@@ -1,0 +1,344 @@
+import { useState, useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
+import { DashboardLayout } from '@/layouts/DashboardLayout';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Send, Bot, User, Sparkles, AlertCircle, Loader2, ArrowRight } from 'lucide-react';
+import { toast } from 'sonner';
+
+export default function GeminiConsultantPage() {
+    const { user, api } = useAuth();
+    const { slug } = useParams();
+    const [businessId, setBusinessId] = useState(null);
+    const [messages, setMessages] = useState([]);
+    const [input, setInput] = useState('');
+    const [isTyping, setIsTyping] = useState(false);
+    const scrollRef = useRef(null);
+
+    // Initial greeting
+    useEffect(() => {
+        setMessages([
+            {
+                id: 'welcome',
+                role: 'assistant',
+                content: `¡Hola ${user?.nombre || 'Chef'}! Soy tu Consultor de Lealtad potenciado por Gemini. Puedo analizar tus ventas, sugerir estrategias de marketing o ayudarte a optimizar tu menú. ¿En qué te puedo ayudar hoy?`,
+                timestamp: new Date()
+            }
+        ]);
+    }, [user]);
+
+    useEffect(() => {
+        if (slug) {
+            api().get(`/business/${slug}`)
+                .then(res => setBusinessId(res.data.id))
+                .catch(console.error);
+        }
+    }, [slug, api]);
+
+    // Auto-scroll to bottom
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+    }, [messages, isTyping]);
+
+    // Insights States
+    const [insights, setInsights] = useState(null);
+    const [loadingInsights, setLoadingInsights] = useState(true);
+
+    const fetchInsights = async () => {
+        if (!user?.id) return;
+        setLoadingInsights(true);
+        try {
+            const response = await api().get(`/gemini/insights/${user.id}`);
+            setInsights(response.data);
+        } catch (error) {
+            console.error('Error fetching insights:', error);
+        } finally {
+            setLoadingInsights(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchInsights();
+    }, [user]);
+
+    const handleSendMessage = async (e) => {
+        e.preventDefault();
+        if (!input.trim()) return;
+
+        const userMessage = {
+            id: Date.now(),
+            role: 'user',
+            content: input,
+            timestamp: new Date()
+        };
+
+        setMessages(prev => [...prev, userMessage]);
+        setInput('');
+        setIsTyping(true);
+
+        try {
+            if (!businessId) {
+                toast.error('Identificando negocio...');
+                throw new Error('No Business ID');
+            }
+            const response = await api().post(`/gemini/chat/${businessId}`, {
+                message: userMessage.content,
+                history: messages.slice(-10)
+            });
+
+            const botMessage = {
+                id: Date.now() + 1,
+                role: 'assistant',
+                content: response.data.reply,
+                timestamp: new Date()
+            };
+
+            setMessages(prev => [...prev, botMessage]);
+        } catch (error) {
+            console.error('Chat error:', error);
+            toast.error('Error al conectar con el consultor via IA.');
+            setMessages(prev => [...prev, {
+                id: Date.now() + 1,
+                role: 'system',
+                content: '⚠️ Lo siento, tuve un problema de conexión. Por favor intenta de nuevo.',
+                isError: true
+            }]);
+        } finally {
+            setIsTyping(false);
+        }
+    };
+
+    return (
+        <DashboardLayout>
+            <div className="flex flex-col h-[calc(100vh-8rem)] gap-4">
+                {/* Header */}
+                <div className="flex items-center gap-3 pb-2 border-b">
+                    <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg shadow-lg shadow-green-500/20">
+                        <Sparkles className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                        <h1 className="font-heading text-2xl font-bold text-gray-900">Consultor Gemini</h1>
+                        <p className="text-gray-500 text-sm">Estrategia de lealtad basada en psicología del consumidor</p>
+                    </div>
+                </div>
+
+                {/* Main Content Area: Divided in two */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full min-h-0">
+
+                    {/* Left Side: Chat Area */}
+                    <Card className="flex flex-col bg-white border-gray-200 shadow-xl overflow-hidden border-t-4 border-t-green-500">
+                        <ScrollArea className="flex-1 p-4 bg-[#FAFAF9]" ref={scrollRef}>
+                            <div className="space-y-6">
+                                {messages.map((msg) => (
+                                    <div
+                                        key={msg.id}
+                                        className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                                    >
+                                        {msg.role === 'assistant' && (
+                                            <Avatar className="h-8 w-8 border border-green-200">
+                                                <AvatarFallback className="bg-green-100 text-green-600">
+                                                    <Bot className="w-5 h-5" />
+                                                </AvatarFallback>
+                                            </Avatar>
+                                        )}
+
+                                        <div
+                                            className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${msg.role === 'user'
+                                                ? 'bg-[#13ec6d]/5 border-2 border-[#13ec6d] text-gray-900 rounded-br-none font-medium'
+                                                : msg.isError
+                                                    ? 'bg-red-50 text-red-800 border border-red-100'
+                                                    : 'bg-white text-gray-800 rounded-bl-none border border-gray-200'
+                                                }`}
+                                        >
+                                            <p className="whitespace-pre-wrap">{msg.content}</p>
+                                            <span className={`text-[10px] block mt-1 ${msg.role === 'user' ? 'text-[#13ec6d]' : 'text-gray-400'
+                                                }`}>
+                                                {msg.timestamp?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            </span>
+                                        </div>
+
+                                        {msg.role === 'user' && (
+                                            <Avatar className="h-8 w-8 border border-[#13ec6d]/30">
+                                                <AvatarImage src={user?.avatar_url} />
+                                                <AvatarFallback className="bg-[#13ec6d]/10 text-[#13ec6d]">
+                                                    <User className="w-5 h-5" />
+                                                </AvatarFallback>
+                                            </Avatar>
+                                        )}
+                                    </div>
+                                ))}
+
+                                {isTyping && (
+                                    <div className="flex gap-3 justify-start">
+                                        <Avatar className="h-8 w-8 border border-[#13ec6d]/20">
+                                            <AvatarFallback className="bg-[#13ec6d]/10 text-[#13ec6d] animate-pulse">
+                                                <Bot className="w-5 h-5" />
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div className="bg-white border border-gray-200 rounded-2xl px-4 py-3 rounded-bl-none flex items-center gap-1">
+                                            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                                            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                                            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </ScrollArea>
+
+                        {/* Input Area */}
+                        <div className="p-4 bg-white border-t border-gray-100">
+                            <form onSubmit={handleSendMessage} className="flex gap-2">
+                                <Input
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    placeholder="Escribe tu consulta aquí..."
+                                    className="bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus-visible:ring-[#13ec6d] focus-visible:ring-offset-0"
+                                    disabled={isTyping}
+                                />
+                                <Button
+                                    id="chat-send-button"
+                                    type="submit"
+                                    disabled={!input.trim() || isTyping}
+                                    className="bg-[#13ec6d] hover:bg-[#13ec6d]/90 text-[#111814] shadow-lg shadow-[#13ec6d]/10 transition-all font-bold"
+                                >
+                                    <Send className="w-4 h-4" />
+                                </Button>
+                            </form>
+                        </div>
+                    </Card>
+
+                    {/* Right Side: Menu.IA Insights */}
+                    <Card className="flex flex-col bg-white border-2 border-[#13ec6d] shadow-2xl rounded-[2.5rem] overflow-hidden relative">
+                        {/* Subtle Premium Glow Effect */}
+                        <div className="absolute top-0 right-0 w-80 h-80 bg-[#13ec6d]/10 rounded-full blur-[100px] -mr-40 -mt-40 opacity-50" />
+
+                        <div className="p-8 pb-4 flex items-center justify-between relative z-10 border-b border-gray-100 bg-gray-50/50">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-[#13ec6d] rounded-2xl shadow-lg shadow-[#13ec6d]/20">
+                                    <Sparkles className="w-6 h-6 text-white" />
+                                </div>
+                                <div>
+                                    <h2 className="text-xl font-black tracking-tight text-gray-900">Menu.IA Insights</h2>
+                                    <div className="flex items-center gap-2 mt-0.5">
+                                        <div className="w-2 h-2 bg-[#13ec6d] rounded-full animate-pulse" />
+                                        <span className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold">Estrategia en tiempo real</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <ScrollArea className="flex-1 px-8 py-6 relative z-10 bg-white">
+                            {loadingInsights ? (
+                                <div className="h-full flex flex-col items-center justify-center py-20 space-y-4">
+                                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#13ec6d]/10 border-t-[#13ec6d]" />
+                                    <p className="text-gray-500 font-medium animate-pulse">Consultando oráculo de datos...</p>
+                                </div>
+                            ) : insights?.acciones_sugeridas ? (
+                                <div className="space-y-10 pb-10">
+                                    <p className="text-gray-600 text-sm leading-relaxed bg-[#13ec6d]/5 p-4 rounded-2xl border border-[#13ec6d]/10 italic">
+                                        "Basado en el análisis de hoy, he detectado estas oportunidades clave para maximizar tu rentabilidad:"
+                                    </p>
+
+                                    <div className="space-y-10">
+                                        {insights.acciones_sugeridas.map((tip, idx) => {
+                                            const parts = tip.split(/\*\*SOLUCIÓN:\*\*/i);
+                                            const problemPart = parts[0].replace(/\*\*PROBLEMA:\*\*/i, '').trim();
+                                            const solutionPart = parts[1]?.trim();
+
+                                            const handleDeepDive = () => {
+                                                const query = `Hola, me interesa profundizar en esta oportunidad:
+                                                
+PROBLEMA DETECTADO: ${problemPart.replace(/\*\*/g, '')}
+ESTRATEGIA SUGERIDA: ${solutionPart?.replace(/\*\*/g, '') || ''}
+
+¿Podrías darme un paso a paso detallado de cómo implementar esto en mi restaurante y qué resultados esperar?`;
+
+                                                setInput(query);
+                                                setTimeout(() => {
+                                                    const sendBtn = document.getElementById('chat-send-button');
+                                                    sendBtn?.click();
+                                                }, 100);
+                                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                            };
+
+                                            return (
+                                                <div
+                                                    key={idx}
+                                                    onClick={handleDeepDive}
+                                                    className="relative group cursor-pointer"
+                                                >
+                                                    <div className="absolute -left-4 top-0 bottom-0 w-1 bg-[#13ec6d]/20 rounded-full group-hover:bg-[#13ec6d] transition-all" />
+
+                                                    <div className="space-y-4 pl-4 transition-all group-hover:translate-x-1">
+                                                        <div className="space-y-1">
+                                                            <div className="flex items-center justify-between mb-2">
+                                                                <span className="text-[10px] font-black uppercase tracking-widest text-[#13ec6d] opacity-60">Oportunidad {idx + 1}</span>
+                                                                <span className="text-[9px] font-bold text-[#13ec6d] bg-[#13ec6d]/10 px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                                                                    CLICK PARA PROFUNDIZAR <ArrowRight className="w-2 h-2" />
+                                                                </span>
+                                                            </div>
+                                                            <div className="bg-red-50 border border-red-100 p-4 rounded-xl group-hover:border-red-200 transition-colors">
+                                                                <h4 className="text-[10px] font-black text-red-600 uppercase mb-1 flex items-center gap-2">
+                                                                    <AlertCircle className="w-3 h-3" /> Problema Detectado
+                                                                </h4>
+                                                                <p className="text-sm font-semibold text-gray-800 leading-relaxed">
+                                                                    {problemPart.replace(/\*\*/g, '')}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+
+                                                        {solutionPart && (
+                                                            <div className="bg-[#13ec6d]/5 border border-[#13ec6d]/10 p-5 rounded-2xl shadow-sm group-hover:border-[#13ec6d]/30 group-hover:shadow-md transition-all">
+                                                                <h4 className="text-[10px] font-black text-[#13ec6d] uppercase mb-2 flex items-center gap-2">
+                                                                    <Sparkles className="w-3 h-3" /> Estrategia Sugerida
+                                                                </h4>
+                                                                <p className="text-[15px] font-bold text-gray-900 leading-relaxed">
+                                                                    {solutionPart.replace(/\*\*/g, '')}
+                                                                </p>
+                                                                <div className="mt-4 pt-4 border-t border-[#13ec6d]/10 flex justify-end">
+                                                                    <div className="text-[10px] font-black text-[#13ec6d] flex items-center gap-2">
+                                                                        CONSULTAR DETALLES IA <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-center py-20 opacity-70">
+                                    <AlertCircle className="w-12 h-12 mx-auto mb-4 text-[#13ec6d]/20" />
+                                    <p className="font-bold text-gray-400">Sin datos estratégicos disponibles por ahora.</p>
+                                </div>
+                            )}
+                        </ScrollArea>
+
+                        <div className="p-8 bg-gray-50/80 backdrop-blur-md border-t border-gray-100 relative z-10">
+                            <Button
+                                onClick={fetchInsights}
+                                disabled={loadingInsights}
+                                className="w-full h-15 bg-[#13ec6d] text-[#111814] hover:bg-[#13ec6d]/90 rounded-2xl font-black uppercase text-xs tracking-[0.3em] shadow-lg shadow-[#13ec6d]/20 transition-all active:scale-95 group border-none"
+                            >
+                                {loadingInsights ? <Loader2 className="animate-spin" /> : (
+                                    <>
+                                        RE-ANALIZAR NEGOCIO
+                                        <Sparkles className="w-4 h-4 ml-3 group-hover:rotate-12 transition-transform" />
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    </Card>
+                </div>
+            </div>
+        </DashboardLayout>
+    );
+}
