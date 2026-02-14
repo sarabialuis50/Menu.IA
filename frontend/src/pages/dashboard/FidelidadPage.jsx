@@ -20,9 +20,9 @@ export default function FidelidadPage() {
   const [customers, setCustomers] = useState([]);
   const [config, setConfig] = useState({
     activo: false,
-    pesos_por_punto: 100,
-    puntos_minimo_canje: 100,
-    valor_punto_descuento: 1
+    pesos_por_punto: 0,
+    puntos_minimo_canje: 0,
+    valor_punto_descuento: 0
   });
   const [originalConfig, setOriginalConfig] = useState(null);
 
@@ -95,9 +95,7 @@ export default function FidelidadPage() {
       if (configRes.data) {
         setConfig(configRes.data);
         setOriginalConfig(configRes.data);
-        if (configRes.data.pesos_por_punto) {
-          setTempConfigValue(configRes.data.pesos_por_punto);
-        }
+        setTempConfigValue('');
       }
       setCustomers(customersRes.data || []);
 
