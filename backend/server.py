@@ -2153,7 +2153,12 @@ async def get_client_orders(slug: str = None, client: Cliente = Depends(get_curr
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://menuia.co",
+        "https://www.menuia.co",
+        "https://menuia.production.up.railway.app",
+        "http://localhost:3000"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
