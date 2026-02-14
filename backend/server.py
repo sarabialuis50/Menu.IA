@@ -2153,8 +2153,8 @@ async def get_client_orders(slug: str = None, client: Cliente = Depends(get_curr
 
 app.add_middleware(
     CORSMiddleware,
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
     allow_methods=["*"],
     allow_headers=["*"],
 )
