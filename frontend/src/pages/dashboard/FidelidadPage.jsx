@@ -58,9 +58,9 @@ export default function FidelidadPage() {
   };
 
   // Simulator State
-  const [simVenta, setSimVenta] = useState(15000);
-  const [simCashback, setSimCashback] = useState(10);
-  const [simPuntos, setSimPuntos] = useState(1500);
+  const [simVenta, setSimVenta] = useState(0);
+  const [simCashback, setSimCashback] = useState(0);
+  const [simPuntos, setSimPuntos] = useState(0);
   const [tempConfigValue, setTempConfigValue] = useState('');
 
   // Sync points with cashback for a "live" simulator experience (1pt = $1 default)
@@ -357,9 +357,10 @@ export default function FidelidadPage() {
                   <span className="font-black text-gray-900 text-xl mr-2 h-full flex items-center">$</span>
                   <Input
                     type="number"
-                    value={simVenta}
+                    value={simVenta === 0 ? '' : simVenta}
                     onChange={(e) => setSimVenta(parseInt(e.target.value) || 0)}
                     onWheel={(e) => e.target.blur()}
+                    placeholder="0"
                     className="border-none bg-transparent p-0 text-xl font-black focus-visible:ring-0 w-full h-full flex items-center"
                   />
                 </div>
@@ -374,9 +375,10 @@ export default function FidelidadPage() {
                 <div className="h-16 rounded-3xl border-2 border-[#22C55E]/30 bg-white px-6 flex items-center group focus-within:border-[#22C55E] transition-all shadow-sm">
                   <Input
                     type="number"
-                    value={simCashback}
+                    value={simCashback === 0 ? '' : simCashback}
                     onChange={(e) => setSimCashback(parseInt(e.target.value) || 0)}
                     onWheel={(e) => e.target.blur()}
+                    placeholder="0"
                     className="border-none bg-transparent p-0 text-2xl font-black text-[#22C55E] focus-visible:ring-0 w-full text-center h-full"
                   />
                   <div className="flex flex-col items-end leading-none ml-2">
@@ -395,9 +397,10 @@ export default function FidelidadPage() {
                 <div className="h-16 rounded-3xl border-2 border-[#22C55E]/30 bg-white px-6 flex items-center group focus-within:border-[#22C55E] transition-all shadow-md shadow-[#22C55E]/5">
                   <Input
                     type="number"
-                    value={simPuntos}
+                    value={simPuntos === 0 ? '' : simPuntos}
                     onChange={(e) => setSimPuntos(parseInt(e.target.value) || 0)}
                     onWheel={(e) => e.target.blur()}
+                    placeholder="0"
                     className="border-none bg-transparent p-0 text-2xl font-black text-[#22C55E] focus-visible:ring-0 w-full text-center h-full flex items-center"
                   />
                   <span className="text-[8px] font-black text-[#22C55E] uppercase tracking-widest ml-2">PUNTOS</span>
@@ -726,8 +729,8 @@ export default function FidelidadPage() {
                       onClick={handleAwardPoints}
                       disabled={awarding || !selectedCustomer || (creditMode === 'compra' ? purchaseAmount <= 0 : manualPoints <= 0)}
                       className={`w-full h-24 rounded-[3rem] font-black uppercase text-sm tracking-[0.4em] transition-all duration-500 flex items-center justify-center gap-6 group overflow-hidden ${selectedCustomer && (creditMode === 'compra' ? purchaseAmount > 0 : manualPoints > 0)
-                          ? 'bg-[#13ec6d] text-[#111814] hover:bg-[#0fd660] shadow-[0_20px_50px_rgba(19,236,109,0.3)] hover:scale-[1.02] active:scale-95 border-none'
-                          : 'bg-transparent text-[#13ec6d] border-4 border-[#13ec6d]/20 cursor-not-allowed opacity-40'
+                        ? 'bg-[#13ec6d] text-[#111814] hover:bg-[#0fd660] shadow-[0_20px_50px_rgba(19,236,109,0.3)] hover:scale-[1.02] active:scale-95 border-none'
+                        : 'bg-transparent text-[#13ec6d] border-4 border-[#13ec6d]/20 cursor-not-allowed opacity-40'
                         }`}
                     >
                       {awarding ? (
