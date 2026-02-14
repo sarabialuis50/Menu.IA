@@ -58,6 +58,10 @@ security = HTTPBearer()
 # Create the main app
 app = FastAPI(title="Menu.IA API", version="1.0.0")
 
+@app.get("/")
+async def health_check():
+    return {"status": "ok", "message": "Menu.IA API is running"}
+
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
@@ -2147,8 +2151,6 @@ async def get_client_orders(slug: str = None, client: Cliente = Depends(get_curr
     res = query.execute()
     return res.data
 
-app.include_router(api_router)
-
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
@@ -2156,3 +2158,5 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(api_router)
