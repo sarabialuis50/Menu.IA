@@ -332,96 +332,96 @@ export default function FidelidadPage() {
         </div>
 
         {/* SECTION: SIMULADOR DE PUNTOS (IMAGE DESIGN) */}
-        <Card className="border-none shadow-2xl rounded-[2.5rem] overflow-hidden bg-white">
-          <CardHeader className="bg-[#f8faf9] border-b border-gray-100 px-10 py-8">
+        <Card className="border-none shadow-2xl rounded-[2rem] md:rounded-[2.5rem] overflow-hidden bg-white">
+          <CardHeader className="bg-[#f8faf9] border-b border-gray-100 px-6 py-6 md:px-10 md:py-8">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl bg-[#22C55E] flex items-center justify-center shadow-lg shadow-[#22C55E]/20">
                 <Calculator className="w-5 h-5 text-white" />
               </div>
               <div>
-                <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-[#22C55E]">Simulador de Puntos</CardTitle>
-                <CardDescription className="text-[10px] font-bold text-gray-400 mt-0.5">Define tu inversión por compra antes de configurar</CardDescription>
+                <CardTitle className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-[#22C55E]">Simulador de Puntos</CardTitle>
+                <CardDescription className="text-[9px] md:text-[10px] font-bold text-gray-400 mt-0.5">Define tu inversión antes de configurar</CardDescription>
               </div>
             </div>
           </CardHeader>
-          <CardContent className="px-10 py-12 space-y-12">
+          <CardContent className="px-6 py-8 md:px-10 md:py-12 space-y-10 md:space-y-12">
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-end">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 items-end">
 
               {/* Step 1: VENTA */}
-              <div className="space-y-4">
-                <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block px-1">1. VENTA DE</Label>
-                <div className="h-16 rounded-3xl border-2 border-[#22C55E]/30 bg-white px-6 flex items-center group focus-within:border-[#22C55E] transition-all shadow-sm">
-                  <span className="font-black text-gray-900 text-xl mr-2 h-full flex items-center">$</span>
+              <div className="space-y-2 md:space-y-4">
+                <Label className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest block px-1">1. VENTA DE</Label>
+                <div className="h-14 md:h-16 rounded-[1.25rem] md:rounded-3xl border-2 border-[#22C55E]/30 bg-white px-3 md:px-6 flex items-center group focus-within:border-[#22C55E] transition-all shadow-sm">
+                  <span className="font-black text-gray-900 text-lg md:text-xl mr-1.5 h-full flex items-center">$</span>
                   <Input
                     type="number"
                     value={simVenta === 0 ? '' : simVenta}
                     onChange={(e) => setSimVenta(parseInt(e.target.value) || 0)}
                     onWheel={(e) => e.target.blur()}
                     placeholder="0"
-                    className="border-none bg-transparent p-0 text-xl font-black focus-visible:ring-0 w-full h-full flex items-center"
+                    className="border border-[#22C55E]/20 bg-green-50/30 px-2 md:px-3 text-lg md:text-xl font-black focus-visible:ring-1 focus-visible:ring-[#22C55E]/30 w-full h-9 md:h-10 rounded-xl transition-all"
                   />
                 </div>
               </div>
 
               {/* Step 2: EQUIVALENCIA (CASHBACK) */}
-              <div className="space-y-4 relative group">
+              <div className="space-y-2 md:space-y-4 relative group">
                 <div className="hidden md:flex absolute -left-6 top-2/3 -translate-y-1/2 z-10 items-center justify-center">
                   <ArrowRight className="w-4 h-4 text-[#22C55E]/40" />
                 </div>
-                <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block px-1">2. EQUIVALENCIA</Label>
-                <div className="h-16 rounded-3xl border-2 border-[#22C55E]/30 bg-white px-6 flex items-center group focus-within:border-[#22C55E] transition-all shadow-sm">
+                <Label className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest block px-1">2. EQUIVALENCIA</Label>
+                <div className="h-14 md:h-16 rounded-[1.25rem] md:rounded-3xl border-2 border-[#22C55E]/30 bg-white px-3 md:px-5 flex items-center group focus-within:border-[#22C55E] transition-all shadow-sm">
                   <Input
                     type="number"
                     value={simCashback === 0 ? '' : simCashback}
                     onChange={(e) => setSimCashback(parseInt(e.target.value) || 0)}
                     onWheel={(e) => e.target.blur()}
                     placeholder="0"
-                    className="border-none bg-transparent p-0 text-2xl font-black text-[#22C55E] focus-visible:ring-0 w-full text-center h-full"
+                    className="border border-[#22C55E]/20 bg-green-50/30 p-0 text-xl md:text-2xl font-black text-[#22C55E] focus-visible:ring-1 focus-visible:ring-[#22C55E]/30 w-16 md:w-20 text-center h-9 md:h-10 rounded-xl transition-all"
                   />
-                  <div className="flex flex-col items-end leading-none ml-2">
-                    <span className="text-[10px] font-black text-[#22C55E] uppercase tracking-tighter">%</span>
-                    <span className="text-[7px] font-black text-[#22C55E]/60 uppercase tracking-tighter whitespace-nowrap">CASHBACK</span>
+                  <div className="flex items-baseline gap-1 ml-auto shrink-0">
+                    <span className="text-[9px] md:text-[10px] font-black text-[#22C55E] uppercase tracking-tighter">%</span>
+                    <span className="text-[6px] md:text-[7px] font-black text-[#22C55E]/60 uppercase tracking-tighter whitespace-nowrap">CASHBACK</span>
                   </div>
                 </div>
               </div>
 
               {/* Step 3: PUNTOS (Reactive) */}
-              <div className="space-y-4 relative">
+              <div className="space-y-2 md:space-y-4 relative">
                 <div className="hidden md:flex absolute -left-6 top-2/3 -translate-y-1/2 z-10 items-center justify-center">
                   <ArrowRight className="w-4 h-4 text-[#22C55E]/40" />
                 </div>
-                <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block px-1">3. CLIENTE RECIBE</Label>
-                <div className="h-16 rounded-3xl border-2 border-[#22C55E]/30 bg-white px-6 flex items-center group focus-within:border-[#22C55E] transition-all shadow-md shadow-[#22C55E]/5">
+                <Label className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest block px-1">3. CLIENTE RECIBE</Label>
+                <div className="h-14 md:h-16 rounded-[1.25rem] md:rounded-3xl border-2 border-[#22C55E]/30 bg-white px-3 md:px-5 flex items-center group focus-within:border-[#22C55E] transition-all shadow-md shadow-[#22C55E]/5">
                   <Input
                     type="number"
                     value={simPuntos === 0 ? '' : simPuntos}
                     onChange={(e) => setSimPuntos(parseInt(e.target.value) || 0)}
                     onWheel={(e) => e.target.blur()}
                     placeholder="0"
-                    className="border-none bg-transparent p-0 text-2xl font-black text-[#22C55E] focus-visible:ring-0 w-full text-center h-full flex items-center"
+                    className="border border-[#22C55E]/20 bg-green-50/30 p-0 text-xl md:text-2xl font-black text-[#22C55E] focus-visible:ring-1 focus-visible:ring-[#22C55E]/30 w-16 md:w-20 text-center h-9 md:h-10 rounded-xl transition-all"
                   />
-                  <span className="text-[8px] font-black text-[#22C55E] uppercase tracking-widest ml-2">PUNTOS</span>
+                  <span className="text-[7px] md:text-[8px] font-black text-[#22C55E] uppercase tracking-widest ml-auto shrink-0">PUNTOS</span>
                 </div>
               </div>
 
               {/* Step 4: RESULTADO (CONFIGURACIÓN SUGERIDA) */}
-              <div className="space-y-4 relative">
+              <div className="space-y-2 md:space-y-4 relative text-center">
                 <div className="hidden md:flex absolute -left-6 top-2/3 -translate-y-1/2 z-10 items-center justify-center">
                   <ArrowRight className="w-4 h-4 text-[#22C55E]/40" />
                 </div>
-                <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block px-1">4. RESULTADO (SUGERIDO)</Label>
-                <div className="h-16 rounded-3xl border-2 border-[#22C55E]/40 bg-white px-6 flex items-center justify-between group shadow-xl shadow-[#22C55E]/5">
+                <Label className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest block px-1">4. RESULTADO (SUGERIDO)</Label>
+                <div className="h-14 md:h-16 rounded-[1.25rem] md:rounded-3xl border-2 border-[#22C55E]/40 bg-white px-3 md:px-6 flex items-center justify-between group shadow-xl shadow-[#22C55E]/5">
                   <div className="flex flex-col justify-center">
                     <div className="flex items-baseline gap-1">
-                      <span className="text-xl font-black text-[#22C55E] leading-none">{suggestedSpend}</span>
+                      <span className="text-lg md:text-xl font-black text-[#22C55E] leading-none">{suggestedSpend}</span>
                     </div>
                   </div>
                   <Button
                     onClick={applySimulator}
-                    className="bg-[#22C55E] hover:bg-[#1da850] text-white font-black text-[10px] uppercase h-10 rounded-2xl px-5 transition-transform active:scale-95 shadow-lg shadow-[#22C55E]/20 flex items-center gap-2"
+                    className="bg-[#22C55E] hover:bg-[#1da850] text-white font-black text-[9px] md:text-[10px] uppercase h-9 md:h-10 rounded-xl md:rounded-2xl px-3 md:px-5 transition-transform active:scale-95 shadow-lg shadow-[#22C55E]/20 flex items-center gap-1.5 md:gap-2"
                   >
-                    <Package className="w-4 h-4" />
+                    <Package className="w-3.5 h-3.5 md:w-4 h-4" />
                     USAR
                   </Button>
                 </div>
@@ -429,22 +429,22 @@ export default function FidelidadPage() {
             </div>
 
             {/* SECTION: CONFIGURACIÓN TÉCNICA DEFINITIVA */}
-            <div className="pt-12 border-t border-gray-100">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10">
+            <div className="pt-8 md:pt-12 border-t border-gray-100">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 md:gap-10">
 
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
+                <div className="space-y-2 text-center lg:text-left">
+                  <div className="flex items-center justify-center lg:justify-start gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-[#22C55E]" />
                     <h3 className="text-xs font-black text-gray-900 uppercase tracking-widest">CONFIGURACIÓN TÉCNICA DEFINITIVA</h3>
                   </div>
-                  <p className="text-[10px] font-medium text-gray-400 ml-3.5">Usa el "Resultado Sugerido" de arriba como guía, pero escribe aquí el valor final.</p>
+                  <p className="text-[10px] font-medium text-gray-400">Usa el "Resultado Sugerido" de arriba como guía, pero escribe aquí el valor final.</p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-end gap-6">
-                  <div className="space-y-3">
+                <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 w-full lg:w-auto">
+                  <div className="space-y-3 w-full sm:w-auto flex flex-col items-center sm:items-start text-center sm:text-left">
                     <Label className="text-[9px] font-black text-[#22C55E] uppercase tracking-widest px-1">5. COLOCA AQUÍ TU VALOR ($)</Label>
-                    <div className="h-14 bg-gray-50 border-2 border-[#22C55E]/40 rounded-full flex items-center p-1.5 pr-6 group focus-within:border-[#22C55E] focus-within:bg-white transition-all">
-                      <div className="w-11 h-11 rounded-full bg-white shadow-sm flex items-center justify-center font-black text-[#22C55E] text-lg">$</div>
+                    <div className="h-12 md:h-14 bg-gray-50 border-2 border-[#22C55E]/40 rounded-full flex items-center p-1.5 pr-4 md:pr-5 group focus-within:border-[#22C55E] focus-within:bg-white transition-all w-fit mx-auto sm:mx-0">
+                      <div className="w-9 h-9 md:w-11 md:h-11 rounded-full bg-white shadow-sm flex items-center justify-center font-black text-[#22C55E] text-base md:text-lg">$</div>
                       <Input
                         type="number"
                         value={tempConfigValue}
@@ -453,22 +453,22 @@ export default function FidelidadPage() {
                           setTempConfigValue(val);
                           setConfig({ ...config, pesos_por_punto: parseInt(val) || 0 });
                         }}
-                        className="border-none bg-transparent text-xl font-black text-gray-900 focus-visible:ring-0 w-32 px-4"
-                        placeholder="..."
+                        className="border border-[#22C55E]/20 bg-white px-2 md:px-3 text-lg md:text-xl font-black text-gray-900 focus-visible:ring-1 focus-visible:ring-[#22C55E]/30 w-16 md:w-24 h-8 md:h-10 rounded-xl text-center transition-all"
+                        placeholder="0"
                         id="loyalty-config-input"
                         onWheel={(e) => e.target.blur()}
                       />
-                      <span className="text-[10px] font-black text-[#22C55E] uppercase tracking-tighter">/ 1 PUNTO</span>
+                      <span className="text-[9px] md:text-[10px] font-black text-[#22C55E] uppercase tracking-tighter whitespace-nowrap ml-1">/ 1 PUNTO</span>
                     </div>
                   </div>
 
                   <Button
                     onClick={handleSave}
                     disabled={saving}
-                    className={getButtonStyle(hasChanges())}
+                    className={`${getButtonStyle(hasChanges())} w-fit mx-auto sm:mx-0 px-8 h-12 md:h-16 text-[10px] md:text-xs`}
                   >
                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4 group-hover:scale-110 transition-transform" />}
-                    GUARDAR
+                    GUARDAR CAMBIOS
                   </Button>
                 </div>
 
@@ -481,8 +481,8 @@ export default function FidelidadPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 px-2">
 
           {/* Card Buscar Cliente */}
-          <Card className="rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden group">
-            <CardHeader className="px-8 pt-8 pb-4">
+          <Card className="rounded-[2rem] md:rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden group order-1 lg:order-none">
+            <CardHeader className="px-5 md:px-8 pt-6 md:pt-8 pb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-green-50 flex items-center justify-center">
@@ -492,7 +492,7 @@ export default function FidelidadPage() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="px-8 pb-10 space-y-6">
+            <CardContent className="px-5 md:px-8 pb-8 md:pb-10 space-y-6">
               <div className="space-y-4">
                 <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Nombre, Email o WhatsApp</Label>
                 <div className="flex gap-3">
@@ -583,22 +583,22 @@ export default function FidelidadPage() {
           </Card>
 
           {/* Card Acreditar Puntos */}
-          <Card className="rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden group">
-            <CardHeader className="px-8 pt-8 pb-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-green-50 flex items-center justify-center">
-                    <Trophy className="w-6 h-6 text-[#22C55E]" />
+          <Card className="rounded-[2rem] md:rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden group order-2 lg:order-none">
+            <CardHeader className="px-5 md:px-8 pt-6 md:pt-8 pb-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-3 shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center shrink-0">
+                    <Trophy className="w-5 h-5 text-[#22C55E]" />
                   </div>
-                  <CardTitle className="text-sm font-black text-gray-900 uppercase tracking-widest">
+                  <CardTitle className="text-[11px] font-black text-gray-900 uppercase tracking-wider whitespace-nowrap">
                     {creditMode === 'compra' ? 'Calculadora' : 'Manual'}
                   </CardTitle>
                 </div>
-                <div className="flex p-1.5 bg-gray-100 rounded-[1.25rem] shadow-inner">
+                <div className="flex p-1 bg-gray-100 rounded-xl shadow-inner shrink-0">
                   <button
                     onClick={() => setCreditMode('compra')}
-                    className={`px-6 py-2 rounded-xl text-[10px] font-black tracking-widest transition-all ${creditMode === 'compra'
-                      ? 'bg-white text-[#22C55E] shadow-sm ring-1 ring-black/5'
+                    className={`px-3 py-2 rounded-lg text-[9px] font-black transition-all whitespace-nowrap ${creditMode === 'compra'
+                      ? 'bg-white text-[#22C55E] shadow-sm'
                       : 'text-gray-400 hover:text-gray-600'
                       }`}
                   >
@@ -606,17 +606,17 @@ export default function FidelidadPage() {
                   </button>
                   <button
                     onClick={() => setCreditMode('manual')}
-                    className={`px-6 py-2 rounded-xl text-[10px] font-black tracking-widest transition-all ${creditMode === 'manual'
-                      ? 'bg-white text-[#22C55E] shadow-sm ring-1 ring-black/5'
+                    className={`px-3 py-2 rounded-lg text-[9px] font-black transition-all whitespace-nowrap ${creditMode === 'manual'
+                      ? 'bg-white text-[#22C55E] shadow-sm'
                       : 'text-gray-400 hover:text-gray-600'
                       }`}
                   >
-                    PTS MANUAL
+                    MANUAL
                   </button>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="px-8 pb-10 flex flex-col items-center justify-center min-h-[420px]">
+            <CardContent className="px-5 md:px-8 pb-8 md:pb-10 flex flex-col items-center justify-center min-h-[380px] md:min-h-[420px]">
 
 
               <div className="w-full space-y-12 animate-in fade-in zoom-in duration-500">
@@ -660,7 +660,7 @@ export default function FidelidadPage() {
                               onChange={(e) => setPurchaseAmount(parseInt(e.target.value) || 0)}
                               onWheel={(e) => e.target.blur()}
                               placeholder="0"
-                              className="w-full h-24 bg-white border-2 border-gray-200 rounded-[2.5rem] py-6 pl-16 pr-16 text-5xl font-black text-gray-900 text-center focus-visible:ring-0 focus:border-[#22C55E] focus:shadow-[0_0_30px_rgba(34,197,94,0.1)] outline-none transition-all placeholder:text-gray-100 shadow-inner"
+                              className="w-full h-20 md:h-24 bg-white border-2 border-gray-200 rounded-[2rem] md:rounded-[2.5rem] py-6 pl-14 pr-14 md:pl-16 md:pr-16 text-4xl md:text-5xl font-black text-gray-900 text-center focus-visible:ring-0 focus:border-[#22C55E] focus:shadow-[0_0_30px_rgba(34,197,94,0.1)] outline-none transition-all placeholder:text-gray-100 shadow-inner"
                             />
                             <div className="absolute right-8 h-full flex flex-col justify-center gap-1.5 z-10">
                               <button onClick={() => setPurchaseAmount(prev => prev + 1000)} className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center hover:bg-green-50 hover:text-[#22C55E] text-gray-300 transition-all border border-gray-300">
@@ -685,36 +685,36 @@ export default function FidelidadPage() {
                       </div>
                     ) : (
                       <div className="flex flex-col items-center space-y-12">
-                        <div className="flex items-center gap-12">
+                        <div className="flex items-center gap-6 md:gap-12">
                           <button
                             onClick={() => setManualPoints(Math.max(0, manualPoints - 1))}
-                            className="w-20 h-20 rounded-full bg-white border-2 border-gray-200 shadow-sm flex items-center justify-center text-gray-300 hover:bg-green-50 hover:border-[#22C55E] hover:text-[#22C55E] transition-all active:scale-90 hover:shadow-md"
+                            className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-white border-2 border-gray-200 shadow-sm flex items-center justify-center text-gray-300 hover:bg-green-50 hover:border-[#22C55E] hover:text-[#22C55E] transition-all active:scale-90 hover:shadow-md"
                           >
-                            <Minus className="w-10 h-10" />
+                            <Minus className="w-6 h-6 md:w-10 md:h-10" />
                           </button>
 
                           <div className="text-center group relative">
                             <div className="absolute inset-0 bg-[#22C55E]/5 blur-3xl rounded-full transition-all group-hover:bg-[#22C55E]/10" />
-                            <span className="text-9xl font-black text-[#22C55E] leading-none relative z-10 drop-shadow-sm">
+                            <span className="text-7xl md:text-9xl font-black text-[#22C55E] leading-none relative z-10 drop-shadow-sm">
                               {manualPoints}
                             </span>
-                            <p className="text-gray-400 font-black uppercase tracking-[0.4em] text-[10px] mt-6 relative z-10">Puntos a otorgar</p>
+                            <p className="text-gray-400 font-black uppercase tracking-[0.4em] text-[8px] md:text-[10px] mt-4 md:mt-6 relative z-10">Puntos a otorgar</p>
                           </div>
 
                           <button
                             onClick={() => setManualPoints(manualPoints + 1)}
-                            className="w-20 h-20 rounded-full bg-white border-2 border-gray-200 shadow-sm flex items-center justify-center text-gray-300 hover:bg-green-50 hover:border-[#22C55E] hover:text-[#22C55E] transition-all active:scale-90 hover:shadow-md"
+                            className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-white border-2 border-gray-200 shadow-sm flex items-center justify-center text-gray-300 hover:bg-green-50 hover:border-[#22C55E] hover:text-[#22C55E] transition-all active:scale-90 hover:shadow-md"
                           >
-                            <Plus className="w-10 h-10" />
+                            <Plus className="w-6 h-6 md:w-10 md:h-10" />
                           </button>
                         </div>
 
-                        <div className="flex flex-wrap justify-center gap-4 pt-6">
+                        <div className="flex flex-wrap justify-center gap-3 pt-6">
                           {[5, 10, 20, 50, 100].map(val => (
                             <button
                               key={val}
                               onClick={() => setManualPoints(prev => prev + val)}
-                              className="px-10 py-4 rounded-2xl border-2 border-gray-200 bg-white text-sm font-black text-gray-400 hover:bg-[#22C55E] hover:text-white hover:border-[#22C55E] transition-all hover:scale-110 active:scale-95 shadow-sm hover:shadow-lg hover:shadow-[#22C55E]/20"
+                              className="w-[70px] h-14 rounded-2xl border-2 border-gray-200 bg-white text-xs font-black text-gray-400 hover:bg-[#22C55E] hover:text-white hover:border-[#22C55E] transition-all hover:scale-110 active:scale-95 shadow-sm hover:shadow-lg hover:shadow-[#22C55E]/20 flex items-center justify-center"
                             >
                               +{val}
                             </button>
@@ -726,7 +726,7 @@ export default function FidelidadPage() {
                     <Button
                       onClick={handleAwardPoints}
                       disabled={awarding || !selectedCustomer || (creditMode === 'compra' ? purchaseAmount <= 0 : manualPoints <= 0)}
-                      className={`w-full h-24 rounded-[3rem] font-black uppercase text-sm tracking-[0.4em] transition-all duration-500 flex items-center justify-center gap-6 group overflow-hidden ${selectedCustomer && (creditMode === 'compra' ? purchaseAmount > 0 : manualPoints > 0)
+                      className={`w-full h-20 md:h-24 rounded-[2rem] md:rounded-[3rem] font-black uppercase text-xs md:text-sm tracking-[0.2em] md:tracking-[0.4em] transition-all duration-500 flex items-center justify-center gap-4 md:gap-6 group overflow-hidden ${selectedCustomer && (creditMode === 'compra' ? purchaseAmount > 0 : manualPoints > 0)
                         ? 'bg-[#13ec6d] text-[#111814] hover:bg-[#0fd660] shadow-[0_20px_50px_rgba(19,236,109,0.3)] hover:scale-[1.02] active:scale-95 border-none'
                         : 'bg-transparent text-[#13ec6d] border-4 border-[#13ec6d]/20 cursor-not-allowed opacity-40'
                         }`}
@@ -770,9 +770,11 @@ export default function FidelidadPage() {
             <Link to={`/dashboard/${slug}/fidelidad/historial`}>
               <Button
                 variant="outline"
-                className="h-9 bg-white border-2 border-green-100 text-[#22C55E] hover:bg-green-50 hover:border-green-200 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm transition-all"
+                className="h-9 px-3 md:px-4 bg-white border-2 border-green-100 text-[#22C55E] hover:bg-green-50 hover:border-green-200 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm transition-all"
               >
-                VER HISTORIAL COMPLETO <ArrowRight className="w-3 h-3 ml-2" />
+                <span className="hidden sm:inline">VER HISTORIAL COMPLETO</span>
+                <span className="sm:hidden">HISTORIAL</span>
+                <ArrowRight className="w-3 h-3 ml-2" />
               </Button>
             </Link>
           </div>
@@ -782,38 +784,38 @@ export default function FidelidadPage() {
               <table className="w-full text-left">
                 <thead>
                   <tr className="border-b border-gray-50 bg-gray-50/30">
-                    <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Cliente</th>
-                    <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Monto</th>
-                    <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Puntos</th>
-                    <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Fecha</th>
-                    <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Estado</th>
+                    <th className="px-5 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Cliente</th>
+                    <th className="px-5 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Monto</th>
+                    <th className="px-5 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Puntos</th>
+                    <th className="px-5 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Fecha</th>
+                    <th className="px-5 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest text-right whitespace-nowrap">Estado</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {currentItems.length > 0 ? (
                     currentItems.map((credit, idx) => (
                       <tr key={idx} className="group hover:bg-gray-50/50 transition-colors">
-                        <td className="px-8 py-5">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-[#22C55E] font-black text-[10px] uppercase">
+                        <td className="px-5 md:px-8 py-4 md:py-5">
+                          <div className="flex items-center gap-2 md:gap-3">
+                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-green-50 flex items-center justify-center text-[#22C55E] font-black text-[9px] md:text-[10px] uppercase shrink-0">
                               {(credit.nombre || 'C').split(' ').map(n => n[0]).join('')}
                             </div>
-                            <span className="text-sm font-bold text-gray-900">{credit.nombre}</span>
+                            <span className="text-xs md:text-sm font-bold text-gray-900 truncate max-w-[80px] md:max-w-none">{credit.nombre}</span>
                           </div>
                         </td>
-                        <td className="px-8 py-5">
-                          <span className="text-gray-900 font-bold text-sm">
+                        <td className="px-5 md:px-8 py-4 md:py-5">
+                          <span className="text-gray-900 font-bold text-xs md:text-sm whitespace-nowrap">
                             {credit.monto ? formatCurrency(credit.monto) : '-'}
                           </span>
                         </td>
-                        <td className="px-8 py-5">
-                          <span className="text-[#22C55E] font-black text-sm">+{credit.puntos} pts</span>
+                        <td className="px-5 md:px-8 py-4 md:py-5">
+                          <span className="text-[#22C55E] font-black text-xs md:text-sm whitespace-nowrap">+{credit.puntos} pts</span>
                         </td>
-                        <td className="px-8 py-5 text-gray-400 font-bold text-xs italic">
+                        <td className="px-5 md:px-8 py-4 md:py-5 text-gray-400 font-bold text-[10px] md:text-xs italic whitespace-nowrap">
                           {credit.fecha}
                         </td>
-                        <td className="px-8 py-5 text-right">
-                          <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest border-green-100 text-[#22C55E]">
+                        <td className="px-5 md:px-8 py-4 md:py-5 text-right">
+                          <Badge variant="outline" className="text-[7px] md:text-[8px] font-black uppercase tracking-widest border-green-100 text-[#22C55E] whitespace-nowrap">
                             {credit.estado}
                           </Badge>
                         </td>

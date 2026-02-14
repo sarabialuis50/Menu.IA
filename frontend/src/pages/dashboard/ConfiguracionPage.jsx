@@ -153,7 +153,7 @@ const getButtonStyle = (hasPendingChanges, size = "large") => {
     if (hasPendingChanges) {
         return `${heightClass} rounded-full bg-[#13ec6d] text-[#111814] font-black uppercase text-[10px] tracking-widest hover:bg-[#0fd660] shadow-xl shadow-[#13ec6d]/20 transition-all active:scale-95 flex items-center gap-3 border-2 border-transparent`;
     }
-    return `${heightClass} rounded-full bg-transparent text-[#13ec6d] border-2 border-[#13ec6d] font-black uppercase text-[10px] tracking-widest hover:bg-[#13ec6d]/5 transition-all active:scale-95 flex items-center gap-3`;
+    return `${heightClass} rounded-full bg-white text-[#13ec6d] border-2 border-[#13ec6d] font-black uppercase text-[10px] tracking-widest hover:bg-[#13ec6d]/5 transition-all active:scale-95 flex items-center gap-3 shadow-sm`;
 };
 
 const getModalButtonStyle = (hasPendingChanges) => {
@@ -517,7 +517,8 @@ export default function ConfiguracionPage() {
             'precio_km', 'costo_minimo_domicilio', 'lat', 'lng',
             'nombre', 'descripcion', 'direccion', 'telefono', 'horarios', 'slogan',
             'banner_url', 'logo_url',
-            'ai_habilitado', 'ai_personalidad', 'ai_saludo', 'ai_conocimiento'
+            'ai_habilitado', 'ai_personalidad', 'ai_saludo', 'ai_conocimiento',
+            'banner_tag', 'banner_title', 'banner_description'
         ];
 
         const simpleChanges = fields.some(f => !isEquivalent(businessData[f], originalData[f]));
@@ -905,14 +906,14 @@ export default function ConfiguracionPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-gray-50/50 p-8 rounded-[2rem] border border-gray-100">
                                     <div className="space-y-4">
                                         <div className="space-y-2">
-                                            <Label className="text-sm font-black uppercase tracking-tight">Etiqueta del Banner (Ej: NUEVO, RECOMENDADO)</Label>
+                                            <Label className="text-xs font-black uppercase tracking-tight text-[#111814]">Etiqueta del banner (Ej: Nuevo, Recomendado)</Label>
                                             <div className="relative">
                                                 <Input
                                                     maxLength={20}
                                                     value={businessData.banner_tag || ''}
                                                     onChange={e => setBusinessData({ ...businessData, banner_tag: e.target.value })}
-                                                    className="h-12 rounded-2xl bg-white border-gray-100 font-bold pr-12"
-                                                    placeholder="Ej: NUESTROS FAVORITOS"
+                                                    className="h-11 rounded-xl bg-white border-gray-100 font-medium pr-12 text-xs text-[#618972] placeholder:text-[#618972]/50"
+                                                    placeholder="Ej: Nuestros favoritos"
                                                 />
                                                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold">
                                                     {(businessData.banner_tag || '').length}/20
@@ -920,14 +921,14 @@ export default function ConfiguracionPage() {
                                             </div>
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="text-sm font-black uppercase tracking-tight">Título Principal del Banner</Label>
+                                            <Label className="text-xs font-black uppercase tracking-tight text-[#111814]">Título principal del banner</Label>
                                             <div className="relative">
                                                 <Input
                                                     maxLength={40}
                                                     value={businessData.banner_title || ''}
                                                     onChange={e => setBusinessData({ ...businessData, banner_title: e.target.value })}
-                                                    className="h-12 rounded-2xl bg-white border-gray-100 font-black pr-12 text-lg"
-                                                    placeholder="Ej: NUESTRO MENÚ"
+                                                    className="h-11 rounded-xl bg-white border-gray-100 font-medium pr-12 text-xs text-[#618972] placeholder:text-[#618972]/50"
+                                                    placeholder="Ej: Nuestro menú"
                                                 />
                                                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold">
                                                     {(businessData.banner_title || '').length}/40
@@ -936,13 +937,13 @@ export default function ConfiguracionPage() {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-sm font-black uppercase tracking-tight">Descripción del Banner</Label>
+                                        <Label className="text-xs font-black uppercase tracking-tight text-[#111814]">Descripción del banner</Label>
                                         <div className="relative">
                                             <Textarea
                                                 maxLength={150}
                                                 value={businessData.banner_description || ''}
                                                 onChange={e => setBusinessData({ ...businessData, banner_description: e.target.value })}
-                                                className="min-h-[120px] rounded-2xl bg-white border-gray-100 resize-none pr-4 pb-8"
+                                                className="min-h-[100px] rounded-xl bg-white border-gray-100 resize-none pr-4 pb-8 text-xs font-medium text-[#618972] placeholder:text-[#618972]/50 transition-all"
                                                 placeholder="Describe brevemente lo que ofreces hoy..."
                                             />
                                             <span className="absolute right-4 bottom-4 text-[10px] text-gray-400 font-bold">
@@ -956,7 +957,7 @@ export default function ConfiguracionPage() {
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <Label className="text-base font-black uppercase tracking-tight">Imagen Principal del Menú (Banner)</Label>
+                                            <Label className="text-[11px] font-bold tracking-tight text-gray-600">Imagen principal del menú (Banner)</Label>
                                             <p className="text-xs text-[#618972]">Se mostrará en la parte superior de tu página pública.</p>
                                         </div>
                                         <div className="flex items-center gap-2">

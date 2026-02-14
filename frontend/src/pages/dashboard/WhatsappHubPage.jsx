@@ -135,8 +135,8 @@ export default function WhatsappHubPage() {
                                 <button
                                     onClick={() => setActiveTab('templates')}
                                     className={`px-6 py-2.5 text-[10px] font-black tracking-widest transition-all flex items-center gap-2 rounded-full ${activeTab === 'templates'
-                                            ? 'bg-[#25D366] text-white shadow-lg shadow-green-100'
-                                            : 'text-gray-400 hover:text-gray-600'
+                                        ? 'bg-[#25D366] text-white shadow-lg shadow-green-100'
+                                        : 'text-gray-400 hover:text-gray-600'
                                         }`}
                                 >
                                     <Zap className={`w-3 h-3 ${activeTab === 'templates' ? 'fill-current' : ''}`} />
@@ -145,8 +145,8 @@ export default function WhatsappHubPage() {
                                 <button
                                     onClick={() => setActiveTab('campaigns')}
                                     className={`px-6 py-2.5 text-[10px] font-black tracking-widest transition-all flex items-center gap-2 rounded-full ${activeTab === 'campaigns'
-                                            ? 'bg-[#25D366] text-white shadow-lg shadow-green-100'
-                                            : 'text-gray-400 hover:text-gray-600'
+                                        ? 'bg-[#25D366] text-white shadow-lg shadow-green-100'
+                                        : 'text-gray-400 hover:text-gray-600'
                                         }`}
                                 >
                                     <MessageSquareMore className={`w-3 h-3 ${activeTab === 'campaigns' ? 'fill-current' : ''}`} />
@@ -384,10 +384,10 @@ export default function WhatsappHubPage() {
 
                     {/* Sidebar / Preview Area */}
                     <div className="lg:col-span-4 h-full flex flex-col">
-                        <div className="sticky top-24 flex flex-col gap-4">
+                        <div className="sticky top-[128px] flex flex-col gap-4">
                             {/* Phone Preview */}
-                            <div className="bg-white rounded-[2.2rem] border-[11px] border-gray-900 shadow-2xl w-full max-w-[280px] h-[585px] overflow-hidden relative mx-auto transition-all">
-                                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-28 h-6 bg-gray-900 rounded-b-2xl z-20"></div>
+                            <div className="bg-white rounded-[1.5rem] border-[5px] border-gray-900 shadow-2xl w-full max-w-[280px] h-[450px] overflow-hidden relative mx-auto transition-all">
+                                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-28 h-4 bg-gray-900 rounded-b-lg z-20"></div>
                                 <div className="w-full h-full bg-[#E5DDD5] flex flex-col relative">
                                     <div className="bg-[#075E54] p-4 pt-10 text-white flex items-center gap-3 shrink-0">
                                         <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm shadow-inner">

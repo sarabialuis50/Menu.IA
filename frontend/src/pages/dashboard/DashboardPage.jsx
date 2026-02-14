@@ -1,20 +1,26 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { DashboardLayout } from '@/layouts/DashboardLayout';
 import { motion } from 'framer-motion';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import {
   DollarSign,
   ShoppingBag,
-  Clock,
-  TableProperties,
   TrendingUp,
+  TableProperties,
   AlertCircle,
-  ChefHat
+  ChefHat,
+  MessageSquare,
+  CheckCircle,
+  ExternalLink,
+  Users,
+  MessageCircle
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const StatCard = ({ title, value, icon: Icon, color, subtitle }) => (
   <motion.div
@@ -101,11 +107,25 @@ export default function DashboardPage() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#25D366]" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#22C55E]" />
         </div>
       </DashboardLayout>
     );
   }
+
+  const segmentationData = [
+    { name: 'ALTA PARTICIPACIÓN', value: 45, color: '#22C55E' },
+    { name: 'PARTICIPACIÓN MEDIA', value: 25, color: '#3B82F6' },
+    { name: 'CLIENTES NUEVOS', value: 20, color: '#EAB308' },
+    { name: 'SIN ACTIVIDAD', value: 10, color: '#EF4444' },
+  ];
+
+  const vipClientes = [
+    { nombre: 'Carlos Rodríguez', nivel: 'Oro', puntos: '1.450 pts', img: 'https://ui-avatars.com/api/?name=Carlos+Rodriguez&background=22C55E&color=fff' },
+    { nombre: 'María García', nivel: 'Plata', puntos: '450 pts', img: 'https://ui-avatars.com/api/?name=Maria+Garcia&background=22C55E&color=fff' },
+    { nombre: 'Juan Pérez', nivel: 'Oro', puntos: '1.250 pts', img: 'https://ui-avatars.com/api/?name=Juan+Perez&background=22C55E&color=fff' },
+    { nombre: 'Ana López', nivel: 'Plata', puntos: '320 pts', img: 'https://ui-avatars.com/api/?name=Ana+Lopez&background=22C55E&color=fff' },
+  ];
 
   return (
     <DashboardLayout>
@@ -144,6 +164,45 @@ export default function DashboardPage() {
             color="bg-purple-500"
             subtitle="Ocupadas"
           />
+        </div>
+
+        {/* SECTION: TOP CLIENTES VIP */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between px-1">
+            <h2 className="text-sm font-black text-gray-900 uppercase tracking-widest">Top Clientes VIP</h2>
+            <Link to={`/dashboard/${slug}/clientes`} className="text-[10px] font-black text-[#22C55E] uppercase tracking-widest hover:underline whitespace-nowrap">
+              Ver Todos
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {vipClientes.map((cliente, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: i * 0.1 }}
+                className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between group hover:shadow-md transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-green-50 overflow-hidden border border-gray-100 shrink-0">
+                    <img src={cliente.img} alt={cliente.nombre} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-black text-gray-900 truncate">{cliente.nombre}</p>
+                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">
+                      <span className={cliente.nivel === 'Oro' ? 'text-amber-500' : 'text-blue-400'}>{cliente.nivel}</span> • {cliente.puntos}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => toast.success(`Abriendo chat con ${cliente.nombre}`)}
+                  className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-[#22C55E]/10 hover:text-[#22C55E] transition-all shrink-0"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                </button>
+              </motion.div>
+            ))}
+          </div>
         </div>
 
         {/* Charts and Orders */}
@@ -188,28 +247,28 @@ export default function DashboardPage() {
           </Card>
 
           {/* Recent Orders */}
-          <Card>
-            <CardHeader>
+          <Card className="rounded-[2rem] border-none shadow-xl overflow-hidden">
+            <CardHeader className="bg-gray-50/50 border-b border-gray-100">
               <CardTitle className="flex items-center gap-2">
-                <ChefHat className="w-5 h-5 text-[#25D366]" />
-                Últimos pedidos
+                <ChefHat className="w-5 h-5 text-[#22C55E]" />
+                <span className="text-sm font-black uppercase tracking-widest text-gray-900">Últimos pedidos</span>
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               {recentOrders.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   <ShoppingBag className="w-12 h-12 mx-auto mb-2 opacity-50" />
                   <p>No hay pedidos aún</p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="divide-y divide-gray-50">
                   {recentOrders.map((order) => (
-                    <div key={order.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                    <div key={order.id} className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
                       <div>
-                        <p className="font-medium text-sm">
+                        <p className="font-bold text-xs text-gray-900">
                           {order.mesa_numero ? `Mesa ${order.mesa_numero}` : order.cliente_nombre || 'Para llevar'}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-[10px] text-gray-500 font-medium">
                           {order.items?.length} items · {formatCurrency(order.total)}
                         </p>
                       </div>
@@ -220,6 +279,123 @@ export default function DashboardPage() {
               )}
             </CardContent>
           </Card>
+        </div>
+
+        {/* SECTION: SEGMENTACIÓN Y WHATSAPP HUB */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-12">
+
+          {/* Análisis de Participación */}
+          <Card className="rounded-[2rem] border-none shadow-2xl bg-white overflow-hidden">
+            <CardHeader className="p-8 pb-4">
+              <CardTitle className="text-sm font-black uppercase tracking-[0.2em] text-gray-900">Análisis de Participación</CardTitle>
+              <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase tracking-widest leading-relaxed">
+                Distribución de clientes según su actividad y acumulación de puntos.
+              </p>
+            </CardHeader>
+            <CardContent className="p-8 pt-0 flex flex-col sm:flex-row items-center gap-10">
+              <div className="relative w-48 h-48 shrink-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={segmentationData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={55}
+                      outerRadius={80}
+                      paddingAngle={5}
+                      dataKey="value"
+                      startAngle={90}
+                      endAngle={450}
+                    >
+                      {segmentationData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                  <p className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">Retención</p>
+                  <p className="text-sm font-black text-[#22C55E] uppercase tracking-tighter">Óptima</p>
+                </div>
+              </div>
+              <div className="w-full space-y-3">
+                {segmentationData.map((item, i) => (
+                  <div key={i} className="flex items-center justify-between group">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
+                      <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{item.name}</span>
+                    </div>
+                    <span className="text-xs font-black text-gray-900">{item.value}%</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* WhatsApp Hub */}
+          <Card className="rounded-[2rem] border-none shadow-2xl bg-[#22C55E] overflow-hidden text-white group">
+            <CardContent className="p-8 flex flex-col h-full space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-md">
+                    <MessageSquare className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-sm font-black uppercase tracking-[0.2em]">WhatsApp Hub</CardTitle>
+                    <div className="flex items-center gap-1.5 text-[8px] font-bold text-white/60">
+                      <div className="w-1 h-1 rounded-full bg-white opacity-40" />
+                      SINCRONIZACIÓN ACTIVA
+                    </div>
+                  </div>
+                </div>
+                <AlertCircle className="w-4 h-4 text-white/40" />
+              </div>
+
+              <div className="space-y-4 py-2">
+                <div className="flex items-end justify-between">
+                  <div>
+                    <h3 className="text-4xl font-black leading-none">850/1000</h3>
+                    <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest mt-2 px-1">Mensajes consumidos</p>
+                  </div>
+                  <Badge className="bg-white/20 text-white text-[9px] font-black tracking-widest border-none px-2 py-0.5 mb-1">MES ACTUAL</Badge>
+                </div>
+                <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden">
+                  <div className="h-full bg-white rounded-full w-[85%] shadow-[0_0_15px_rgba(255,255,255,0.4)]" />
+                </div>
+                <p className="text-[9px] font-bold text-white/80 italic text-center">
+                  ✨ Has usado el 85.0% de tu cupo disponible.
+                </p>
+              </div>
+
+              <div className="bg-white/10 rounded-2xl p-4 flex items-center justify-between border border-white/10">
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="w-4 h-4 text-white" />
+                  <div className="space-y-0.5">
+                    <p className="text-[9px] font-black uppercase tracking-wider">Reporte Programado</p>
+                    <p className="text-[8px] font-bold text-white/60">Próximo reset: 01/3/2026</p>
+                  </div>
+                </div>
+                <ExternalLink className="w-4 h-4 text-white/40" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <Button
+                  onClick={() => toast.success('Módulo de compra cargando...')}
+                  className="bg-white text-[#22C55E] hover:bg-white/90 font-black text-[10px] uppercase h-12 rounded-xl tracking-widest shadow-xl shadow-green-900/10"
+                >
+                  Comprar Mensajes
+                </Button>
+                <Button
+                  onClick={() => toast.info('Generando reporte...')}
+                  variant="outline"
+                  className="bg-transparent border-2 border-white text-white hover:bg-white/10 font-black text-[10px] uppercase h-12 rounded-xl tracking-widest"
+                >
+                  Reporte Diario
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
         </div>
 
         {/* Alerts */}

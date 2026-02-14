@@ -102,8 +102,8 @@ export default function FidelidadHistoryPage() {
                 {/* Filters */}
                 <Card className="rounded-[2rem] border-gray-100 shadow-xl overflow-hidden">
                     <CardContent className="p-6">
-                        <div className="flex flex-wrap items-end gap-4">
-                            <div className="space-y-2">
+                        <div className="flex flex-col lg:flex-row items-end gap-4">
+                            <div className="space-y-2 w-full lg:w-auto">
                                 <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Desde</label>
                                 <div className="relative">
                                     <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -111,11 +111,11 @@ export default function FidelidadHistoryPage() {
                                         type="date"
                                         value={startDate}
                                         onChange={(e) => setStartDate(e.target.value)}
-                                        className="pl-10 rounded-xl border-gray-200 bg-gray-50/50"
+                                        className="pl-10 rounded-xl border-gray-200 bg-gray-50/50 h-11"
                                     />
                                 </div>
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-2 w-full lg:w-auto">
                                 <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Hasta</label>
                                 <div className="relative">
                                     <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -123,25 +123,26 @@ export default function FidelidadHistoryPage() {
                                         type="date"
                                         value={endDate}
                                         onChange={(e) => setEndDate(e.target.value)}
-                                        className="pl-10 rounded-xl border-gray-200 bg-gray-50/50"
+                                        className="pl-10 rounded-xl border-gray-200 bg-gray-50/50 h-11"
                                     />
                                 </div>
                             </div>
+
                             <Button
                                 onClick={handleFilter}
-                                className="rounded-xl px-8 bg-[#22C55E] hover:bg-[#1da850] text-white font-black uppercase tracking-widest shadow-lg shadow-[#22C55E]/20"
+                                className="rounded-xl px-8 h-11 bg-[#22C55E] hover:bg-[#1da850] text-white font-black uppercase tracking-widest shadow-lg shadow-[#22C55E]/20 w-full lg:w-auto"
                             >
                                 <Search className="w-4 h-4 mr-2" />
-                                Filtrar
+                                FILTRAR
                             </Button>
                             <Button
                                 onClick={handleExportExcel}
                                 variant="outline"
-                                className="rounded-xl px-6 border-[#22C55E] text-[#22C55E] hover:bg-green-50 font-black uppercase tracking-widest"
+                                className="rounded-xl px-6 h-11 border-[#22C55E] text-[#22C55E] hover:bg-green-50 font-black uppercase tracking-widest w-full lg:w-auto mt-2 lg:mt-0"
                                 disabled={transactions.length === 0}
                             >
                                 <Download className="w-4 h-4 mr-2" />
-                                Exportar Excel
+                                EXPORTAR EXCEL
                             </Button>
                         </div>
                     </CardContent>

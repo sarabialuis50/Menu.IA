@@ -264,14 +264,14 @@ export default function CustomersPage() {
 
     return (
         <DashboardLayout>
-            <div className="max-w-7xl mx-auto space-y-8 pb-10">
+            <div className="max-w-[98%] mx-auto space-y-6 md:space-y-8 pb-10">
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div className="space-y-1">
-                        <h1 className="text-2xl font-black tracking-tight text-gray-900 uppercase">BASE DE CLIENTES</h1>
-                        <p className="text-sm text-gray-500 font-medium">Gestiona tu base de clientes y analiza sus comportamientos.</p>
+                        <h1 className="text-xl md:text-2xl font-black tracking-tight text-gray-900 uppercase">BASE DE CLIENTES</h1>
+                        <p className="text-xs md:text-sm text-gray-500 font-medium leading-tight">Gestiona tu base de clientes y analiza sus comportamientos.</p>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="grid grid-cols-2 md:flex md:items-center gap-2 md:gap-3">
                         <input
                             type="file"
                             ref={fileInputRef}
@@ -282,24 +282,24 @@ export default function CustomersPage() {
                         <Button
                             variant="outline"
                             onClick={handleImportClick}
-                            className="h-11 px-6 rounded-xl border-2 font-black text-[11px] tracking-widest gap-2 hover:bg-gray-50 transition-all active:scale-95"
+                            className="h-9 md:h-11 px-3 md:px-6 rounded-xl border-2 font-black text-[9px] md:text-[11px] tracking-widest gap-2 hover:bg-gray-50 transition-all active:scale-95"
                         >
-                            <Upload className="w-4 h-4" />
-                            IMPORTAR
+                            <Upload className="w-3.5 h-3.5" />
+                            <span className="truncate">IMPORTAR</span>
                         </Button>
                         <Button
                             variant="outline"
                             onClick={handleExport}
-                            className="h-11 px-6 rounded-xl border-2 font-black text-[11px] tracking-widest gap-2 hover:bg-gray-50 transition-all active:scale-95 text-blue-600 border-blue-100 bg-blue-50/30"
+                            className="h-9 md:h-11 px-3 md:px-6 rounded-xl border-2 font-black text-[9px] md:text-[11px] tracking-widest gap-2 hover:bg-gray-50 transition-all active:scale-95 text-blue-600 border-blue-100 bg-blue-50/30"
                         >
-                            <Download className="w-4 h-4" />
-                            EXPORTAR
+                            <Download className="w-3.5 h-3.5" />
+                            <span className="truncate">EXPORTAR</span>
                         </Button>
                         <Button
                             onClick={() => setIsAddModalOpen(true)}
-                            className="h-11 px-6 rounded-xl bg-[#22C55E] hover:bg-[#1da850] border-none font-black text-[11px] tracking-widest gap-2 shadow-lg shadow-green-100 transition-all active:scale-95"
+                            className="col-span-2 md:col-auto h-9 md:h-11 px-6 rounded-xl bg-[#22C55E] hover:bg-[#1da850] border-none font-black text-[9px] md:text-[11px] tracking-widest gap-2 shadow-lg shadow-green-100 transition-all active:scale-95"
                         >
-                            <UserPlus className="w-4 h-4" />
+                            <UserPlus className="w-3.5 h-3.5" />
                             NUEVO CLIENTE
                         </Button>
                     </div>
@@ -457,76 +457,78 @@ export default function CustomersPage() {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-gray-50/50 border-b border-gray-100">
-                                    <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Cliente</th>
-                                    <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">WhatsApp</th>
-                                    <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Email</th>
-                                    <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Nivel</th>
-                                    <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Puntos</th>
-                                    <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Estado</th>
-                                    <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.15em] text-center">Acciones</th>
+                                    <th className="px-4 md:px-5 py-4 text-[9px] font-black text-gray-400 uppercase tracking-[0.1em]">Cliente</th>
+                                    <th className="px-2 md:px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-[0.1em]">WhatsApp</th>
+                                    <th className="px-2 md:px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-[0.1em]">Email</th>
+                                    <th className="px-2 md:px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-[0.1em]">Nivel</th>
+                                    <th className="px-2 md:px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-[0.1em]">Puntos</th>
+                                    <th className="px-2 md:px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-[0.1em]">Estado</th>
+                                    <th className="px-4 md:px-5 py-4 text-[9px] font-black text-gray-400 uppercase tracking-[0.1em] text-center">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
                                 {paginatedCustomers.map((customer) => (
                                     <tr key={customer.id} className="hover:bg-gray-50/50 transition-colors group">
-                                        <td className="px-8 py-5">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 border-2 border-white shadow-sm flex items-center justify-center text-gray-600 font-black text-xs">
+                                        <td className="px-4 md:px-5 py-3 border-r border-gray-50/50">
+                                            <div className="flex items-center gap-2 md:gap-3">
+                                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 border-2 border-white shadow-sm flex items-center justify-center text-gray-600 font-black text-[9px] md:text-xs shrink-0">
                                                     {customer.avatar}
                                                 </div>
-                                                <div>
-                                                    <p className="font-black text-sm text-gray-900 leading-none mb-1 group-hover:text-[#25D366] transition-colors">{customer.name}</p>
-                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Cliente Registrado</p>
+                                                <div className="min-w-0 max-w-[120px] md:max-w-[180px]">
+                                                    <p className="font-black text-[11px] md:text-xs text-gray-900 leading-none mb-1 group-hover:text-[#25D366] transition-colors truncate">{customer.name}</p>
+                                                    <p className="text-[7px] md:text-[9px] font-bold text-gray-400 uppercase tracking-tighter truncate">
+                                                        {customer.createdAt ? new Date(customer.createdAt).toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: '2-digit' }) : 'Sin fecha'}
+                                                    </p>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-sm font-bold text-gray-700">{customer.phone}</span>
+                                        <td className="px-2 md:px-3 py-3">
+                                            <div className="flex items-center gap-1 whitespace-nowrap">
+                                                <span className="text-[11px] md:text-xs font-bold text-gray-700">{customer.phone}</span>
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
                                                     onClick={() => window.open(`https://wa.me/${customer.phone.replace(/\s+/g, '')}`, '_blank')}
-                                                    className="h-7 w-7 rounded-full text-[#25D366] hover:bg-green-50 transition-all"
+                                                    className="h-5 w-5 md:h-6 md:w-6 rounded-full text-[#25D366] hover:bg-green-50 transition-all"
                                                 >
-                                                    <MessageSquareMore className="w-4 h-4" />
+                                                    <MessageSquareMore className="w-3 h-3 md:w-3.5 md:h-3.5" />
                                                 </Button>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-xs font-semibold text-gray-600">{customer.email}</span>
+                                        <td className="px-2 md:px-3 py-3">
+                                            <div className="flex items-center gap-1 whitespace-nowrap max-w-[100px] md:max-w-[150px]">
+                                                <span className="text-[10px] md:text-[11px] font-semibold text-gray-600 truncate">{customer.email}</span>
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
                                                     onClick={() => window.location.href = `mailto:${customer.email}`}
-                                                    className="h-7 w-7 rounded-full text-blue-500 hover:bg-blue-50 transition-all"
+                                                    className="h-5 w-5 md:h-6 md:w-6 rounded-full text-blue-500 hover:bg-blue-50 transition-all shrink-0"
                                                 >
-                                                    <Mail className="w-4 h-4" />
+                                                    <Mail className="w-3 h-3 md:w-3.5 md:h-3.5" />
                                                 </Button>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5">
-                                            <Badge variant="outline" className={`rounded-xl px-3 py-1 text-[9px] font-black border-2 flex items-center gap-2 w-fit ${getLevelStyles(customer.level)}`}>
-                                                <div className={`w-1.5 h-1.5 rounded-full ${customer.level === 'ORO' ? 'bg-yellow-600' :
+                                        <td className="px-2 md:px-3 py-3">
+                                            <Badge variant="outline" className={`rounded-lg px-1.5 md:px-2 py-0 md:py-0.5 text-[7px] md:text-[8px] font-black border flex items-center gap-1 w-fit whitespace-nowrap ${getLevelStyles(customer.level)}`}>
+                                                <div className={`w-1 h-1 rounded-full ${customer.level === 'ORO' ? 'bg-yellow-600' :
                                                     customer.level === 'PLATA' ? 'bg-gray-500' : 'bg-orange-800'
                                                     }`} />
                                                 {customer.level}
                                             </Badge>
                                         </td>
-                                        <td className="px-6 py-5">
-                                            <p className="text-sm font-black text-gray-900 tracking-tight">{customer.points.toLocaleString()}</p>
+                                        <td className="px-2 md:px-3 py-3">
+                                            <p className="text-[11px] md:text-xs font-black text-gray-900 tracking-tight whitespace-nowrap">{customer.points.toLocaleString()}</p>
                                         </td>
-                                        <td className="px-6 py-5">
-                                            <Badge variant="outline" className={`rounded-xl px-3 py-1 text-[9px] font-black border-2 ${getStatusStyles(customer.status)}`}>
+                                        <td className="px-2 md:px-3 py-3">
+                                            <Badge variant="outline" className={`rounded-lg px-1.5 md:px-2 py-0 md:py-0.5 text-[7px] md:text-[8px] font-black border whitespace-nowrap ${getStatusStyles(customer.status)}`}>
                                                 {customer.status}
                                             </Badge>
                                         </td>
-                                        <td className="px-8 py-5 text-center">
+                                        <td className="px-4 md:px-5 py-3 text-center">
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" className="h-9 w-9 p-0 hover:bg-white hover:shadow-md rounded-full transition-all">
-                                                        <MoreHorizontal className="w-4 h-4 text-gray-400" />
+                                                    <Button variant="ghost" className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-white hover:shadow-md rounded-full transition-all">
+                                                        <MoreHorizontal className="w-3.5 h-3.5 text-gray-400" />
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end" className="rounded-2xl border-2 border-gray-100 shadow-xl p-2 min-w-[180px]">
