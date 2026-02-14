@@ -62,6 +62,21 @@ app = FastAPI(title="Menu.IA API", version="1.0.0")
 async def health_check():
     return {"status": "ok", "message": "Menu.IA API is running"}
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://menuia.co",
+        "https://www.menuia.co",
+        "https://menuia-production.up.railway.app",
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://localhost:8000"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
@@ -2151,17 +2166,5 @@ async def get_client_orders(slug: str = None, client: Cliente = Depends(get_curr
     res = query.execute()
     return res.data
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "https://menuia.co",
-        "https://www.menuia.co",
-        "https://menuia.production.up.railway.app",
-        "http://localhost:3000"
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 app.include_router(api_router)
