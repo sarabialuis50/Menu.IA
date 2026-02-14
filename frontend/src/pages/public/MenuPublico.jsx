@@ -112,8 +112,8 @@ import {
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 
-// Proxy /api
-const API = process.env.REACT_APP_BACKEND_URL || '';
+// Backend API URL
+const API = (import.meta.env?.VITE_BACKEND_URL || import.meta.env?.REACT_APP_BACKEND_URL) || '';
 
 
 const MenuContent = () => {
@@ -187,9 +187,9 @@ const MenuContent = () => {
   const fetchData = async () => {
     try {
       const [businessRes, productsRes, loyaltyRes] = await Promise.all([
-        axios.get(`/api/business/${slug}`),
-        axios.get(`/api/products/${slug}`),
-        axios.get(`/api/loyalty/${slug}/config`).catch(() => ({ data: { activo: false } }))
+        axios.get(`${API}/api/business/${slug}`),
+        axios.get(`${API}/api/products/${slug}`),
+        axios.get(`${API}/api/loyalty/${slug}/config`).catch(() => ({ data: { activo: false } }))
       ]);
 
       setBusiness(businessRes.data);
@@ -227,8 +227,10 @@ const MenuContent = () => {
           setMetodoEntregaNombre(first === 'domicilio' ? 'Domicilio' : first === 'mesa' ? 'Mesa' : 'Para recoger');
         }
       }
+
       // We keep filtering by disponible as it's a public menu
-      const availableProducts = productsRes.data.filter(p => p.disponible);
+      const productsData = Array.isArray(productsRes.data) ? productsRes.data : [];
+      const availableProducts = productsData.filter(p => p.disponible);
       setProducts(availableProducts);
       setShuffledAllProducts([...availableProducts].sort(() => Math.random() - 0.5));
       setLoyaltyConfig(loyaltyRes.data);
@@ -236,7 +238,7 @@ const MenuContent = () => {
       // Handle categories
       let cats = [];
       try {
-        const categoriesRes = await axios.get(`/api/categories/${slug}`);
+        const categoriesRes = await axios.get(`${API}/api/categories/${slug}`);
         if (Array.isArray(categoriesRes.data) && categoriesRes.data.length > 0) {
           // Map string categories (legacy) to objects if necessary, though backend should return objects now
           cats = categoriesRes.data.map(c => typeof c === 'string' ? { nombre: c, icono: null } : c);
@@ -247,7 +249,7 @@ const MenuContent = () => {
 
       if (cats.length === 0) {
         // Fallback if API fails or returns empty
-        const uniqueCats = [...new Set(productsRes.data.map(p => p.categoria))].filter(Boolean);
+        const uniqueCats = [...new Set(productsData.map(p => p.categoria))].filter(Boolean);
         cats = uniqueCats.map(c => ({ nombre: c, icono: null }));
       }
 
@@ -256,7 +258,7 @@ const MenuContent = () => {
 
       if (mesa) {
         try {
-          const tableRes = await axios.get(`/api/tables/${slug}/${mesa}/info`);
+          const tableRes = await axios.get(`${API}/api/tables/${slug}/${mesa}/info`);
           setTableInfo(tableRes.data);
         } catch (e) {
           console.log('Table not found');
@@ -272,7 +274,7 @@ const MenuContent = () => {
 
   const fetchCustomerPoints = async (telefono) => {
     try {
-      const response = await axios.get(`/api/loyalty/${slug}/points/${encodeURIComponent(telefono)}`);
+      const response = await axios.get(`${API}/api/loyalty/${slug}/points/${encodeURIComponent(telefono)}`);
       setCustomerPoints(response.data);
     } catch (error) {
       setCustomerPoints(null);
@@ -429,7 +431,7 @@ const MenuContent = () => {
         ].filter(Boolean).join('. ')
       };
 
-      const response = await axios.post(`/api/orders/${slug}`, orderData);
+      const response = await axios.post(`${API}/api/orders/${slug}`, orderData);
       setOrderSuccess({ ...response.data, discount, redeemPoints });
       clearCart();
       setRedeemPoints(0);
@@ -704,11 +706,11 @@ const MenuContent = () => {
             <div className="absolute bottom-0 left-0 p-8 md:p-12 z-20 w-full pb-16 md:pb-24">
               <span className="inline-flex items-center gap-2 px-4 py-1.5 mb-4 text-[10px] font-black text-[#111814] bg-[#13ec6d] rounded-full uppercase tracking-[0.2em] shadow-lg shadow-[#13ec6d]/20">
                 <Star className="w-3 h-3 fill-[#111814]" />
-                Los mejores sabores
+                {business.banner_tag || 'Los mejores sabores'}
               </span>
-              <h1 className="text-4xl md:text-6xl font-black text-white mb-3 tracking-tighter">Nuestro Menú</h1>
+              <h1 className="text-4xl md:text-6xl font-black text-white mb-3 tracking-tighter">{business.banner_title || 'Nuestro Menú'}</h1>
               <p className="text-gray-300 text-sm md:text-lg max-w-xl font-medium leading-relaxed">
-                {business.slogan || "Descubre una explosión de sabores preparados con pasión."}
+                {business.banner_description || business.slogan || "Descubre una explosión de sabores preparados con pasión."}
               </p>
             </div>
           </div>

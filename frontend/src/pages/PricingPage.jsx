@@ -44,9 +44,10 @@ export default function PricingPage() {
             </nav>
 
             {/* Pricing Header */}
-            <section className="pt-32 pb-16 px-4">
+            {/* Pricing Header */}
+            <section className="pt-20 pb-4 px-4">
                 <div className="max-w-7xl mx-auto text-center">
-                    <h1 className="font-heading text-4xl sm:text-5xl font-extrabold text-gray-900 mb-6">
+                    <h1 className="font-heading text-4xl sm:text-5xl font-extrabold text-gray-900 mb-4">
                         Planes para <span className="text-[#22C55E]">cada tamaño</span> de negocio
                     </h1>
                     <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -56,7 +57,8 @@ export default function PricingPage() {
             </section>
 
             {/* Pricing Grid */}
-            <section className="py-12 px-4 pb-32">
+            {/* Pricing Grid */}
+            <section className="pt-0 px-4 pb-16">
                 <div className="max-w-5xl mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <PricingCard
@@ -136,8 +138,8 @@ function PricingCard({ name, price, features, popular, onSelect }) {
                 </span>
             )}
             <h3 className="font-heading font-bold text-xl mb-2">{name}</h3>
-            <p className="text-3xl font-bold text-gray-900 mb-6">{price}</p>
-            <ul className="space-y-3 mb-6">
+            <p className="text-3xl font-bold text-gray-900 mb-4">{price}</p>
+            <ul className="space-y-2 mb-6">
                 {features.map((feature, i) => (
                     <li key={i} className="flex items-center gap-2 text-gray-600">
                         <Check className="w-5 h-5 text-[#25D366]" />

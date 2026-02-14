@@ -23,7 +23,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
-// Usamos el proxy de Vite para /api
+// Backend API URL
+const API = (import.meta.env?.VITE_BACKEND_URL || import.meta.env?.REACT_APP_BACKEND_URL) || '';
 
 
 const BusinessHomePageContent = () => {
@@ -40,13 +41,14 @@ const BusinessHomePageContent = () => {
     const fetchData = async () => {
         try {
             const [businessRes, productsRes] = await Promise.all([
-                axios.get(`/api/business/${slug}`),
-                axios.get(`/api/products/${slug}`)
+                axios.get(`${API}/api/business/${slug}`),
+                axios.get(`${API}/api/products/${slug}`)
             ]);
 
             setBusiness(businessRes.data);
             // Take first 4 products as featured (matching the 4 grid in HTML)
-            setFeaturedProducts(productsRes.data.filter(p => p.disponible).slice(0, 4));
+            const productsData = Array.isArray(productsRes.data) ? productsRes.data : [];
+            setFeaturedProducts(productsData.filter(p => p.disponible).slice(0, 4));
         } catch (error) {
             console.error('Error fetching data:', error);
             // toast.error('Error al cargar la información');

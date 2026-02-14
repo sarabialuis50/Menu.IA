@@ -31,6 +31,9 @@ const DEMO_BUSINESS = {
     logo_url: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=500&q=80",
     banner_url: "https://images.unsplash.com/photo-1549611016-3a70d82b5040?w=1200&q=80",
     slogan: "Descubre una explosión de sabores preparados con pasión.",
+    banner_tag: "Los mejores sabores",
+    banner_title: "Nuestro Menú",
+    banner_description: "Descubre una explosión de sabores preparados con pasión.",
     slug: "demo-restaurante"
 };
 
@@ -330,10 +333,10 @@ export default function DemoRestaurante() {
                         <div className="absolute bottom-0 left-0 p-8 md:p-12 z-20 w-full pb-16 md:pb-24">
                             <span className="inline-flex items-center gap-2 px-4 py-1.5 mb-4 text-[10px] font-black text-[#111814] bg-[#13ec6d] rounded-full uppercase tracking-[0.2em] shadow-lg shadow-[#13ec6d]/20">
                                 <Star className="w-3 h-3 fill-[#111814]" />
-                                Los mejores sabores
+                                {DEMO_BUSINESS.banner_tag}
                             </span>
-                            <h1 className="text-4xl md:text-6xl font-black text-white mb-3 tracking-tighter">Nuestro Menú</h1>
-                            <p className="text-gray-300 text-sm md:text-lg max-w-xl font-medium leading-relaxed">{DEMO_BUSINESS.slogan}</p>
+                            <h1 className="text-4xl md:text-6xl font-black text-white mb-3 tracking-tighter">{DEMO_BUSINESS.banner_title}</h1>
+                            <p className="text-gray-300 text-sm md:text-lg max-w-xl font-medium leading-relaxed">{DEMO_BUSINESS.banner_description}</p>
                         </div>
                     </div>
                     <div className="relative z-30 -mt-10 max-w-3xl mx-auto px-4">

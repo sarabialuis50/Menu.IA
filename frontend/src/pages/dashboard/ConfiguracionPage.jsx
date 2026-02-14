@@ -194,6 +194,9 @@ export default function ConfiguracionPage() {
         banner_url: '',
         logo_url: '',
         slogan: '',
+        banner_tag: '',
+        banner_title: '',
+        banner_description: '',
         ai_habilitado: true,
         ai_personalidad: 'Amigable y cercano (Recomendado)',
         ai_saludo: '',
@@ -898,64 +901,53 @@ export default function ConfiguracionPage() {
                                 </Button>
                             </CardHeader>
                             <CardContent className="px-10 pb-10 space-y-10">
-                                {/* Datos Básicos Section */}
+                                {/* Banner Personalization Section */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-gray-50/50 p-8 rounded-[2rem] border border-gray-100">
                                     <div className="space-y-4">
                                         <div className="space-y-2">
-                                            <Label className="text-sm font-black uppercase tracking-tight">Nombre del Negocio</Label>
-                                            <Input
-                                                value={businessData.nombre || ''}
-                                                onChange={e => setBusinessData({ ...businessData, nombre: e.target.value })}
-                                                className="h-12 rounded-2xl bg-white border-gray-100 font-bold"
-                                                placeholder="Ej: Mi Restaurante"
-                                            />
+                                            <Label className="text-sm font-black uppercase tracking-tight">Etiqueta del Banner (Ej: NUEVO, RECOMENDADO)</Label>
+                                            <div className="relative">
+                                                <Input
+                                                    maxLength={20}
+                                                    value={businessData.banner_tag || ''}
+                                                    onChange={e => setBusinessData({ ...businessData, banner_tag: e.target.value })}
+                                                    className="h-12 rounded-2xl bg-white border-gray-100 font-bold pr-12"
+                                                    placeholder="Ej: NUESTROS FAVORITOS"
+                                                />
+                                                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold">
+                                                    {(businessData.banner_tag || '').length}/20
+                                                </span>
+                                            </div>
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="text-sm font-black uppercase tracking-tight">Eslogan / Frase corta</Label>
-                                            <Input
-                                                value={businessData.slogan || ''}
-                                                onChange={e => setBusinessData({ ...businessData, slogan: e.target.value })}
-                                                className="h-12 rounded-2xl bg-white border-gray-100 italic"
-                                                placeholder="Ej: El mejor sabor de la ciudad"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-sm font-black uppercase tracking-tight">Descripción</Label>
-                                            <Textarea
-                                                value={businessData.descripcion || ''}
-                                                onChange={e => setBusinessData({ ...businessData, descripcion: e.target.value })}
-                                                className="min-h-[100px] rounded-2xl bg-white border-gray-100"
-                                                placeholder="Describe tu negocio..."
-                                            />
+                                            <Label className="text-sm font-black uppercase tracking-tight">Título Principal del Banner</Label>
+                                            <div className="relative">
+                                                <Input
+                                                    maxLength={40}
+                                                    value={businessData.banner_title || ''}
+                                                    onChange={e => setBusinessData({ ...businessData, banner_title: e.target.value })}
+                                                    className="h-12 rounded-2xl bg-white border-gray-100 font-black pr-12 text-lg"
+                                                    placeholder="Ej: NUESTRO MENÚ"
+                                                />
+                                                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold">
+                                                    {(businessData.banner_title || '').length}/40
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="space-y-4">
-                                        <div className="space-y-2">
-                                            <Label className="text-sm font-black uppercase tracking-tight">Teléfono de Contacto</Label>
-                                            <Input
-                                                value={businessData.telefono || ''}
-                                                onChange={e => setBusinessData({ ...businessData, telefono: e.target.value })}
-                                                className="h-12 rounded-2xl bg-white border-gray-100"
-                                                placeholder="Ej: +57 300 123 4567"
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-black uppercase tracking-tight">Descripción del Banner</Label>
+                                        <div className="relative">
+                                            <Textarea
+                                                maxLength={150}
+                                                value={businessData.banner_description || ''}
+                                                onChange={e => setBusinessData({ ...businessData, banner_description: e.target.value })}
+                                                className="min-h-[120px] rounded-2xl bg-white border-gray-100 resize-none pr-4 pb-8"
+                                                placeholder="Describe brevemente lo que ofreces hoy..."
                                             />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-sm font-black uppercase tracking-tight">Dirección Física</Label>
-                                            <Input
-                                                value={businessData.direccion || ''}
-                                                onChange={e => setBusinessData({ ...businessData, direccion: e.target.value })}
-                                                className="h-12 rounded-2xl bg-white border-gray-100"
-                                                placeholder="Ej: Calle 123 #45-67"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-sm font-black uppercase tracking-tight">Horarios de Atención</Label>
-                                            <Input
-                                                value={businessData.horarios || ''}
-                                                onChange={e => setBusinessData({ ...businessData, horarios: e.target.value })}
-                                                className="h-12 rounded-2xl bg-white border-gray-100"
-                                                placeholder="Ej: Lunes a Viernes 8am - 10pm"
-                                            />
+                                            <span className="absolute right-4 bottom-4 text-[10px] text-gray-400 font-bold">
+                                                {(businessData.banner_description || '').length}/150
+                                            </span>
                                         </div>
                                     </div>
                                 </div>

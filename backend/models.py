@@ -48,6 +48,9 @@ class BusinessBase(BaseModel):
     horarios: Optional[str] = None
     logo_url: Optional[str] = None
     banner_url: Optional[str] = None
+    banner_tag: Optional[str] = "Los mejores sabores"
+    banner_title: Optional[str] = "Nuestro Menú"
+    banner_description: Optional[str] = None
     # Delivery Config
     precio_km: Optional[float] = 0.0
     costo_minimo_domicilio: Optional[float] = 0.0

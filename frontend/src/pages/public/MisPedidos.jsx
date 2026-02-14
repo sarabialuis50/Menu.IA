@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Proxy /api
+// Backend API URL
+const API = (import.meta.env?.VITE_BACKEND_URL || import.meta.env?.REACT_APP_BACKEND_URL) || '';
 
 
 export default function MisPedidos() {
@@ -24,11 +25,11 @@ export default function MisPedidos() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`/api/business/${slug}`);
+        const response = await axios.get(`${API}/api/business/${slug}`);
         setBusiness(response.data);
         const orderId = searchParams.get('order');
         if (orderId) {
-          const orderRes = await axios.get(`/api/orders/${slug}/track/${orderId}`);
+          const orderRes = await axios.get(`${API}/api/orders/${slug}/track/${orderId}`);
           setSelectedOrder(orderRes.data);
           setOrders([orderRes.data]);
         }
@@ -56,7 +57,7 @@ export default function MisPedidos() {
     if (!phone) return;
     setSearching(true);
     try {
-      const response = await axios.get(`/api/orders/${slug}/my-orders?telefono=${encodeURIComponent(phone)}`);
+      const response = await axios.get(`${API}/api/orders/${slug}/my-orders?telefono=${encodeURIComponent(phone)}`);
       setOrders(response.data);
       if (response.data.length > 0) setSelectedOrder(response.data[0]);
     } catch (error) {
@@ -69,7 +70,7 @@ export default function MisPedidos() {
   const refreshOrder = async () => {
     if (!selectedOrder) return;
     try {
-      const response = await axios.get(`/api/orders/${slug}/track/${selectedOrder.id}`);
+      const response = await axios.get(`${API}/api/orders/${slug}/track/${selectedOrder.id}`);
       setSelectedOrder(response.data);
     } catch (error) {
       console.error('Error:', error);

@@ -453,6 +453,7 @@ async def update_business(slug: str, data: Dict[str, Any], business: Business = 
     allowed_fields = [
         'nombre', 'descripcion', 'slogan', 'direccion', 'telefono', 
         'whatsapp', 'horarios', 'logo_url', 'banner_url',
+        'banner_tag', 'banner_title', 'banner_description',
         'precio_km', 'costo_minimo_domicilio', 'lat', 'lng',
         'metodos_pago', 'metodos_entrega',
         'ai_habilitado', 'ai_personalidad', 'ai_saludo', 'ai_conocimiento'
