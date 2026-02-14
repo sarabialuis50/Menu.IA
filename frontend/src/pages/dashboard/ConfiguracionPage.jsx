@@ -813,10 +813,10 @@ export default function ConfiguracionPage() {
                     onValueChange={(val) => setSearchParams({ tab: val })}
                     className="w-full"
                 >
-                    <TabsList className="bg-gray-100/50 p-1.5 h-auto rounded-[2rem] flex gap-1 mb-8 w-full">
+                    <TabsList className="bg-gray-100/50 p-1 h-auto rounded-[2.5rem] grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-1 mb-8 w-full overflow-hidden">
                         <TabsTrigger
                             value="diseno"
-                            className="flex-1 rounded-full px-4 py-3 font-black uppercase tracking-tighter text-[10px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
+                            className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
                             data-[state=active]:bg-[#13ec6d] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#13ec6d]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
@@ -825,7 +825,7 @@ export default function ConfiguracionPage() {
                         </TabsTrigger>
                         <TabsTrigger
                             value="menu"
-                            className="flex-1 rounded-full px-4 py-3 font-black uppercase tracking-tighter text-[10px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
+                            className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
                             data-[state=active]:bg-[#13ec6d] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#13ec6d]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
@@ -834,7 +834,7 @@ export default function ConfiguracionPage() {
                         </TabsTrigger>
                         <TabsTrigger
                             value="domicilios"
-                            className="flex-1 rounded-full px-4 py-3 font-black uppercase tracking-tighter text-[10px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
+                            className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
                             data-[state=active]:bg-[#13ec6d] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#13ec6d]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
@@ -843,7 +843,7 @@ export default function ConfiguracionPage() {
                         </TabsTrigger>
                         <TabsTrigger
                             value="entrega"
-                            className="flex-1 rounded-full px-4 py-3 font-black uppercase tracking-tighter text-[10px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
+                            className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
                             data-[state=active]:bg-[#13ec6d] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#13ec6d]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
@@ -852,7 +852,7 @@ export default function ConfiguracionPage() {
                         </TabsTrigger>
                         <TabsTrigger
                             value="pagos"
-                            className="flex-1 rounded-full px-4 py-3 font-black uppercase tracking-tighter text-[10px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
+                            className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
                             data-[state=active]:bg-[#13ec6d] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#13ec6d]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
@@ -861,7 +861,7 @@ export default function ConfiguracionPage() {
                         </TabsTrigger>
                         <TabsTrigger
                             value="experiencia"
-                            className="flex-1 rounded-full px-4 py-3 font-black uppercase tracking-tighter text-[10px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
+                            className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
                             data-[state=active]:bg-[#13ec6d] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#13ec6d]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
@@ -870,7 +870,7 @@ export default function ConfiguracionPage() {
                         </TabsTrigger>
                         <TabsTrigger
                             value="ai"
-                            className="flex-1 rounded-full px-4 py-3 font-black uppercase tracking-tighter text-[10px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
+                            className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
                             data-[state=active]:bg-[#13ec6d] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#13ec6d]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
