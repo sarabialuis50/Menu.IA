@@ -48,7 +48,7 @@ export default function ClientProfilePage() {
         setLoading(true);
         try {
             const api = axios.create({
-                baseURL: (import.meta.env && (import.meta.env.VITE_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL)) || '/api',
+                baseURL: (import.meta.env && import.meta.env.REACT_APP_BACKEND_URL) || '/api',
                 headers: { Authorization: `Bearer ${token}` }
             });
 

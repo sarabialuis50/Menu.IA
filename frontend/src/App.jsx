@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { Toaster } from "sonner";
 
 // Pages
+import DemoRestaurante from './pages/public/DemoRestaurante';
 import LandingPage from "@/pages/LandingPage";
 import PricingPage from "@/pages/PricingPage";
 import LoginPage from "@/pages/LoginPage";
@@ -119,8 +120,10 @@ function AppRoutes() {
       <Route path="/:slug/mi-cuenta" element={<ClientProfilePage />} />
       <Route path="/:slug/mi-cuenta/editar" element={<ClientEditProfilePage />} />
 
-      {/* Demo redirect */}
+      {/* Demo routes */}
       <Route path="/demo" element={<Navigate to="/demo-restaurante" replace />} />
+      <Route path="/demo-restaurante" element={<DemoRestaurante />} />
+      <Route path="/demo-negocio" element={<DemoRestaurante />} />
 
       {/* Catch all */}
       <Route path="*" element={<Navigate to="/" replace />} />
