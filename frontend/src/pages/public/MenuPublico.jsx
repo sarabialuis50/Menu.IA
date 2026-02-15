@@ -59,6 +59,7 @@ import {
   CookingPot,
   Filter
 } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 const AvailableIcons = {
   UtensilsCrossed,
@@ -119,6 +120,7 @@ const API = (import.meta.env?.VITE_BACKEND_URL || import.meta.env?.REACT_APP_BAC
 const MenuContent = () => {
   const { slug, mesa } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { items, addItem, updateQuantity, clearCart, total, itemCount, customerInfo, setCustomerInfo } = useCart();
 
   const [business, setBusiness] = useState(null);
@@ -158,9 +160,15 @@ const MenuContent = () => {
   const [metodoEntregaNombre, setMetodoEntregaNombre] = useState('');
 
   const handleBack = () => {
+    // If user is logged in and viewing their own menu, go back to configuration
+    if (user && user.slug === slug) {
+      navigate(`/dashboard/${slug}/configuracion`);
+      return;
+    }
+
     const fromDashboard = document.referrer?.includes('/dashboard/');
 
-    if (fromDashboard) {
+    if (fromDashboard && window.history.length > 2) {
       navigate(-1);
     } else if (slug) {
       navigate(`/${slug}`);
@@ -507,8 +515,8 @@ const MenuContent = () => {
 
         {/* Promotional Tag Badge */}
         {product.etiqueta && (
-          <div className="absolute top-4 left-4 z-20">
-            <div className="bg-[#13ec6d] text-[#111814] text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl shadow-xl border border-white/10 flex items-center gap-1.5 ring-1 ring-white/20">
+          <div className="absolute top-2 left-2 z-20">
+            <div className="bg-[#13ec6d] text-[#111814] text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg shadow-md border border-white/10 flex items-center gap-1 ring-1 ring-white/20">
               <div className="size-1 rounded-full bg-white animate-pulse" />
               {product.etiqueta}
             </div>
@@ -517,9 +525,9 @@ const MenuContent = () => {
 
         {/* Offer Percentage Badge */}
         {(product.oferta_porcentaje || (product.precio_original && product.precio_original > product.precio)) && (
-          <div className="absolute top-4 right-4 z-20">
-            <div className="bg-[#ff4b4b] text-white text-[10px] font-black px-2.5 py-1.5 rounded-xl shadow-lg border border-white/20 flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3 fill-white" />
+          <div className="absolute top-2 right-2 z-20">
+            <div className="bg-[#ff4b4b] text-white text-[8px] font-black px-2 py-1 rounded-lg shadow-md border border-white/20 flex items-center gap-1">
+              <Sparkles className="w-2.5 h-2.5 fill-white" />
               {product.oferta_porcentaje ? `-${product.oferta_porcentaje}%` : 'OFERTA'}
             </div>
           </div>
@@ -696,20 +704,24 @@ const MenuContent = () => {
         )}
 
         <div className="mb-10">
-          <div className="relative w-full h-48 md:h-[430px] rounded-[2.5rem] overflow-hidden group shadow-2xl border border-white">
-            <div className="absolute inset-0 bg-gradient-to-t from-[#102218]/80 via-[#102218]/20 to-transparent z-10" />
+          <div className="relative w-full h-80 md:h-[450px] rounded-[2.5rem] overflow-hidden group shadow-2xl border border-white">
+            <div className="absolute inset-0 bg-gradient-to-t from-[#102218] via-[#102218]/50 to-transparent z-10" />
             <img
               src={business.banner_url || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80"}
               alt="Banner"
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
-            <div className="absolute bottom-0 left-0 p-8 md:p-12 z-20 w-full pb-16 md:pb-24">
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 mb-4 text-[10px] font-black text-[#111814] bg-[#13ec6d] rounded-full uppercase tracking-[0.2em] shadow-lg shadow-[#13ec6d]/20">
+
+            <div className="absolute top-6 left-6 z-20">
+              <span className="inline-flex items-center gap-2 px-4 py-2 text-[10px] font-black text-[#111814] bg-[#13ec6d] rounded-full uppercase tracking-[0.2em] shadow-lg shadow-[#13ec6d]/20">
                 <Star className="w-3 h-3 fill-[#111814]" />
                 {business.banner_tag || 'Los mejores sabores'}
               </span>
-              <h1 className="text-4xl md:text-6xl font-black text-white mb-3 tracking-tighter">{business.banner_title || 'Nuestro Menú'}</h1>
-              <p className="text-gray-300 text-sm md:text-lg max-w-xl font-medium leading-relaxed">
+            </div>
+
+            <div className="absolute bottom-0 left-0 p-6 md:p-12 z-20 w-full pb-20 md:pb-24">
+              <h1 className="text-3xl md:text-6xl font-black text-white mb-2 tracking-tighter leading-none">{business.banner_title || 'Nuestro Menú'}</h1>
+              <p className="text-gray-300 text-sm md:text-lg max-w-xl font-medium leading-relaxed line-clamp-2 md:line-clamp-none">
                 {business.banner_description || business.slogan || "Descubre una explosión de sabores preparados con pasión."}
               </p>
             </div>
@@ -768,8 +780,10 @@ const MenuContent = () => {
         </div>
 
         {/* Category Controls - Positioned below search */}
-        <div className="mb-12 px-2">
-          <div className="flex gap-4 overflow-x-auto no-scrollbar py-4 px-2">
+        {/* Category Controls - Sticky on Mobile */}
+        {/* Category Controls */}
+        <div className="mb-8 md:mb-12 transition-all px-2 md:px-0">
+          <div className="flex flex-wrap justify-center md:justify-start gap-2 md:overflow-x-auto md:flex-nowrap md:pb-4 md:no-scrollbar">
             {categories.map((catObj, idx) => {
               const catName = typeof catObj === 'string' ? catObj : catObj.nombre;
               const catIcon = typeof catObj === 'object' ? catObj.icono : null;
@@ -783,21 +797,21 @@ const MenuContent = () => {
                   key={idx}
                   onClick={() => setActiveCategory(catName)}
                   className={`
-                    flex h-11 shrink-0 items-center justify-center gap-x-2 rounded-full px-6 transition-all active:scale-95 font-bold text-sm
+                    flex h-8 md:h-10 shrink-0 items-center justify-center gap-x-1.5 rounded-full px-4 md:px-5 transition-all active:scale-95 font-bold text-[9px] md:text-xs uppercase tracking-wide
                     ${activeCategory === catName
-                      ? 'bg-[#13ec6d] text-[#111814] shadow-lg shadow-[#13ec6d]/20 scale-105'
-                      : 'bg-white border border-[#f0f4f2] text-[#618972] hover:border-[#13ec6d] hover:text-[#111814]'
+                      ? 'bg-[#13ec6d] text-[#111814] shadow-md shadow-[#13ec6d]/20 scale-105 ring-2 ring-white'
+                      : 'bg-white border border-gray-100 text-gray-400 hover:border-[#13ec6d] hover:text-[#111814] shadow-sm'
                     }
                   `}
                 >
                   {isUrl ? (
-                    <img src={catIcon} alt="" className="w-5 h-5 object-contain" />
+                    <img src={catIcon} alt="" className="w-3 md:w-4 h-3 md:h-4 object-contain" />
                   ) : isLucide ? (
-                    <IconComponent className="w-5 h-5" />
+                    <IconComponent className="w-3 md:w-4 h-3 md:h-4" />
                   ) : catIcon ? (
-                    <span className="text-lg leading-none">{catIcon}</span>
+                    <span className="text-sm md:text-lg leading-none">{catIcon}</span>
                   ) : (
-                    <IconComponent className="w-5 h-5" />
+                    <IconComponent className="w-3 md:w-4 h-3 md:h-4" />
                   )}
                   <span>{catName}</span>
                 </button>
@@ -827,7 +841,7 @@ const MenuContent = () => {
 
             {destacados.length > 0 && (
               <ProductSection
-                title="✨ Recomendados del Chef"
+                title="✨ Recomendados"
                 items={destacados}
                 onSeeAll={() => setActiveCategory('Destacados')}
               />
@@ -856,7 +870,7 @@ const MenuContent = () => {
               <h2 className="text-2xl font-black text-[#111814] tracking-tighter flex items-center gap-2">
                 {(() => {
                   if (activeCategory === 'Destacados') {
-                    return <><Sparkles className="w-6 h-6 text-[#13ec6d]" /> <span>✨ Recomendados del Chef</span></>;
+                    return <><Sparkles className="w-6 h-6 text-[#13ec6d]" /> <span>✨ Recomendados</span></>;
                   }
                   if (activeCategory === 'Ofertas') {
                     return <><div className="text-[#13ec6d] text-xl">🔥</div> <span>Ofertas Especiales</span></>;
@@ -1329,7 +1343,7 @@ const MenuContent = () => {
                   <Button
                     onClick={handleSubmitOrder}
                     disabled={submitting || !customerInfo.nombre || !customerInfo.telefono || (tipoPedido === 'delivery' && !direccion) || items.length === 0}
-                    className="w-full h-16 rounded-2xl bg-[#13ec6d] text-[#111814] font-black text-xl shadow-xl hover:bg-[#0fd660] disabled:opacity-50 disabled:bg-gray-200 transition-all mt-4"
+                    className="w-full h-16 rounded-2xl bg-[#13ec6d] text-[#111814] font-black text-xl shadow-xl hover:bg-[#0fd660] disabled:opacity-50 disabled:bg-gray-200 transition-all mt-4 border-2 border-[#13ec6d]"
                   >
                     {submitting ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Pedir Ahora'}
                   </Button>
@@ -1380,7 +1394,7 @@ const MenuContent = () => {
 
             {/* Footer Actions for Cart/Checkout */}
             {checkoutStep < 2 && (
-              <div className="pt-8 mt-auto border-t border-gray-100 space-y-4">
+              <div className="pt-8 mt-auto border-t border-gray-100 space-y-4 pb-12">
                 <div className="flex flex-col gap-2">
                   {discount > 0 && (
                     <div className="flex justify-between text-sm font-bold">

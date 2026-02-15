@@ -791,7 +791,7 @@ export default function ConfiguracionPage() {
 
     return (
         <DashboardLayout>
-            <div className="max-w-6xl mx-auto space-y-8 pb-20">
+            <div className="max-w-7xl mx-auto space-y-8 pb-20 px-4 md:px-6">
                 {/* Header Contextual */}
                 <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="space-y-1 text-center md:text-left">
@@ -887,15 +887,15 @@ export default function ConfiguracionPage() {
                     {/* DISEÑO TAB */}
                     <TabsContent value="diseno" className="space-y-6 outline-none">
                         <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                            <CardHeader className="pt-10 px-10 pb-4 flex flex-row items-center justify-between">
-                                <div>
-                                    <CardTitle>Identidad Visual</CardTitle>
-                                    <CardDescription>Configura los elementos gráficos que verán los clientes en el catálogo.</CardDescription>
+                            <CardHeader className="pt-8 md:pt-10 px-6 md:px-10 pb-4 flex flex-col md:flex-row items-center md:items-center justify-between gap-6">
+                                <div className="text-center md:text-left space-y-1">
+                                    <CardTitle className="text-2xl md:text-3xl font-black">Identidad Visual</CardTitle>
+                                    <CardDescription className="text-sm md:text-base">Configura los elementos gráficos que verán los clientes en el catálogo.</CardDescription>
                                 </div>
                                 <Button
                                     onClick={handleSaveBusiness}
                                     disabled={saving}
-                                    className={getButtonStyle(hasChanges(), "small")}
+                                    className={`${getButtonStyle(hasChanges(), "small")} w-full md:w-auto h-12 md:h-11`}
                                 >
                                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                                     GUARDAR IDENTIDAD
@@ -955,29 +955,10 @@ export default function ConfiguracionPage() {
 
                                 {/* Banner Section */}
                                 <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
                                         <div>
                                             <Label className="text-[11px] font-bold tracking-tight text-gray-600">Imagen principal del menú (Banner)</Label>
                                             <p className="text-xs text-[#618972]">Se mostrará en la parte superior de tu página pública.</p>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <input
-                                                type="file"
-                                                id="banner-upload"
-                                                className="hidden"
-                                                accept="image/*"
-                                                onChange={(e) => handleBusinessMediaUpload(e, 'banner_url')}
-                                            />
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="rounded-xl border-dashed hover:bg-[#13ec6d]/5 hover:text-[#13ec6d] hover:border-[#13ec6d]/30 transition-all font-bold"
-                                                onClick={() => document.getElementById('banner-upload').click()}
-                                                disabled={saving}
-                                            >
-                                                {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
-                                                SUBIR IMAGEN
-                                            </Button>
                                         </div>
                                     </div>
                                     <div className="relative aspect-[21/7] rounded-[2rem] overflow-hidden border border-gray-100 group shadow-inner bg-gray-50">
@@ -992,12 +973,33 @@ export default function ConfiguracionPage() {
                                             </div>
                                         </div>
                                     </div>
-                                    <Input
-                                        value={businessData.banner_url || ''}
-                                        onChange={e => setBusinessData({ ...businessData, banner_url: e.target.value })}
-                                        className="rounded-2xl bg-gray-50 border-dashed text-xs font-mono"
-                                        placeholder="URL de la imagen del banner..."
-                                    />
+                                    <div className="space-y-3">
+                                        <Input
+                                            value={businessData.banner_url || ''}
+                                            onChange={e => setBusinessData({ ...businessData, banner_url: e.target.value })}
+                                            className="rounded-2xl bg-gray-50 border-dashed text-xs font-mono"
+                                            placeholder="URL de la imagen del banner..."
+                                        />
+                                        <div className="flex justify-end">
+                                            <input
+                                                type="file"
+                                                id="banner-upload"
+                                                className="hidden"
+                                                accept="image/*"
+                                                onChange={(e) => handleBusinessMediaUpload(e, 'banner_url')}
+                                            />
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="w-full md:w-auto rounded-xl border-dashed hover:bg-[#13ec6d]/5 hover:text-[#13ec6d] hover:border-[#13ec6d]/30 transition-all font-bold h-11"
+                                                onClick={() => document.getElementById('banner-upload').click()}
+                                                disabled={saving}
+                                            >
+                                                {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
+                                                SUBIR IMAGEN DEL BANNER
+                                            </Button>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 {/* Logo Section */}
@@ -1023,6 +1025,14 @@ export default function ConfiguracionPage() {
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between">
                                             <Label className="font-bold">URL del Logotipo</Label>
+                                        </div>
+                                        <Input
+                                            value={businessData.logo_url || ''}
+                                            onChange={e => setBusinessData({ ...businessData, logo_url: e.target.value })}
+                                            className="rounded-2xl bg-white border-dashed text-xs font-mono"
+                                            placeholder="URL del logo (preferiblemente PNG sin fondo)..."
+                                        />
+                                        <div className="flex justify-end">
                                             <input
                                                 type="file"
                                                 id="logo-upload"
@@ -1032,20 +1042,15 @@ export default function ConfiguracionPage() {
                                             />
                                             <Button
                                                 variant="outline"
-                                                size="xs"
-                                                className="h-7 rounded-lg border-dashed text-[10px] font-bold"
+                                                size="sm"
+                                                className="w-full md:w-auto rounded-xl border-dashed hover:bg-[#13ec6d]/5 hover:text-[#13ec6d] hover:border-[#13ec6d]/30 transition-all font-bold h-11"
                                                 onClick={() => document.getElementById('logo-upload').click()}
                                                 disabled={saving}
                                             >
-                                                SUBIR LOGO
+                                                {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
+                                                SUBIR LOGOTIPO
                                             </Button>
                                         </div>
-                                        <Input
-                                            value={businessData.logo_url || ''}
-                                            onChange={e => setBusinessData({ ...businessData, logo_url: e.target.value })}
-                                            className="rounded-2xl bg-white border-dashed text-xs font-mono"
-                                            placeholder="URL del logo (preferiblemente PNG sin fondo)..."
-                                        />
                                         <p className="text-[10px] text-[#618972] italic">* Recomendado: 512x512px, PNG transparente.</p>
                                     </div>
                                 </div>
@@ -1204,32 +1209,37 @@ export default function ConfiguracionPage() {
 
                         {/* Products Table */}
                         <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                            <div className="p-8 border-b border-gray-50 flex items-center justify-between">
-                                <h2 className="text-2xl font-black text-[#111814] tracking-tight">Gestión de Catálogo</h2>
-                                <div className="flex items-center gap-3">
-                                    <Button
-                                        onClick={() => navigate(`/dashboard/${slug}/catalogo/todos`)}
-                                        variant="outline"
-                                        className="rounded-2xl h-11 px-6 border-gray-200 text-[#618972] font-black gap-2 hover:bg-gray-50 transition-all active:scale-95"
-                                    >
-                                        <LayoutGrid className="w-4 h-4" />
-                                        Ver lista completa
-                                    </Button>
-                                    <Button
-                                        onClick={() => window.open(`/${slug}/menu-completo`, '_blank')}
-                                        variant="outline"
-                                        className="rounded-2xl h-11 px-6 border-gray-200 text-[#618972] font-black gap-2 hover:bg-gray-50 transition-all active:scale-95"
-                                    >
-                                        <ExternalLink className="w-4 h-4" />
-                                        Ver catálogo
-                                    </Button>
-                                    <Button
-                                        onClick={openAddProduct}
-                                        className="rounded-2xl h-11 px-6 bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] font-black gap-2 shadow-lg shadow-[#13ec6d]/10 transition-all active:scale-95"
-                                    >
-                                        <Plus className="w-5 h-5" />
-                                        Nuevo Producto
-                                    </Button>
+                            <div className="p-6 md:px-8 border-b border-gray-50">
+                                <div className="flex items-center justify-between gap-4">
+                                    <div>
+                                        <h2 className="text-xl font-black text-[#111814] tracking-tight whitespace-nowrap">Gestión de Catálogo</h2>
+                                        <p className="text-[11px] text-[#618972] font-medium mt-0.5 hidden sm:block">Administra tus productos y existencias.</p>
+                                    </div>
+                                    <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+                                        <Button
+                                            onClick={() => navigate(`/dashboard/${slug}/catalogo/todos`)}
+                                            variant="outline"
+                                            className="rounded-2xl h-10 md:h-11 px-4 md:px-6 border-gray-200 text-[#618972] font-black gap-2 hover:bg-gray-50 transition-all active:scale-95 text-xs md:text-sm"
+                                        >
+                                            <LayoutGrid className="w-4 h-4" />
+                                            <span className="hidden sm:inline whitespace-nowrap">Ver lista completa</span>
+                                        </Button>
+                                        <Button
+                                            onClick={() => window.open(`/${slug}/menu-completo`, '_blank')}
+                                            variant="outline"
+                                            className="rounded-2xl h-10 md:h-11 px-4 md:px-6 border-gray-200 text-[#618972] font-black gap-2 hover:bg-gray-50 transition-all active:scale-95 text-xs md:text-sm"
+                                        >
+                                            <ExternalLink className="w-4 h-4" />
+                                            <span className="hidden sm:inline whitespace-nowrap">Ver catálogo</span>
+                                        </Button>
+                                        <Button
+                                            onClick={openAddProduct}
+                                            className="rounded-2xl h-10 md:h-11 px-4 md:px-6 bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] font-black gap-2 shadow-lg shadow-[#13ec6d]/10 transition-all active:scale-95 text-xs md:text-sm"
+                                        >
+                                            <Plus className="w-4 h-4" />
+                                            <span className="whitespace-nowrap">Nuevo Producto</span>
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -1237,12 +1247,12 @@ export default function ConfiguracionPage() {
                                 <table className="w-full">
                                     <thead>
                                         <tr className="bg-gray-50/50">
-                                            <th className="px-8 py-4 text-left text-[10px] font-black text-[#618972] uppercase tracking-widest">Imagen</th>
-                                            <th className="px-6 py-4 text-left text-[10px] font-black text-[#618972] uppercase tracking-widest">Producto</th>
-                                            <th className="px-6 py-4 text-left text-[10px] font-black text-[#618972] uppercase tracking-widest">Categoría</th>
-                                            <th className="px-6 py-4 text-left text-[10px] font-black text-[#618972] uppercase tracking-widest">Precio</th>
-                                            <th className="px-6 py-4 text-left text-[10px] font-black text-[#618972] uppercase tracking-widest">Estado</th>
-                                            <th className="px-8 py-4 text-right text-[10px] font-black text-[#618972] uppercase tracking-widest">Acciones</th>
+                                            <th className="hidden sm:table-cell px-3 py-3 text-left text-[10px] font-black text-[#618972] uppercase tracking-widest w-[72px]">Imagen</th>
+                                            <th className="px-3 py-3 text-left text-[10px] font-black text-[#618972] uppercase tracking-widest">Producto</th>
+                                            <th className="hidden lg:table-cell px-3 py-3 text-left text-[10px] font-black text-[#618972] uppercase tracking-widest">Categoría</th>
+                                            <th className="px-3 py-3 text-left text-[10px] font-black text-[#618972] uppercase tracking-widest w-[100px]">Precio</th>
+                                            <th className="hidden md:table-cell px-3 py-3 text-left text-[10px] font-black text-[#618972] uppercase tracking-widest w-[110px]">Estado</th>
+                                            <th className="px-3 py-3 text-right text-[10px] font-black text-[#618972] uppercase tracking-widest w-[100px]">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-50">
@@ -1256,7 +1266,7 @@ export default function ConfiguracionPage() {
                                                     exit={{ opacity: 0 }}
                                                     className="hover:bg-gray-50/50 transition-colors group"
                                                 >
-                                                    <td className="px-8 py-4">
+                                                    <td className="hidden sm:table-cell px-3 py-3">
                                                         <div className="size-14 rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 shadow-sm">
                                                             <img
                                                                 src={p.imagen || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80'}
@@ -1265,29 +1275,43 @@ export default function ConfiguracionPage() {
                                                             />
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-4">
-                                                        <div className="space-y-0.5">
-                                                            <div className="font-black text-[#111814] text-sm group-hover:text-[#13ec6d] transition-colors">
-                                                                {p.nombre}
+                                                    <td className="px-3 py-3">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="sm:hidden size-12 rounded-xl overflow-hidden border border-gray-100 bg-gray-50 flex-shrink-0">
+                                                                <img
+                                                                    src={p.imagen || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80'}
+                                                                    className="w-full h-full object-cover"
+                                                                    alt={p.nombre}
+                                                                />
                                                             </div>
-                                                            {p.etiqueta && (
-                                                                <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-[#111824] text-[8px] font-black text-white uppercase tracking-widest">
-                                                                    {p.etiqueta}
-                                                                </span>
-                                                            )}
+                                                            <div className="space-y-0.5 min-w-0">
+                                                                <div className="font-black text-[#111814] text-sm group-hover:text-[#13ec6d] transition-colors truncate">
+                                                                    {p.nombre}
+                                                                </div>
+                                                                <div className="flex flex-wrap gap-1">
+                                                                    {p.etiqueta && (
+                                                                        <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-[#111824] text-[8px] font-black text-white uppercase tracking-widest">
+                                                                            {p.etiqueta}
+                                                                        </span>
+                                                                    )}
+                                                                    <span className={`sm:hidden text-[9px] font-black uppercase tracking-tight ${p.disponible ? 'text-[#13ec6d]' : 'text-red-400'}`}>
+                                                                        {p.disponible ? 'Disponible' : 'Agotado'}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-4">
+                                                    <td className="hidden lg:table-cell px-3 py-3">
                                                         <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-[10px] font-black text-[#618972] uppercase tracking-tighter">
                                                             {typeof p.categoria === 'object' ? p.categoria.nombre : p.categoria}
                                                         </span>
                                                     </td>
-                                                    <td className="px-6 py-4">
-                                                        <span className="font-black text-[#111814] text-base tracking-tighter">
+                                                    <td className="px-3 py-3">
+                                                        <span className="font-black text-[#111814] text-sm md:text-base tracking-tighter">
                                                             {formatCurrency(p.precio)}
                                                         </span>
                                                     </td>
-                                                    <td className="px-6 py-4">
+                                                    <td className="hidden md:table-cell px-3 py-3">
                                                         <div className="flex items-center gap-3">
                                                             <span className={`text-[10px] font-black uppercase tracking-widest ${p.disponible ? 'text-[#13ec6d]' : 'text-red-400'}`}>
                                                                 {p.disponible ? 'Disponible' : 'Agotado'}
@@ -1305,13 +1329,24 @@ export default function ConfiguracionPage() {
                                                             />
                                                         </div>
                                                     </td>
-                                                    <td className="px-8 py-4 text-right">
-                                                        <div className="flex items-center justify-end gap-2">
+                                                    <td className="px-3 py-3 text-right">
+                                                        <div className="flex items-center justify-end gap-1 md:gap-2">
+                                                            <Switch
+                                                                checked={p.disponible}
+                                                                className="sm:hidden scale-75 data-[state=checked]:bg-[#13ec6d]"
+                                                                onCheckedChange={async (val) => {
+                                                                    try {
+                                                                        await api().put(`/products/${slug}/${p.id}`, { disponible: val });
+                                                                        fetchInitialData();
+                                                                        toast.success(val ? 'Activado' : 'Pausado');
+                                                                    } catch (e) { toast.error('Error'); }
+                                                                }}
+                                                            />
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 onClick={() => openEditProduct(p)}
-                                                                className="size-9 rounded-xl text-gray-400 hover:text-[#13ec6d] hover:bg-[#13ec6d]/5 transition-all"
+                                                                className="size-8 md:size-9 rounded-xl text-gray-400 hover:text-[#13ec6d] hover:bg-[#13ec6d]/5 transition-all"
                                                             >
                                                                 <Edit2 className="w-4 h-4" />
                                                             </Button>
@@ -1319,7 +1354,7 @@ export default function ConfiguracionPage() {
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 onClick={() => handleDeleteProduct(p.id)}
-                                                                className="size-9 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                                                                className="size-8 md:size-9 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
                                                             >
                                                                 <Trash2 className="w-4 h-4" />
                                                             </Button>
@@ -1473,9 +1508,9 @@ export default function ConfiguracionPage() {
                                                 toast.error("Geolocalización no soportada");
                                             }
                                         }}
-                                        className="w-full h-12 rounded-2xl border-2 border-dashed border-[#13ec6d]/30 text-[#618972] font-black text-xs gap-2 hover:bg-[#13ec6d]/5 transition-all"
+                                        className="w-full h-auto py-3 sm:h-12 rounded-2xl border-2 border-dashed border-[#13ec6d]/30 text-[#618972] font-black text-[10px] sm:text-xs tracking-tight gap-2 hover:bg-[#13ec6d]/5 transition-all whitespace-normal"
                                     >
-                                        <MapPin className="w-4 h-4" />
+                                        <MapPin className="w-4 h-4 flex-shrink-0" />
                                         USAR MI UBICACIÓN ACTUAL
                                     </Button>
                                 </div>
@@ -1613,7 +1648,7 @@ export default function ConfiguracionPage() {
                                         { key: 'daviplata', label: 'Daviplata', desc: 'Billetera virtual.', icon: Wallet },
                                         { key: 'transferencia', label: 'Transferencia', desc: 'Bancolombia/Otros.', icon: Coins },
                                         { key: 'tarjeta', label: 'Tarjeta / Datáfono', desc: 'Débito o Crédito.', icon: CreditCardIcon },
-                                        { key: 'link', label: 'Link de Pago', desc: 'ePayco / Wompi.', icon: LinkIcon }
+                                        { key: 'link', label: 'Bre-B', desc: 'Pagos Inteligentes.', icon: LinkIcon }
                                     ].map((method) => (
                                         <div
                                             key={method.key}
@@ -1642,11 +1677,11 @@ export default function ConfiguracionPage() {
                                     ))}
                                 </div>
 
-                                <div className="flex justify-end pt-4 border-t border-gray-100">
+                                <div className="flex justify-center md:justify-end pt-4 border-t border-gray-100">
                                     <Button
                                         onClick={handleSaveBusiness}
                                         disabled={saving}
-                                        className={getButtonStyle(hasChanges())}
+                                        className={`${getButtonStyle(hasChanges())} w-auto`}
                                     >
                                         {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                                         GUARDAR MÉTODOS DE PAGO
@@ -1872,13 +1907,89 @@ export default function ConfiguracionPage() {
                                 <div className="w-full md:w-64 aspect-[9/18] bg-white rounded-[2.5rem] border-[8px] border-gray-800 shadow-2xl relative overflow-hidden group">
                                     <div className="absolute inset-0 bg-[#f6f8f7]">
                                         {/* Mockup content */}
-                                        <div className="h-20 bg-[#13ec6d] flex items-center justify-center p-4">
-                                            <img src={businessData.logo_url || "/favicon.svg"} className="h-10 w-10 bg-white rounded-full p-1" />
+                                        <div className="h-16 bg-[#13ec6d] px-4 pt-6 pb-2 shadow-sm rounded-b-[1.5rem] relative z-10 flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className="h-8 w-8 bg-white rounded-full p-0.5 shadow-sm flex items-center justify-center overflow-hidden">
+                                                    <img src={businessData.logo_url || "/favicon.svg"} className="size-full object-cover" />
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] font-black text-[#111814] leading-tight">Don Jediondo</span>
+                                                    <span className="text-[8px] font-medium text-[#111814]/70 leading-tight">Abierto • 20-30 min</span>
+                                                </div>
+                                            </div>
+                                            <div className="size-8 bg-white/20 rounded-full flex items-center justify-center text-[#111814]">
+                                                <Search className="w-3 h-3" />
+                                            </div>
                                         </div>
-                                        <div className="p-4 space-y-4">
-                                            <div className="h-4 w-3/4 bg-gray-200 rounded-full" />
-                                            <div className="h-24 w-full bg-gray-100 rounded-2xl" />
-                                            <div className="h-24 w-full bg-gray-100 rounded-2xl" />
+
+                                        <div className="p-3 space-y-3 overflow-hidden bg-[#f8fcf9] h-full">
+                                            {/* Categories */}
+                                            <div className="flex gap-2 mb-2 overflow-x-auto pb-1 no-scrollbar">
+                                                <div className="px-3 py-1 bg-[#111814] rounded-full flex items-center shadow-lg shadow-black/10">
+                                                    <span className="text-[9px] font-bold text-white whitespace-nowrap">Todos</span>
+                                                </div>
+                                                <div className="px-3 py-1 bg-white border border-gray-100 rounded-full flex items-center">
+                                                    <span className="text-[9px] font-bold text-gray-500 whitespace-nowrap">Burgers</span>
+                                                </div>
+                                                <div className="px-3 py-1 bg-white border border-gray-100 rounded-full flex items-center">
+                                                    <span className="text-[9px] font-bold text-gray-500 whitespace-nowrap">Pizzas</span>
+                                                </div>
+                                                <div className="px-3 py-1 bg-white border border-gray-100 rounded-full flex items-center">
+                                                    <span className="text-[9px] font-bold text-gray-500 whitespace-nowrap">Bebidas</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Product 1 */}
+                                            <div className="bg-white p-2.5 rounded-2xl shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-gray-50 flex gap-3 items-center">
+                                                <div className="size-14 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0 shadow-sm relative group">
+                                                    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&q=80" className="w-full h-full object-cover" />
+                                                </div>
+                                                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                                                    <h4 className="text-[10px] font-black text-gray-900 leading-tight truncate">Hamburguesa Doble</h4>
+                                                    <p className="text-[8px] text-gray-500 leading-tight line-clamp-1 mt-0.5">Queso cheddar, tocineta, salsas...</p>
+                                                    <p className="text-[10px] font-black text-[#13ec6d] mt-1">$24.900</p>
+                                                </div>
+                                                <div className="size-7 bg-[#13ec6d] rounded-full flex items-center justify-center text-[#111814] shadow-lg shadow-[#13ec6d]/20 active:scale-90 transition-transform">
+                                                    <Plus className="w-3.5 h-3.5" />
+                                                </div>
+                                            </div>
+
+                                            {/* Product 2 */}
+                                            <div className="bg-white p-2.5 rounded-2xl shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-gray-50 flex gap-3 items-center">
+                                                <div className="size-14 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0 shadow-sm">
+                                                    <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&q=80" className="w-full h-full object-cover" />
+                                                </div>
+                                                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                                                    <h4 className="text-[10px] font-black text-gray-900 leading-tight truncate">Pizza Pepperoni</h4>
+                                                    <p className="text-[8px] text-gray-500 leading-tight line-clamp-1 mt-0.5">Masa madre, queso mozzarella...</p>
+                                                    <p className="text-[10px] font-black text-[#13ec6d] mt-1">$32.000</p>
+                                                </div>
+                                                <div className="size-7 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center hover:bg-[#13ec6d] hover:text-[#111814] transition-colors">
+                                                    <Plus className="w-3.5 h-3.5" />
+                                                </div>
+                                            </div>
+
+                                            {/* Product 3 */}
+                                            <div className="bg-white p-2.5 rounded-2xl shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-gray-50 flex gap-3 items-center opacity-80">
+                                                <div className="size-14 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0 shadow-sm">
+                                                    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&q=80" className="w-full h-full object-cover" />
+                                                </div>
+                                                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                                                    <h4 className="text-[10px] font-black text-gray-900 leading-tight truncate">Ensalada César</h4>
+                                                    <p className="text-[8px] text-gray-500 leading-tight line-clamp-1 mt-0.5">Pollo grillé, crutones, parmesano...</p>
+                                                    <p className="text-[10px] font-black text-[#13ec6d] mt-1">$18.500</p>
+                                                </div>
+                                                <div className="size-7 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center">
+                                                    <Plus className="w-3.5 h-3.5" />
+                                                </div>
+                                            </div>
+
+                                            {/* Floating Cart Pill */}
+                                            <div className="mx-auto w-max bg-[#111814] rounded-full px-4 py-2 mt-4 flex items-center gap-2 shadow-xl">
+                                                <div className="size-4 rounded-full bg-[#13ec6d] text-[#111814] text-[8px] font-black flex items-center justify-center">1</div>
+                                                <span className="text-[9px] font-bold text-white">Ver pedido</span>
+                                                <span className="text-[9px] font-bold text-white/60 pl-2 border-l border-white/10">$24.900</span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center text-center p-6">
@@ -1892,84 +2003,89 @@ export default function ConfiguracionPage() {
                     {/* BOT CONFIG TAB */}
                     <TabsContent value="ai" className="space-y-6 outline-none">
                         <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                            <CardHeader className="pt-10 px-10 pb-4 flex flex-row items-center justify-between">
-                                <div>
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Sparkles className="w-5 h-5 text-[#13ec6d]" />
-                                        <CardTitle>Configuración del Bot IA</CardTitle>
+                            <CardHeader className="pt-8 px-6 md:pt-10 md:px-10 pb-4 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0 bg-white">
+                                <div className="text-center md:text-left">
+                                    <div className="flex flex-col md:flex-row items-center gap-2 mb-2 justify-center md:justify-start">
+                                        <div className="p-2 bg-[#13ec6d]/10 rounded-xl">
+                                            <Sparkles className="w-5 h-5 text-[#13ec6d]" />
+                                        </div>
+                                        <CardTitle className="text-xl md:text-2xl font-black text-[#111814]">Configuración del Bot IA</CardTitle>
                                     </div>
-                                    <CardDescription>Personaliza cómo tu asistente de IA responde a tus clientes por WhatsApp.</CardDescription>
+                                    <CardDescription className="text-xs md:text-sm text-center md:text-left">Personaliza cómo tu asistente responde por WhatsApp.</CardDescription>
                                 </div>
-                                <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-2xl border border-gray-100">
+
+                                <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-2xl border border-gray-100 w-full md:w-auto justify-between md:justify-start">
                                     <span className="text-[10px] font-black uppercase tracking-widest text-[#618972]">Estado del Bot</span>
                                     <Switch
                                         checked={businessData.ai_habilitado}
                                         onCheckedChange={(val) => setBusinessData({ ...businessData, ai_habilitado: val })}
+                                        className="data-[state=checked]:bg-[#13ec6d]"
                                     />
                                 </div>
                             </CardHeader>
 
-                            <CardContent className="p-10 space-y-8">
-                                <div className="grid grid-cols-1 gap-8">
+                            <CardContent className="px-6 md:px-10 pb-8 md:pb-10 space-y-8">
+                                <div className="grid grid-cols-1 gap-8 max-w-xl mx-auto">
                                     {/* Personalidad */}
-                                    <div className="space-y-3">
-                                        <Label className="text-sm font-black uppercase tracking-widest text-[#111814] ml-1">Personalidad del Bot</Label>
+                                    <div className="space-y-3 text-center">
+                                        <Label className="text-xs font-black uppercase tracking-widest text-[#111814]">Personalidad del Bot</Label>
                                         <Select
                                             value={businessData.ai_personalidad}
                                             onValueChange={(val) => setBusinessData({ ...businessData, ai_personalidad: val })}
                                         >
-                                            <SelectTrigger className="h-14 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#13ec6d]/20 transition-all font-medium">
+                                            <SelectTrigger className="h-11 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#13ec6d]/20 transition-all font-medium text-xs text-center justify-center">
                                                 <SelectValue placeholder="Selecciona una personalidad" />
                                             </SelectTrigger>
-                                            <SelectContent className="rounded-2xl border-gray-100">
+                                            <SelectContent className="rounded-2xl border-gray-100 text-xs font-medium">
                                                 <SelectItem value="Amigable y cercano (Recomendado)">Amigable y cercano (Recomendado)</SelectItem>
                                                 <SelectItem value="Formal y profesional">Formal y profesional</SelectItem>
                                                 <SelectItem value="Divertido y entusiasta">Divertido y entusiasta</SelectItem>
                                                 <SelectItem value="Elegante y sofisticado">Elegante y sofisticado</SelectItem>
                                             </SelectContent>
                                         </Select>
-                                        <p className="text-[10px] text-[#618972] font-medium ml-1 italic">Define el tono de voz que usará el bot al hablar con tus clientes.</p>
+                                        <p className="text-[10px] text-[#618972] font-medium italic">Define el tono de voz que usará el bot.</p>
                                     </div>
 
                                     {/* Saludo */}
-                                    <div className="space-y-3">
-                                        <Label className="text-sm font-black uppercase tracking-widest text-[#111814] ml-1">Saludo Automático</Label>
+                                    <div className="space-y-3 text-center">
+                                        <Label className="text-xs font-black uppercase tracking-widest text-[#111814]">Saludo Automático</Label>
                                         <Textarea
                                             value={businessData.ai_saludo || ''}
                                             onChange={(e) => setBusinessData({ ...businessData, ai_saludo: e.target.value })}
                                             placeholder="¡Hola! Soy el asistente de su negocio 🍕 ¿En qué puedo ayudarte hoy?"
-                                            className="min-h-[100px] rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#13ec6d]/20 transition-all font-medium leading-relaxed"
+                                            className="min-h-[80px] rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#13ec6d]/20 transition-all font-medium leading-relaxed text-xs text-center placeholder:text-center"
                                         />
-                                        <p className="text-[10px] text-[#618972] font-medium ml-1 italic">Este mensaje se enviará automáticamente al iniciar una conversación.</p>
+                                        <p className="text-[10px] text-[#618972] font-medium italic">Este mensaje se enviará al iniciar.</p>
                                     </div>
 
                                     {/* Conocimiento */}
-                                    <div className="space-y-3">
-                                        <div className="flex items-center justify-between ml-1">
-                                            <Label className="text-sm font-black uppercase tracking-widest text-[#111814]">Conocimiento de la IA (Entrenamiento)</Label>
+                                    <div className="space-y-3 text-center">
+                                        <div className="flex flex-col items-center gap-2">
+                                            <Label className="text-xs font-black uppercase tracking-widest text-[#111814]">Conocimiento de la IA</Label>
                                             <span className="text-[9px] font-black text-[#13ec6d] uppercase bg-[#13ec6d]/10 px-2 py-0.5 rounded-full">Mejora la Precisión</span>
                                         </div>
                                         <Textarea
                                             value={businessData.ai_conocimiento || ''}
                                             onChange={(e) => setBusinessData({ ...businessData, ai_conocimiento: e.target.value })}
                                             placeholder="Describe detalles únicos de tu negocio, políticas, especialidades o curiosidades..."
-                                            className="min-h-[180px] rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#13ec6d]/20 transition-all font-medium leading-relaxed"
+                                            className="min-h-[120px] rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#13ec6d]/20 transition-all font-medium leading-relaxed text-xs p-4"
                                         />
-                                        <p className="text-[10px] text-[#618972] font-medium ml-1 italic">Describe detalles únicos de tu negocio para que la IA los use en sus respuestas.</p>
+                                        <p className="text-[10px] text-[#618972] font-medium italic">Describe detalles únicos para que la IA los use.</p>
                                     </div>
                                 </div>
 
-                                <div className="pt-6 border-t border-gray-100 flex flex-col md:flex-row gap-6 items-center justify-between">
-                                    <div className="flex gap-4">
-                                        <div className="flex flex-col items-center gap-1">
-                                            <div className="w-12 h-12 rounded-2xl bg-[#13ec6d]/10 flex items-center justify-center">
-                                                <Check className="w-6 h-6 text-[#13ec6d]" />
+                                {/* Footer / Actions */}
+                                <div className="pt-6 border-t border-gray-100 flex flex-col items-center gap-6">
+                                    <div className="flex gap-8 justify-center w-full">
+                                        <div className="flex flex-col items-center gap-2">
+                                            <div className="size-10 rounded-xl bg-[#13ec6d]/10 flex items-center justify-center">
+                                                <Check className="w-5 h-5 text-[#13ec6d]" />
                                             </div>
                                             <span className="text-[9px] font-bold text-[#618972]">Bot Activo</span>
                                         </div>
-                                        <div className="flex flex-col items-center gap-1">
-                                            <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center">
-                                                <Globe className="w-6 h-6 text-blue-500" />
+                                        <div className="flex flex-col items-center gap-2">
+                                            <div className="size-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                                                <Globe className="w-5 h-5 text-blue-500" />
                                             </div>
                                             <span className="text-[9px] font-bold text-[#618972]">Multilingüe</span>
                                         </div>
@@ -1978,10 +2094,10 @@ export default function ConfiguracionPage() {
                                     <Button
                                         onClick={handleSaveBusiness}
                                         disabled={saving}
-                                        className={getButtonStyle(hasChanges())}
+                                        className={`${getButtonStyle(hasChanges(), "small")} w-full md:w-auto justify-center h-11 px-8 text-[10px]`}
                                     >
-                                        {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-                                        GUARDAR CONFIGURACIÓN BOT
+                                        {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" /> : <Save className="w-3.5 h-3.5 mr-2" />}
+                                        GUARDAR CONFIGURACIÓN
                                     </Button>
                                 </div>
                             </CardContent>

@@ -89,50 +89,53 @@ export default function MiPerfilPage() {
     };
 
     useEffect(() => {
+        let isMounted = true;
         const fetchBusiness = async () => {
+            if (!slug) return;
             try {
                 const response = await api().get(`/business/${slug}`);
-                let parsedHorarios = { semana: '', fines: '' };
+                if (!isMounted) return;
 
+                let parsedHorarios = { semana: '', sabado: '', domingos: '' };
                 if (response.data.horarios) {
-                    if (typeof response.data.horarios === 'string') {
-                        if (response.data.horarios.trim().startsWith('{')) {
-                            try {
-                                const obj = JSON.parse(response.data.horarios);
-                                parsedHorarios = {
-                                    semana: obj.semana || obj.week || '',
-                                    sabado: obj.sabado || obj.saturday || '',
-                                    domingos: obj.domingos || obj.sunday || obj.fines || obj.weekend || ''
-                                };
-                            } catch (e) {
-                                parsedHorarios = { semana: response.data.horarios, sabado: '', domingos: '' };
-                            }
-                        } else {
-                            parsedHorarios = { semana: response.data.horarios, sabado: '', domingos: '' };
+                    const h = response.data.horarios;
+                    if (typeof h === 'string' && h.trim().startsWith('{')) {
+                        try {
+                            const obj = JSON.parse(h);
+                            parsedHorarios = {
+                                semana: obj.semana || obj.week || '',
+                                sabado: obj.sabado || obj.saturday || '',
+                                domingos: obj.domingos || obj.sunday || obj.fines || obj.weekend || ''
+                            };
+                        } catch (e) {
+                            parsedHorarios = { semana: h, sabado: '', domingos: '' };
                         }
-                    } else if (typeof response.data.horarios === 'object') {
+                    } else if (typeof h === 'object') {
                         parsedHorarios = {
-                            semana: response.data.horarios.semana || response.data.horarios.week || '',
-                            sabado: response.data.horarios.sabado || response.data.horarios.saturday || '',
-                            domingos: response.data.horarios.domingos || response.data.horarios.sunday || response.data.horarios.fines || response.data.horarios.weekend || ''
+                            semana: h.semana || h.week || '',
+                            sabado: h.sabado || h.saturday || '',
+                            domingos: h.domingos || h.sunday || h.fines || h.weekend || ''
                         };
+                    } else {
+                        parsedHorarios = { semana: String(h), sabado: '', domingos: '' };
                     }
                 }
 
-                setBusinessData({
-                    ...businessData,
+                setBusinessData(prev => ({
+                    ...prev,
                     ...response.data,
                     horarios: parsedHorarios,
                     subdominio: slug
-                });
+                }));
             } catch (error) {
                 console.error('Error fetching business:', error);
-                toast.error('Error al cargar la información del negocio');
+                if (isMounted) toast.error('Error al cargar la información del negocio');
             } finally {
-                setLoading(false);
+                if (isMounted) setLoading(false);
             }
         };
         fetchBusiness();
+        return () => { isMounted = false; };
     }, [slug, api]);
 
     const [detecting, setDetecting] = useState(false);
@@ -255,17 +258,17 @@ export default function MiPerfilPage() {
         <DashboardLayout>
             <div className="max-w-6xl mx-auto space-y-8 pb-20">
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-sm border border-gray-100">
                     <div className="space-y-1">
                         <div className="flex items-center gap-2 text-[#13ec6d] font-bold text-sm uppercase tracking-widest">
                             <span className="w-8 h-[2px] bg-[#13ec6d]"></span>
                             Configuración de Marca
                         </div>
-                        <h1 className="text-4xl font-black text-[#111814] tracking-tighter">Mi Perfil Público</h1>
-                        <p className="text-[#618972] font-medium">Personaliza cómo los clientes experimentan tu marca online.</p>
+                        <h1 className="text-3xl md:text-4xl font-black text-[#111814] tracking-tighter">Mi Perfil Público</h1>
+                        <p className="text-[#618972] font-medium text-sm md:text-base">Personaliza cómo los clientes experimentan tu marca online.</p>
                     </div>
-                    <div className="flex gap-3">
-                        <Button variant="outline" asChild className="rounded-2xl h-12 px-6 border-gray-200 hover:bg-gray-50 text-[#111814] font-bold gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:flex gap-3 w-full md:w-auto">
+                        <Button variant="outline" asChild className="rounded-2xl h-12 px-6 border-gray-200 hover:bg-gray-50 text-[#111814] font-bold gap-2 w-full md:w-auto flex justify-center">
                             <Link to={`/${slug}`}>
                                 <Eye className="w-4 h-4" />
                                 Ver Perfil
@@ -273,7 +276,7 @@ export default function MiPerfilPage() {
                             </Link>
                         </Button>
                         <Button
-                            className="rounded-2xl h-12 px-8 bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] font-bold gap-2 shadow-lg shadow-[#13ec6d]/20"
+                            className="rounded-2xl h-12 px-8 bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] font-bold gap-2 shadow-lg shadow-[#13ec6d]/20 w-full md:w-auto"
                             onClick={handleSave}
                             disabled={saving}
                         >

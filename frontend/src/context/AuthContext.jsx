@@ -27,19 +27,32 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   useEffect(() => {
+    let isMounted = true;
     const verifyToken = async () => {
       if (token) {
         try {
+          // Use a new instance directly if needed, but api() is memoized
           const response = await api().get('/auth/me');
-          setUser(response.data);
+          if (isMounted) {
+            setUser(response.data);
+          }
         } catch (error) {
           console.error('Token verification failed:', error);
-          logout();
+          if (isMounted) {
+            logout();
+          }
+        }
+      } else {
+        if (isMounted) {
+          setUser(null);
         }
       }
-      setLoading(false);
+      if (isMounted) {
+        setLoading(false);
+      }
     };
     verifyToken();
+    return () => { isMounted = false; };
   }, [token, api]);
 
   const login = async (email, password) => {

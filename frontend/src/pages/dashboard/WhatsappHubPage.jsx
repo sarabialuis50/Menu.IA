@@ -126,9 +126,51 @@ export default function WhatsappHubPage() {
     return (
         <DashboardLayout>
             <div className="max-w-7xl mx-auto space-y-8 pb-10">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    {/* Main Content Area */}
-                    <div className="lg:col-span-8 flex flex-col space-y-6">
+                <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8">
+                    {/* Phone Preview - TOP on mobile */}
+                    <div className="lg:col-span-4 order-1 lg:order-2">
+                        <div className="lg:sticky lg:top-[128px]">
+                            <div className="bg-white rounded-[1.5rem] border-[5px] border-gray-900 shadow-2xl w-full max-w-[280px] h-[400px] md:h-[450px] overflow-hidden relative mx-auto transition-all">
+                                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-28 h-4 bg-gray-900 rounded-b-lg z-20"></div>
+                                <div className="w-full h-full bg-[#E5DDD5] flex flex-col relative">
+                                    <div className="bg-[#075E54] p-4 pt-10 text-white flex items-center gap-3 shrink-0">
+                                        <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm shadow-inner">
+                                            {user?.business_name?.[0] || 'M'}
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-black uppercase tracking-tight leading-none">{user?.business_name || 'Mi Negocio'}</p>
+                                            <p className="text-[10px] opacity-70 font-bold uppercase mt-0.5">En línea</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 p-4 space-y-4 overflow-y-auto scrollbar-hide">
+                                        <div className="max-w-[90%] bg-white rounded-2xl rounded-tl-sm p-4 shadow-md relative border-b-2 border-gray-100">
+                                            <div className="flex items-center gap-1.5 mb-2">
+                                                <span className="text-[9px] font-black text-[#25D366] uppercase tracking-widest">OFICIAL</span>
+                                                <div className="w-1.5 h-1.5 rounded-full bg-[#25D366]" />
+                                            </div>
+                                            <p className="text-sm text-gray-800 font-medium leading-relaxed whitespace-pre-wrap">
+                                                {activeTab === 'templates'
+                                                    ? (selectedTemplate?.message || 'Escribe tu mensaje...')
+                                                    : (campaignMessage || 'Escribiendo campaña...')
+                                                }
+                                            </p>
+                                            <div className="flex items-center justify-end gap-1 mt-2">
+                                                <p className="text-[8px] text-gray-400 font-bold uppercase">Ahora</p>
+                                                <Check className="w-2.5 h-2.5 text-[#25D366]" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="bg-gray-100 p-3 px-4 flex items-center gap-3 shrink-0">
+                                        <div className="flex-1 h-9 bg-white rounded-full border-2 border-gray-200"></div>
+                                        <div className="w-10 h-10 rounded-full bg-[#075E54] flex items-center justify-center text-white shadow-lg"><Smartphone className="w-5 h-5" /></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Main Content Area - MIDDLE on mobile */}
+                    <div className="lg:col-span-8 flex flex-col space-y-6 order-2 lg:order-1">
                         {/* Tabs Navigation - Pill Style - Left Aligned */}
                         <div className="flex justify-start mb-2">
                             <div className="bg-gray-100 p-1.5 rounded-full flex items-center gap-1 shadow-inner border border-gray-200">
@@ -228,23 +270,23 @@ export default function WhatsappHubPage() {
                                                     <textarea
                                                         value={selectedTemplate.message}
                                                         onChange={(e) => setSelectedTemplate({ ...selectedTemplate, message: e.target.value })}
-                                                        className="w-full h-full min-h-[180px] bg-transparent resize-none border-none focus:ring-0 text-gray-800 placeholder:text-gray-300 text-xl font-medium leading-relaxed scrollbar-hide"
+                                                        className="w-full h-full min-h-[180px] bg-transparent resize-none border-none focus:ring-0 text-gray-800 placeholder:text-gray-300 text-lg font-medium leading-relaxed scrollbar-hide"
                                                         placeholder="Escribe el mensaje de la automatización..."
                                                     />
                                                 </div>
 
-                                                <div className="pt-6 border-t-2 border-gray-100 flex items-center justify-between gap-6">
+                                                <div className="pt-6 border-t-2 border-gray-100 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-6">
                                                     <div className="space-y-3 min-w-0 flex-1">
                                                         <div className="flex items-center gap-2">
                                                             <Sparkles className="w-3.5 h-3.5 text-gray-400" />
                                                             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Etiquetas Inteligentes</span>
                                                         </div>
-                                                        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide no-wrap">
+                                                        <div className="flex flex-wrap items-center gap-2">
                                                             {tags.map(tag => (
                                                                 <button
                                                                     key={tag}
                                                                     onClick={() => setSelectedTemplate({ ...selectedTemplate, message: selectedTemplate.message + ' ' + tag })}
-                                                                    className="whitespace-nowrap text-[11px] font-bold px-4 py-2 bg-white border-2 border-gray-100 hover:border-[#25D366] hover:text-[#25D366] hover:shadow-sm text-gray-600 rounded-xl transition-all shrink-0"
+                                                                    className="whitespace-nowrap text-[10px] font-bold px-3 py-1.5 bg-white border-2 border-gray-100 hover:border-[#25D366] hover:text-[#25D366] hover:shadow-sm text-gray-600 rounded-xl transition-all"
                                                                 >
                                                                     {tag}
                                                                 </button>
@@ -252,20 +294,20 @@ export default function WhatsappHubPage() {
                                                         </div>
                                                     </div>
 
-                                                    <div className="pl-6 border-l-2 border-gray-100 flex flex-col items-end gap-3 shrink-0">
+                                                    <div className="md:pl-6 md:border-l-2 border-gray-100 flex flex-col items-center md:items-end gap-3 shrink-0">
                                                         <Button
                                                             onClick={handleSaveTemplate}
                                                             disabled={isSavingTemplate}
-                                                            className="h-14 px-10 rounded-2xl bg-[#25D366] hover:bg-[#128C7E] text-white font-black flex items-center gap-3 transition-all shadow-xl shadow-green-100 disabled:opacity-50 text-base"
+                                                            className="h-11 px-6 rounded-xl bg-[#25D366] hover:bg-[#128C7E] text-white font-black flex items-center gap-2 transition-all shadow-lg shadow-green-100 disabled:opacity-50 text-[11px] tracking-widest"
                                                         >
                                                             {isSavingTemplate ? (
-                                                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                                             ) : (
-                                                                <Save className="w-5 h-5" />
+                                                                <Save className="w-4 h-4" />
                                                             )}
                                                             GUARDAR CAMBIOS
                                                         </Button>
-                                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center md:text-right">
                                                             {selectedTemplate.message.length} <span className="text-gray-200">/</span> 500 caract.
                                                         </span>
                                                     </div>
@@ -333,23 +375,23 @@ export default function WhatsappHubPage() {
                                                 <textarea
                                                     value={campaignMessage}
                                                     onChange={(e) => setCampaignMessage(e.target.value)}
-                                                    className="w-full h-full min-h-[180px] bg-transparent resize-none border-none focus:ring-0 text-gray-800 placeholder:text-gray-300 text-xl font-medium leading-relaxed scrollbar-hide"
+                                                    className="w-full h-full min-h-[180px] bg-transparent resize-none border-none focus:ring-0 text-gray-800 placeholder:text-gray-300 text-lg font-medium leading-relaxed scrollbar-hide"
                                                     placeholder="Escribe el mensaje que recibirán todos los clientes seleccionados..."
                                                 />
                                             </div>
 
-                                            <div className="pt-6 border-t-2 border-gray-100 flex items-center justify-between gap-6">
+                                            <div className="pt-6 border-t-2 border-gray-100 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-6">
                                                 <div className="space-y-3 min-w-0 flex-1">
                                                     <div className="flex items-center gap-2">
                                                         <Sparkles className="w-3.5 h-3.5 text-gray-400" />
                                                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Etiquetas Inteligentes</span>
                                                     </div>
-                                                    <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide no-wrap">
+                                                    <div className="flex flex-wrap items-center gap-2">
                                                         {tags.map(tag => (
                                                             <button
                                                                 key={tag}
                                                                 onClick={() => setCampaignMessage(campaignMessage + ' ' + tag)}
-                                                                className="whitespace-nowrap text-[11px] font-bold px-4 py-2 bg-white border-2 border-gray-100 hover:border-[#25D366] hover:text-[#25D366] hover:shadow-sm text-gray-600 rounded-xl transition-all shrink-0"
+                                                                className="whitespace-nowrap text-[10px] font-bold px-3 py-1.5 bg-white border-2 border-gray-100 hover:border-[#25D366] hover:text-[#25D366] hover:shadow-sm text-gray-600 rounded-xl transition-all"
                                                             >
                                                                 {tag}
                                                             </button>
@@ -357,20 +399,20 @@ export default function WhatsappHubPage() {
                                                     </div>
                                                 </div>
 
-                                                <div className="pl-6 border-l-2 border-gray-100 flex flex-col items-end gap-3 shrink-0">
+                                                <div className="md:pl-6 md:border-l-2 border-gray-100 flex flex-col items-center md:items-end gap-3 shrink-0">
                                                     <Button
                                                         onClick={handleSendCampaign}
                                                         disabled={isSendingCampaign || !campaignMessage.trim()}
-                                                        className="h-14 px-10 rounded-2xl bg-[#25D366] hover:bg-[#128C7E] text-white font-black flex items-center gap-3 transition-all shadow-xl shadow-green-100 disabled:opacity-50 text-base"
+                                                        className="h-11 px-6 rounded-xl bg-[#25D366] hover:bg-[#128C7E] text-white font-black flex items-center gap-2 transition-all shadow-lg shadow-green-100 disabled:opacity-50 text-[11px] tracking-widest"
                                                     >
                                                         {isSendingCampaign ? (
-                                                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                                         ) : (
-                                                            <Send className="w-5 h-5" />
+                                                            <Send className="w-4 h-4" />
                                                         )}
                                                         ENVIAR CAMPAÑA
                                                     </Button>
-                                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center md:text-right">
                                                         {campaignMessage.length} <span className="text-gray-200">/</span> 500 caract.
                                                     </span>
                                                 </div>
@@ -382,49 +424,10 @@ export default function WhatsappHubPage() {
                         )}
                     </div>
 
-                    {/* Sidebar / Preview Area */}
-                    <div className="lg:col-span-4 h-full flex flex-col">
-                        <div className="sticky top-[128px] flex flex-col gap-4">
-                            {/* Phone Preview */}
-                            <div className="bg-white rounded-[1.5rem] border-[5px] border-gray-900 shadow-2xl w-full max-w-[280px] h-[450px] overflow-hidden relative mx-auto transition-all">
-                                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-28 h-4 bg-gray-900 rounded-b-lg z-20"></div>
-                                <div className="w-full h-full bg-[#E5DDD5] flex flex-col relative">
-                                    <div className="bg-[#075E54] p-4 pt-10 text-white flex items-center gap-3 shrink-0">
-                                        <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm shadow-inner">
-                                            {user?.business_name?.[0] || 'M'}
-                                        </div>
-                                        <div>
-                                            <p className="text-xs font-black uppercase tracking-tight leading-none">{user?.business_name || 'Mi Negocio'}</p>
-                                            <p className="text-[10px] opacity-70 font-bold uppercase mt-0.5">En línea</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex-1 p-4 space-y-4 overflow-y-auto scrollbar-hide">
-                                        <div className="max-w-[90%] bg-white rounded-2xl rounded-tl-sm p-4 shadow-md relative border-b-2 border-gray-100">
-                                            <div className="flex items-center gap-1.5 mb-2">
-                                                <span className="text-[9px] font-black text-[#25D366] uppercase tracking-widest">OFICIAL</span>
-                                                <div className="w-1.5 h-1.5 rounded-full bg-[#25D366]" />
-                                            </div>
-                                            <p className="text-sm text-gray-800 font-medium leading-relaxed whitespace-pre-wrap">
-                                                {activeTab === 'templates'
-                                                    ? (selectedTemplate?.message || 'Escribe tu mensaje...')
-                                                    : (campaignMessage || 'Escribiendo campaña...')
-                                                }
-                                            </p>
-                                            <div className="flex items-center justify-end gap-1 mt-2">
-                                                <p className="text-[8px] text-gray-400 font-bold uppercase">Ahora</p>
-                                                <Check className="w-2.5 h-2.5 text-[#25D366]" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="bg-gray-100 p-3 px-4 flex items-center gap-3 shrink-0">
-                                        <div className="flex-1 h-9 bg-white rounded-full border-2 border-gray-200"></div>
-                                        <div className="w-10 h-10 rounded-full bg-[#075E54] flex items-center justify-center text-white shadow-lg"><Smartphone className="w-5 h-5" /></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Impact Stats */}
-                            <Card className="border-2 border-gray-200 shadow-xl bg-white overflow-hidden rounded-[2rem] w-full max-w-[280px] mx-auto border-t-[10px] border-t-green-500">
+                    {/* Impact Stats - BOTTOM on mobile */}
+                    <div className="lg:col-span-12 order-3 lg:order-3">
+                        <div className="flex justify-center lg:justify-end mt-4 lg:mt-0">
+                            <Card className="border-2 border-gray-200 shadow-xl bg-white overflow-hidden rounded-[2rem] w-full max-w-[280px] lg:max-w-none lg:w-full border-t-[10px] border-t-green-500">
                                 <div className="p-5 border-b flex items-center justify-between">
                                     <h4 className="font-black text-gray-900 text-[10px] flex items-center gap-2 uppercase tracking-widest">
                                         <BarChart className="w-3.5 h-3.5 text-[#25D366]" />
@@ -432,27 +435,29 @@ export default function WhatsappHubPage() {
                                     </h4>
                                     <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
                                 </div>
-                                <div className="p-6 space-y-5">
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-400 font-black text-[10px] uppercase">Alcance</span>
-                                        <span className="font-black text-gray-900 text-sm">
-                                            {activeTab === 'templates' ? (selectedTemplate?.stats?.alcance || 0) : (selectedSegment?.count || 0)} Clientes
-                                        </span>
+                                <div className="p-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div className="flex justify-between md:flex-col md:items-start items-center gap-1">
+                                            <span className="text-gray-400 font-black text-[10px] uppercase">Alcance</span>
+                                            <span className="font-black text-gray-900 text-sm">
+                                                {activeTab === 'templates' ? (selectedTemplate?.stats?.alcance || 0) : (selectedSegment?.count || 0)} Clientes
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between md:flex-col md:items-start items-center gap-1">
+                                            <span className="text-gray-400 font-black text-[10px] uppercase">Tasa Apertura</span>
+                                            <span className="font-black text-[#25D366] text-lg">
+                                                {activeTab === 'templates' ? (selectedTemplate?.stats?.apertura || '95%') : '96%'}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between md:flex-col md:items-start items-center gap-1">
+                                            <span className="text-gray-400 font-black text-[10px] uppercase">Conversión</span>
+                                            <span className="font-black text-[#25D366] text-lg">
+                                                {activeTab === 'templates' ? (selectedTemplate?.stats?.conversion || '10%') : '8%'}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-400 font-black text-[10px] uppercase">Tasa Apertura</span>
-                                        <span className="font-black text-[#25D366] text-lg">
-                                            {activeTab === 'templates' ? (selectedTemplate?.stats?.apertura || '95%') : '96%'}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-400 font-black text-[10px] uppercase">Conversión</span>
-                                        <span className="font-black text-[#25D366] text-lg">
-                                            {activeTab === 'templates' ? (selectedTemplate?.stats?.conversion || '10%') : '8%'}
-                                        </span>
-                                    </div>
-                                    <div className="pt-4 border-t-2 border-gray-50">
-                                        <p className="text-[10px] text-gray-400 font-black italic leading-relaxed text-center uppercase tracking-tighter">
+                                    <div className="pt-4 mt-4 border-t-2 border-gray-50">
+                                        <p className="text-[10px] text-gray-400 font-black italic leading-relaxed text-center lg:text-left uppercase tracking-tighter">
                                             {activeTab === 'templates'
                                                 ? (selectedTemplate?.stats?.tip || 'Optimización automática activada.')
                                                 : `Impactarás al ${selectedSegment ? ((selectedSegment.count / 204) * 100).toFixed(0) : 0}% de tu base.`}

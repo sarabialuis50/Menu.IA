@@ -70,22 +70,26 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchData = async () => {
       try {
         const [analyticsRes, ordersRes] = await Promise.all([
           api().get(`/business/${slug}/analytics`),
           api().get(`/orders/${slug}?limit=5`)
         ]);
-        setAnalytics(analyticsRes.data);
-        setRecentOrders(ordersRes.data);
+        if (isMounted) {
+          setAnalytics(analyticsRes.data);
+          setRecentOrders(ordersRes.data);
+        }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
-        toast.error('Error al cargar datos del dashboard');
+        if (isMounted) toast.error('Error al cargar datos del dashboard');
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
     fetchData();
+    return () => { isMounted = false; };
   }, [slug, api]);
 
   const formatCurrency = (value) => {

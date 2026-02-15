@@ -32,11 +32,15 @@ export default function GeminiConsultantPage() {
     }, [user]);
 
     useEffect(() => {
+        let isMounted = true;
         if (slug) {
             api().get(`/business/${slug}`)
-                .then(res => setBusinessId(res.data.id))
+                .then(res => {
+                    if (isMounted) setBusinessId(res.data.id);
+                })
                 .catch(console.error);
         }
+        return () => { isMounted = false; };
     }, [slug, api]);
 
     // Auto-scroll to bottom
@@ -64,8 +68,10 @@ export default function GeminiConsultantPage() {
     };
 
     useEffect(() => {
-        fetchInsights();
-    }, [user]);
+        if (user?.id) {
+            fetchInsights();
+        }
+    }, [user?.id]);
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
@@ -116,7 +122,7 @@ export default function GeminiConsultantPage() {
 
     return (
         <DashboardLayout>
-            <div className="flex flex-col h-[calc(100vh-8rem)] gap-4">
+            <div className="flex flex-col min-h-screen lg:h-[calc(100vh-8rem)] gap-4">
                 {/* Header */}
                 <div className="flex items-center gap-3 pb-2 border-b">
                     <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg shadow-lg shadow-green-500/20">
@@ -129,10 +135,10 @@ export default function GeminiConsultantPage() {
                 </div>
 
                 {/* Main Content Area: Divided in two */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full min-h-0">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:h-full">
 
                     {/* Left Side: Chat Area */}
-                    <Card className="flex flex-col bg-white border-gray-200 shadow-xl overflow-hidden border-t-4 border-t-green-500">
+                    <Card className="flex flex-col bg-white border-gray-200 shadow-xl overflow-hidden border-t-4 border-t-green-500 h-[600px] lg:h-full">
                         <ScrollArea className="flex-1 p-4 bg-[#FAFAF9]" ref={scrollRef}>
                             <div className="space-y-6">
                                 {messages.map((msg) => (
@@ -214,7 +220,7 @@ export default function GeminiConsultantPage() {
                     </Card>
 
                     {/* Right Side: Menu.IA Insights */}
-                    <Card className="flex flex-col bg-white border-2 border-[#13ec6d] shadow-2xl rounded-[2.5rem] overflow-hidden relative">
+                    <Card className="flex flex-col bg-white border-2 border-[#13ec6d] shadow-2xl rounded-[2.5rem] overflow-hidden relative h-[600px] lg:h-full">
                         {/* Subtle Premium Glow Effect */}
                         <div className="absolute top-0 right-0 w-80 h-80 bg-[#13ec6d]/10 rounded-full blur-[100px] -mr-40 -mt-40 opacity-50" />
 

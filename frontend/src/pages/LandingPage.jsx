@@ -62,7 +62,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section - Split Layout */}
-      <section className="pt-14 lg:pt-20 pb-14 lg:pb-20 px-4">
+      <section className="pt-24 lg:pt-20 pb-14 lg:pb-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center">
             {/* Left Content */}
@@ -70,18 +70,18 @@ export default function LandingPage() {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-left"
+              className="text-left min-h-[90vh] flex flex-col justify-center lg:min-h-0 lg:block lg:justify-start"
             >
-              <span className="inline-block px-4 py-1.5 rounded-full bg-[#22C55E]/10 text-[#22C55E] text-xs font-black uppercase tracking-wider mt-6 sm:mt-0 mb-4 transition-all">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-[#22C55E]/10 text-[#22C55E] text-xs font-black uppercase tracking-wider mt-6 sm:mt-0 mb-6 transition-all">
                 Gestión Inteligente para tu Negocio
               </span>
-              <h1 className="font-heading text-4xl sm:text-5xl lg:text-[56px] font-extrabold text-gray-900 tracking-tight mb-4 leading-[1.05]">
+              <h1 className="font-heading text-4xl sm:text-5xl lg:text-[56px] font-extrabold text-gray-900 tracking-tight mb-6 lg:mb-8 leading-[1.05]">
                 La forma más inteligente de <span className="text-[#22C55E]">gestionar tu negocio</span>
               </h1>
-              <p className="text-base sm:text-lg text-gray-600 mb-6 max-w-lg font-medium leading-snug">
+              <p className="text-base sm:text-lg text-gray-600 mb-8 lg:mb-10 max-w-lg font-medium leading-snug">
                 Optimiza tus pedidos, fideliza clientes con IA y automatiza tu comunicación por WhatsApp en un solo lugar.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-6 lg:gap-4">
                 <Button
                   size="lg"
                   onClick={() => navigate('/register')}
@@ -103,7 +103,7 @@ export default function LandingPage() {
               </div>
 
               {/* Trust indicators */}
-              <div className="mt-8 flex items-center gap-6 text-sm text-gray-500">
+              <div className="mt-12 lg:mt-10 flex items-center gap-6 text-sm text-gray-500">
                 <div className="flex items-center gap-2 font-medium">
                   <Check className="w-5 h-5 text-[#25D366] stroke-[3px]" />
                   <span>Sin tarjeta requerida</span>
@@ -120,7 +120,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="mt-16 lg:mt-0"
+              className="mt-32 lg:mt-0"
             >
               <div className="flex flex-col items-center gap-16 lg:block lg:relative lg:w-full lg:h-[520px] lg:scale-95 lg:origin-right">
                 {/* Background blur decorations - Hidden on small mobile to avoid clutter */}
