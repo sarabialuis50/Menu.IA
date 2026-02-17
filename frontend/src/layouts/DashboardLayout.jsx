@@ -67,8 +67,11 @@ export const DashboardLayout = ({ children }) => {
           <Menu className="w-6 h-6 text-white" />
         </button>
         <div className="flex-1 flex items-center justify-center gap-2">
-          <img src="/favicon.svg" alt="Menu.IA" className="size-8" />
-          <span className="font-black text-xl tracking-tighter text-white">Menu.IA</span>
+          <img src="/logos/logo-bg.png" alt="Menu.IA" className="size-8 rounded-lg" />
+          <span className="font-heading font-black text-xl tracking-tighter">
+            <span className="text-[#22C55E]">Menu</span>
+            <span className="text-[#22B8CF]">.IA</span>
+          </span>
         </div>
         <div className="size-10 rounded-xl bg-slate-800" />
       </header>
@@ -97,10 +100,13 @@ export const DashboardLayout = ({ children }) => {
           {/* Logo */}
           <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800">
             <Link to={basePath} className="flex items-center gap-3">
-              <div className="size-8 rounded-xl bg-[#22C55E]/10 flex items-center justify-center overflow-hidden">
-                <img src="/favicon.svg" alt="Menu.IA" className="w-5 h-5" />
+              <div className="size-10 rounded-xl bg-transparent flex items-center justify-center overflow-hidden">
+                <img src="/logos/logo-bg.png" alt="Menu.IA" className="w-full h-full object-cover" />
               </div>
-              <span className="font-black text-xl tracking-tighter text-white">Menu.IA</span>
+              <span className="font-heading font-black text-xl tracking-tighter">
+                <span className="text-[#22C55E]">Menu</span>
+                <span className="text-[#22B8CF]">.IA</span>
+              </span>
             </Link>
             <button
               onClick={() => setSidebarOpen(false)}

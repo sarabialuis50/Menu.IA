@@ -22,16 +22,16 @@ export default function PricingPage() {
                             </div>
                             <span className="font-heading font-black text-xl tracking-tighter">
                                 <span className="text-[#22C55E]">Menu</span>
-                                <span className="text-[#3B82F6]">.IA</span>
+                                <span className="text-[#22B8CF]">.IA</span>
                             </span>
                         </Link>
 
                         <div className="flex items-center gap-1 sm:gap-3">
-                            <Link to="/precios" className="text-sm font-bold text-gray-600 hover:text-[#22C55E] px-2 sm:px-4 transition-colors">Precios</Link>
+                            <Link to="/precios" className="text-sm font-bold text-gray-600 hover:bg-[#22C55E] hover:text-white px-4 py-2 rounded-xl transition-colors">Precios</Link>
                             <Button
                                 variant="ghost"
                                 onClick={() => navigate('/login')}
-                                className="border-[#22C55E] border-2 sm:border-0 hover:bg-[#22C55E]/5 px-4 py-2 rounded-xl text-sm font-bold text-[#22C55E] sm:text-gray-600"
+                                className="border-[#22C55E] border-2 sm:border-0 hover:bg-[#22C55E] hover:text-white px-4 py-2 rounded-xl text-sm font-bold text-[#22C55E] sm:text-gray-600 transition-colors"
                             >
                                 Iniciar sesión
                             </Button>

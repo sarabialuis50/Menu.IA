@@ -230,7 +230,9 @@ export default function GeminiConsultantPage() {
                                     <Sparkles className="w-6 h-6 text-white" />
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-black tracking-tight text-gray-900">Menu.IA Insights</h2>
+                                    <h2 className="text-xl font-black tracking-tight text-gray-900">
+                                        <span className="text-[#22C55E]">Menu</span><span className="text-[#22B8CF]">.IA</span> Insights
+                                    </h2>
                                     <div className="flex items-center gap-2 mt-0.5">
                                         <div className="w-2 h-2 bg-[#22C55E] rounded-full animate-pulse" />
                                         <span className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold">Estrategia en tiempo real</span>

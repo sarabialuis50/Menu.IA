@@ -34,27 +34,27 @@ export default function LandingPage() {
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center gap-2">
               <div className="w-10 h-10 rounded-xl bg-transparent flex items-center justify-center overflow-hidden">
-                <img src="/logos/logo-bg.png" alt="Menu.IA" className="w-full h-full object-cover" />
+                <img src="/logos/logo-icon-white.png" alt="Menu.IA" className="w-full h-full object-cover" />
               </div>
               <span className="font-heading font-black text-xl tracking-tighter">
                 <span className="text-[#22C55E]">Menu</span>
-                <span className="text-[#3B82F6]">.IA</span>
+                <span className="text-[#22B8CF]">.IA</span>
               </span>
             </Link>
 
             <div className="flex items-center gap-1 sm:gap-3">
-              <Link to="/precios" className="text-sm font-bold text-gray-600 hover:text-[#22C55E] px-2 sm:px-4 transition-colors">Precios</Link>
+              <Link to="/precios" className="text-sm font-bold text-gray-600 hover:bg-[#22C55E] hover:text-white px-4 py-2 rounded-xl transition-colors">Precios</Link>
               <Button
                 variant="ghost"
                 onClick={() => navigate('/login')}
-                className="border-[#22C55E] border-2 sm:border-0 hover:bg-[#22C55E]/5 px-4 py-2 rounded-xl text-sm font-bold text-[#22C55E] sm:text-gray-600"
+                className="border-[#22C55E] border-2 sm:border-0 hover:bg-[#22C55E] hover:text-white px-4 py-2 rounded-xl text-sm font-bold text-[#22C55E] sm:text-gray-600 transition-colors"
                 data-testid="login-nav-btn"
               >
                 Iniciar sesión
               </Button>
               <Button
                 onClick={() => navigate('/register')}
-                className="bg-[#22C55E] hover:bg-[#16A34A] text-white hidden sm:flex"
+                className="bg-[#22C55E] hover:bg-transparent text-white hover:text-[#22C55E] border-2 border-[#22C55E] hidden sm:flex transition-colors"
                 data-testid="register-nav-btn"
               >
                 Comenzar gratis
@@ -73,7 +73,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-left min-h-[85vh] flex flex-col lg:justify-center lg:min-h-0 lg:block lg:justify-start"
+              className="text-left flex flex-col lg:block lg:justify-start"
             >
               <span className="inline-block px-4 py-1.5 rounded-full bg-[#22C55E]/10 text-[#22C55E] text-xs font-black uppercase tracking-wider mt-6 sm:mt-0 mb-6 transition-all">
                 Gestión Inteligente para tu Negocio
@@ -84,11 +84,11 @@ export default function LandingPage() {
               <p className="text-base sm:text-lg text-slate-600 mb-8 lg:mb-10 max-w-lg font-medium leading-snug">
                 Optimiza tus pedidos, fideliza clientes con IA y automatiza tu comunicación por WhatsApp en un solo lugar.
               </p>
-              <div className="flex flex-col sm:flex-row gap-6 lg:gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 lg:gap-4 w-full sm:w-auto">
                 <Button
                   size="lg"
                   onClick={() => navigate('/register')}
-                  className="bg-[#22C55E] hover:bg-[#16A34A] text-white text-lg px-8 h-14 rounded-xl shadow-lg shadow-green-500/20"
+                  className="bg-[#22C55E] hover:bg-transparent text-white hover:text-[#22C55E] border-2 border-[#22C55E] text-lg px-8 h-14 rounded-xl shadow-lg shadow-green-500/20 transition-all w-full sm:w-auto"
                   data-testid="hero-cta-btn"
                 >
                   Comenzar gratis
@@ -98,7 +98,7 @@ export default function LandingPage() {
                   size="lg"
                   variant="outline"
                   onClick={() => navigate('/demo-negocio')}
-                  className="text-lg px-8 h-14 rounded-xl border-2 text-[#0F172A] border-slate-200"
+                  className="text-lg px-8 h-14 rounded-xl border-2 text-[#0F172A] border-[#22C55E] w-full sm:w-auto"
                   data-testid="demo-btn"
                 >
                   Ver demo
@@ -311,7 +311,7 @@ export default function LandingPage() {
           <Button
             size="lg"
             onClick={() => navigate('/register')}
-            className="bg-[#22C55E] hover:bg-[#16A34A] text-white text-lg px-10 h-16 rounded-2xl shadow-[0_20px_40px_rgba(34,197,94,0.2)] transition-all hover:scale-105 active:scale-95"
+            className="bg-[#22C55E] hover:bg-transparent text-white hover:text-[#22C55E] border-2 border-[#22C55E] text-lg px-10 h-16 rounded-2xl shadow-[0_20px_40px_rgba(34,197,94,0.2)] transition-all hover:scale-105 active:scale-95"
           >
             Comenzar gratis ahora
             <ArrowRight className="ml-2 w-5 h-5" />
@@ -324,10 +324,13 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg overflow-hidden bg-white/10 flex items-center justify-center">
-                <img src="/logos/logo.png" alt="Menu.IA" className="w-full h-full object-contain" />
+              <div className="w-10 h-10 rounded-xl bg-transparent flex items-center justify-center overflow-hidden">
+                <img src="/logos/logo-icon-white.png" alt="Menu.IA" className="w-full h-full object-cover" />
               </div>
-              <span className="font-heading font-bold text-white uppercase tracking-tighter">MENU.IA</span>
+              <span className="font-heading font-black text-xl tracking-tighter">
+                <span className="text-[#22C55E]">Menu</span>
+                <span className="text-[#22B8CF]">.IA</span>
+              </span>
             </div>
             <p className="text-sm max-w-xs md:max-w-none">
               © 2026 Menu.IA. Hecho con amor para negocios apasionados.

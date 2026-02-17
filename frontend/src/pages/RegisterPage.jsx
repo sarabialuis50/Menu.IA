@@ -96,7 +96,7 @@ export default function RegisterPage() {
 
             <div className="space-y-4">
               <h2 className="font-heading text-4xl lg:text-5xl font-bold tracking-tight text-white drop-shadow-lg text-balance">
-                Únete a <span className="text-[#22C55E]">Menu</span><span className="text-[#3B82F6]">.IA</span>
+                Únete a <span className="text-[#22C55E]">Menu</span><span className="text-[#22B8CF]">.IA</span>
               </h2>
               <p className="text-lg lg:text-xl text-gray-300 font-medium leading-relaxed drop-shadow-md text-balance max-w-lg mx-auto">
                 La plataforma líder para la digitalización y fidelización de restaurantes.
@@ -123,11 +123,11 @@ export default function RegisterPage() {
         >
           <Link to="/" className="flex items-center gap-2 mb-8">
             <div className="w-10 h-10 rounded-xl bg-transparent flex items-center justify-center overflow-hidden">
-              <img src="/logos/logo-bg.png" alt="Menu.IA" className="w-full h-full object-cover" />
+              <img src="/logos/logo-icon-white.png" alt="Menu.IA" className="w-full h-full object-cover" />
             </div>
             <span className="font-heading font-black text-xl tracking-tighter">
               <span className="text-[#22C55E]">Menu</span>
-              <span className="text-[#3B82F6]">.IA</span>
+              <span className="text-[#22B8CF]">.IA</span>
             </span>
           </Link>
 

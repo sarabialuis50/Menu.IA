@@ -136,7 +136,7 @@ export default function DashboardPage() {
       <div className="space-y-6" data-testid="dashboard-container">
         {/* Header */}
         <div>
-          <h1 className="font-heading text-2xl font-bold text-gray-900">Dashboard</h1>
+          <h1 className="font-heading text-2xl font-bold text-gray-900">Panel Central</h1>
           <p className="text-gray-500">Resumen de tu negocio hoy</p>
         </div>
 
@@ -385,14 +385,14 @@ export default function DashboardPage() {
               <div className="grid grid-cols-2 gap-3 pt-2">
                 <Button
                   onClick={() => toast.success('Módulo de compra cargando...')}
-                  className="bg-white text-[#22C55E] hover:bg-white/90 font-black text-[10px] uppercase h-12 rounded-xl tracking-widest shadow-xl shadow-green-900/10"
+                  className="bg-white text-[#22C55E] border-2 border-transparent hover:bg-transparent hover:text-white hover:border-white font-black text-[10px] uppercase h-12 rounded-xl tracking-widest shadow-xl shadow-green-900/10 transition-all"
                 >
                   Comprar Mensajes
                 </Button>
                 <Button
                   onClick={() => toast.info('Generando reporte...')}
                   variant="outline"
-                  className="bg-transparent border-2 border-white text-white hover:bg-white/10 font-black text-[10px] uppercase h-12 rounded-xl tracking-widest"
+                  className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-[#22C55E] font-black text-[10px] uppercase h-12 rounded-xl tracking-widest transition-all"
                 >
                   Reporte Diario
                 </Button>

@@ -374,12 +374,12 @@ export default function DemoRestaurante() {
                 {/* Sections */}
                 {activeCategory === 'Todas' && specialFilter === null && searchQuery === '' ? (
                     <>
-                        <ProductSection title="Recomendados del Chef" items={destacados} icon={<Sparkles className="w-6 h-6 text-orange-400 fill-orange-400" />} onVerTodo={() => setSpecialFilter('destacados')} />
+                        <ProductSection title="Recomendados" items={destacados} icon={<Sparkles className="w-6 h-6 text-orange-400 fill-orange-400" />} onVerTodo={() => setSpecialFilter('destacados')} />
                         <ProductSection title="Ofertas Especiales" items={ofertas} icon={<Sparkles className="w-6 h-6 text-red-500" />} onVerTodo={() => setSpecialFilter('ofertas')} />
                         <ProductSection title="Nuestros Productos" items={DEMO_PRODUCTS} icon={<CheckCircle2 className="w-6 h-6 text-[#22C55E]" />} rows={3} />
                     </>
                 ) : (
-                    <ProductSection title={specialFilter === 'destacados' ? 'Recomendados del Chef' : (specialFilter === 'ofertas' ? 'Ofertas Especiales' : activeCategory)} items={filteredProducts} icon={<UtensilsCrossed className="w-6 h-6 text-[#22C55E]" />} rows={Math.ceil(filteredProducts.length / 4)} />
+                    <ProductSection title={specialFilter === 'destacados' ? 'Recomendados' : (specialFilter === 'ofertas' ? 'Ofertas Especiales' : activeCategory)} items={filteredProducts} icon={<UtensilsCrossed className="w-6 h-6 text-[#22C55E]" />} rows={Math.ceil(filteredProducts.length / 4)} />
                 )}
             </main>
 
