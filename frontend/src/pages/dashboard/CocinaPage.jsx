@@ -5,6 +5,7 @@ import useWebSocket from '@/hooks/useWebSocket';
 import { ChefHat, Clock, Volume2, VolumeX, RefreshCw, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { playOrderSound } from '@/utils/sound';
 
 export default function CocinaPage() {
   const { slug } = useParams();
@@ -34,10 +35,13 @@ export default function CocinaPage() {
 
   useEffect(() => {
     if (lastMessage && (lastMessage.type === 'new_order' || lastMessage.type === 'order_updated')) {
-      if (lastMessage.type === 'new_order') toast.success('¡Nuevo pedido!');
+      if (lastMessage.type === 'new_order') {
+        toast.success('¡Nuevo pedido!');
+        if (soundEnabled) playOrderSound();
+      }
       fetchOrders();
     }
-  }, [lastMessage, fetchOrders]);
+  }, [lastMessage, fetchOrders, soundEnabled]);
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
@@ -62,8 +66,8 @@ export default function CocinaPage() {
       <header className="sticky top-0 z-50 bg-gray-800 border-b border-gray-700">
         <div className="max-w-full mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#22C55E] to-[#16A34A] flex items-center justify-center">
-              <ChefHat className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-transparent flex items-center justify-center overflow-hidden">
+              <img src="/logos/logo-icon-transparent.png" alt="Menu.IA" className="w-full h-full object-contain" />
             </div>
             <div>
               <h1 className="font-heading font-bold text-lg">Cocina</h1>

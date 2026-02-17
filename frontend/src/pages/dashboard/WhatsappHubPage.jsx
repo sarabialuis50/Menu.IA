@@ -5,7 +5,8 @@ import { DashboardLayout } from '@/layouts/DashboardLayout';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { MessageSquareMore, Megaphone, Zap, BarChart, Plus, Copy, Smartphone, Users, Award, AlertCircle, Check, Sparkles, Send, Save, Trash2, LayoutGrid, Calendar } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { MessageSquareMore, Megaphone, Zap, BarChart, Plus, Copy, Smartphone, Users, Award, AlertCircle, Check, Sparkles, Send, Save, Trash2, LayoutGrid, Calendar, MessageSquare, CheckCircle, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
@@ -129,6 +130,70 @@ export default function WhatsappHubPage() {
                 <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8">
                     {/* Phone Preview - TOP on mobile */}
                     <div className="lg:col-span-4 order-1 lg:order-2">
+                        {/* WhatsApp Usage Card */}
+                        <Card className="rounded-[2rem] border-none shadow-2xl bg-[#22C55E] overflow-hidden text-white group mb-6">
+                            <CardContent className="p-8 flex flex-col h-full space-y-6">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-md">
+                                            <MessageSquare className="w-5 h-5 text-white" />
+                                        </div>
+                                        <div>
+                                            <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-white">WhatsApp Hub</CardTitle>
+                                            <div className="flex items-center gap-1.5 text-[8px] font-bold text-white/60">
+                                                <div className="w-1 h-1 rounded-full bg-white opacity-40" />
+                                                SINCRONIZACIÓN ACTIVA
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <AlertCircle className="w-4 h-4 text-white/40" />
+                                </div>
+
+                                <div className="space-y-4 py-2">
+                                    <div className="flex flex-col gap-1">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-3xl font-black leading-none">850/1000</h3>
+                                            <Badge className="bg-white/20 text-white text-[7px] font-black tracking-widest border-none px-2 py-0.5 text-center ml-2">MES ACTUAL</Badge>
+                                        </div>
+                                        <p className="text-[9px] font-bold text-white/60 uppercase tracking-widest px-1">Mensajes consumidos</p>
+                                    </div>
+                                    <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden">
+                                        <div className="h-full bg-white rounded-full w-[85%] shadow-[0_0_15px_rgba(255,255,255,0.4)]" />
+                                    </div>
+                                    <p className="text-[9px] font-bold text-white/80 italic text-center">
+                                        ✨ Has usado el 85.0% de tu cupo disponible.
+                                    </p>
+                                </div>
+
+                                <div className="bg-white/10 rounded-2xl p-4 flex items-center justify-between border border-white/10">
+                                    <div className="flex items-center gap-3">
+                                        <CheckCircle className="w-4 h-4 text-white" />
+                                        <div className="space-y-0.5">
+                                            <p className="text-[9px] font-black uppercase tracking-wider">Reporte Programado</p>
+                                            <p className="text-[8px] font-bold text-white/60">Próximo reset: 01/3/2026</p>
+                                        </div>
+                                    </div>
+                                    <ExternalLink className="w-4 h-4 text-white/40" />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3 pt-2">
+                                    <Button
+                                        onClick={() => toast.success('Módulo de compra cargando...')}
+                                        className="bg-white text-[#22C55E] border-2 border-transparent hover:bg-transparent hover:text-white hover:border-white font-black text-[9px] uppercase h-10 rounded-xl tracking-wider shadow-xl shadow-green-900/10 transition-all px-2"
+                                    >
+                                        Comprar
+                                    </Button>
+                                    <Button
+                                        onClick={() => toast.info('Generando reporte...')}
+                                        variant="outline"
+                                        className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-[#22C55E] font-black text-[9px] uppercase h-10 rounded-xl tracking-wider transition-all px-2"
+                                    >
+                                        Reporte
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+
                         <div className="lg:sticky lg:top-[128px]">
                             <div className="bg-white rounded-[1.5rem] border-[5px] border-gray-900 shadow-2xl w-full max-w-[280px] h-[400px] md:h-[450px] overflow-hidden relative mx-auto transition-all">
                                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-28 h-4 bg-gray-900 rounded-b-lg z-20"></div>
