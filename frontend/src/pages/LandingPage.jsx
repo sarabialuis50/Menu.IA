@@ -33,10 +33,13 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-[#22C55E]/10 flex items-center justify-center p-2">
-                <img src="/favicon.svg" alt="Menu.IA" className="w-full h-full" />
+              <div className="w-10 h-10 rounded-xl bg-transparent flex items-center justify-center overflow-hidden">
+                <img src="/logos/logo-bg.png" alt="Menu.IA" className="w-full h-full object-cover" />
               </div>
-              <span className="font-heading font-black text-xl tracking-tighter">Menu.IA</span>
+              <span className="font-heading font-black text-xl tracking-tighter">
+                <span className="text-[#22C55E]">Menu</span>
+                <span className="text-[#3B82F6]">.IA</span>
+              </span>
             </Link>
 
             <div className="flex items-center gap-1 sm:gap-3">
@@ -51,7 +54,7 @@ export default function LandingPage() {
               </Button>
               <Button
                 onClick={() => navigate('/register')}
-                className="bg-[#25D366] hover:bg-[#128C7E] text-white hidden sm:flex"
+                className="bg-[#22C55E] hover:bg-[#16A34A] text-white hidden sm:flex"
                 data-testid="register-nav-btn"
               >
                 Comenzar gratis
@@ -70,22 +73,22 @@ export default function LandingPage() {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-left min-h-[90vh] flex flex-col justify-center lg:min-h-0 lg:block lg:justify-start"
+              className="text-left min-h-[85vh] flex flex-col lg:justify-center lg:min-h-0 lg:block lg:justify-start"
             >
               <span className="inline-block px-4 py-1.5 rounded-full bg-[#22C55E]/10 text-[#22C55E] text-xs font-black uppercase tracking-wider mt-6 sm:mt-0 mb-6 transition-all">
                 Gestión Inteligente para tu Negocio
               </span>
-              <h1 className="font-heading text-4xl sm:text-5xl lg:text-[56px] font-extrabold text-gray-900 tracking-tight mb-6 lg:mb-8 leading-[1.05]">
-                La forma más inteligente de <span className="text-[#22C55E]">gestionar tu negocio</span>
+              <h1 className="font-heading text-4xl sm:text-5xl lg:text-[56px] font-extrabold text-[#0F172A] tracking-tight mb-6 lg:mb-8 leading-[1.05]">
+                La forma más inteligente de <span className="bg-gradient-to-r from-[#22C55E] to-[#06B6D4] bg-clip-text text-transparent">gestionar tu negocio</span>
               </h1>
-              <p className="text-base sm:text-lg text-gray-600 mb-8 lg:mb-10 max-w-lg font-medium leading-snug">
+              <p className="text-base sm:text-lg text-slate-600 mb-8 lg:mb-10 max-w-lg font-medium leading-snug">
                 Optimiza tus pedidos, fideliza clientes con IA y automatiza tu comunicación por WhatsApp en un solo lugar.
               </p>
               <div className="flex flex-col sm:flex-row gap-6 lg:gap-4">
                 <Button
                   size="lg"
                   onClick={() => navigate('/register')}
-                  className="bg-[#25D366] hover:bg-[#128C7E] text-white text-lg px-8 h-14 rounded-xl shadow-lg shadow-green-500/20"
+                  className="bg-[#22C55E] hover:bg-[#16A34A] text-white text-lg px-8 h-14 rounded-xl shadow-lg shadow-green-500/20"
                   data-testid="hero-cta-btn"
                 >
                   Comenzar gratis
@@ -95,7 +98,7 @@ export default function LandingPage() {
                   size="lg"
                   variant="outline"
                   onClick={() => navigate('/demo-negocio')}
-                  className="text-lg px-8 h-14 rounded-xl border-2"
+                  className="text-lg px-8 h-14 rounded-xl border-2 text-[#0F172A] border-slate-200"
                   data-testid="demo-btn"
                 >
                   Ver demo
@@ -103,13 +106,13 @@ export default function LandingPage() {
               </div>
 
               {/* Trust indicators */}
-              <div className="mt-12 lg:mt-10 flex items-center gap-6 text-sm text-gray-500">
+              <div className="mt-auto pb-10 lg:pb-0 lg:mt-10 flex items-center gap-6 text-sm text-gray-500">
                 <div className="flex items-center gap-2 font-medium">
-                  <Check className="w-5 h-5 text-[#25D366] stroke-[3px]" />
+                  <Check className="w-5 h-5 text-[#22C55E] stroke-[3px]" />
                   <span>Sin tarjeta requerida</span>
                 </div>
                 <div className="flex items-center gap-2 font-medium">
-                  <Check className="w-5 h-5 text-[#25D366] stroke-[3px]" />
+                  <Check className="w-5 h-5 text-[#22C55E] stroke-[3px]" />
                   <span>Setup en 5 minutos</span>
                 </div>
               </div>
@@ -124,7 +127,7 @@ export default function LandingPage() {
             >
               <div className="flex flex-col items-center gap-16 lg:block lg:relative lg:w-full lg:h-[520px] lg:scale-95 lg:origin-right">
                 {/* Background blur decorations - Hidden on small mobile to avoid clutter */}
-                <div className="hidden lg:block absolute top-10 right-10 w-64 h-64 bg-[#25D366]/20 rounded-full blur-3xl animate-pulse" />
+                <div className="hidden lg:block absolute top-10 right-10 w-64 h-64 bg-[#22C55E]/20 rounded-full blur-3xl animate-pulse" />
                 <div className="hidden lg:block absolute bottom-10 left-10 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl" />
 
                 {/* The mockups are now relative on mobile (stacking) and absolute on desktop (overlapping) */}
@@ -276,10 +279,10 @@ export default function LandingPage() {
       <section className="py-20 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Todo lo que necesitas para <span className="text-[#22C55E]">modernizar tu negocio</span>
+            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-[#0F172A] mb-4">
+              Todo lo que necesitas para <span className="bg-gradient-to-r from-[#22C55E] to-[#06B6D4] bg-clip-text text-transparent">modernizar tu negocio</span>
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
               Herramientas potentes diseñadas específicamente para negocios colombianos.
             </p>
           </div>
@@ -299,16 +302,16 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="py-24 px-4 bg-white border-t border-gray-100">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 mb-6 tracking-tight">
-            ¿Listo para <span className="text-[#22C55E]">transformar tu negocio?</span>
+          <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-[#0F172A] mb-6 tracking-tight">
+            ¿Listo para <span className="bg-gradient-to-r from-[#22C55E] to-[#06B6D4] bg-clip-text text-transparent">transformar tu negocio?</span>
           </h2>
-          <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto font-medium">
+          <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto font-medium">
             Únete a cientos de negocios colombianos que ya están modernizando su gestión con Menu.IA.
           </p>
           <Button
             size="lg"
             onClick={() => navigate('/register')}
-            className="bg-[#25D366] hover:bg-[#128C7E] text-white text-lg px-10 h-16 rounded-2xl shadow-[0_20px_40px_rgba(37,211,102,0.2)] transition-all hover:scale-105 active:scale-95"
+            className="bg-[#22C55E] hover:bg-[#16A34A] text-white text-lg px-10 h-16 rounded-2xl shadow-[0_20px_40px_rgba(34,197,94,0.2)] transition-all hover:scale-105 active:scale-95"
           >
             Comenzar gratis ahora
             <ArrowRight className="ml-2 w-5 h-5" />
@@ -317,12 +320,12 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-4 bg-gray-900 text-gray-400">
+      <footer className="py-12 px-4 bg-[#0F172A] text-slate-400">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-[#22C55E] flex items-center justify-center p-1.5">
-                <img src="/favicon.svg" alt="Menu.IA" className="w-full h-full brightness-0 invert" />
+              <div className="w-8 h-8 rounded-lg overflow-hidden bg-white/10 flex items-center justify-center">
+                <img src="/logos/logo.png" alt="Menu.IA" className="w-full h-full object-contain" />
               </div>
               <span className="font-heading font-bold text-white uppercase tracking-tighter">MENU.IA</span>
             </div>
@@ -344,8 +347,8 @@ function FeatureCard({ icon: Icon, title, description }) {
       viewport={{ once: true }}
       className="group p-6 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-lg border border-transparent hover:border-gray-100 transition-all"
     >
-      <div className="w-12 h-12 rounded-xl bg-[#25D366]/10 flex items-center justify-center mb-4 group-hover:bg-[#25D366] transition-colors">
-        <Icon className="w-6 h-6 text-[#25D366] group-hover:text-white transition-colors" />
+      <div className="w-12 h-12 rounded-xl bg-[#22C55E]/10 flex items-center justify-center mb-4 group-hover:bg-[#22C55E] transition-colors">
+        <Icon className="w-6 h-6 text-[#22C55E] group-hover:text-white transition-colors" />
       </div>
       <h3 className="font-heading font-bold text-xl mb-2">{title}</h3>
       <p className="text-gray-600">{description}</p>

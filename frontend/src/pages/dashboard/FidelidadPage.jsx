@@ -133,9 +133,10 @@ export default function FidelidadPage() {
 
   const getButtonStyle = (hasPendingChanges) => {
     if (hasPendingChanges) {
-      return "h-14 rounded-full border-2 border-transparent bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] font-black uppercase text-[10px] tracking-widest px-10 transition-all flex items-center gap-2 group shadow-lg shadow-[#13ec6d]/20 active:scale-95";
+      return "h-14 rounded-full border-2 border-transparent bg-[#22C55E] hover:bg-[#16A34A] text-white font-black uppercase text-[10px] tracking-widest px-10 transition-all flex items-center gap-2 group shadow-lg shadow-[#22C55E]/20 active:scale-95";
+
     }
-    return "h-14 rounded-full border-2 border-[#13ec6d] bg-transparent text-[#13ec6d] font-black uppercase text-[10px] tracking-widest px-10 transition-all flex items-center gap-2 group active:scale-95 hover:bg-[#13ec6d]/5";
+    return "h-14 rounded-full border-2 border-[#22C55E] bg-transparent text-[#22C55E] font-black uppercase text-[10px] tracking-widest px-10 transition-all flex items-center gap-2 group active:scale-95 hover:bg-[#22C55E]/5";
   };
 
   const applySimulator = () => {
@@ -727,14 +728,14 @@ export default function FidelidadPage() {
                       onClick={handleAwardPoints}
                       disabled={awarding || !selectedCustomer || (creditMode === 'compra' ? purchaseAmount <= 0 : manualPoints <= 0)}
                       className={`w-full h-20 md:h-24 rounded-[2rem] md:rounded-[3rem] font-black uppercase text-xs md:text-sm tracking-[0.2em] md:tracking-[0.4em] transition-all duration-500 flex items-center justify-center gap-4 md:gap-6 group overflow-hidden ${selectedCustomer && (creditMode === 'compra' ? purchaseAmount > 0 : manualPoints > 0)
-                        ? 'bg-[#13ec6d] text-[#111814] hover:bg-[#0fd660] shadow-[0_20px_50px_rgba(19,236,109,0.3)] hover:scale-[1.02] active:scale-95 border-none'
-                        : 'bg-transparent text-[#13ec6d] border-4 border-[#13ec6d]/20 cursor-not-allowed opacity-40'
+                        ? 'bg-[#22C55E] text-white hover:bg-[#16A34A] shadow-[0_20px_50px_rgba(34,197,94,0.3)] hover:scale-[1.02] active:scale-95 border-none'
+                        : 'bg-transparent text-[#22C55E] border-4 border-[#22C55E]/20 cursor-not-allowed opacity-40'
                         }`}
                     >
                       {awarding ? (
                         <Loader2 className="w-8 h-8 animate-spin" />
                       ) : (
-                        <div className={`p-3 rounded-full transition-colors duration-500 ${selectedCustomer && (creditMode === 'compra' ? purchaseAmount > 0 : manualPoints > 0) ? 'bg-[#111814]/10' : 'bg-[#13ec6d]/10'}`}>
+                        <div className={`p-3 rounded-full transition-colors duration-500 ${selectedCustomer && (creditMode === 'compra' ? purchaseAmount > 0 : manualPoints > 0) ? 'bg-[#111814]/10' : 'bg-[#22C55E]/10'}`}>
                           <Check className="w-8 h-8" />
                         </div>
                       )}

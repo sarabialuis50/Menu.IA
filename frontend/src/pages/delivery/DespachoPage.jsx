@@ -100,7 +100,7 @@ export default function DespachoPage() {
     if (loading) {
         return (
             <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-6">
-                <Loader2 className="w-10 h-10 text-[#25D366] animate-spin mb-4" />
+                <Loader2 className="w-10 h-10 text-[#22C55E] animate-spin mb-4" />
                 <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Cargando logística...</p>
             </div>
         );
@@ -112,7 +112,7 @@ export default function DespachoPage() {
                 <div className="size-20 rounded-3xl bg-red-50 flex items-center justify-center text-red-500 mb-6 font-black text-2xl">!</div>
                 <h2 className="text-2xl font-black text-[#111814] mb-2">Pedido no encontrado</h2>
                 <p className="text-gray-500 mb-8 max-w-xs">El enlace podría haber expirado o el pedido no existe.</p>
-                <Link to="/" className="text-[#25D366] font-black uppercase tracking-widest text-xs">Volver al Inicio</Link>
+                <Link to="/" className="text-[#22C55E] font-black uppercase tracking-widest text-xs">Volver al Inicio</Link>
             </div>
         );
     }
@@ -121,7 +121,7 @@ export default function DespachoPage() {
         <div className="min-h-screen bg-[#F8FAFC]">
             {/* Dynamic Background Effect */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-40">
-                <div className="absolute -top-[10%] -right-[10%] size-96 rounded-full bg-[#25D366]/5 blur-3xl animate-pulse" />
+                <div className="absolute -top-[10%] -right-[10%] size-96 rounded-full bg-[#22C55E]/5 blur-3xl animate-pulse" />
                 <div className="absolute top-[40%] -left-[10%] size-80 rounded-full bg-blue-500/5 blur-3xl" />
             </div>
 
@@ -135,11 +135,11 @@ export default function DespachoPage() {
                             </div>
                             <div>
                                 <h1 className="text-xl font-black text-[#111814] leading-tight">Módulo de Reparto</h1>
-                                <p className="text-[10px] font-black text-[#25D366] uppercase tracking-[0.2em]">Enlace Seguro v1.0</p>
+                                <p className="text-[10px] font-black text-[#22C55E] uppercase tracking-[0.2em]">Enlace Seguro v1.0</p>
                             </div>
                         </div>
                         <div className="size-10 rounded-full bg-white border-2 border-gray-100 flex items-center justify-center shadow-sm">
-                            <div className={`size-2 rounded-full ${isTracking ? 'bg-[#25D366] animate-ping' : 'bg-gray-300'}`} />
+                            <div className={`size-2 rounded-full ${isTracking ? 'bg-[#22C55E] animate-ping' : 'bg-gray-300'}`} />
                         </div>
                     </div>
 
@@ -149,7 +149,7 @@ export default function DespachoPage() {
                             {business?.logo_url ? (
                                 <img src={business.logo_url} className="size-14 rounded-2xl object-cover bg-gray-50 p-1 border border-gray-100 shadow-sm" alt="Logo" />
                             ) : (
-                                <div className="size-14 rounded-2xl bg-[#F0FFF4] flex items-center justify-center text-[#25D366]">
+                                <div className="size-14 rounded-2xl bg-[#F0FFF4] flex items-center justify-center text-[#22C55E]">
                                     <Package className="w-8 h-8" />
                                 </div>
                             )}
@@ -167,7 +167,7 @@ export default function DespachoPage() {
 
                         <div className="relative z-10">
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="size-8 rounded-full bg-[#25D366] flex items-center justify-center text-[#111814]">
+                                <div className="size-8 rounded-full bg-[#22C55E] flex items-center justify-center text-[#111814]">
                                     <User className="w-4 h-4" />
                                 </div>
                                 <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.34em]">Información del Cliente</span>
@@ -176,7 +176,7 @@ export default function DespachoPage() {
                             <div className="space-y-6">
                                 <div>
                                     <p className="text-3xl font-black text-white tracking-tighter mb-1 uppercase italic leading-none">{order.cliente_nombre}</p>
-                                    <div className="flex items-center gap-2 text-[#25D366]">
+                                    <div className="flex items-center gap-2 text-[#22C55E]">
                                         <Phone className="w-3 h-3" />
                                         <span className="text-xs font-bold leading-none">{order.cliente_telefono}</span>
                                     </div>
@@ -197,7 +197,7 @@ export default function DespachoPage() {
                                             href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.direccion)}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="size-10 rounded-2xl bg-[#25D366] flex items-center justify-center text-[#111814] hover:scale-110 active:scale-95 transition-all shadow-lg shadow-[#25D366]/20"
+                                            className="size-10 rounded-2xl bg-[#22C55E] flex items-center justify-center text-[#111814] hover:scale-110 active:scale-95 transition-all shadow-lg shadow-[#22C55E]/20"
                                         >
                                             <Navigation className="w-5 h-5" />
                                         </a>
@@ -219,7 +219,7 @@ export default function DespachoPage() {
                                     <Button
                                         onClick={() => updateStatus('enviado')}
                                         disabled={updating}
-                                        className="w-full h-20 rounded-[2rem] bg-[#25D366] hover:bg-[#128C7E] text-[#111814] font-black text-lg tracking-widest shadow-xl shadow-[#25D366]/20 transition-all border-b-4 border-black/10 active:border-b-0 active:translate-y-1"
+                                        className="w-full h-20 rounded-[2rem] bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-black text-lg tracking-widest shadow-xl shadow-[#22C55E]/20 transition-all border-b-4 border-black/10 active:border-b-0 active:translate-y-1"
                                     >
                                         {updating ? <Loader2 className="animate-spin" /> : 'INICIAR VIAJE 🛵'}
                                     </Button>
@@ -245,8 +245,8 @@ export default function DespachoPage() {
                                             </span>
                                         )}
                                     </Button>
-                                    <p className="text-center text-[10px] font-black text-[#25D366] uppercase tracking-widest mt-4 flex items-center justify-center gap-2">
-                                        <span className="size-2 rounded-full bg-[#25D366] animate-ping" />
+                                    <p className="text-center text-[10px] font-black text-[#22C55E] uppercase tracking-widest mt-4 flex items-center justify-center gap-2">
+                                        <span className="size-2 rounded-full bg-[#22C55E] animate-ping" />
                                         TRANSMITIENDO GPS EN TIEMPO REAL
                                     </p>
                                 </motion.div>
@@ -258,7 +258,7 @@ export default function DespachoPage() {
                                     animate={{ opacity: 1, scale: 1 }}
                                     className="text-center py-12"
                                 >
-                                    <div className="size-20 rounded-[2rem] bg-[#F0FFF4] text-[#25D366] flex items-center justify-center mx-auto mb-6 shadow-sm border-2 border-[#25D366]/10">
+                                    <div className="size-20 rounded-[2rem] bg-[#F0FFF4] text-[#22C55E] flex items-center justify-center mx-auto mb-6 shadow-sm border-2 border-[#22C55E]/10">
                                         <CheckCircle2 className="w-10 h-10" />
                                     </div>
                                     <h3 className="text-2xl font-black text-[#111814] mb-2">¡TRABAJO TERMINADO!</h3>

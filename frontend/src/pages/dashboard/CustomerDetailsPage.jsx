@@ -385,13 +385,13 @@ export default function CustomerDetailsPage() {
                                 <Trophy className="w-56 h-56 text-black" />
                             </div>
                             <div className="flex items-center gap-6 mb-2 relative z-10">
-                                <div className="p-5 bg-[#13ec6d] text-[#111814] rounded-[1.75rem] shadow-2xl shadow-[#13ec6d]/30 ring-8 ring-white">
+                                <div className="p-5 bg-[#22C55E] text-[#111814] rounded-[1.75rem] shadow-2xl shadow-[#22C55E]/30 ring-8 ring-white">
                                     <Award className="w-8 h-8 stroke-[2.5]" />
                                 </div>
                                 <div className="space-y-0.5">
                                     <DialogTitle className="text-3xl font-black text-gray-900 uppercase tracking-tighter leading-none">Acreditar Puntos</DialogTitle>
                                     <div className="flex items-center gap-2 mt-2">
-                                        <div className="w-2 h-2 rounded-full bg-[#13ec6d] animate-pulse" />
+                                        <div className="w-2 h-2 rounded-full bg-[#22C55E] animate-pulse" />
                                         <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.25em]">
                                             Beneficios para {customer.name}
                                         </p>
@@ -405,13 +405,13 @@ export default function CustomerDetailsPage() {
                                 <TabsList className="grid grid-cols-2 w-full h-[72px] bg-gray-100/80 p-2.5 rounded-[2rem] border-2 border-gray-200/50 shadow-inner overflow-hidden">
                                     <TabsTrigger
                                         value="compra"
-                                        className="h-full rounded-[1.5rem] font-black text-[11px] tracking-[0.2em] uppercase border border-[#13ec6d]/20 data-[state=active]:bg-white data-[state=active]:text-[#111814] data-[state=active]:shadow-[0_8px_25px_rgba(0,0,0,0.12)] data-[state=active]:scale-[1.02] data-[state=active]:border-transparent transition-all duration-300"
+                                        className="h-full rounded-[1.5rem] font-black text-[11px] tracking-[0.2em] uppercase border border-[#22C55E]/20 data-[state=active]:bg-white data-[state=active]:text-[#111814] data-[state=active]:shadow-[0_8px_25px_rgba(0,0,0,0.12)] data-[state=active]:scale-[1.02] data-[state=active]:border-transparent transition-all duration-300"
                                     >
                                         POR COMPRA
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="puntos"
-                                        className="h-full rounded-[1.5rem] font-black text-[11px] tracking-[0.2em] uppercase border border-[#13ec6d]/20 data-[state=active]:bg-white data-[state=active]:text-[#111814] data-[state=active]:shadow-[0_8px_25px_rgba(0,0,0,0.12)] data-[state=active]:scale-[1.02] data-[state=active]:border-transparent transition-all duration-300"
+                                        className="h-full rounded-[1.5rem] font-black text-[11px] tracking-[0.2em] uppercase border border-[#22C55E]/20 data-[state=active]:bg-white data-[state=active]:text-[#111814] data-[state=active]:shadow-[0_8px_25px_rgba(0,0,0,0.12)] data-[state=active]:scale-[1.02] data-[state=active]:border-transparent transition-all duration-300"
                                     >
                                         DIRECTO
                                     </TabsTrigger>
@@ -497,8 +497,8 @@ export default function CustomerDetailsPage() {
                                 onClick={handleAwardPoints}
                                 disabled={awarding || (creditMode === 'compra' ? !purchaseAmount || parseFloat(purchaseAmount) <= 0 : !manualPoints || parseInt(manualPoints) <= 0)}
                                 className={`h-16 flex-1 rounded-full font-black text-[10px] tracking-widest uppercase transition-all duration-500 flex items-center justify-center gap-3 group overflow-hidden ${(creditMode === 'compra' ? parseFloat(purchaseAmount) > 0 : parseInt(manualPoints) > 0)
-                                    ? 'bg-[#13ec6d] text-[#111814] hover:bg-[#0fd660] shadow-2xl shadow-[#13ec6d]/40 border-none scale-100'
-                                    : 'bg-transparent text-[#13ec6d] border-2 border-[#13ec6d] cursor-not-allowed opacity-50'
+                                    ? 'bg-[#22C55E] text-[#111814] hover:bg-[#16A34A] shadow-2xl shadow-[#22C55E]/40 border-none scale-100'
+                                    : 'bg-transparent text-[#22C55E] border-2 border-[#22C55E] cursor-not-allowed opacity-50'
                                     }`}
                             >
                                 {awarding ? (

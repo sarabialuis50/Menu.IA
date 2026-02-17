@@ -239,7 +239,7 @@ export default function HistorialPedidosPage() {
                                     type="date"
                                     value={dateFrom}
                                     onChange={(e) => { setDateFrom(e.target.value); setCurrentPage(1); }}
-                                    className="pl-10 h-12 bg-gray-100/30 border-gray-100 rounded-2xl text-[11px] font-bold focus:ring-[#25D366]"
+                                    className="pl-10 h-12 bg-gray-100/30 border-gray-100 rounded-2xl text-[11px] font-bold focus:ring-[#22C55E]"
                                 />
                             </div>
                         </div>
@@ -253,7 +253,7 @@ export default function HistorialPedidosPage() {
                                     type="date"
                                     value={dateTo}
                                     onChange={(e) => { setDateTo(e.target.value); setCurrentPage(1); }}
-                                    className="pl-10 h-12 bg-gray-100/30 border-gray-100 rounded-2xl text-[11px] font-bold focus:ring-[#25D366]"
+                                    className="pl-10 h-12 bg-gray-100/30 border-gray-100 rounded-2xl text-[11px] font-bold focus:ring-[#22C55E]"
                                 />
                             </div>
                         </div>
@@ -292,16 +292,16 @@ export default function HistorialPedidosPage() {
                                 placeholder="Buscar por cliente, ID o mesa..."
                                 value={searchTerm}
                                 onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-                                className="pl-11 h-11 bg-white border-gray-100 rounded-2xl text-sm font-bold focus:ring-[#25D366] transition-all shadow-sm"
+                                className="pl-11 h-11 bg-white border-gray-100 rounded-2xl text-sm font-bold focus:ring-[#22C55E] transition-all shadow-sm"
                             />
                         </div>
 
                         {/* Pedidos Count and Filter on the right */}
                         <div className="flex items-center gap-3">
                             <div className="flex items-center gap-2 pr-4 border-r border-gray-200">
-                                <ShoppingBag className="w-4 h-4 text-[#25D366]" />
+                                <ShoppingBag className="w-4 h-4 text-[#22C55E]" />
                                 <h2 className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Pedidos</h2>
-                                <span className="px-2.5 py-0.5 bg-white border border-gray-100 rounded-full text-[10px] font-black text-[#25D366] shadow-sm">
+                                <span className="px-2.5 py-0.5 bg-white border border-gray-100 rounded-full text-[10px] font-black text-[#22C55E] shadow-sm">
                                     {filteredOrders.length}
                                 </span>
                             </div>
@@ -309,7 +309,7 @@ export default function HistorialPedidosPage() {
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" className="h-10 px-4 rounded-xl border border-gray-100 font-black text-[9px] tracking-widest gap-2 bg-white hover:bg-gray-50 transition-all text-gray-500 uppercase">
-                                        <Filter className="w-3.5 h-3.5 text-[#25D366]" />
+                                        <Filter className="w-3.5 h-3.5 text-[#22C55E]" />
                                         <span>Filtrar: {filterStatus}</span>
                                         <ChevronDown className="w-3 h-3 text-gray-300" />
                                     </Button>
@@ -462,7 +462,7 @@ export default function HistorialPedidosPage() {
                                 variant="outline"
                                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                                 disabled={currentPage === totalPages || totalPages === 0}
-                                className="h-10 px-4 rounded-xl border-2 border-[#25D366] text-[#25D366] bg-white font-black text-[10px] tracking-widest hover:bg-green-50 shadow-sm transition-all disabled:opacity-30"
+                                className="h-10 px-4 rounded-xl border-2 border-[#22C55E] text-[#22C55E] bg-white font-black text-[10px] tracking-widest hover:bg-green-50 shadow-sm transition-all disabled:opacity-30"
                             >
                                 SIGUIENTE
                             </Button>

@@ -387,7 +387,7 @@ export default function AllCustomersPage() {
                                                 {customer.avatar}
                                             </div>
                                             <div>
-                                                <p className="font-black text-sm text-gray-900 leading-none mb-1 group-hover:text-[#25D366] transition-colors">{customer.name}</p>
+                                                <p className="font-black text-sm text-gray-900 leading-none mb-1 group-hover:text-[#22C55E] transition-colors">{customer.name}</p>
                                                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Cliente Registrado</p>
                                             </div>
                                         </div>
@@ -399,7 +399,7 @@ export default function AllCustomersPage() {
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={() => window.open(`https://wa.me/${customer.phone.replace(/\s+/g, '')}`, '_blank')}
-                                                className="h-7 w-7 rounded-full text-[#25D366] hover:bg-green-50 transition-all"
+                                                className="h-7 w-7 rounded-full text-[#22C55E] hover:bg-green-50 transition-all"
                                             >
                                                 <MessageSquareMore className="w-4 h-4" />
                                             </Button>
@@ -444,7 +444,7 @@ export default function AllCustomersPage() {
                                             <DropdownMenuContent align="end" className="rounded-2xl border-2 border-gray-100 shadow-xl p-2 min-w-[180px]">
                                                 <DropdownMenuItem
                                                     onClick={() => navigate(`/dashboard/${slug}/clientes/${customer.id}`)}
-                                                    className="rounded-xl px-4 py-3 text-xs font-bold gap-3 focus:bg-green-50 focus:text-[#25D366] cursor-pointer"
+                                                    className="rounded-xl px-4 py-3 text-xs font-bold gap-3 focus:bg-green-50 focus:text-[#22C55E] cursor-pointer"
                                                 >
                                                     <BarChart3 className="w-4 h-4" /> Análisis Táctico
                                                 </DropdownMenuItem>
@@ -487,7 +487,7 @@ export default function AllCustomersPage() {
                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                             }}
                             disabled={currentPage >= Math.ceil(filteredCustomers.length / itemsPerPage)}
-                            className="h-10 px-4 rounded-xl border-2 border-[#25D366] text-[#25D366] bg-white font-black text-[10px] tracking-widest hover:bg-green-50 shadow-sm transition-all disabled:opacity-30"
+                            className="h-10 px-4 rounded-xl border-2 border-[#22C55E] text-[#22C55E] bg-white font-black text-[10px] tracking-widest hover:bg-green-50 shadow-sm transition-all disabled:opacity-30"
                         >
                             SIGUIENTE
                         </Button>
@@ -514,7 +514,7 @@ export default function AllCustomersPage() {
                                         value={newCustomerData.name}
                                         onChange={(e) => setNewCustomerData({ ...newCustomerData, name: e.target.value })}
                                         placeholder="Ej. Juan Pérez"
-                                        className="h-12 pl-11 rounded-xl border-2 border-gray-100 focus:border-[#25D366] focus:ring-4 focus:ring-green-50 transition-all font-bold text-sm"
+                                        className="h-12 pl-11 rounded-xl border-2 border-gray-100 focus:border-[#22C55E] focus:ring-4 focus:ring-green-50 transition-all font-bold text-sm"
                                     />
                                 </div>
                             </div>
@@ -548,7 +548,7 @@ export default function AllCustomersPage() {
                                         placeholder="300 123 4567"
                                         className={`h-12 pl-24 rounded-xl border-2 transition-all font-bold text-sm ${phoneError
                                             ? 'border-red-100 bg-red-50/30 focus:border-red-400 focus:ring-red-50'
-                                            : 'border-gray-100 focus:border-[#25D366] focus:ring-4 focus:ring-green-50'
+                                            : 'border-gray-100 focus:border-[#22C55E] focus:ring-4 focus:ring-green-50'
                                             }`}
                                     />
                                     {newCustomerData.phone.length === 10 && !phoneError && (

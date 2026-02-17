@@ -68,7 +68,7 @@ const BusinessHomePageContent = () => {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-[#f6f8f7]">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#13ec6d]" />
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#22C55E]" />
             </div>
         );
     }
@@ -81,7 +81,7 @@ const BusinessHomePageContent = () => {
                 </div>
                 <h1 className="font-heading text-3xl font-bold mb-3 text-[#111814]">Negocio no encontrado</h1>
                 <p className="text-[#618972] max-w-xs mb-8">El enlace que seguiste podría estar roto o el restaurante ya no está disponible.</p>
-                <Button onClick={() => navigate('/')} className="bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] px-8 h-12 rounded-xl font-bold">
+                <Button onClick={() => navigate('/')} className="bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] px-8 h-12 rounded-xl font-bold">
                     Ir al inicio
                 </Button>
             </div>
@@ -111,9 +111,9 @@ const BusinessHomePageContent = () => {
                             animate={{ scale: 1, opacity: 1 }}
                             className="size-32 md:size-40 rounded-full border-[6px] border-[#f6f8f7] bg-white shadow-2xl overflow-hidden flex items-center justify-center p-1"
                         >
-                            <div className="w-full h-full rounded-full overflow-hidden bg-[#13ec6d]/10">
+                            <div className="w-full h-full rounded-full overflow-hidden bg-[#22C55E]/10">
                                 <img
-                                    src={business.logo_url || `https://ui-avatars.com/api/?name=${business.nombre}&background=13ec6d&color=111814&bold=true&size=512`}
+                                    src={business.logo_url || `https://ui-avatars.com/api/?name=${business.nombre}&background=22C55E&color=111814&bold=true&size=512`}
                                     alt="Logo"
                                     className="w-full h-full object-cover"
                                 />
@@ -133,7 +133,7 @@ const BusinessHomePageContent = () => {
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ delay: 0.1 }}
-                                className="text-[#13ec6d] font-bold text-xl mb-5 tracking-tight"
+                                className="text-[#22C55E] font-bold text-xl mb-5 tracking-tight"
                             >
                                 {business.slogan || 'Sabor auténtico en cada plato'}
                             </motion.p>
@@ -175,7 +175,7 @@ const BusinessHomePageContent = () => {
                 <section className="px-4 md:px-10 mb-10 w-full overflow-hidden max-w-[1200px] mx-auto">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-xl font-bold text-[#111814]">Destacados del Menú</h2>
-                        <Link to={`/${slug}/menu-completo`} className="text-[#13ec6d] text-sm font-semibold hover:underline">
+                        <Link to={`/${slug}/menu-completo`} className="text-[#22C55E] text-sm font-semibold hover:underline">
                             Ver todo
                         </Link>
                     </div>
@@ -200,7 +200,7 @@ const BusinessHomePageContent = () => {
                                         <div className="p-4 pt-2">
                                             <div className="flex justify-between items-start mb-1">
                                                 <h3 className="font-bold text-[#111814] text-lg leading-tight">{product.nombre}</h3>
-                                                <span className="text-[#13ec6d] font-bold text-lg">{formatCurrency(product.precio)}</span>
+                                                <span className="text-[#22C55E] font-bold text-lg">{formatCurrency(product.precio)}</span>
                                             </div>
                                             <p className="text-sm text-[#618972] line-clamp-2">
                                                 {product.descripcion || "Platillo delicioso preparado con ingredientes frescos de la mejor calidad."}
@@ -240,8 +240,8 @@ const BusinessHomePageContent = () => {
 
                         <div className="md:col-span-5 flex flex-col gap-4">
                             {/* Address Card */}
-                            <div className="bg-white p-6 rounded-3xl shadow-sm border border-[#f0f4f2] flex gap-5 hover:border-[#13ec6d]/30 transition-colors">
-                                <div className="bg-[#13ec6d]/10 p-4 rounded-2xl h-fit text-[#13ec6d]">
+                            <div className="bg-white p-6 rounded-3xl shadow-sm border border-[#f0f4f2] flex gap-5 hover:border-[#22C55E]/30 transition-colors">
+                                <div className="bg-[#22C55E]/10 p-4 rounded-2xl h-fit text-[#22C55E]">
                                     <Store className="w-6 h-6" />
                                 </div>
                                 <div>
@@ -251,22 +251,22 @@ const BusinessHomePageContent = () => {
                             </div>
 
                             {/* Contact Card */}
-                            <div className="bg-white p-6 rounded-3xl shadow-sm border border-[#f0f4f2] flex gap-5 hover:border-[#13ec6d]/30 transition-colors">
-                                <div className="bg-[#13ec6d]/10 p-4 rounded-2xl h-fit text-[#13ec6d]">
+                            <div className="bg-white p-6 rounded-3xl shadow-sm border border-[#f0f4f2] flex gap-5 hover:border-[#22C55E]/30 transition-colors">
+                                <div className="bg-[#22C55E]/10 p-4 rounded-2xl h-fit text-[#22C55E]">
                                     <Phone className="w-6 h-6" />
                                 </div>
                                 <div className="flex-1">
                                     <h3 className="font-extrabold text-[#111814] mb-1">Contacto</h3>
                                     <p className="text-[#618972] text-sm leading-relaxed">{business.telefono || 'Escríbenos por WhatsApp'}</p>
                                     {business.whatsapp && (
-                                        <Button variant="link" className="text-[#13ec6d] p-0 h-auto font-bold text-xs mt-2 hover:no-underline" onClick={() => window.open(`https://wa.me/${business.whatsapp.replace(/\D/g, '')}`, '_blank')}>WhatsApp directo</Button>
+                                        <Button variant="link" className="text-[#22C55E] p-0 h-auto font-bold text-xs mt-2 hover:no-underline" onClick={() => window.open(`https://wa.me/${business.whatsapp.replace(/\D/g, '')}`, '_blank')}>WhatsApp directo</Button>
                                     )}
                                 </div>
                             </div>
 
                             {/* Hours Card */}
-                            <div className="bg-white p-6 rounded-3xl shadow-sm border border-[#f0f4f2] flex gap-5 hover:border-[#13ec6d]/30 transition-colors">
-                                <div className="bg-[#13ec6d]/10 p-4 rounded-2xl h-fit text-[#13ec6d]">
+                            <div className="bg-white p-6 rounded-3xl shadow-sm border border-[#f0f4f2] flex gap-5 hover:border-[#22C55E]/30 transition-colors">
+                                <div className="bg-[#22C55E]/10 p-4 rounded-2xl h-fit text-[#22C55E]">
                                     <Clock className="w-6 h-6" />
                                 </div>
                                 <div>
@@ -318,7 +318,7 @@ const BusinessHomePageContent = () => {
                         </div>
                         <Button
                             onClick={() => navigate(`/${slug}/menu-completo`)}
-                            className="flex-1 sm:flex-none sm:min-w-[280px] h-14 bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] text-lg font-black rounded-2xl shadow-xl shadow-[#13ec6d]/30 transform active:scale-95 transition-all flex items-center gap-3 overflow-hidden group"
+                            className="flex-1 sm:flex-none sm:min-w-[280px] h-14 bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] text-lg font-black rounded-2xl shadow-xl shadow-[#22C55E]/30 transform active:scale-95 transition-all flex items-center gap-3 overflow-hidden group"
                         >
                             <div className="bg-white/20 p-2 rounded-xl group-hover:rotate-12 transition-transform">
                                 <UtensilsCrossed className="w-5 h-5" />

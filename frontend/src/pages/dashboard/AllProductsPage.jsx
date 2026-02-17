@@ -114,7 +114,7 @@ export default function AllProductsPage() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                            <Package className="w-6 h-6 text-[#13ec6d]" />
+                            <Package className="w-6 h-6 text-[#22C55E]" />
                             <h1 className="text-2xl font-black tracking-tight text-gray-900 uppercase">CATÁLOGO COMPLETO</h1>
                         </div>
                         <p className="text-sm text-gray-500 font-medium">Gestiona todos tus productos, precios y disponibilidad en un solo lugar.</p>
@@ -146,7 +146,7 @@ export default function AllProductsPage() {
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <Input
                                 placeholder="Buscar productos por nombre o descripción..."
-                                className="pl-11 h-12 rounded-2xl border-2 border-gray-100 focus:border-[#13ec6d] focus:ring-4 focus:ring-green-50 transition-all font-medium text-sm"
+                                className="pl-11 h-12 rounded-2xl border-2 border-gray-100 focus:border-[#22C55E] focus:ring-4 focus:ring-green-50 transition-all font-medium text-sm"
                                 value={searchTerm}
                                 onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
                             />
@@ -166,12 +166,12 @@ export default function AllProductsPage() {
                                 <DropdownMenuContent align="end" className="rounded-2xl border-2 border-gray-100 shadow-xl p-3 min-w-[220px] space-y-1">
                                     <DropdownMenuItem onClick={() => { setFilterCategory('TODAS'); setCurrentPage(1); }} className="rounded-xl px-4 py-2.5 text-[11px] font-bold gap-3 cursor-pointer">
                                         TODAS LAS CATEGORÍAS
-                                        {filterCategory === 'TODAS' && <CheckCircle2 className="w-4 h-4 ml-auto text-[#13ec6d]" />}
+                                        {filterCategory === 'TODAS' && <CheckCircle2 className="w-4 h-4 ml-auto text-[#22C55E]" />}
                                     </DropdownMenuItem>
                                     {categories.map((cat) => (
                                         <DropdownMenuItem key={cat} onClick={() => { setFilterCategory(cat); setCurrentPage(1); }} className="rounded-xl px-4 py-2.5 text-[11px] font-bold gap-3 cursor-pointer">
                                             {cat.toUpperCase()}
-                                            {filterCategory === cat && <CheckCircle2 className="w-4 h-4 ml-auto text-[#13ec6d]" />}
+                                            {filterCategory === cat && <CheckCircle2 className="w-4 h-4 ml-auto text-[#22C55E]" />}
                                         </DropdownMenuItem>
                                     ))}
                                 </DropdownMenuContent>
@@ -192,7 +192,7 @@ export default function AllProductsPage() {
                                     {['TODOS', 'DISPONIBLE', 'AGOTADO'].map((status) => (
                                         <DropdownMenuItem key={status} onClick={() => { setFilterStatus(status); setCurrentPage(1); }} className="rounded-xl px-4 py-2.5 text-[11px] font-bold gap-3 cursor-pointer">
                                             {status}
-                                            {filterStatus === status && <CheckCircle2 className="w-4 h-4 ml-auto text-[#13ec6d]" />}
+                                            {filterStatus === status && <CheckCircle2 className="w-4 h-4 ml-auto text-[#22C55E]" />}
                                         </DropdownMenuItem>
                                     ))}
                                 </DropdownMenuContent>
@@ -216,7 +216,7 @@ export default function AllProductsPage() {
                                     <tr>
                                         <td colSpan={5} className="py-20 text-center">
                                             <div className="flex flex-col items-center gap-3">
-                                                <div className="size-10 rounded-full border-4 border-[#13ec6d] border-t-transparent animate-spin" />
+                                                <div className="size-10 rounded-full border-4 border-[#22C55E] border-t-transparent animate-spin" />
                                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Cargando Catálogo...</p>
                                             </div>
                                         </td>
@@ -229,7 +229,7 @@ export default function AllProductsPage() {
                                                     <img src={p.imagen || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80'} className="w-full h-full object-cover group-hover:scale-110 transition-all duration-500" alt={p.nombre} />
                                                 </div>
                                                 <div>
-                                                    <p className="font-black text-sm text-gray-900 leading-none mb-1 group-hover:text-[#13ec6d] transition-colors">{p.nombre}</p>
+                                                    <p className="font-black text-sm text-gray-900 leading-none mb-1 group-hover:text-[#22C55E] transition-colors">{p.nombre}</p>
                                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter truncate max-w-[200px]">{p.descripcion || 'Sin descripción'}</p>
                                                 </div>
                                             </div>
@@ -244,13 +244,13 @@ export default function AllProductsPage() {
                                         </td>
                                         <td className="px-6 py-5">
                                             <div className="flex items-center gap-3">
-                                                <span className={`text-[9px] font-black uppercase tracking-widest ${p.disponible ? 'text-[#13ec6d]' : 'text-red-400'}`}>
+                                                <span className={`text-[9px] font-black uppercase tracking-widest ${p.disponible ? 'text-[#22C55E]' : 'text-red-400'}`}>
                                                     {p.disponible ? 'Disponible' : 'Agotado'}
                                                 </span>
                                                 <Switch
                                                     checked={p.disponible}
                                                     onCheckedChange={() => toggleAvailability(p.id, p.disponible)}
-                                                    className="data-[state=checked]:bg-[#13ec6d]"
+                                                    className="data-[state=checked]:bg-[#22C55E]"
                                                 />
                                             </div>
                                         </td>
@@ -260,7 +260,7 @@ export default function AllProductsPage() {
                                                     variant="ghost"
                                                     size="icon"
                                                     onClick={() => navigate(`/dashboard/${slug}/configuracion?tab=menu&edit=${p.id}`)}
-                                                    className="size-9 rounded-xl text-gray-400 hover:text-[#13ec6d] hover:bg-green-50 transition-all"
+                                                    className="size-9 rounded-xl text-gray-400 hover:text-[#22C55E] hover:bg-green-50 transition-all"
                                                 >
                                                     <Edit2 className="w-4 h-4" />
                                                 </Button>
@@ -315,7 +315,7 @@ export default function AllProductsPage() {
                                         window.scrollTo({ top: 0, behavior: 'smooth' });
                                     }}
                                     disabled={currentPage === totalPages || totalPages === 0}
-                                    className="h-10 px-4 rounded-xl border-2 border-[#13ec6d] text-[#13ec6d] bg-white font-black text-[10px] tracking-widest hover:bg-green-50 shadow-sm transition-all disabled:opacity-30"
+                                    className="h-10 px-4 rounded-xl border-2 border-[#22C55E] text-[#22C55E] bg-white font-black text-[10px] tracking-widest hover:bg-green-50 shadow-sm transition-all disabled:opacity-30"
                                 >
                                     SIGUIENTE
                                 </Button>

@@ -3,11 +3,11 @@ import { useParams } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { DashboardLayout } from '@/layouts/DashboardLayout';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Plus, 
-  Search, 
-  Edit2, 
-  Trash2, 
+import {
+  Plus,
+  Search,
+  Edit2,
+  Trash2,
   Image as ImageIcon,
   X,
   Loader2,
@@ -190,7 +190,7 @@ export default function CatalogoPage() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#25D366]" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#22C55E]" />
         </div>
       </DashboardLayout>
     );
@@ -205,9 +205,9 @@ export default function CatalogoPage() {
             <h1 className="font-heading text-2xl font-bold text-gray-900">Catálogo</h1>
             <p className="text-gray-500">{products.length} productos</p>
           </div>
-          <Button 
+          <Button
             onClick={openCreateModal}
-            className="bg-[#25D366] hover:bg-[#128C7E] text-white"
+            className="bg-[#22C55E] hover:bg-[#16A34A] text-white"
             data-testid="add-product-btn"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -246,7 +246,7 @@ export default function CatalogoPage() {
             <ImageIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
             <h3 className="font-heading font-bold text-lg mb-2">No hay productos</h3>
             <p className="text-gray-500 mb-4">Comienza agregando productos a tu catálogo</p>
-            <Button onClick={openCreateModal} className="bg-[#25D366] hover:bg-[#128C7E] text-white">
+            <Button onClick={openCreateModal} className="bg-[#22C55E] hover:bg-[#16A34A] text-white">
               <Plus className="w-4 h-4 mr-2" />
               Agregar primer producto
             </Button>
@@ -266,9 +266,8 @@ export default function CatalogoPage() {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
                         whileHover={{ y: -4 }}
-                        className={`bg-white rounded-xl border overflow-hidden shadow-sm hover:shadow-md transition-all ${
-                          !product.disponible ? 'opacity-60' : ''
-                        }`}
+                        className={`bg-white rounded-xl border overflow-hidden shadow-sm hover:shadow-md transition-all ${!product.disponible ? 'opacity-60' : ''
+                          }`}
                         data-testid={`product-card-${product.id}`}
                       >
                         <div className="relative aspect-video bg-gray-100">
@@ -294,8 +293,8 @@ export default function CatalogoPage() {
                         <div className="p-4">
                           <h3 className="font-semibold text-gray-900 mb-1 truncate">{product.nombre}</h3>
                           <p className="text-sm text-gray-500 mb-2 line-clamp-2">{product.descripcion}</p>
-                          <p className="font-bold text-[#25D366] text-lg">{formatCurrency(product.precio)}</p>
-                          
+                          <p className="font-bold text-[#22C55E] text-lg">{formatCurrency(product.precio)}</p>
+
                           <div className="flex items-center justify-between mt-4 pt-4 border-t">
                             <div className="flex items-center gap-2">
                               <Switch
@@ -445,7 +444,7 @@ export default function CatalogoPage() {
                 <Button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 bg-[#25D366] hover:bg-[#128C7E] text-white"
+                  className="flex-1 bg-[#22C55E] hover:bg-[#16A34A] text-white"
                   data-testid="save-product-btn"
                 >
                   {saving ? (

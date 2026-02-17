@@ -20,22 +20,22 @@ export const PublicLayout = ({ children, businessName, businessLogo, slug }) => 
   };
 
   return (
-    <div className="min-h-screen bg-[#f6f8f7] font-sans">
+    <div className="min-h-screen bg-slate-50 font-sans">
       {/* Top Navbar */}
-      <header className="sticky top-0 z-50 w-full bg-white border-b border-[#f0f4f2] shadow-sm">
+      <header className="sticky top-0 z-50 w-full bg-[#0F172A] border-b border-slate-800 shadow-sm">
         <div className="px-4 md:px-10 py-3 flex items-center justify-between max-w-[1200px] mx-auto w-full">
           <div className="flex items-center gap-4">
             {/* Back Arrow Button */}
             <button
               onClick={handleBack}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors text-[#111814] active:scale-90"
+              className="p-2 hover:bg-slate-800 rounded-full transition-colors text-white active:scale-90"
               aria-label="Volver"
             >
               <ArrowLeft className="w-6 h-6" />
             </button>
 
-            <Link to={`/${slug}`} className="flex items-center gap-3 text-[#111814] group">
-              <div className="size-10 rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
+            <Link to={`/${slug}`} className="flex items-center gap-3 text-white group">
+              <div className="size-10 rounded-xl overflow-hidden bg-slate-800 border border-slate-700">
                 {/* Logo Logic: User provided > Generated Avatar > Default Icon */}
                 <img
                   src={businessLogo || `https://ui-avatars.com/api/?name=${businessName || 'Menu.IA'}&background=22C55E&color=fff&bold=true`}
@@ -53,7 +53,7 @@ export const PublicLayout = ({ children, businessName, businessLogo, slug }) => 
 
           <div className="flex items-center">
             {/* Optional: User Profile or Cart could go here, but for now we keep it empty and clean as requested */}
-            <div className="size-10 rounded-full bg-gray-50 border border-gray-100 hidden sm:block" />
+            <div className="size-10 rounded-full bg-slate-800 border border-slate-700 hidden sm:block" />
           </div>
         </div>
       </header>

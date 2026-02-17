@@ -146,7 +146,7 @@ export default function DashboardPage() {
             title="Ventas Hoy"
             value={formatCurrency(analytics?.ventas_hoy || 0)}
             icon={DollarSign}
-            color="bg-[#25D366]"
+            color="bg-[#22C55E]"
           />
           <StatCard
             title="Pedidos Hoy"
@@ -215,7 +215,7 @@ export default function DashboardPage() {
           <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-[#25D366]" />
+                <TrendingUp className="w-5 h-5 text-[#22C55E]" />
                 Ventas últimos 7 días
               </CardTitle>
             </CardHeader>
@@ -225,8 +225,8 @@ export default function DashboardPage() {
                   <AreaChart data={chartData}>
                     <defs>
                       <linearGradient id="colorVentas" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#25D366" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#25D366" stopOpacity={0} />
+                        <stop offset="5%" stopColor="#22C55E" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#22C55E" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -239,7 +239,7 @@ export default function DashboardPage() {
                     <Area
                       type="monotone"
                       dataKey="ventas"
-                      stroke="#25D366"
+                      stroke="#22C55E"
                       strokeWidth={2}
                       fillOpacity={1}
                       fill="url(#colorVentas)"

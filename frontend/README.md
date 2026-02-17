@@ -1,4 +1,4 @@
-# 🌐 MenuPro - Frontend (Client App)
+# 🌐 Menu.IA - Frontend (Client App)
 
 Esta es la aplicación cliente de MenuPro, construida con React para ofrecer una experiencia rápida, moderna y responsiva a los usuarios y administradores de restaurantes.
 
@@ -39,4 +39,4 @@ Asegúrate de configurar la URL base de la API en tus variables de entorno si es
    ```
 
 ---
-*Parte del ecosistema MenuPro.*
+*Parte del ecosistema Menu.IA.*

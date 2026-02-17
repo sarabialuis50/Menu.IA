@@ -171,7 +171,7 @@ export default function EmpleadosPage() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#25D366]" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#22C55E]" />
         </div>
       </DashboardLayout>
     );
@@ -188,7 +188,7 @@ export default function EmpleadosPage() {
           </div>
           <Button
             onClick={openCreateModal}
-            className="bg-[#25D366] hover:bg-[#128C7E] text-white"
+            className="bg-[#22C55E] hover:bg-[#16A34A] text-white"
             data-testid="add-employee-btn"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -211,7 +211,7 @@ export default function EmpleadosPage() {
             <Users className="w-16 h-16 mx-auto mb-4 text-gray-300" />
             <h3 className="font-heading font-bold text-lg mb-2">No hay empleados</h3>
             <p className="text-gray-500 mb-4">Agrega empleados para que puedan acceder al sistema</p>
-            <Button onClick={openCreateModal} className="bg-[#25D366] hover:bg-[#128C7E] text-white">
+            <Button onClick={openCreateModal} className="bg-[#22C55E] hover:bg-[#16A34A] text-white">
               <Plus className="w-4 h-4 mr-2" />
               Agregar primer empleado
             </Button>
@@ -369,7 +369,7 @@ export default function EmpleadosPage() {
                 <Button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 bg-[#25D366] hover:bg-[#128C7E] text-white"
+                  className="flex-1 bg-[#22C55E] hover:bg-[#16A34A] text-white"
                   data-testid="save-employee-btn"
                 >
                   {saving ? (

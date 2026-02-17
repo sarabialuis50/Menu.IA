@@ -12,21 +12,21 @@
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 145 76% 49%;
+    --primary: 142 71% 45%;
     --primary-foreground: 0 0% 100%;
     --secondary: 210 40% 96%;
     --secondary-foreground: 222 47% 11%;
     --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
-    --accent: 138 76% 97%;
-    --accent-foreground: 142 76% 26%;
+    --accent: 142 71% 45%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 145 76% 49%;
+    --ring: 142 71% 45%;
     --radius: 0.75rem;
-    
+
     /* Custom colors */
     --whatsapp: 145 76% 49%;
     --whatsapp-dark: 160 100% 33%;
@@ -45,7 +45,12 @@
     font-family: 'Inter', system-ui, sans-serif;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: 'Manrope', system-ui, sans-serif;
   }
 }
@@ -54,9 +59,12 @@
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
   .no-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
   }
 }
 
@@ -132,27 +140,36 @@
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { 
+  from {
     opacity: 0;
     transform: translateY(20px);
   }
-  to { 
+
+  to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
 @keyframes pulse-green {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.4);
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
   }
+
   50% {
-    box-shadow: 0 0 0 10px rgba(37, 211, 102, 0);
+    box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
   }
 }
 
@@ -188,10 +205,10 @@
 /* Floating cart */
 .floating-cart {
   @apply fixed bottom-4 left-1/2 -translate-x-1/2 z-50;
-  @apply bg-[#25D366] text-white rounded-full px-6 py-3;
+  @apply bg-[#22C55E] text-white rounded-full px-6 py-3;
   @apply shadow-lg shadow-green-500/30;
   @apply flex items-center gap-3 cursor-pointer;
-  @apply hover:bg-[#128C7E] transition-all;
+  @apply hover:bg-[#16A34A] transition-all;
   @apply active:scale-95;
 }
 
@@ -206,7 +223,7 @@
   .no-print {
     display: none !important;
   }
-  
+
   .print-only {
     display: block !important;
   }

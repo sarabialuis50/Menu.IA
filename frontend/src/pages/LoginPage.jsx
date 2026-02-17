@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { motion } from 'framer-motion';
-import { UtensilsCrossed, Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { UtensilsCrossed, Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -37,17 +37,28 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#FAFAF9] flex">
       {/* Left Panel - Form */}
-      <div className="flex-1 flex items-center justify-center p-8">
+      <div className="flex-1 flex items-center justify-center p-8 relative">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate(-1)}
+          className="absolute top-4 left-4 md:top-8 md:left-8 hover:bg-gray-100 rounded-full"
+        >
+          <ArrowLeft className="w-6 h-6 text-gray-600" />
+        </Button>
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           className="w-full max-w-md"
         >
           <Link to="/" className="flex items-center gap-2 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-[#22C55E]/10 flex items-center justify-center p-2">
-              <img src="/favicon.svg" alt="Menu.IA" className="w-full h-full" />
+            <div className="w-10 h-10 rounded-xl bg-transparent flex items-center justify-center overflow-hidden">
+              <img src="/logos/logo-bg.png" alt="Menu.IA" className="w-full h-full object-cover" />
             </div>
-            <span className="font-heading font-black text-xl tracking-tighter">Menu.IA</span>
+            <span className="font-heading font-black text-xl tracking-tighter">
+              <span className="text-[#22C55E]">Menu</span>
+              <span className="text-[#3B82F6]">.IA</span>
+            </span>
           </Link>
 
           <h1 className="font-heading text-3xl font-bold text-gray-900 mb-2">
@@ -102,7 +113,7 @@ export default function LoginPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 bg-[#25D366] hover:bg-[#128C7E] text-white text-base"
+              className="w-full h-12 bg-[#22C55E] hover:bg-[#16A34A] text-white text-base font-bold rounded-xl"
               data-testid="login-submit-btn"
             >
               {loading ? (
@@ -118,7 +129,7 @@ export default function LoginPage() {
 
           <p className="mt-6 text-center text-gray-600">
             ¿No tienes cuenta?{' '}
-            <Link to="/register" className="text-[#25D366] hover:text-[#128C7E] font-medium">
+            <Link to="/register" className="text-[#22C55E] hover:text-[#16A34A] font-bold">
               Regístrate gratis
             </Link>
           </p>
@@ -126,21 +137,40 @@ export default function LoginPage() {
       </div>
 
       {/* Right Panel - Image */}
-      <div className="hidden lg:block lg:w-1/2 relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#25D366] to-[#128C7E]" />
-        <img
-          src="https://images.unsplash.com/photo-1654018334224-4887d9e85ffe?w=800&q=80"
-          alt="Restaurant"
-          className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-50"
-        />
-        <div className="absolute inset-0 flex items-center justify-center p-12">
-          <div className="text-white text-center">
-            <h2 className="font-heading text-4xl font-bold mb-4">
-              Gestiona tu restaurante con inteligencia
-            </h2>
-            <p className="text-lg text-white/90">
-              Pedidos, fidelización y automatización en una sola plataforma. Bienvenido a Menu.IA.
-            </p>
+      {/* Right Panel - Image */}
+      <div className="hidden lg:block lg:w-1/2 relative bg-[#0F172A] overflow-hidden">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0F172A] via-[#1e293b] to-[#0F172A]" />
+
+        {/* Decorative elements */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-[#22C55E]/10 rounded-full blur-[100px] transform -translate-x-1/3 -translate-y-1/3" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] transform translate-x-1/3 translate-y-1/3" />
+
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-12 z-10">
+          <div className="text-white text-center max-w-2xl mx-auto space-y-8">
+            {/* Logo */}
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="w-48 h-48 mx-auto -mb-4 relative"
+            >
+              <div className="absolute inset-0 bg-[#22C55E]/20 rounded-full blur-2xl animate-pulse" />
+              <img
+                src="/logos/logo.png"
+                alt="Menu.IA Logo"
+                className="w-full h-full object-contain relative z-10 drop-shadow-2xl"
+              />
+            </motion.div>
+
+            <div className="space-y-4">
+              <h2 className="font-heading text-4xl lg:text-5xl font-bold tracking-tight text-white drop-shadow-lg text-balance">
+                Bienvenido a <span className="text-[#22C55E]">Menu</span><span className="text-[#3B82F6]">.IA</span>
+              </h2>
+              <p className="text-lg lg:text-xl text-gray-300 font-medium leading-relaxed drop-shadow-md text-balance max-w-lg mx-auto">
+                Gestiona tu restaurante con inteligencia. Pedidos, fidelización y automatización en una sola plataforma.
+              </p>
+            </div>
           </div>
         </div>
       </div>

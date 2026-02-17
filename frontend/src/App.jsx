@@ -45,7 +45,7 @@ const ProtectedRoute = ({ children }) => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAFAF9]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#25D366]" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#22C55E]" />
       </div>
     );
   }
@@ -64,7 +64,7 @@ const AuthRoute = ({ children }) => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAFAF9]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#25D366]" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#22C55E]" />
       </div>
     );
   }

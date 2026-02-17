@@ -17,10 +17,13 @@ export default function PricingPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16">
                         <Link to="/" className="flex items-center gap-2">
-                            <div className="w-10 h-10 rounded-xl bg-[#22C55E]/10 flex items-center justify-center p-2">
-                                <img src="/favicon.svg" alt="Menu.IA" className="w-full h-full" />
+                            <div className="w-10 h-10 rounded-xl bg-transparent flex items-center justify-center overflow-hidden">
+                                <img src="/logos/logo-bg.png" alt="Menu.IA" className="w-full h-full object-cover" />
                             </div>
-                            <span className="font-heading font-black text-xl tracking-tighter">Menu.IA</span>
+                            <span className="font-heading font-black text-xl tracking-tighter">
+                                <span className="text-[#22C55E]">Menu</span>
+                                <span className="text-[#3B82F6]">.IA</span>
+                            </span>
                         </Link>
 
                         <div className="flex items-center gap-1 sm:gap-3">
@@ -34,7 +37,7 @@ export default function PricingPage() {
                             </Button>
                             <Button
                                 onClick={() => navigate('/register')}
-                                className="bg-[#25D366] hover:bg-[#128C7E] text-white hidden sm:flex"
+                                className="bg-[#22C55E] hover:bg-[#16A34A] text-white hidden sm:flex"
                             >
                                 Comenzar gratis
                             </Button>
@@ -96,7 +99,7 @@ export default function PricingPage() {
                     <Button
                         size="lg"
                         onClick={() => navigate('/register')}
-                        className="bg-[#25D366] hover:bg-[#128C7E] text-white text-lg px-10 h-16 rounded-2xl shadow-[0_20px_40px_rgba(37,211,102,0.2)] transition-all hover:scale-105 active:scale-95"
+                        className="bg-[#22C55E] hover:bg-[#16A34A] text-white text-lg px-10 h-16 rounded-2xl shadow-[0_20px_40px_rgba(37,211,102,0.2)] transition-all hover:scale-105 active:scale-95"
                     >
                         Comenzar gratis ahora
                         <ArrowRight className="ml-2 w-5 h-5" />
@@ -109,8 +112,8 @@ export default function PricingPage() {
                 <div className="max-w-7xl mx-auto">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-lg bg-[#22C55E] flex items-center justify-center p-1.5">
-                                <img src="/favicon.svg" alt="Menu.IA" className="w-full h-full brightness-0 invert" />
+                            <div className="w-8 h-8 rounded-lg overflow-hidden bg-white/10 flex items-center justify-center">
+                                <img src="/logos/logo.png" alt="Menu.IA" className="w-full h-full object-contain" />
                             </div>
                             <span className="font-heading font-bold text-white uppercase tracking-tighter">MENU.IA</span>
                         </div>
@@ -130,10 +133,10 @@ function PricingCard({ name, price, features, popular, onSelect }) {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className={`relative p-6 rounded-2xl bg-white border-2 ${popular ? 'border-[#25D366] shadow-lg' : 'border-gray-100'}`}
+            className={`relative p-6 rounded-2xl bg-white border-2 ${popular ? 'border-[#22C55E] shadow-lg' : 'border-gray-100'}`}
         >
             {popular && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#25D366] text-white text-sm font-medium">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#22C55E] text-white text-sm font-medium">
                     Popular
                 </span>
             )}
@@ -142,13 +145,13 @@ function PricingCard({ name, price, features, popular, onSelect }) {
             <ul className="space-y-2 mb-6">
                 {features.map((feature, i) => (
                     <li key={i} className="flex items-center gap-2 text-gray-600">
-                        <Check className="w-5 h-5 text-[#25D366]" />
+                        <Check className="w-5 h-5 text-[#22C55E]" />
                         {feature}
                     </li>
                 ))}
             </ul>
             <Button
-                className={`w-full ${popular ? 'bg-[#25D366] hover:bg-[#128C7E] text-white' : ''}`}
+                className={`w-full ${popular ? 'bg-[#22C55E] hover:bg-[#16A34A] text-white' : ''}`}
                 variant={popular ? 'default' : 'outline'}
                 onClick={onSelect}
             >

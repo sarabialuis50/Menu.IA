@@ -80,7 +80,7 @@ export default function MisPedidos() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAFAF9]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#13ec6d]" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#22C55E]" />
       </div>
     );
   }
@@ -93,13 +93,13 @@ export default function MisPedidos() {
           <div>
             <Link
               to={`/${slug}`}
-              className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#618972] mb-4 hover:text-[#13ec6d] transition-colors"
+              className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#618972] mb-4 hover:text-[#22C55E] transition-colors"
             >
               <ArrowLeft className="w-3 h-3" /> Volver al Menú
             </Link>
             <h1 className="text-4xl font-black text-[#111814] tracking-tighter leading-none">Mis Pedidos</h1>
           </div>
-          <div className="size-14 rounded-2xl bg-[#13ec6d]/10 flex items-center justify-center text-[#13ec6d]">
+          <div className="size-14 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
             <Smartphone className="w-8 h-8" />
           </div>
         </div>
@@ -148,13 +148,13 @@ function SearchSection({ phone, setPhone, searchOrders, searching }) {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="Tu número de teléfono"
-            className="h-16 pl-14 rounded-2xl bg-gray-50/50 border-gray-100 font-bold text-lg focus:ring-[#13ec6d] focus:border-[#13ec6d] transition-all"
+            className="h-16 pl-14 rounded-2xl bg-gray-50/50 border-gray-100 font-bold text-lg focus:ring-[#22C55E] focus:border-[#22C55E] transition-all"
           />
         </div>
         <Button
           onClick={searchOrders}
           disabled={searching}
-          className="w-full h-16 bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg shadow-[#13ec6d]/20 transition-all active:scale-95"
+          className="w-full h-16 bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg shadow-[#22C55E]/20 transition-all active:scale-95"
         >
           {searching ? <RefreshCw className="w-5 h-5 animate-spin" /> : (
             <div className="flex items-center gap-2">
@@ -212,7 +212,7 @@ function OrderTimeline({ order, onRefresh, onReset }) {
             />
             <div className="absolute top-4 left-4 z-[1000] flex items-center gap-2">
               <div className="px-3 py-1 bg-white/90 backdrop-blur-md border border-gray-200 rounded-full shadow-sm flex items-center gap-2">
-                <div className={`size-2 rounded-full ${order.estado === 'entregado' ? 'bg-gray-400' : 'bg-[#25D366] animate-ping'}`} />
+                <div className={`size-2 rounded-full ${order.estado === 'entregado' ? 'bg-gray-400' : 'bg-[#22C55E] animate-ping'}`} />
                 <span className="text-[10px] font-black uppercase tracking-widest text-[#111814]">
                   {order.estado === 'entregado' ? 'Entrega Finalizada' : 'Seguimiento en Vivo'}
                 </span>
@@ -223,7 +223,7 @@ function OrderTimeline({ order, onRefresh, onReset }) {
       )}
 
       <div className="bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-2xl shadow-gray-200/50" data-testid="order-timeline">
-        <div className="bg-[#13ec6d] text-[#111814] p-8">
+        <div className="bg-[#22C55E] text-[#111814] p-8">
           <div className="flex justify-between items-start">
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -247,15 +247,15 @@ function OrderTimeline({ order, onRefresh, onReset }) {
             return (
               <div key={idx} className="flex gap-6 relative">
                 <div className="flex flex-col items-center z-10">
-                  <div className={`size-14 rounded-2xl flex items-center justify-center transition-all duration-500 ${isCompleted ? 'bg-[#13ec6d] text-[#111814] shadow-lg shadow-[#13ec6d]/20' : 'bg-gray-100 text-gray-300'} ${isCurrent ? 'ring-8 ring-[#13ec6d]/10 scale-110' : ''}`}>
+                  <div className={`size-14 rounded-2xl flex items-center justify-center transition-all duration-500 ${isCompleted ? 'bg-[#22C55E] text-[#111814] shadow-lg shadow-[#22C55E]/20' : 'bg-gray-100 text-gray-300'} ${isCurrent ? 'ring-8 ring-[#22C55E]/10 scale-110' : ''}`}>
                     <StepIcon className="w-7 h-7" />
                   </div>
-                  {idx < steps.length - 1 && <div className={`w-1 h-12 my-1 transition-all duration-500 ${isCompleted ? 'bg-[#13ec6d]' : 'bg-gray-100'}`} />}
+                  {idx < steps.length - 1 && <div className={`w-1 h-12 my-1 transition-all duration-500 ${isCompleted ? 'bg-[#22C55E]' : 'bg-gray-100'}`} />}
                 </div>
                 <div className="flex-1 pt-2">
                   <p className={`text-lg font-black tracking-tight ${isCompleted ? 'text-[#111814]' : 'text-gray-300'}`}>{step.label}</p>
                   <p className={`text-sm font-medium ${isCompleted ? 'text-[#618972]' : 'text-gray-200'}`}>{step.desc}</p>
-                  {isCurrent && <span className="inline-flex mt-2 px-2 py-0.5 bg-[#13ec6d]/10 text-[#13ec6d] text-[8px] font-black uppercase tracking-widest rounded-md border border-[#13ec6d]/20">En Progreso</span>}
+                  {isCurrent && <span className="inline-flex mt-2 px-2 py-0.5 bg-[#22C55E]/10 text-[#22C55E] text-[8px] font-black uppercase tracking-widest rounded-md border border-[#22C55E]/20">En Progreso</span>}
                 </div>
               </div>
             );
@@ -264,7 +264,7 @@ function OrderTimeline({ order, onRefresh, onReset }) {
 
         <div className="border-t border-gray-50 bg-gray-50/50 p-10">
           <h3 className="text-sm font-black uppercase tracking-widest text-[#111814] mb-6 flex items-center gap-2">
-            <Package className="w-4 h-4 text-[#13ec6d]" /> Resumen del pedido
+            <Package className="w-4 h-4 text-[#22C55E]" /> Resumen del pedido
           </h3>
           <div className="space-y-4">
             {order.items.map((item, idx) => (
@@ -279,7 +279,7 @@ function OrderTimeline({ order, onRefresh, onReset }) {
           </div>
           <div className="mt-8 pt-8 border-t border-gray-200 flex justify-between items-center">
             <span className="font-black text-lg text-[#111814] tracking-tighter">Total pagado</span>
-            <span className="text-3xl font-black text-[#13ec6d] tracking-tighter">{formatCurrency(order.total)}</span>
+            <span className="text-3xl font-black text-[#22C55E] tracking-tighter">{formatCurrency(order.total)}</span>
           </div>
         </div>
       </div>
@@ -344,7 +344,7 @@ function DeliveryMap({ lat, lng, businessLat, businessLng, isDelivered }) {
       if (!markers.courier) {
         const courierIcon = window.L.divIcon({
           className: 'custom-div-icon',
-          html: `<div style="background-color: #25D366; width: 40px; height: 40px; border-radius: 15px; display: flex; align-items: center; justify-content: center; color: #111814; border: 3px solid white; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg></div>`,
+          html: `<div style="background-color: #22C55E; width: 40px; height: 40px; border-radius: 15px; display: flex; align-items: center; justify-content: center; color: #111814; border: 3px solid white; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg></div>`,
           iconSize: [40, 40],
           iconAnchor: [20, 20]
         });

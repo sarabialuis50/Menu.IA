@@ -59,18 +59,18 @@ export const DashboardLayout = ({ children }) => {
   return (
     <div className="min-h-screen bg-[#f6f8f7] font-sans">
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b z-50 flex items-center px-6">
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#0F172A] border-b border-slate-800 z-50 flex items-center px-6">
         <button
           onClick={() => setSidebarOpen(true)}
-          className="p-2.5 hover:bg-gray-50 rounded-xl transition-colors"
+          className="p-2.5 hover:bg-slate-800 rounded-xl transition-colors"
         >
-          <Menu className="w-6 h-6 text-[#111814]" />
+          <Menu className="w-6 h-6 text-white" />
         </button>
         <div className="flex-1 flex items-center justify-center gap-2">
           <img src="/favicon.svg" alt="Menu.IA" className="size-8" />
-          <span className="font-black text-xl tracking-tighter text-[#111814]">Menu.IA</span>
+          <span className="font-black text-xl tracking-tighter text-white">Menu.IA</span>
         </div>
-        <div className="size-10 rounded-xl bg-gray-100" />
+        <div className="size-10 rounded-xl bg-slate-800" />
       </header>
 
       {/* Mobile Sidebar Overlay */}
@@ -88,32 +88,32 @@ export const DashboardLayout = ({ children }) => {
 
       {/* Sidebar */}
       <aside className={`
-        fixed top-0 left-0 h-full w-72 bg-white border-r border-[#f0f4f2] z-50 shadow-2xl lg:shadow-none
+        fixed top-0 left-0 h-full w-72 bg-[#0F172A] border-r border-slate-800 z-50 shadow-2xl lg:shadow-none
         transform transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1)
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0
       `}>
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="h-16 flex items-center justify-between px-6">
+          <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800">
             <Link to={basePath} className="flex items-center gap-3">
               <div className="size-8 rounded-xl bg-[#22C55E]/10 flex items-center justify-center overflow-hidden">
                 <img src="/favicon.svg" alt="Menu.IA" className="w-5 h-5" />
               </div>
-              <span className="font-black text-xl tracking-tighter text-[#111814]">Menu.IA</span>
+              <span className="font-black text-xl tracking-tighter text-white">Menu.IA</span>
             </Link>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-2 hover:bg-gray-50 rounded-xl transition-colors"
+              className="lg:hidden p-2 hover:bg-slate-800 rounded-xl transition-colors"
             >
-              <X className="w-5 h-5 text-[#618972]" />
+              <X className="w-5 h-5 text-slate-400" />
             </button>
           </div>
 
           {/* Business Info */}
-          <div className="px-4 mb-2">
-            <div className="p-3 rounded-2xl bg-gray-50 border border-gray-100 flex items-center gap-3">
-              <div className="size-8 rounded-xl bg-white shadow-sm flex items-center justify-center font-bold text-[#13ec6d] overflow-hidden">
+          <div className="px-4 mb-2 mt-4">
+            <div className="p-3 rounded-2xl bg-slate-800/50 border border-slate-700 flex items-center gap-3">
+              <div className="size-8 rounded-xl bg-slate-800 shadow-sm flex items-center justify-center font-bold text-[#22C55E] overflow-hidden">
                 {user?.logo_url ? (
                   <img src={user.logo_url} alt="Logo" className="w-full h-full object-cover" />
                 ) : (
@@ -121,8 +121,8 @@ export const DashboardLayout = ({ children }) => {
                 )}
               </div>
               <div className="flex-1 overflow-hidden">
-                <p className="text-[9px] font-black text-[#618972] uppercase tracking-[0.1em]">Restaurante</p>
-                <p className="font-bold text-[#111814] truncate text-xs">{user?.nombre || 'Mi Negocio'}</p>
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.1em]">Restaurante</p>
+                <p className="font-bold text-slate-100 truncate text-xs">{user?.nombre || 'Mi Negocio'}</p>
               </div>
             </div>
           </div>
@@ -142,8 +142,8 @@ export const DashboardLayout = ({ children }) => {
                   className={`
                     flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs transition-all duration-300 group
                     ${isActive
-                      ? 'bg-[#13ec6d] text-[#111814] shadow-sm shadow-[#13ec6d]/20 scale-[1.01]'
-                      : 'text-[#618972] hover:bg-gray-50 hover:text-[#111814]'
+                      ? 'bg-[#22C55E] text-white shadow-lg shadow-green-500/20 scale-[1.01]'
+                      : 'text-slate-400 hover:bg-slate-800 hover:text-white'
                     }
                   `}
                 >
@@ -154,13 +154,13 @@ export const DashboardLayout = ({ children }) => {
               );
             })}
 
-            <div className="pt-4 mt-4 border-t border-[#f0f4f2]">
-              <p className="px-3 mb-2 text-[10px] font-black text-[#618972] uppercase tracking-[0.2em]">Acceso Público</p>
+            <div className="pt-4 mt-4 border-t border-slate-800">
+              <p className="px-3 mb-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Acceso Público</p>
               <a
                 href={`/${user?.slug}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs text-[#618972] hover:bg-gray-50 hover:text-[#111814] transition-all group"
+                className="flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs text-slate-400 hover:bg-slate-800 hover:text-white transition-all group"
               >
                 <Smartphone className="w-4 h-4 group-hover:scale-110 transition-transform" />
                 <span className="flex-1 truncate">Vista del Cliente</span>
@@ -170,10 +170,10 @@ export const DashboardLayout = ({ children }) => {
           </nav>
 
           {/* Logout */}
-          <div className="p-4 border-t border-[#f0f4f2]">
+          <div className="p-4 border-t border-slate-800">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs text-red-500 hover:bg-red-50 transition-all hover:scale-[1.02]"
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs text-red-400 hover:bg-red-500/10 transition-all hover:scale-[1.02]"
             >
               <LogOut className="w-4 h-4" />
               Cerrar sesión
@@ -195,7 +195,7 @@ export const DashboardLayout = ({ children }) => {
         </div>
       </main>
       {/* Mobile Bottom Navigation */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-[#f0f4f2] z-50 flex items-center justify-around px-2 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-[#0F172A] border-t border-slate-800 z-50 flex items-center justify-around px-2 shadow-[0_-4px_20px_rgba(0,0,0,0.2)]">
         {mobileBottomNavItems.map((item) => {
           const fullPath = `${basePath}${item.path}`;
           const isActive = location.pathname === fullPath;
@@ -204,10 +204,10 @@ export const DashboardLayout = ({ children }) => {
             <Link
               key={item.path}
               to={fullPath}
-              className={`flex flex-col items-center justify-center gap-1 transition-all duration-300 w-full h-full ${isActive ? 'text-[#13ec6d]' : 'text-[#618972]'
+              className={`flex flex-col items-center justify-center gap-1 transition-all duration-300 w-full h-full ${isActive ? 'text-[#22C55E]' : 'text-slate-400'
                 }`}
             >
-              <div className={`p-1.5 rounded-xl transition-all ${isActive ? 'bg-[#13ec6d]/10 scale-110 shadow-sm shadow-[#13ec6d]/10' : ''}`}>
+              <div className={`p-1.5 rounded-xl transition-all ${isActive ? 'bg-[#22C55E]/10 scale-110 shadow-sm shadow-[#22C55E]/10' : ''}`}>
                 <item.icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5px]' : 'stroke-2'}`} />
               </div>
               <span className={`text-[9px] font-black uppercase tracking-tight ${isActive ? 'opacity-100' : 'opacity-60'}`}>

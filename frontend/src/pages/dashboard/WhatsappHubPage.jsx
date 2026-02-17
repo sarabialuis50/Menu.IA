@@ -145,8 +145,8 @@ export default function WhatsappHubPage() {
                                     <div className="flex-1 p-4 space-y-4 overflow-y-auto scrollbar-hide">
                                         <div className="max-w-[90%] bg-white rounded-2xl rounded-tl-sm p-4 shadow-md relative border-b-2 border-gray-100">
                                             <div className="flex items-center gap-1.5 mb-2">
-                                                <span className="text-[9px] font-black text-[#25D366] uppercase tracking-widest">OFICIAL</span>
-                                                <div className="w-1.5 h-1.5 rounded-full bg-[#25D366]" />
+                                                <span className="text-[9px] font-black text-[#22C55E] uppercase tracking-widest">OFICIAL</span>
+                                                <div className="w-1.5 h-1.5 rounded-full bg-[#22C55E]" />
                                             </div>
                                             <p className="text-sm text-gray-800 font-medium leading-relaxed whitespace-pre-wrap">
                                                 {activeTab === 'templates'
@@ -156,7 +156,7 @@ export default function WhatsappHubPage() {
                                             </p>
                                             <div className="flex items-center justify-end gap-1 mt-2">
                                                 <p className="text-[8px] text-gray-400 font-bold uppercase">Ahora</p>
-                                                <Check className="w-2.5 h-2.5 text-[#25D366]" />
+                                                <Check className="w-2.5 h-2.5 text-[#22C55E]" />
                                             </div>
                                         </div>
                                     </div>
@@ -177,7 +177,7 @@ export default function WhatsappHubPage() {
                                 <button
                                     onClick={() => setActiveTab('templates')}
                                     className={`px-6 py-2.5 text-[10px] font-black tracking-widest transition-all flex items-center gap-2 rounded-full ${activeTab === 'templates'
-                                        ? 'bg-[#25D366] text-white shadow-lg shadow-green-100'
+                                        ? 'bg-[#22C55E] text-white shadow-lg shadow-green-100'
                                         : 'text-gray-400 hover:text-gray-600'
                                         }`}
                                 >
@@ -187,7 +187,7 @@ export default function WhatsappHubPage() {
                                 <button
                                     onClick={() => setActiveTab('campaigns')}
                                     className={`px-6 py-2.5 text-[10px] font-black tracking-widest transition-all flex items-center gap-2 rounded-full ${activeTab === 'campaigns'
-                                        ? 'bg-[#25D366] text-white shadow-lg shadow-green-100'
+                                        ? 'bg-[#22C55E] text-white shadow-lg shadow-green-100'
                                         : 'text-gray-400 hover:text-gray-600'
                                         }`}
                                 >
@@ -201,7 +201,7 @@ export default function WhatsappHubPage() {
                             <>
                                 {/* Selector de Disparadores Atómicos */}
                                 <div className="space-y-4">
-                                    <div className="flex items-center gap-2 text-[#25D366]">
+                                    <div className="flex items-center gap-2 text-[#22C55E]">
                                         <Zap className="w-3.5 h-3.5 fill-current" />
                                         <h3 className="text-[10px] font-black uppercase tracking-widest text-[#23a352]">Disparadores Atómicos</h3>
                                         <div className="ml-auto px-2 py-0.5 bg-green-50 rounded-full text-[9px] font-black border border-green-100 uppercase tracking-tighter">
@@ -215,15 +215,15 @@ export default function WhatsappHubPage() {
                                                 key={template.id}
                                                 onClick={() => setSelectedTemplate(template)}
                                                 className={`p-4 rounded-2xl border transition-all flex items-start gap-4 text-left ${selectedTemplate?.id === template.id
-                                                    ? 'bg-white border-[#25D366] border-2 shadow-lg shadow-green-100 ring-4 ring-green-50/50'
+                                                    ? 'bg-white border-[#22C55E] border-2 shadow-lg shadow-green-100 ring-4 ring-green-50/50'
                                                     : 'bg-white border-gray-100 border-2 hover:border-gray-200 shadow-sm'
                                                     }`}
                                             >
-                                                <div className={`p-2 rounded-xl shrink-0 ${selectedTemplate?.id === template.id ? 'bg-[#25D366] text-white shadow-md' : 'bg-gray-50 text-gray-300'}`}>
+                                                <div className={`p-2 rounded-xl shrink-0 ${selectedTemplate?.id === template.id ? 'bg-[#22C55E] text-white shadow-md' : 'bg-gray-50 text-gray-300'}`}>
                                                     <Zap className="w-4 h-4" />
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <p className={`font-black text-[10px] uppercase tracking-tight leading-none mb-2 ${selectedTemplate?.id === template.id ? 'text-[#25D366]' : 'text-gray-500'}`}>{template.name}</p>
+                                                    <p className={`font-black text-[10px] uppercase tracking-tight leading-none mb-2 ${selectedTemplate?.id === template.id ? 'text-[#22C55E]' : 'text-gray-500'}`}>{template.name}</p>
                                                     <div className="flex items-center gap-1.5">
                                                         <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${template.status ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`} />
                                                         <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">
@@ -241,7 +241,7 @@ export default function WhatsappHubPage() {
                                     <div className="space-y-4 flex flex-col flex-1">
                                         <div className="flex items-center justify-between px-1">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-9 h-9 rounded-full bg-white border-2 border-[#25D366] text-[#25D366] flex items-center justify-center font-black shadow-sm">
+                                                <div className="w-9 h-9 rounded-full bg-white border-2 border-[#22C55E] text-[#22C55E] flex items-center justify-center font-black shadow-sm">
                                                     <MessageSquareMore className="w-4 h-4" />
                                                 </div>
                                                 <h3 className="font-black text-gray-900 text-base uppercase tracking-tight">Personaliza el mensaje</h3>
@@ -254,7 +254,7 @@ export default function WhatsappHubPage() {
                                                 <Switch
                                                     checked={selectedTemplate.status}
                                                     onCheckedChange={(checked) => setSelectedTemplate({ ...selectedTemplate, status: checked })}
-                                                    className="data-[state=checked]:bg-[#25D366]"
+                                                    className="data-[state=checked]:bg-[#22C55E]"
                                                 />
                                             </div>
                                         </div>
@@ -262,7 +262,7 @@ export default function WhatsappHubPage() {
                                         <Card className="border-2 border-gray-200 shadow-xl shadow-gray-200/50 overflow-hidden bg-white flex flex-col flex-1 min-h-[500px] rounded-[1.5rem]">
                                             <div className="p-7 flex-1 flex flex-col space-y-6">
                                                 <div className="bg-gray-50/80 rounded-2xl p-5 border-2 border-dashed border-gray-200 flex items-center gap-3">
-                                                    <AlertCircle className="w-5 h-5 text-[#25D366] shrink-0" />
+                                                    <AlertCircle className="w-5 h-5 text-[#22C55E] shrink-0" />
                                                     <p className="text-xs text-gray-500 font-bold uppercase tracking-tight leading-relaxed">{selectedTemplate.trigger}</p>
                                                 </div>
 
@@ -286,7 +286,7 @@ export default function WhatsappHubPage() {
                                                                 <button
                                                                     key={tag}
                                                                     onClick={() => setSelectedTemplate({ ...selectedTemplate, message: selectedTemplate.message + ' ' + tag })}
-                                                                    className="whitespace-nowrap text-[10px] font-bold px-3 py-1.5 bg-white border-2 border-gray-100 hover:border-[#25D366] hover:text-[#25D366] hover:shadow-sm text-gray-600 rounded-xl transition-all"
+                                                                    className="whitespace-nowrap text-[10px] font-bold px-3 py-1.5 bg-white border-2 border-gray-100 hover:border-[#22C55E] hover:text-[#22C55E] hover:shadow-sm text-gray-600 rounded-xl transition-all"
                                                                 >
                                                                     {tag}
                                                                 </button>
@@ -298,7 +298,7 @@ export default function WhatsappHubPage() {
                                                         <Button
                                                             onClick={handleSaveTemplate}
                                                             disabled={isSavingTemplate}
-                                                            className="h-11 px-6 rounded-xl bg-[#25D366] hover:bg-[#128C7E] text-white font-black flex items-center gap-2 transition-all shadow-lg shadow-green-100 disabled:opacity-50 text-[11px] tracking-widest"
+                                                            className="h-11 px-6 rounded-xl bg-[#22C55E] hover:bg-[#16A34A] text-white font-black flex items-center gap-2 transition-all shadow-lg shadow-green-100 disabled:opacity-50 text-[11px] tracking-widest"
                                                         >
                                                             {isSavingTemplate ? (
                                                                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -321,10 +321,10 @@ export default function WhatsappHubPage() {
                             <>
                                 {/* Selector de Audiencia - CON BORDES PRONUNCIADOS */}
                                 <div className="space-y-4">
-                                    <div className="flex items-center gap-2 text-[#25D366]">
+                                    <div className="flex items-center gap-2 text-[#22C55E]">
                                         <Users className="w-3.5 h-3.5 fill-current" />
                                         <h3 className="text-[10px] font-black uppercase tracking-widest text-[#23a352]">Audiencia Objetivo</h3>
-                                        <div className="ml-auto px-2 py-0.5 bg-green-50 rounded-full text-[9px] font-black border border-green-100 uppercase tracking-tighter text-[#25D366]">
+                                        <div className="ml-auto px-2 py-0.5 bg-green-50 rounded-full text-[9px] font-black border border-green-100 uppercase tracking-tighter text-[#22C55E]">
                                             {selectedSegment?.count} CLIENTES SELECCIONADOS
                                         </div>
                                     </div>
@@ -335,15 +335,15 @@ export default function WhatsappHubPage() {
                                                 key={segment.id}
                                                 onClick={() => handleSegmentChange(segment)}
                                                 className={`p-4 rounded-2xl border transition-all flex flex-col items-center gap-2 text-center ${selectedSegment?.id === segment.id
-                                                    ? 'bg-white border-[#25D366] border-2 shadow-lg shadow-green-100 ring-4 ring-green-50/50'
+                                                    ? 'bg-white border-[#22C55E] border-2 shadow-lg shadow-green-100 ring-4 ring-green-50/50'
                                                     : 'bg-white border-transparent border-2 hover:border-gray-200 shadow-sm'
                                                     }`}
                                             >
-                                                <div className={`p-2 rounded-xl ${selectedSegment?.id === segment.id ? 'bg-[#25D366] text-white shadow-md' : 'bg-gray-50 text-gray-300'}`}>
+                                                <div className={`p-2 rounded-xl ${selectedSegment?.id === segment.id ? 'bg-[#22C55E] text-white shadow-md' : 'bg-gray-50 text-gray-300'}`}>
                                                     {segment.icon}
                                                 </div>
                                                 <div>
-                                                    <p className={`font-black text-[9px] uppercase tracking-tighter leading-none mb-1 ${selectedSegment?.id === segment.id ? 'text-[#25D366]' : 'text-gray-500'}`}>{segment.name}</p>
+                                                    <p className={`font-black text-[9px] uppercase tracking-tighter leading-none mb-1 ${selectedSegment?.id === segment.id ? 'text-[#22C55E]' : 'text-gray-500'}`}>{segment.name}</p>
                                                     <p className="text-[11px] font-black text-gray-900">{segment.count}</p>
                                                 </div>
                                             </button>
@@ -354,7 +354,7 @@ export default function WhatsappHubPage() {
                                 {/* Editor de Mensaje de Campaña - CON BORDES PRONUNCIADOS */}
                                 <div className="space-y-4 flex flex-col flex-1">
                                     <div className="flex items-center gap-3 px-1">
-                                        <div className="w-9 h-9 rounded-full bg-white border-2 border-[#25D366] text-[#25D366] flex items-center justify-center font-black shadow-sm">
+                                        <div className="w-9 h-9 rounded-full bg-white border-2 border-[#22C55E] text-[#22C55E] flex items-center justify-center font-black shadow-sm">
                                             <Send className="w-4 h-4" />
                                         </div>
                                         <h3 className="font-black text-gray-900 text-base uppercase tracking-tight">Personaliza el mensaje de campaña</h3>
@@ -364,7 +364,7 @@ export default function WhatsappHubPage() {
                                         <div className="p-7 flex-1 flex flex-col space-y-6">
                                             <div className="bg-gray-50/80 rounded-2xl p-5 border-2 border-dashed border-gray-200 flex flex-col gap-3">
                                                 <div className="flex items-center gap-3">
-                                                    <AlertCircle className="w-5 h-5 text-[#25D366] shrink-0" />
+                                                    <AlertCircle className="w-5 h-5 text-[#22C55E] shrink-0" />
                                                     <p className="text-xs text-gray-500 font-bold uppercase tracking-tight leading-relaxed">
                                                         {selectedSegment?.desc}
                                                     </p>
@@ -391,7 +391,7 @@ export default function WhatsappHubPage() {
                                                             <button
                                                                 key={tag}
                                                                 onClick={() => setCampaignMessage(campaignMessage + ' ' + tag)}
-                                                                className="whitespace-nowrap text-[10px] font-bold px-3 py-1.5 bg-white border-2 border-gray-100 hover:border-[#25D366] hover:text-[#25D366] hover:shadow-sm text-gray-600 rounded-xl transition-all"
+                                                                className="whitespace-nowrap text-[10px] font-bold px-3 py-1.5 bg-white border-2 border-gray-100 hover:border-[#22C55E] hover:text-[#22C55E] hover:shadow-sm text-gray-600 rounded-xl transition-all"
                                                             >
                                                                 {tag}
                                                             </button>
@@ -403,7 +403,7 @@ export default function WhatsappHubPage() {
                                                     <Button
                                                         onClick={handleSendCampaign}
                                                         disabled={isSendingCampaign || !campaignMessage.trim()}
-                                                        className="h-11 px-6 rounded-xl bg-[#25D366] hover:bg-[#128C7E] text-white font-black flex items-center gap-2 transition-all shadow-lg shadow-green-100 disabled:opacity-50 text-[11px] tracking-widest"
+                                                        className="h-11 px-6 rounded-xl bg-[#22C55E] hover:bg-[#16A34A] text-white font-black flex items-center gap-2 transition-all shadow-lg shadow-green-100 disabled:opacity-50 text-[11px] tracking-widest"
                                                     >
                                                         {isSendingCampaign ? (
                                                             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -430,7 +430,7 @@ export default function WhatsappHubPage() {
                             <Card className="border-2 border-gray-200 shadow-xl bg-white overflow-hidden rounded-[2rem] w-full max-w-[280px] lg:max-w-none lg:w-full border-t-[10px] border-t-green-500">
                                 <div className="p-5 border-b flex items-center justify-between">
                                     <h4 className="font-black text-gray-900 text-[10px] flex items-center gap-2 uppercase tracking-widest">
-                                        <BarChart className="w-3.5 h-3.5 text-[#25D366]" />
+                                        <BarChart className="w-3.5 h-3.5 text-[#22C55E]" />
                                         Impacto Estimado
                                     </h4>
                                     <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
@@ -445,13 +445,13 @@ export default function WhatsappHubPage() {
                                         </div>
                                         <div className="flex justify-between md:flex-col md:items-start items-center gap-1">
                                             <span className="text-gray-400 font-black text-[10px] uppercase">Tasa Apertura</span>
-                                            <span className="font-black text-[#25D366] text-lg">
+                                            <span className="font-black text-[#22C55E] text-lg">
                                                 {activeTab === 'templates' ? (selectedTemplate?.stats?.apertura || '95%') : '96%'}
                                             </span>
                                         </div>
                                         <div className="flex justify-between md:flex-col md:items-start items-center gap-1">
                                             <span className="text-gray-400 font-black text-[10px] uppercase">Conversión</span>
-                                            <span className="font-black text-[#25D366] text-lg">
+                                            <span className="font-black text-[#22C55E] text-lg">
                                                 {activeTab === 'templates' ? (selectedTemplate?.stats?.conversion || '10%') : '8%'}
                                             </span>
                                         </div>

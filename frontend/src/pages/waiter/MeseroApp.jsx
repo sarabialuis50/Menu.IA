@@ -66,7 +66,7 @@ const PinLogin = ({ slug, onLogin }) => {
         className="w-full max-w-sm"
       >
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-[#25D366] rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-[#22C55E] rounded-2xl flex items-center justify-center mx-auto mb-4">
             <User className="w-8 h-8 text-white" />
           </div>
           <h1 className="font-heading text-2xl font-bold text-white">Acceso Mesero</h1>
@@ -79,7 +79,7 @@ const PinLogin = ({ slug, onLogin }) => {
               <div
                 key={index}
                 className={`w-14 h-14 rounded-xl border-2 flex items-center justify-center text-2xl font-bold ${pin.length > index
-                  ? 'bg-[#25D366] border-[#25D366] text-white'
+                  ? 'bg-[#22C55E] border-[#22C55E] text-white'
                   : 'bg-gray-800 border-gray-700 text-gray-400'
                   }`}
               >
@@ -129,7 +129,7 @@ const PinLogin = ({ slug, onLogin }) => {
           <Button
             type="submit"
             disabled={pin.length !== 4 || loading}
-            className="w-full h-14 bg-[#25D366] hover:bg-[#128C7E] text-white text-lg"
+            className="w-full h-14 bg-[#22C55E] hover:bg-[#16A34A] text-white text-lg"
             data-testid="pin-submit-btn"
           >
             {loading ? (
@@ -248,7 +248,7 @@ const WaiterAppContent = ({ employee, slug, onLogout }) => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#25D366]" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#22C55E]" />
       </div>
     );
   }
@@ -350,7 +350,7 @@ const WaiterAppContent = ({ employee, slug, onLogout }) => {
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
                     className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeCategory === cat
-                      ? 'bg-[#25D366] text-white'
+                      ? 'bg-[#22C55E] text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     data-testid={`waiter-category-${cat}`}
@@ -381,7 +381,7 @@ const WaiterAppContent = ({ employee, slug, onLogout }) => {
                     />
                   )}
                   <h3 className="font-medium text-sm text-gray-900 line-clamp-1">{product.nombre}</h3>
-                  <p className="font-bold text-[#25D366] mt-1">{formatCurrency(product.precio)}</p>
+                  <p className="font-bold text-[#22C55E] mt-1">{formatCurrency(product.precio)}</p>
                 </motion.button>
               ))}
             </div>
@@ -399,7 +399,7 @@ const WaiterAppContent = ({ employee, slug, onLogout }) => {
           <Sheet open={cartOpen} onOpenChange={setCartOpen}>
             <SheetTrigger asChild>
               <button
-                className="w-full bg-[#25D366] text-white rounded-xl px-4 py-4 flex items-center justify-between hover:bg-[#128C7E] transition-colors"
+                className="w-full bg-[#22C55E] text-white rounded-xl px-4 py-4 flex items-center justify-between hover:bg-[#16A34A] transition-colors"
                 data-testid="waiter-cart-btn"
               >
                 <div className="flex items-center gap-3">
@@ -451,12 +451,12 @@ const WaiterAppContent = ({ employee, slug, onLogout }) => {
                 <div className="pt-4 mt-4 border-t space-y-4">
                   <div className="flex justify-between text-xl font-bold">
                     <span>Total</span>
-                    <span className="text-[#25D366]">{formatCurrency(total)}</span>
+                    <span className="text-[#22C55E]">{formatCurrency(total)}</span>
                   </div>
                   <Button
                     onClick={handleSubmitOrder}
                     disabled={submitting}
-                    className="w-full h-14 bg-[#25D366] hover:bg-[#128C7E] text-white text-lg"
+                    className="w-full h-14 bg-[#22C55E] hover:bg-[#16A34A] text-white text-lg"
                     data-testid="send-order-btn"
                   >
                     {submitting ? (

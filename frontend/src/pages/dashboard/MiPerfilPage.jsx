@@ -248,7 +248,7 @@ export default function MiPerfilPage() {
         return (
             <DashboardLayout>
                 <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#13ec6d]" />
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#22C55E]" />
                 </div>
             </DashboardLayout>
         );
@@ -260,8 +260,8 @@ export default function MiPerfilPage() {
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-sm border border-gray-100">
                     <div className="space-y-1">
-                        <div className="flex items-center gap-2 text-[#13ec6d] font-bold text-sm uppercase tracking-widest">
-                            <span className="w-8 h-[2px] bg-[#13ec6d]"></span>
+                        <div className="flex items-center gap-2 text-[#22C55E] font-bold text-sm uppercase tracking-widest">
+                            <span className="w-8 h-[2px] bg-[#22C55E]"></span>
                             Configuración de Marca
                         </div>
                         <h1 className="text-3xl md:text-4xl font-black text-[#111814] tracking-tighter">Mi Perfil Público</h1>
@@ -276,7 +276,7 @@ export default function MiPerfilPage() {
                             </Link>
                         </Button>
                         <Button
-                            className="rounded-2xl h-12 px-8 bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] font-bold gap-2 shadow-lg shadow-[#13ec6d]/20 w-full md:w-auto"
+                            className="rounded-2xl h-12 px-8 bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-bold gap-2 shadow-lg shadow-[#22C55E]/20 w-full md:w-auto"
                             onClick={handleSave}
                             disabled={saving}
                         >
@@ -310,9 +310,9 @@ export default function MiPerfilPage() {
                                     />
                                     <div className="bg-white/90 px-4 py-2 rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 flex items-center gap-2 font-bold text-sm text-[#111814]">
                                         {uploadingBanner ? (
-                                            <Loader2 className="w-4 h-4 animate-spin text-[#13ec6d]" />
+                                            <Loader2 className="w-4 h-4 animate-spin text-[#22C55E]" />
                                         ) : (
-                                            <Upload className="w-4 h-4 text-[#13ec6d]" />
+                                            <Upload className="w-4 h-4 text-[#22C55E]" />
                                         )}
                                         {uploadingBanner ? 'Subiendo...' : 'Cambiar Banner'}
                                     </div>
@@ -352,7 +352,7 @@ export default function MiPerfilPage() {
                                         <Input
                                             value={businessData.nombre}
                                             onChange={e => setBusinessData({ ...businessData, nombre: e.target.value })}
-                                            className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#13ec6d]/20 transition-all font-medium"
+                                            className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium"
                                             placeholder="Nombre de tu negocio"
                                         />
                                     </div>
@@ -362,7 +362,7 @@ export default function MiPerfilPage() {
                                             placeholder="Ej: Sabor auténtico en cada rebanada"
                                             value={businessData.slogan || ''}
                                             onChange={e => setBusinessData({ ...businessData, slogan: e.target.value })}
-                                            className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#13ec6d]/20 transition-all font-medium"
+                                            className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium"
                                         />
                                     </div>
                                 </div>
@@ -373,7 +373,7 @@ export default function MiPerfilPage() {
                                         rows={4}
                                         value={businessData.descripcion || ''}
                                         onChange={e => setBusinessData({ ...businessData, descripcion: e.target.value })}
-                                        className="rounded-3xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#13ec6d]/20 transition-all font-medium leading-relaxed"
+                                        className="rounded-3xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium leading-relaxed"
                                         placeholder="Cuéntales a tus clientes tu historia..."
                                     />
                                 </div>
@@ -384,8 +384,8 @@ export default function MiPerfilPage() {
                         <Card className="border-none shadow-sm rounded-[2.5rem] bg-white overflow-hidden">
                             <CardHeader className="px-10 pt-10 pb-2">
                                 <CardTitle className="text-xl font-bold flex items-center gap-3">
-                                    <div className="p-2 bg-[#13ec6d]/10 rounded-xl">
-                                        <MapPin className="w-5 h-5 text-[#13ec6d]" />
+                                    <div className="p-2 bg-[#22C55E]/10 rounded-xl">
+                                        <MapPin className="w-5 h-5 text-[#22C55E]" />
                                     </div>
                                     Ubicación y Contacto
                                 </CardTitle>
@@ -399,7 +399,7 @@ export default function MiPerfilPage() {
                                             <button
                                                 onClick={detectLocation}
                                                 disabled={detecting}
-                                                className="absolute left-4 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-[#13ec6d]/10 text-[#618972] hover:text-[#13ec6d] transition-colors z-10 disabled:opacity-50"
+                                                className="absolute left-4 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-[#22C55E]/10 text-[#618972] hover:text-[#22C55E] transition-colors z-10 disabled:opacity-50"
                                                 title="Detectar mi ubicación actual"
                                             >
                                                 {detecting ? (
@@ -409,7 +409,7 @@ export default function MiPerfilPage() {
                                                 )}
                                             </button>
                                             <Input
-                                                className="pl-11 h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#13ec6d]/20 transition-all font-medium"
+                                                className="pl-11 h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium"
                                                 value={businessData.direccion || ''}
                                                 onChange={e => setBusinessData({ ...businessData, direccion: e.target.value })}
                                                 placeholder="Calle 123 #45-67, Ciudad"
@@ -421,7 +421,7 @@ export default function MiPerfilPage() {
                                         <div className="relative">
                                             <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#618972]" />
                                             <Input
-                                                className="pl-11 h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#13ec6d]/20 transition-all font-medium"
+                                                className="pl-11 h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium"
                                                 value={businessData.telefono || ''}
                                                 onChange={e => setBusinessData({ ...businessData, telefono: e.target.value })}
                                                 placeholder="+57 300 123 4567"
@@ -434,7 +434,7 @@ export default function MiPerfilPage() {
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                         <div className="space-y-2.5">
                                             <Label className="text-[#111814] font-bold ml-1 flex items-center gap-2">
-                                                <Clock className="w-4 h-4 text-[#13ec6d]" />
+                                                <Clock className="w-4 h-4 text-[#22C55E]" />
                                                 Lunes a Viernes
                                             </Label>
                                             <Input
@@ -449,7 +449,7 @@ export default function MiPerfilPage() {
                                         </div>
                                         <div className="space-y-2.5">
                                             <Label className="text-[#111814] font-bold ml-1 flex items-center gap-2">
-                                                <Clock className="w-4 h-4 text-[#13ec6d]" />
+                                                <Clock className="w-4 h-4 text-[#22C55E]" />
                                                 Sábados
                                             </Label>
                                             <Input
@@ -464,7 +464,7 @@ export default function MiPerfilPage() {
                                         </div>
                                         <div className="space-y-2.5">
                                             <Label className="text-[#111814] font-bold ml-1 flex items-center gap-2">
-                                                <Clock className="w-4 h-4 text-[#13ec6d]" />
+                                                <Clock className="w-4 h-4 text-[#22C55E]" />
                                                 Domingos y Festivos
                                             </Label>
                                             <Input
@@ -489,7 +489,7 @@ export default function MiPerfilPage() {
                         <Card className="border-none shadow-sm rounded-[2.5rem] bg-white overflow-hidden">
                             <CardHeader className="p-8 pb-4">
                                 <CardTitle className="text-lg font-bold flex items-center gap-2">
-                                    <Globe className="w-5 h-5 text-[#13ec6d]" />
+                                    <Globe className="w-5 h-5 text-[#22C55E]" />
                                     Tu Sitio Web
                                 </CardTitle>
                             </CardHeader>
@@ -497,7 +497,7 @@ export default function MiPerfilPage() {
                                 <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100 space-y-3">
                                     <div className="flex items-center justify-between">
                                         <span className="text-[10px] font-black text-[#618972] uppercase tracking-widest">Enlace Directo</span>
-                                        <CheckCircle2 className="w-4 h-4 text-[#13ec6d]" />
+                                        <CheckCircle2 className="w-4 h-4 text-[#22C55E]" />
                                     </div>
                                     <div className="flex gap-2">
                                         <Input
@@ -509,17 +509,17 @@ export default function MiPerfilPage() {
                                             navigator.clipboard.writeText(`https://menuia.co/${slug}/menu-completo`);
                                             toast.success('Link copiado');
                                         }}>
-                                            <Share2 className="w-4 h-4 text-[#13ec6d]" />
+                                            <Share2 className="w-4 h-4 text-[#22C55E]" />
                                         </Button>
                                     </div>
                                 </div>
                                 <div className="space-y-3">
                                     <div className="flex items-center gap-2 text-xs font-bold text-[#618972]">
-                                        <CheckCircle2 className="w-4 h-4 text-[#13ec6d]" />
+                                        <CheckCircle2 className="w-4 h-4 text-[#22C55E]" />
                                         Subdominio personalizado activo
                                     </div>
                                     <div className="flex items-center gap-2 text-xs font-bold text-[#618972]">
-                                        <CheckCircle2 className="w-4 h-4 text-[#13ec6d]" />
+                                        <CheckCircle2 className="w-4 h-4 text-[#22C55E]" />
                                         Certificado SSL (Sitio Seguro)
                                     </div>
                                 </div>
@@ -527,14 +527,14 @@ export default function MiPerfilPage() {
                         </Card>
 
                         {/* QR Code Action */}
-                        <Card className="border border-gray-100 shadow-xl rounded-[2.5rem] bg-white overflow-hidden relative group hover:shadow-2xl hover:border-[#13ec6d]/20 transition-all duration-500">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-[#13ec6d]/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-[#13ec6d]/10 transition-all duration-500"></div>
+                        <Card className="border border-gray-100 shadow-xl rounded-[2.5rem] bg-white overflow-hidden relative group hover:shadow-2xl hover:border-[#22C55E]/20 transition-all duration-500">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-[#22C55E]/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-[#22C55E]/10 transition-all duration-500"></div>
                             <CardContent className="p-8 flex flex-col items-center text-center space-y-6 relative z-10">
                                 <div>
                                     <h3 className="text-xl font-black tracking-tight text-gray-900">Código QR del Catálogo</h3>
                                     <p className="text-gray-500 text-sm mt-1 font-medium">Imprímelo para que tus clientes accedan instantáneamente.</p>
                                 </div>
-                                <div className="w-full aspect-square max-w-[240px] bg-white rounded-[2rem] p-4 flex items-center justify-center border-2 border-dashed border-gray-200 group-hover:border-[#13ec6d] transition-colors duration-500">
+                                <div className="w-full aspect-square max-w-[240px] bg-white rounded-[2rem] p-4 flex items-center justify-center border-2 border-dashed border-gray-200 group-hover:border-[#22C55E] transition-colors duration-500">
                                     <QRCodeSVG
                                         id="business-qr-code"
                                         value={`${baseUrl}/${slug}/menu-completo`}
@@ -546,7 +546,7 @@ export default function MiPerfilPage() {
                                 </div>
                                 <Button
                                     onClick={downloadQR}
-                                    className="w-full h-12 rounded-2xl bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] font-black shadow-lg shadow-[#13ec6d]/20 transition-all duration-300"
+                                    className="w-full h-12 rounded-2xl bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-black shadow-lg shadow-[#22C55E]/20 transition-all duration-300"
                                 >
                                     Descargar QR
                                 </Button>
@@ -567,7 +567,7 @@ export default function MiPerfilPage() {
                             ></iframe>
                             <div className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg pointer-events-none">
                                 <p className="text-xs font-bold text-[#111814] flex items-center gap-2 truncate">
-                                    <MapPin className="w-3 h-3 text-[#13ec6d] shrink-0" />
+                                    <MapPin className="w-3 h-3 text-[#22C55E] shrink-0" />
                                     {businessData.direccion || 'Ubicación Exacta'}
                                 </p>
                             </div>

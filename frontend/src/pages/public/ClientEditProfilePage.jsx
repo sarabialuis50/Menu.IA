@@ -83,7 +83,7 @@ export default function ClientEditProfilePage() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <Loader2 className="w-8 h-8 animate-spin text-[#13ec6d]" />
+                <Loader2 className="w-8 h-8 animate-spin text-[#22C55E]" />
             </div>
         );
     }
@@ -122,7 +122,7 @@ export default function ClientEditProfilePage() {
                                     <Camera className="w-8 h-8 text-white" />
                                 </div>
                             </div>
-                            <div className="absolute bottom-0 right-2 w-10 h-10 bg-[#13ec6d] rounded-full flex items-center justify-center border-4 border-white shadow-lg text-[#111814]">
+                            <div className="absolute bottom-0 right-2 w-10 h-10 bg-[#22C55E] rounded-full flex items-center justify-center border-4 border-white shadow-lg text-[#111814]">
                                 <Camera className="w-5 h-5" />
                             </div>
                             <input
@@ -138,7 +138,7 @@ export default function ClientEditProfilePage() {
                     {/* Personal Info */}
                     <div className="space-y-6">
                         <div className="flex items-center gap-2 mb-2">
-                            <User className="w-5 h-5 text-[#13ec6d]" />
+                            <User className="w-5 h-5 text-[#22C55E]" />
                             <h3 className="text-lg font-black text-[#111814]">Información Personal</h3>
                         </div>
 
@@ -148,7 +148,7 @@ export default function ClientEditProfilePage() {
                                 <Input
                                     value={formData.nombre}
                                     onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                                    className="h-12 rounded-xl bg-white border-gray-200 focus:ring-[#13ec6d]/20 focus:border-[#13ec6d]"
+                                    className="h-12 rounded-xl bg-white border-gray-200 focus:ring-[#22C55E]/20 focus:border-[#22C55E]"
                                     placeholder="Tu nombre"
                                 />
                             </div>
@@ -161,7 +161,7 @@ export default function ClientEditProfilePage() {
                                         <Input
                                             value={formData.email}
                                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                            className="h-12 pl-10 rounded-xl bg-white border-gray-200 focus:ring-[#13ec6d]/20 focus:border-[#13ec6d]"
+                                            className="h-12 pl-10 rounded-xl bg-white border-gray-200 focus:ring-[#22C55E]/20 focus:border-[#22C55E]"
                                             type="email"
                                             placeholder="correo@ejemplo.com"
                                         />
@@ -186,7 +186,7 @@ export default function ClientEditProfilePage() {
                     {/* Password */}
                     <div className="space-y-6 pt-4 border-t border-gray-100 opacity-50 pointer-events-none">
                         <div className="flex items-center gap-2 mb-2">
-                            <Lock className="w-5 h-5 text-[#13ec6d]" />
+                            <Lock className="w-5 h-5 text-[#22C55E]" />
                             <h3 className="text-lg font-black text-[#111814]">Seguridad</h3>
                         </div>
                         <p className="text-sm text-gray-400">El inicio de sesión se realiza mediante código OTP por WhatsApp, no se requiere contraseña.</p>
@@ -205,7 +205,7 @@ export default function ClientEditProfilePage() {
                         <Button
                             type="submit"
                             disabled={saving}
-                            className="flex-1 h-12 rounded-xl bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] font-black shadow-lg shadow-[#13ec6d]/20"
+                            className="flex-1 h-12 rounded-xl bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-black shadow-lg shadow-[#22C55E]/20"
                         >
                             {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : "Guardar Cambios"}
                         </Button>

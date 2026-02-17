@@ -512,7 +512,7 @@ export default function PedidosPage() {
                                                                     }}
                                                                     className="rounded-xl px-4 py-2.5 text-[11px] font-bold cursor-pointer mb-1 text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                                                                 >
-                                                                    <Truck className="w-4 h-4 text-[#25D366]" />
+                                                                    <Truck className="w-4 h-4 text-[#22C55E]" />
                                                                     Asignar Mensajero
                                                                 </DropdownMenuItem>
                                                             )}
@@ -564,7 +564,7 @@ export default function PedidosPage() {
                             </Button>
                             <Button
                                 variant="outline"
-                                className="h-10 px-4 rounded-xl border-2 font-black text-[10px] tracking-widest bg-white shadow-sm border-[#25D366] text-[#25D366] disabled:opacity-50 disabled:border-gray-200 disabled:text-gray-400"
+                                className="h-10 px-4 rounded-xl border-2 font-black text-[10px] tracking-widest bg-white shadow-sm border-[#22C55E] text-[#22C55E] disabled:opacity-50 disabled:border-gray-200 disabled:text-gray-400"
                                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                 disabled={currentPage >= totalPages}
                             >
@@ -599,7 +599,7 @@ export default function PedidosPage() {
 
                         {/* 1. Datos del Cliente */}
                         <div className="space-y-4">
-                            <div className="flex items-center gap-2 text-[#6366F1]">
+                            <div className="flex items-center gap-2 text-[#22C55E]">
                                 <User className="w-5 h-5" />
                                 <h3 className="text-[13px] font-black uppercase tracking-wider">Datos del Cliente</h3>
                             </div>
@@ -833,7 +833,7 @@ export default function PedidosPage() {
 
                     <DialogHeader>
                         <DialogTitle className="text-3xl font-black text-gray-900 flex items-center gap-4">
-                            <div className="size-14 rounded-[1.5rem] bg-[#E8FBF0] flex items-center justify-center text-[#25D366]">
+                            <div className="size-14 rounded-[1.5rem] bg-[#E8FBF0] flex items-center justify-center text-[#22C55E]">
                                 <Truck className="w-8 h-8" />
                             </div>
                             Despachar Pedido
@@ -863,10 +863,10 @@ export default function PedidosPage() {
                                         key={rep.id}
                                         onClick={() => handleAssignMessenger(rep.id)}
                                         disabled={assigning}
-                                        className="flex items-center justify-between p-6 bg-white rounded-[2rem] border-2 border-gray-50 hover:border-[#25D366]/30 hover:bg-[#F0FFF4]/30 transition-all group relative active:scale-[0.98]"
+                                        className="flex items-center justify-between p-6 bg-white rounded-[2rem] border-2 border-gray-50 hover:border-[#22C55E]/30 hover:bg-[#F0FFF4]/30 transition-all group relative active:scale-[0.98]"
                                     >
                                         <div className="flex items-center gap-4">
-                                            <div className="size-12 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 group-hover:bg-white group-hover:text-[#25D366] group-hover:border-[#25D366]/20 transition-all">
+                                            <div className="size-12 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 group-hover:bg-white group-hover:text-[#22C55E] group-hover:border-[#22C55E]/20 transition-all">
                                                 <User className="w-6 h-6" />
                                             </div>
                                             <div className="text-left">
@@ -874,7 +874,7 @@ export default function PedidosPage() {
                                                 <p className="text-[10px] font-bold text-[#618972] uppercase tracking-[0.2em]">{rep.id.slice(0, 8)}</p>
                                             </div>
                                         </div>
-                                        <div className="size-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-[#25D366] group-hover:text-white transition-all shadow-sm">
+                                        <div className="size-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-[#22C55E] group-hover:text-white transition-all shadow-sm">
                                             <CheckCircle2 className="w-5 h-5" />
                                         </div>
                                     </button>

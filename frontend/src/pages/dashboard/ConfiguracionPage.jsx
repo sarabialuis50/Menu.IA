@@ -151,14 +151,14 @@ const defaultImages = [
 const getButtonStyle = (hasPendingChanges, size = "large") => {
     const heightClass = size === "small" ? "h-11 px-6" : "h-14 px-10";
     if (hasPendingChanges) {
-        return `${heightClass} rounded-full bg-[#13ec6d] text-[#111814] font-black uppercase text-[10px] tracking-widest hover:bg-[#0fd660] shadow-xl shadow-[#13ec6d]/20 transition-all active:scale-95 flex items-center gap-3 border-2 border-transparent`;
+        return `${heightClass} rounded-full bg-[#22C55E] text-white font-black uppercase text-[10px] tracking-widest hover:bg-[#16A34A] shadow-xl shadow-[#22C55E]/20 transition-all active:scale-95 flex items-center gap-3 border-2 border-transparent`;
     }
-    return `${heightClass} rounded-full bg-white text-[#13ec6d] border-2 border-[#13ec6d] font-black uppercase text-[10px] tracking-widest hover:bg-[#13ec6d]/5 transition-all active:scale-95 flex items-center gap-3 shadow-sm`;
+    return `${heightClass} rounded-full bg-white text-[#22C55E] border-2 border-[#22C55E] font-black uppercase text-[10px] tracking-widest hover:bg-[#22C55E]/5 transition-all active:scale-95 flex items-center gap-3 shadow-sm`;
 };
 
 const getModalButtonStyle = (hasPendingChanges) => {
     if (hasPendingChanges) {
-        return "flex-1 h-12 rounded-2xl bg-[#13ec6d] text-[#111814] font-black uppercase text-[10px] tracking-widest hover:bg-[#0fd660] shadow-lg shadow-[#13ec6d]/10 transition-all active:scale-95";
+        return "flex-1 h-12 rounded-2xl bg-[#22C55E] text-white font-black uppercase text-[10px] tracking-widest hover:bg-[#16A34A] shadow-lg shadow-[#22C55E]/10 transition-all active:scale-95";
     }
     return "flex-1 h-12 rounded-2xl bg-gray-100 text-gray-400 font-black uppercase text-[10px] tracking-widest cursor-not-allowed transition-all";
 };
@@ -783,7 +783,7 @@ export default function ConfiguracionPage() {
         return (
             <DashboardLayout>
                 <div className="flex items-center justify-center h-screen -mt-20">
-                    <Loader2 className="w-10 h-10 animate-spin text-[#13ec6d]" />
+                    <Loader2 className="w-10 h-10 animate-spin text-[#22C55E]" />
                 </div>
             </DashboardLayout>
         );
@@ -796,7 +796,7 @@ export default function ConfiguracionPage() {
                 <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="space-y-1 text-center md:text-left">
                         <div className="flex items-center justify-center md:justify-start gap-2 text-[#618972] font-black text-[10px] uppercase tracking-[0.2em]">
-                            <Settings2 className="w-3 h-3 text-[#13ec6d]" />
+                            <Settings2 className="w-3 h-3 text-[#22C55E]" />
                             Panel de Control
                         </div>
                         <h1 className="text-4xl font-black text-[#111814] tracking-tighter">Configuración</h1>
@@ -821,7 +821,7 @@ export default function ConfiguracionPage() {
                         <TabsTrigger
                             value="diseno"
                             className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
-                            data-[state=active]:bg-[#13ec6d] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#13ec6d]/20
+                            data-[state=active]:bg-[#22C55E] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#22C55E]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
                             <Palette className="w-3.5 h-3.5" />
@@ -830,7 +830,7 @@ export default function ConfiguracionPage() {
                         <TabsTrigger
                             value="menu"
                             className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
-                            data-[state=active]:bg-[#13ec6d] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#13ec6d]/20
+                            data-[state=active]:bg-[#22C55E] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#22C55E]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
                             <Utensils className="w-3.5 h-3.5" />
@@ -839,7 +839,7 @@ export default function ConfiguracionPage() {
                         <TabsTrigger
                             value="domicilios"
                             className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
-                            data-[state=active]:bg-[#13ec6d] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#13ec6d]/20
+                            data-[state=active]:bg-[#22C55E] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#22C55E]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
                             <Truck className="w-3.5 h-3.5" />
@@ -848,7 +848,7 @@ export default function ConfiguracionPage() {
                         <TabsTrigger
                             value="entrega"
                             className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
-                            data-[state=active]:bg-[#13ec6d] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#13ec6d]/20
+                            data-[state=active]:bg-[#22C55E] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#22C55E]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
                             <Package className="w-3.5 h-3.5" />
@@ -857,7 +857,7 @@ export default function ConfiguracionPage() {
                         <TabsTrigger
                             value="pagos"
                             className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
-                            data-[state=active]:bg-[#13ec6d] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#13ec6d]/20
+                            data-[state=active]:bg-[#22C55E] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#22C55E]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
                             <CreditCardIcon className="w-3.5 h-3.5" />
@@ -866,7 +866,7 @@ export default function ConfiguracionPage() {
                         <TabsTrigger
                             value="experiencia"
                             className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
-                            data-[state=active]:bg-[#13ec6d] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#13ec6d]/20
+                            data-[state=active]:bg-[#22C55E] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#22C55E]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
                             <Smartphone className="w-3.5 h-3.5" />
@@ -875,7 +875,7 @@ export default function ConfiguracionPage() {
                         <TabsTrigger
                             value="ai"
                             className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
-                            data-[state=active]:bg-[#13ec6d] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#13ec6d]/20
+                            data-[state=active]:bg-[#22C55E] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#22C55E]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
                             <Sparkles className="w-3.5 h-3.5" />
@@ -991,7 +991,7 @@ export default function ConfiguracionPage() {
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="w-full md:w-auto rounded-xl border-dashed hover:bg-[#13ec6d]/5 hover:text-[#13ec6d] hover:border-[#13ec6d]/30 transition-all font-bold h-11"
+                                                className="w-full md:w-auto rounded-xl border-dashed hover:bg-[#22C55E]/5 hover:text-[#22C55E] hover:border-[#22C55E]/30 transition-all font-bold h-11"
                                                 onClick={() => document.getElementById('banner-upload').click()}
                                                 disabled={saving}
                                             >
@@ -1043,7 +1043,7 @@ export default function ConfiguracionPage() {
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="w-full md:w-auto rounded-xl border-dashed hover:bg-[#13ec6d]/5 hover:text-[#13ec6d] hover:border-[#13ec6d]/30 transition-all font-bold h-11"
+                                                className="w-full md:w-auto rounded-xl border-dashed hover:bg-[#22C55E]/5 hover:text-[#22C55E] hover:border-[#22C55E]/30 transition-all font-bold h-11"
                                                 onClick={() => document.getElementById('logo-upload').click()}
                                                 disabled={saving}
                                             >
@@ -1077,7 +1077,7 @@ export default function ConfiguracionPage() {
                                             setCategoryIcon('Utensils');
                                             setIsCategoryModalOpen(true);
                                         }}
-                                        className="rounded-xl bg-[#13ec6d] text-[#111814] font-black hover:bg-[#0fd660] shadow-md transition-all active:scale-95 text-[10px]"
+                                        className="rounded-xl bg-[#22C55E] text-[#111814] font-black hover:bg-[#16A34A] shadow-md transition-all active:scale-95 text-[10px]"
                                     >
                                         <Plus className="w-3.5 h-3.5 mr-1.5" />
                                         NUEVA
@@ -1093,7 +1093,7 @@ export default function ConfiguracionPage() {
                                             const IconComponent = isLucide ? AvailableIcons[catIcon] : Utensils;
 
                                             return (
-                                                <div key={`${catName}-${idx}`} className="group flex items-center gap-2 bg-gray-50 border border-gray-100 pl-3 pr-1 py-1.5 rounded-xl hover:border-[#13ec6d] transition-all">
+                                                <div key={`${catName}-${idx}`} className="group flex items-center gap-2 bg-gray-50 border border-gray-100 pl-3 pr-1 py-1.5 rounded-xl hover:border-[#22C55E] transition-all">
                                                     {isUrl ? (
                                                         <img src={catIcon} alt="" className="w-4 h-4 object-contain" />
                                                     ) : isLucide ? (
@@ -1158,7 +1158,7 @@ export default function ConfiguracionPage() {
                                             setOriginalTagName('');
                                             setIsTagModalOpen(true);
                                         }}
-                                        className="rounded-xl bg-[#13ec6d] text-[#111814] font-black hover:bg-[#0fd660] shadow-md transition-all active:scale-95 text-[10px]"
+                                        className="rounded-xl bg-[#22C55E] text-[#111814] font-black hover:bg-[#16A34A] shadow-md transition-all active:scale-95 text-[10px]"
                                     >
                                         <TagIcon className="w-3.5 h-3.5 mr-1.5" />
                                         NUEVA
@@ -1167,8 +1167,8 @@ export default function ConfiguracionPage() {
                                 <CardContent className="px-8 pb-8">
                                     <div className="flex flex-wrap gap-2">
                                         {tags.map((tag, idx) => (
-                                            <div key={`${tag}-${idx}`} className="group flex items-center gap-1 bg-[#13ec6d]/5 border border-[#13ec6d]/20 pl-3 pr-1 py-1.5 rounded-xl hover:border-[#13ec6d] transition-all">
-                                                <span className="font-bold text-xs text-[#13ec6d]">{tag}</span>
+                                            <div key={`${tag}-${idx}`} className="group flex items-center gap-1 bg-[#22C55E]/5 border border-[#22C55E]/20 pl-3 pr-1 py-1.5 rounded-xl hover:border-[#22C55E] transition-all">
+                                                <span className="font-bold text-xs text-[#22C55E]">{tag}</span>
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
                                                         <Button variant="ghost" size="icon" className="size-6 rounded-lg hover:bg-gray-100">
@@ -1234,7 +1234,7 @@ export default function ConfiguracionPage() {
                                         </Button>
                                         <Button
                                             onClick={openAddProduct}
-                                            className="rounded-2xl h-10 md:h-11 px-4 md:px-6 bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] font-black gap-2 shadow-lg shadow-[#13ec6d]/10 transition-all active:scale-95 text-xs md:text-sm"
+                                            className="rounded-2xl h-10 md:h-11 px-4 md:px-6 bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-black gap-2 shadow-lg shadow-[#22C55E]/10 transition-all active:scale-95 text-xs md:text-sm"
                                         >
                                             <Plus className="w-4 h-4" />
                                             <span className="whitespace-nowrap">Nuevo Producto</span>
@@ -1285,7 +1285,7 @@ export default function ConfiguracionPage() {
                                                                 />
                                                             </div>
                                                             <div className="space-y-0.5 min-w-0">
-                                                                <div className="font-black text-[#111814] text-sm group-hover:text-[#13ec6d] transition-colors truncate">
+                                                                <div className="font-black text-[#111814] text-sm group-hover:text-[#22C55E] transition-colors truncate">
                                                                     {p.nombre}
                                                                 </div>
                                                                 <div className="flex flex-wrap gap-1">
@@ -1294,7 +1294,7 @@ export default function ConfiguracionPage() {
                                                                             {p.etiqueta}
                                                                         </span>
                                                                     )}
-                                                                    <span className={`sm:hidden text-[9px] font-black uppercase tracking-tight ${p.disponible ? 'text-[#13ec6d]' : 'text-red-400'}`}>
+                                                                    <span className={`sm:hidden text-[9px] font-black uppercase tracking-tight ${p.disponible ? 'text-[#22C55E]' : 'text-red-400'}`}>
                                                                         {p.disponible ? 'Disponible' : 'Agotado'}
                                                                     </span>
                                                                 </div>
@@ -1313,12 +1313,12 @@ export default function ConfiguracionPage() {
                                                     </td>
                                                     <td className="hidden md:table-cell px-3 py-3">
                                                         <div className="flex items-center gap-3">
-                                                            <span className={`text-[10px] font-black uppercase tracking-widest ${p.disponible ? 'text-[#13ec6d]' : 'text-red-400'}`}>
+                                                            <span className={`text-[10px] font-black uppercase tracking-widest ${p.disponible ? 'text-[#22C55E]' : 'text-red-400'}`}>
                                                                 {p.disponible ? 'Disponible' : 'Agotado'}
                                                             </span>
                                                             <Switch
                                                                 checked={p.disponible}
-                                                                className="data-[state=checked]:bg-[#13ec6d]"
+                                                                className="data-[state=checked]:bg-[#22C55E]"
                                                                 onCheckedChange={async (val) => {
                                                                     try {
                                                                         await api().put(`/products/${slug}/${p.id}`, { disponible: val });
@@ -1333,7 +1333,7 @@ export default function ConfiguracionPage() {
                                                         <div className="flex items-center justify-end gap-1 md:gap-2">
                                                             <Switch
                                                                 checked={p.disponible}
-                                                                className="sm:hidden scale-75 data-[state=checked]:bg-[#13ec6d]"
+                                                                className="sm:hidden scale-75 data-[state=checked]:bg-[#22C55E]"
                                                                 onCheckedChange={async (val) => {
                                                                     try {
                                                                         await api().put(`/products/${slug}/${p.id}`, { disponible: val });
@@ -1346,7 +1346,7 @@ export default function ConfiguracionPage() {
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 onClick={() => openEditProduct(p)}
-                                                                className="size-8 md:size-9 rounded-xl text-gray-400 hover:text-[#13ec6d] hover:bg-[#13ec6d]/5 transition-all"
+                                                                className="size-8 md:size-9 rounded-xl text-gray-400 hover:text-[#22C55E] hover:bg-[#22C55E]/5 transition-all"
                                                             >
                                                                 <Edit2 className="w-4 h-4" />
                                                             </Button>
@@ -1369,7 +1369,7 @@ export default function ConfiguracionPage() {
                                     <div className="py-20 text-center">
                                         <Utensils className="w-12 h-12 text-gray-200 mx-auto mb-4" />
                                         <h3 className="font-bold text-gray-400 uppercase text-xs tracking-widest">No hay productos registrados</h3>
-                                        <Button variant="link" className="text-[#13ec6d] text-xs font-black uppercase tracking-tighter" onClick={() => { setSearchTerm(''); setFilterCategory('all'); }}>Limpiar filtros</Button>
+                                        <Button variant="link" className="text-[#22C55E] text-xs font-black uppercase tracking-tighter" onClick={() => { setSearchTerm(''); setFilterCategory('all'); }}>Limpiar filtros</Button>
                                     </div>
                                 )}
                             </div>
@@ -1394,7 +1394,7 @@ export default function ConfiguracionPage() {
                                         size="sm"
                                         onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                                         disabled={currentPage === totalPages || totalPages === 0}
-                                        className="h-9 px-4 rounded-xl border-[#13ec6d] text-[#13ec6d] bg-white font-black text-[9px] tracking-widest hover:bg-[#13ec6d]/5 shadow-sm transition-all disabled:opacity-30"
+                                        className="h-9 px-4 rounded-xl border-[#22C55E] text-[#22C55E] bg-white font-black text-[9px] tracking-widest hover:bg-[#22C55E]/5 shadow-sm transition-all disabled:opacity-30"
                                     >
                                         SIGUIENTE
                                     </Button>
@@ -1416,7 +1416,7 @@ export default function ConfiguracionPage() {
                                     <div className="space-y-4">
                                         <div className="space-y-2">
                                             <Label className="text-base font-black uppercase tracking-tight flex items-center gap-2">
-                                                <Truck className="w-4 h-4 text-[#13ec6d]" />
+                                                <Truck className="w-4 h-4 text-[#22C55E]" />
                                                 Precio por Kilómetro (COP)
                                             </Label>
                                             <p className="text-xs text-[#618972]">Valor que se multiplicará por la distancia entre el local y el cliente.</p>
@@ -1430,7 +1430,7 @@ export default function ConfiguracionPage() {
                                                     const raw = e.target.value.replace(/\D/g, '');
                                                     setBusinessData({ ...businessData, precio_km: parseFloat(raw) || 0 });
                                                 }}
-                                                className="h-14 pl-10 rounded-3xl bg-gray-50 border-2 border-transparent focus:border-[#13ec6d] focus:bg-white transition-all font-black text-lg"
+                                                className="h-14 pl-10 rounded-3xl bg-gray-50 border-2 border-transparent focus:border-[#22C55E] focus:bg-white transition-all font-black text-lg"
                                                 placeholder="Ej: 2.500"
                                             />
                                         </div>
@@ -1440,7 +1440,7 @@ export default function ConfiguracionPage() {
                                     <div className="space-y-4">
                                         <div className="space-y-2">
                                             <Label className="text-base font-black uppercase tracking-tight flex items-center gap-2">
-                                                <Check className="w-4 h-4 text-[#13ec6d]" />
+                                                <Check className="w-4 h-4 text-[#22C55E]" />
                                                 Costo Mínimo de Domicilio
                                             </Label>
                                             <p className="text-xs text-[#618972]">El cobro mínimo garantizado, incluso para distancias muy cortas.</p>
@@ -1454,7 +1454,7 @@ export default function ConfiguracionPage() {
                                                     const raw = e.target.value.replace(/\D/g, '');
                                                     setBusinessData({ ...businessData, costo_minimo_domicilio: parseFloat(raw) || 0 });
                                                 }}
-                                                className="h-14 pl-10 rounded-3xl bg-gray-50 border-2 border-transparent focus:border-[#13ec6d] focus:bg-white transition-all font-black text-lg"
+                                                className="h-14 pl-10 rounded-3xl bg-gray-50 border-2 border-transparent focus:border-[#22C55E] focus:bg-white transition-all font-black text-lg"
                                                 placeholder="Ej: 5.000"
                                             />
                                         </div>
@@ -1508,7 +1508,7 @@ export default function ConfiguracionPage() {
                                                 toast.error("Geolocalización no soportada");
                                             }
                                         }}
-                                        className="w-full h-auto py-3 sm:h-12 rounded-2xl border-2 border-dashed border-[#13ec6d]/30 text-[#618972] font-black text-[10px] sm:text-xs tracking-tight gap-2 hover:bg-[#13ec6d]/5 transition-all whitespace-normal"
+                                        className="w-full h-auto py-3 sm:h-12 rounded-2xl border-2 border-dashed border-[#22C55E]/30 text-[#618972] font-black text-[10px] sm:text-xs tracking-tight gap-2 hover:bg-[#22C55E]/5 transition-all whitespace-normal"
                                     >
                                         <MapPin className="w-4 h-4 flex-shrink-0" />
                                         USAR MI UBICACIÓN ACTUAL
@@ -1534,7 +1534,7 @@ export default function ConfiguracionPage() {
                         <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
                             <CardHeader className="pt-10 px-10 pb-4">
                                 <CardTitle className="text-2xl flex items-center gap-3 font-black tracking-tighter">
-                                    <div className="size-10 rounded-2xl bg-[#13ec6d]/10 flex items-center justify-center text-[#13ec6d]">
+                                    <div className="size-10 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
                                         <Package className="w-6 h-6" />
                                     </div>
                                     Configuración de Servicios
@@ -1544,12 +1544,12 @@ export default function ConfiguracionPage() {
                             <CardContent className="px-10 pb-10 space-y-8">
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     {/* Domicilio Switch */}
-                                    <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.domicilio ? 'border-[#13ec6d] bg-[#13ec6d]/5' : 'border-gray-100 bg-gray-50'}`}
+                                    <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.domicilio ? 'border-[#22C55E] bg-[#22C55E]/5' : 'border-gray-100 bg-gray-50'}`}
                                         onClick={() => setBusinessData({
                                             ...businessData,
                                             metodos_entrega: { ...businessData.metodos_entrega, domicilio: !businessData.metodos_entrega?.domicilio }
                                         })}>
-                                        <div className={`size-16 rounded-3xl flex items-center justify-center transition-all ${businessData.metodos_entrega?.domicilio ? 'bg-[#13ec6d] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
+                                        <div className={`size-16 rounded-3xl flex items-center justify-center transition-all ${businessData.metodos_entrega?.domicilio ? 'bg-[#22C55E] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
                                             <Truck className="w-8 h-8" />
                                         </div>
                                         <div>
@@ -1557,7 +1557,7 @@ export default function ConfiguracionPage() {
                                             <p className="text-[10px] text-[#618972] mt-1 font-medium">Activa logística y rastreo GPS.</p>
                                         </div>
                                         <Switch
-                                            activeColor="#13ec6d"
+                                            activeColor="#22C55E"
                                             checked={businessData.metodos_entrega?.domicilio || false}
                                             onCheckedChange={(checked) => setBusinessData({
                                                 ...businessData,
@@ -1567,12 +1567,12 @@ export default function ConfiguracionPage() {
                                     </div>
 
                                     {/* Recoger Switch */}
-                                    <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.recoger ? 'border-[#13ec6d] bg-[#13ec6d]/5' : 'border-gray-100 bg-gray-50'}`}
+                                    <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.recoger ? 'border-[#22C55E] bg-[#22C55E]/5' : 'border-gray-100 bg-gray-50'}`}
                                         onClick={() => setBusinessData({
                                             ...businessData,
                                             metodos_entrega: { ...businessData.metodos_entrega, recoger: !businessData.metodos_entrega?.recoger }
                                         })}>
-                                        <div className={`size-16 rounded-3xl flex items-center justify-center transition-all ${businessData.metodos_entrega?.recoger ? 'bg-[#13ec6d] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
+                                        <div className={`size-16 rounded-3xl flex items-center justify-center transition-all ${businessData.metodos_entrega?.recoger ? 'bg-[#22C55E] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
                                             <ShoppingBag className="w-8 h-8" />
                                         </div>
                                         <div>
@@ -1580,7 +1580,7 @@ export default function ConfiguracionPage() {
                                             <p className="text-[10px] text-[#618972] mt-1 font-medium">El cliente retira su pedido.</p>
                                         </div>
                                         <Switch
-                                            activeColor="#13ec6d"
+                                            activeColor="#22C55E"
                                             checked={businessData.metodos_entrega?.recoger || false}
                                             onCheckedChange={(checked) => setBusinessData({
                                                 ...businessData,
@@ -1590,12 +1590,12 @@ export default function ConfiguracionPage() {
                                     </div>
 
                                     {/* Mesa Switch */}
-                                    <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.mesa ? 'border-[#13ec6d] bg-[#13ec6d]/5' : 'border-gray-100 bg-gray-50'}`}
+                                    <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.mesa ? 'border-[#22C55E] bg-[#22C55E]/5' : 'border-gray-100 bg-gray-50'}`}
                                         onClick={() => setBusinessData({
                                             ...businessData,
                                             metodos_entrega: { ...businessData.metodos_entrega, mesa: !businessData.metodos_entrega?.mesa }
                                         })}>
-                                        <div className={`size-16 rounded-3xl flex items-center justify-center transition-all ${businessData.metodos_entrega?.mesa ? 'bg-[#13ec6d] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
+                                        <div className={`size-16 rounded-3xl flex items-center justify-center transition-all ${businessData.metodos_entrega?.mesa ? 'bg-[#22C55E] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
                                             <Utensils className="w-8 h-8" />
                                         </div>
                                         <div>
@@ -1603,7 +1603,7 @@ export default function ConfiguracionPage() {
                                             <p className="text-[10px] text-[#618972] mt-1 font-medium">Pedidos mediante código QR.</p>
                                         </div>
                                         <Switch
-                                            activeColor="#13ec6d"
+                                            activeColor="#22C55E"
                                             checked={businessData.metodos_entrega?.mesa || false}
                                             onCheckedChange={(checked) => setBusinessData({
                                                 ...businessData,
@@ -1632,7 +1632,7 @@ export default function ConfiguracionPage() {
                         <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
                             <CardHeader className="pt-10 px-10 pb-4">
                                 <CardTitle className="text-2xl flex items-center gap-3 font-black tracking-tighter">
-                                    <div className="size-10 rounded-2xl bg-[#13ec6d]/10 flex items-center justify-center text-[#13ec6d]">
+                                    <div className="size-10 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
                                         <CreditCardIcon className="w-6 h-6" />
                                     </div>
                                     Gestión de Pagos
@@ -1652,13 +1652,13 @@ export default function ConfiguracionPage() {
                                     ].map((method) => (
                                         <div
                                             key={method.key}
-                                            className={`p-6 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-3 ${businessData.metodos_pago?.[method.key] ? 'border-[#13ec6d] bg-[#13ec6d]/5' : 'border-gray-100 bg-gray-50'}`}
+                                            className={`p-6 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-3 ${businessData.metodos_pago?.[method.key] ? 'border-[#22C55E] bg-[#22C55E]/5' : 'border-gray-100 bg-gray-50'}`}
                                             onClick={() => setBusinessData({
                                                 ...businessData,
                                                 metodos_pago: { ...businessData.metodos_pago, [method.key]: !businessData.metodos_pago?.[method.key] }
                                             })}
                                         >
-                                            <div className={`size-14 rounded-2xl flex items-center justify-center transition-all ${businessData.metodos_pago?.[method.key] ? 'bg-[#13ec6d] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
+                                            <div className={`size-14 rounded-2xl flex items-center justify-center transition-all ${businessData.metodos_pago?.[method.key] ? 'bg-[#22C55E] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
                                                 <method.icon className="w-6 h-6" />
                                             </div>
                                             <div>
@@ -1666,7 +1666,7 @@ export default function ConfiguracionPage() {
                                                 <p className="text-[10px] text-[#618972] mt-1 font-medium">{method.desc}</p>
                                             </div>
                                             <Switch
-                                                activeColor="#13ec6d"
+                                                activeColor="#22C55E"
                                                 checked={businessData.metodos_pago?.[method.key] || false}
                                                 onCheckedChange={(checked) => setBusinessData({
                                                     ...businessData,
@@ -1698,7 +1698,7 @@ export default function ConfiguracionPage() {
                             <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
                                 <CardHeader className="pt-10 px-10 pb-4">
                                     <div className="flex items-center gap-4 mb-2">
-                                        <div className="size-12 rounded-2xl bg-[#13ec6d]/10 flex items-center justify-center text-[#13ec6d]">
+                                        <div className="size-12 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
                                             <Globe className="w-6 h-6" />
                                         </div>
                                         <div>
@@ -1719,7 +1719,7 @@ export default function ConfiguracionPage() {
                                             <Button
                                                 variant="outline"
                                                 size="icon"
-                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#13ec6d]/5 hover:text-[#13ec6d] transition-all"
+                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#22C55E]/5 hover:text-[#22C55E] transition-all"
                                                 onClick={() => {
                                                     navigator.clipboard.writeText(`${window.location.origin}/${slug}/menu-completo`);
                                                     toast.success("Enlace copiado al portapapeles");
@@ -1730,7 +1730,7 @@ export default function ConfiguracionPage() {
                                             <Button
                                                 variant="outline"
                                                 size="icon"
-                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#13ec6d]/5 hover:text-[#13ec6d] transition-all"
+                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#22C55E]/5 hover:text-[#22C55E] transition-all"
                                                 onClick={() => window.open(`/${slug}/menu-completo`, '_blank')}
                                             >
                                                 <ExternalLink className="w-5 h-5" />
@@ -1761,7 +1761,7 @@ export default function ConfiguracionPage() {
                                         </div>
                                         <Button
                                             variant="outline"
-                                            className="w-full h-12 rounded-2xl border-[#13ec6d] text-[#13ec6d] font-black gap-2 hover:bg-[#13ec6d]/5"
+                                            className="w-full h-12 rounded-2xl border-[#22C55E] text-[#22C55E] font-black gap-2 hover:bg-[#22C55E]/5"
                                             onClick={() => {
                                                 const svg = document.querySelector("#qr-menu-container svg");
                                                 const svgData = new XMLSerializer().serializeToString(svg);
@@ -1792,7 +1792,7 @@ export default function ConfiguracionPage() {
                             <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
                                 <CardHeader className="pt-10 px-10 pb-4">
                                     <div className="flex items-center gap-4 mb-2">
-                                        <div className="size-12 rounded-2xl bg-[#13ec6d]/10 flex items-center justify-center text-[#13ec6d]">
+                                        <div className="size-12 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
                                             <Clock className="w-6 h-6" />
                                         </div>
                                         <div>
@@ -1813,7 +1813,7 @@ export default function ConfiguracionPage() {
                                             <Button
                                                 variant="outline"
                                                 size="icon"
-                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#13ec6d]/5 hover:text-[#13ec6d] transition-all"
+                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#22C55E]/5 hover:text-[#22C55E] transition-all"
                                                 onClick={() => {
                                                     navigator.clipboard.writeText(`${window.location.origin}/${slug}/mis-pedidos`);
                                                     toast.success("Enlace de seguimiento copiado");
@@ -1824,7 +1824,7 @@ export default function ConfiguracionPage() {
                                             <Button
                                                 variant="outline"
                                                 size="icon"
-                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#13ec6d]/5 hover:text-[#13ec6d] transition-all"
+                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#22C55E]/5 hover:text-[#22C55E] transition-all"
                                                 onClick={() => window.open(`/${slug}/mis-pedidos`, '_blank')}
                                             >
                                                 <ExternalLink className="w-5 h-5" />
@@ -1855,7 +1855,7 @@ export default function ConfiguracionPage() {
                                         </div>
                                         <Button
                                             variant="outline"
-                                            className="w-full h-12 rounded-2xl border-[#13ec6d] text-[#13ec6d] font-black gap-2 hover:bg-[#13ec6d]/5"
+                                            className="w-full h-12 rounded-2xl border-[#22C55E] text-[#22C55E] font-black gap-2 hover:bg-[#22C55E]/5"
                                             onClick={() => {
                                                 const svg = document.querySelector("#qr-tracking-container svg");
                                                 const svgData = new XMLSerializer().serializeToString(svg);
@@ -1887,7 +1887,7 @@ export default function ConfiguracionPage() {
                         <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-[#111814] text-white">
                             <div className="p-10 flex flex-col md:flex-row items-center gap-10">
                                 <div className="space-y-6 flex-1">
-                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#13ec6d]/10 border border-[#13ec6d]/20 text-[#13ec6d] text-[10px] font-black uppercase tracking-widest">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E] text-[10px] font-black uppercase tracking-widest">
                                         <Sparkles className="w-3 h-3" /> Tip Pro
                                     </div>
                                     <h3 className="text-3xl font-black tracking-tighter leading-none">Tu menú vive en el bolsillo de tu cliente.</h3>
@@ -1897,7 +1897,7 @@ export default function ConfiguracionPage() {
                                     </p>
                                     <div className="flex gap-4">
                                         <Button
-                                            className="bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] font-black rounded-2xl h-12 px-8 uppercase text-[10px] tracking-widest"
+                                            className="bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-black rounded-2xl h-12 px-8 uppercase text-[10px] tracking-widest"
                                             onClick={() => window.open(`/${slug}/menu-completo`, '_blank')}
                                         >
                                             Ver mi Catálogo Digital
@@ -1907,7 +1907,7 @@ export default function ConfiguracionPage() {
                                 <div className="w-full md:w-64 aspect-[9/18] bg-white rounded-[2.5rem] border-[8px] border-gray-800 shadow-2xl relative overflow-hidden group">
                                     <div className="absolute inset-0 bg-[#f6f8f7]">
                                         {/* Mockup content */}
-                                        <div className="h-16 bg-[#13ec6d] px-4 pt-6 pb-2 shadow-sm rounded-b-[1.5rem] relative z-10 flex items-center justify-between">
+                                        <div className="h-16 bg-[#22C55E] px-4 pt-6 pb-2 shadow-sm rounded-b-[1.5rem] relative z-10 flex items-center justify-between">
                                             <div className="flex items-center gap-2">
                                                 <div className="h-8 w-8 bg-white rounded-full p-0.5 shadow-sm flex items-center justify-center overflow-hidden">
                                                     <img src={businessData.logo_url || "/favicon.svg"} className="size-full object-cover" />
@@ -1947,9 +1947,9 @@ export default function ConfiguracionPage() {
                                                 <div className="flex-1 min-w-0 flex flex-col justify-center">
                                                     <h4 className="text-[10px] font-black text-gray-900 leading-tight truncate">Hamburguesa Doble</h4>
                                                     <p className="text-[8px] text-gray-500 leading-tight line-clamp-1 mt-0.5">Queso cheddar, tocineta, salsas...</p>
-                                                    <p className="text-[10px] font-black text-[#13ec6d] mt-1">$24.900</p>
+                                                    <p className="text-[10px] font-black text-[#22C55E] mt-1">$24.900</p>
                                                 </div>
-                                                <div className="size-7 bg-[#13ec6d] rounded-full flex items-center justify-center text-[#111814] shadow-lg shadow-[#13ec6d]/20 active:scale-90 transition-transform">
+                                                <div className="size-7 bg-[#22C55E] rounded-full flex items-center justify-center text-[#111814] shadow-lg shadow-[#22C55E]/20 active:scale-90 transition-transform">
                                                     <Plus className="w-3.5 h-3.5" />
                                                 </div>
                                             </div>
@@ -1962,9 +1962,9 @@ export default function ConfiguracionPage() {
                                                 <div className="flex-1 min-w-0 flex flex-col justify-center">
                                                     <h4 className="text-[10px] font-black text-gray-900 leading-tight truncate">Pizza Pepperoni</h4>
                                                     <p className="text-[8px] text-gray-500 leading-tight line-clamp-1 mt-0.5">Masa madre, queso mozzarella...</p>
-                                                    <p className="text-[10px] font-black text-[#13ec6d] mt-1">$32.000</p>
+                                                    <p className="text-[10px] font-black text-[#22C55E] mt-1">$32.000</p>
                                                 </div>
-                                                <div className="size-7 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center hover:bg-[#13ec6d] hover:text-[#111814] transition-colors">
+                                                <div className="size-7 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center hover:bg-[#22C55E] hover:text-[#111814] transition-colors">
                                                     <Plus className="w-3.5 h-3.5" />
                                                 </div>
                                             </div>
@@ -1977,7 +1977,7 @@ export default function ConfiguracionPage() {
                                                 <div className="flex-1 min-w-0 flex flex-col justify-center">
                                                     <h4 className="text-[10px] font-black text-gray-900 leading-tight truncate">Ensalada César</h4>
                                                     <p className="text-[8px] text-gray-500 leading-tight line-clamp-1 mt-0.5">Pollo grillé, crutones, parmesano...</p>
-                                                    <p className="text-[10px] font-black text-[#13ec6d] mt-1">$18.500</p>
+                                                    <p className="text-[10px] font-black text-[#22C55E] mt-1">$18.500</p>
                                                 </div>
                                                 <div className="size-7 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center">
                                                     <Plus className="w-3.5 h-3.5" />
@@ -1986,7 +1986,7 @@ export default function ConfiguracionPage() {
 
                                             {/* Floating Cart Pill */}
                                             <div className="mx-auto w-max bg-[#111814] rounded-full px-4 py-2 mt-4 flex items-center gap-2 shadow-xl">
-                                                <div className="size-4 rounded-full bg-[#13ec6d] text-[#111814] text-[8px] font-black flex items-center justify-center">1</div>
+                                                <div className="size-4 rounded-full bg-[#22C55E] text-[#111814] text-[8px] font-black flex items-center justify-center">1</div>
                                                 <span className="text-[9px] font-bold text-white">Ver pedido</span>
                                                 <span className="text-[9px] font-bold text-white/60 pl-2 border-l border-white/10">$24.900</span>
                                             </div>
@@ -2006,8 +2006,8 @@ export default function ConfiguracionPage() {
                             <CardHeader className="pt-8 px-6 md:pt-10 md:px-10 pb-4 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0 bg-white">
                                 <div className="text-center md:text-left">
                                     <div className="flex flex-col md:flex-row items-center gap-2 mb-2 justify-center md:justify-start">
-                                        <div className="p-2 bg-[#13ec6d]/10 rounded-xl">
-                                            <Sparkles className="w-5 h-5 text-[#13ec6d]" />
+                                        <div className="p-2 bg-[#22C55E]/10 rounded-xl">
+                                            <Sparkles className="w-5 h-5 text-[#22C55E]" />
                                         </div>
                                         <CardTitle className="text-xl md:text-2xl font-black text-[#111814]">Configuración del Bot IA</CardTitle>
                                     </div>
@@ -2019,7 +2019,7 @@ export default function ConfiguracionPage() {
                                     <Switch
                                         checked={businessData.ai_habilitado}
                                         onCheckedChange={(val) => setBusinessData({ ...businessData, ai_habilitado: val })}
-                                        className="data-[state=checked]:bg-[#13ec6d]"
+                                        className="data-[state=checked]:bg-[#22C55E]"
                                     />
                                 </div>
                             </CardHeader>
@@ -2033,7 +2033,7 @@ export default function ConfiguracionPage() {
                                             value={businessData.ai_personalidad}
                                             onValueChange={(val) => setBusinessData({ ...businessData, ai_personalidad: val })}
                                         >
-                                            <SelectTrigger className="h-11 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#13ec6d]/20 transition-all font-medium text-xs text-center justify-center">
+                                            <SelectTrigger className="h-11 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium text-xs text-center justify-center">
                                                 <SelectValue placeholder="Selecciona una personalidad" />
                                             </SelectTrigger>
                                             <SelectContent className="rounded-2xl border-gray-100 text-xs font-medium">
@@ -2053,7 +2053,7 @@ export default function ConfiguracionPage() {
                                             value={businessData.ai_saludo || ''}
                                             onChange={(e) => setBusinessData({ ...businessData, ai_saludo: e.target.value })}
                                             placeholder="¡Hola! Soy el asistente de su negocio 🍕 ¿En qué puedo ayudarte hoy?"
-                                            className="min-h-[80px] rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#13ec6d]/20 transition-all font-medium leading-relaxed text-xs text-center placeholder:text-center"
+                                            className="min-h-[80px] rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium leading-relaxed text-xs text-center placeholder:text-center"
                                         />
                                         <p className="text-[10px] text-[#618972] font-medium italic">Este mensaje se enviará al iniciar.</p>
                                     </div>
@@ -2062,13 +2062,13 @@ export default function ConfiguracionPage() {
                                     <div className="space-y-3 text-center">
                                         <div className="flex flex-col items-center gap-2">
                                             <Label className="text-xs font-black uppercase tracking-widest text-[#111814]">Conocimiento de la IA</Label>
-                                            <span className="text-[9px] font-black text-[#13ec6d] uppercase bg-[#13ec6d]/10 px-2 py-0.5 rounded-full">Mejora la Precisión</span>
+                                            <span className="text-[9px] font-black text-[#22C55E] uppercase bg-[#22C55E]/10 px-2 py-0.5 rounded-full">Mejora la Precisión</span>
                                         </div>
                                         <Textarea
                                             value={businessData.ai_conocimiento || ''}
                                             onChange={(e) => setBusinessData({ ...businessData, ai_conocimiento: e.target.value })}
                                             placeholder="Describe detalles únicos de tu negocio, políticas, especialidades o curiosidades..."
-                                            className="min-h-[120px] rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#13ec6d]/20 transition-all font-medium leading-relaxed text-xs p-4"
+                                            className="min-h-[120px] rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium leading-relaxed text-xs p-4"
                                         />
                                         <p className="text-[10px] text-[#618972] font-medium italic">Describe detalles únicos para que la IA los use.</p>
                                     </div>
@@ -2078,8 +2078,8 @@ export default function ConfiguracionPage() {
                                 <div className="pt-6 border-t border-gray-100 flex flex-col items-center gap-6">
                                     <div className="flex gap-8 justify-center w-full">
                                         <div className="flex flex-col items-center gap-2">
-                                            <div className="size-10 rounded-xl bg-[#13ec6d]/10 flex items-center justify-center">
-                                                <Check className="w-5 h-5 text-[#13ec6d]" />
+                                            <div className="size-10 rounded-xl bg-[#22C55E]/10 flex items-center justify-center">
+                                                <Check className="w-5 h-5 text-[#22C55E]" />
                                             </div>
                                             <span className="text-[9px] font-bold text-[#618972]">Bot Activo</span>
                                         </div>
@@ -2210,7 +2210,7 @@ export default function ConfiguracionPage() {
                                                 type="button"
                                                 variant="outline"
                                                 size="sm"
-                                                className="h-8 rounded-xl border-[#13ec6d]/20 text-[#13ec6d] hover:bg-[#13ec6d]/5 font-bold gap-2 text-[10px]"
+                                                className="h-8 rounded-xl border-[#22C55E]/20 text-[#22C55E] hover:bg-[#22C55E]/5 font-bold gap-2 text-[10px]"
                                                 onClick={() => document.getElementById('product-image-upload').click()}
                                                 disabled={uploadingProductImage}
                                             >
@@ -2280,7 +2280,7 @@ export default function ConfiguracionPage() {
                                             <Switch
                                                 checked={productForm.destacado}
                                                 onCheckedChange={checked => setProductForm({ ...productForm, destacado: checked })}
-                                                className="data-[state=checked]:bg-[#13ec6d]"
+                                                className="data-[state=checked]:bg-[#22C55E]"
                                             />
                                             <Label className="font-bold cursor-pointer" onClick={() => setProductForm({ ...productForm, destacado: !productForm.destacado })}>
                                                 Marcar como Producto Destacado
@@ -2293,7 +2293,7 @@ export default function ConfiguracionPage() {
                                     <Switch
                                         checked={productForm.disponible}
                                         onCheckedChange={checked => setProductForm({ ...productForm, disponible: checked })}
-                                        className="data-[state=checked]:bg-[#13ec6d]"
+                                        className="data-[state=checked]:bg-[#22C55E]"
                                     />
                                     <div>
                                         <Label className="font-bold">Disponible para la venta</Label>
@@ -2354,7 +2354,7 @@ export default function ConfiguracionPage() {
                                                         type="button"
                                                         onClick={() => setCategoryIcon(name)}
                                                         className={`p-2 rounded-xl border flex items-center justify-center transition-all ${categoryIcon === name
-                                                            ? 'bg-[#13ec6d]/10 border-[#13ec6d] text-[#13ec6d] ring-2 ring-[#13ec6d]/20'
+                                                            ? 'bg-[#22C55E]/10 border-[#22C55E] text-[#22C55E] ring-2 ring-[#22C55E]/20'
                                                             : 'bg-white border-gray-100 hover:border-gray-300 text-gray-500'
                                                             }`}
                                                     >
@@ -2369,7 +2369,7 @@ export default function ConfiguracionPage() {
                                                 <Input
                                                     value={(!AvailableIcons[categoryIcon] && !categoryIcon?.includes('/')) ? categoryIcon : ''}
                                                     onChange={(e) => setCategoryIcon(e.target.value)}
-                                                    className="w-24 h-24 text-6xl text-center rounded-2xl border-gray-200 focus:border-[#13ec6d] bg-white shadow-sm"
+                                                    className="w-24 h-24 text-6xl text-center rounded-2xl border-gray-200 focus:border-[#22C55E] bg-white shadow-sm"
                                                     placeholder="😁"
                                                 />
                                                 <p className="text-xs text-gray-500 text-center font-medium mt-2">
@@ -2398,7 +2398,7 @@ export default function ConfiguracionPage() {
                                                         </div>
                                                     </div>
                                                 ) : (
-                                                    <div className="flex flex-col items-center gap-2 text-gray-400 group-hover:text-[#13ec6d] transition-colors">
+                                                    <div className="flex flex-col items-center gap-2 text-gray-400 group-hover:text-[#22C55E] transition-colors">
                                                         <div className="p-4 bg-white rounded-full shadow-sm group-hover:shadow-md transition-all">
                                                             <Upload className="w-6 h-6" />
                                                         </div>
@@ -2420,7 +2420,7 @@ export default function ConfiguracionPage() {
                                                 const IconComponent = isLucide ? AvailableIcons[categoryIcon] : Utensils;
 
                                                 if (isUrl) return <img src={categoryIcon} className="w-5 h-5 object-contain" />;
-                                                if (isLucide) return <IconComponent className="w-5 h-5 text-[#13ec6d]" />;
+                                                if (isLucide) return <IconComponent className="w-5 h-5 text-[#22C55E]" />;
                                                 return <span className="text-lg leading-none">{categoryIcon}</span>;
                                             })()}
                                             <span className="text-sm font-bold text-[#111814]">{categoryName || 'Nombre Categoría'}</span>

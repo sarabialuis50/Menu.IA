@@ -181,7 +181,7 @@ export default function DemoRestaurante() {
                 particleCount: 150,
                 spread: 70,
                 origin: { y: 0.6 },
-                colors: ['#13ec6d', '#111814', '#ffffff']
+                colors: ['#22C55E', '#111814', '#ffffff']
             });
         }
     };
@@ -214,7 +214,7 @@ export default function DemoRestaurante() {
                 />
                 {product.etiqueta && (
                     <div className="absolute top-4 left-4 z-20">
-                        <div className="bg-[#13ec6d] text-[#111814] text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl shadow-xl border border-white/10 flex items-center gap-1.5 ring-1 ring-white/20">
+                        <div className="bg-[#22C55E] text-[#111814] text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl shadow-xl border border-white/10 flex items-center gap-1.5 ring-1 ring-white/20">
                             <div className="size-1 rounded-full bg-white animate-pulse" />
                             {product.etiqueta}
                         </div>
@@ -231,7 +231,7 @@ export default function DemoRestaurante() {
             </div>
             <div className="p-5 flex flex-col flex-1">
                 <div className="flex items-center justify-between mb-3">
-                    <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#13ec6d]/10 text-[9px] font-black text-[#13ec6d] uppercase tracking-wider">
+                    <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#22C55E]/10 text-[9px] font-black text-[#22C55E] uppercase tracking-wider">
                         {product.categoria}
                     </div>
                     <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-full text-[#111814] text-[10px] font-black">
@@ -239,7 +239,7 @@ export default function DemoRestaurante() {
                         4.8
                     </div>
                 </div>
-                <h3 className="text-lg font-black text-[#111814] group-hover:text-[#13ec6d] transition-colors mb-2 leading-tight">
+                <h3 className="text-lg font-black text-[#111814] group-hover:text-[#22C55E] transition-colors mb-2 leading-tight">
                     {product.nombre}
                 </h3>
                 <p className="text-[#618972] text-xs font-medium leading-relaxed mb-4 line-clamp-2">
@@ -254,7 +254,7 @@ export default function DemoRestaurante() {
                             </span>
                         )}
                     </div>
-                    <div className="size-10 bg-[#13ec6d] rounded-full flex items-center justify-center shadow-lg shadow-[#13ec6d]/20 text-[#111814] group-hover:scale-110 transition-transform">
+                    <div className="size-10 bg-[#22C55E] rounded-full flex items-center justify-center shadow-lg shadow-[#22C55E]/20 text-[#111814] group-hover:scale-110 transition-transform">
                         <Plus className="w-5 h-5 stroke-[3]" />
                     </div>
                 </div>
@@ -272,7 +272,7 @@ export default function DemoRestaurante() {
                 {onVerTodo && (
                     <button
                         onClick={onVerTodo}
-                        className="flex h-8 items-center justify-center rounded-full px-4 bg-white border border-[#f0f4f2] text-[#618972] hover:border-[#13ec6d] hover:text-[#13ec6d] transition-all active:scale-95 text-[10px] font-black uppercase tracking-widest shadow-sm"
+                        className="flex h-8 items-center justify-center rounded-full px-4 bg-white border border-[#f0f4f2] text-[#618972] hover:border-[#22C55E] hover:text-[#22C55E] transition-all active:scale-95 text-[10px] font-black uppercase tracking-widest shadow-sm"
                     >
                         Ver todo
                     </button>
@@ -291,34 +291,34 @@ export default function DemoRestaurante() {
     return (
         <div className="min-h-screen bg-[#f6f8f7] pb-24 font-sans text-[#111814] antialiased">
             {/* Top Header */}
-            <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#f0f4f2] shadow-sm">
+            <header className="sticky top-0 z-50 bg-[#0F172A]/95 backdrop-blur-md border-b border-slate-800 shadow-sm">
                 <div className="px-4 md:px-10 py-3 max-w-[1200px] mx-auto w-full flex items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
-                        <button onClick={() => navigate('/')} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-[#111814]">
+                        <button onClick={() => navigate('/')} className="p-2 hover:bg-slate-800 rounded-full transition-colors text-white">
                             <ArrowLeft className="w-6 h-6" />
                         </button>
                         <div className="flex items-center gap-3 group">
-                            <div className="size-10 rounded-xl overflow-hidden bg-gray-100 border border-gray-200 shrink-0">
+                            <div className="size-10 rounded-xl overflow-hidden bg-slate-800 border border-slate-700 shrink-0">
                                 <img src={DEMO_BUSINESS.logo_url} alt="Logo" className="w-full h-full object-cover" />
                             </div>
-                            <h2 className="hidden md:block text-xl font-black tracking-tighter text-[#111814] truncate max-w-[200px]">
+                            <h2 className="hidden md:block text-xl font-black tracking-tighter text-white truncate max-w-[200px]">
                                 {DEMO_BUSINESS.nombre}
                             </h2>
                         </div>
                     </div>
                     <div className="flex items-center gap-4">
-                        <button className="relative size-11 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-[#13ec6d]/10 hover:border-[#13ec6d] transition-all hover:scale-105 active:scale-95 group shadow-sm">
-                            <User className="w-5 h-5 text-[#111814] group-hover:text-[#13ec6d]" />
+                        <button className="relative size-11 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center hover:bg-[#22C55E]/10 hover:border-[#22C55E] transition-all hover:scale-105 active:scale-95 group shadow-sm">
+                            <User className="w-5 h-5 text-white group-hover:text-[#22C55E]" />
                         </button>
                         <button
                             onClick={() => {
                                 setIsCartOpen(true);
                                 setStep('cart');
                             }}
-                            className="relative size-11 rounded-full bg-white border-2 border-[#13ec6d] flex items-center justify-center hover:bg-[#13ec6d] transition-all hover:scale-105 active:scale-95 group shadow-lg shadow-[#13ec6d]/10"
+                            className="relative size-11 rounded-full bg-white border-2 border-[#22C55E] flex items-center justify-center hover:bg-[#22C55E] transition-all hover:scale-105 active:scale-95 group shadow-lg shadow-[#22C55E]/10"
                         >
-                            <ShoppingCart className="w-5 h-5 text-[#13ec6d] group-hover:text-white" />
-                            {cartCount > 0 && <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#13ec6d] text-[10px] font-black text-white ring-2 ring-white">{cartCount}</span>}
+                            <ShoppingCart className="w-5 h-5 text-[#22C55E] group-hover:text-white" />
+                            {cartCount > 0 && <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#22C55E] text-[10px] font-black text-white ring-2 ring-white">{cartCount}</span>}
                         </button>
                     </div>
                 </div>
@@ -331,7 +331,7 @@ export default function DemoRestaurante() {
                         <div className="absolute inset-0 bg-gradient-to-t from-[#102218]/80 via-[#102218]/20 to-transparent z-10" />
                         <img src={DEMO_BUSINESS.banner_url} alt="Banner" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                         <div className="absolute bottom-0 left-0 p-8 md:p-12 z-20 w-full pb-16 md:pb-24">
-                            <span className="inline-flex items-center gap-2 px-4 py-1.5 mb-4 text-[10px] font-black text-[#111814] bg-[#13ec6d] rounded-full uppercase tracking-[0.2em] shadow-lg shadow-[#13ec6d]/20">
+                            <span className="inline-flex items-center gap-2 px-4 py-1.5 mb-4 text-[10px] font-black text-[#111814] bg-[#22C55E] rounded-full uppercase tracking-[0.2em] shadow-lg shadow-[#22C55E]/20">
                                 <Star className="w-3 h-3 fill-[#111814]" />
                                 {DEMO_BUSINESS.banner_tag}
                             </span>
@@ -341,15 +341,15 @@ export default function DemoRestaurante() {
                     </div>
                     <div className="relative z-30 -mt-10 max-w-3xl mx-auto px-4">
                         <div className="relative group">
-                            <div className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-[#618972] group-focus-within:text-[#13ec6d] transition-colors"><Search className="w-full h-full" /></div>
+                            <div className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-[#618972] group-focus-within:text-[#22C55E] transition-colors"><Search className="w-full h-full" /></div>
                             <input
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Busquemos la comida que te gusta..."
-                                className="w-full h-14 bg-white border border-transparent rounded-full pl-14 pr-16 text-base font-medium shadow-xl hover:border-[#13ec6d] focus:outline-none focus:border-[#13ec6d] focus:ring-2 focus:ring-[#13ec6d]/50 transition-all placeholder:text-[#a0b5ab] text-[#111814]"
+                                className="w-full h-14 bg-white border border-transparent rounded-full pl-14 pr-16 text-base font-medium shadow-xl hover:border-[#22C55E] focus:outline-none focus:border-[#22C55E] focus:ring-2 focus:ring-[#22C55E]/50 transition-all placeholder:text-[#a0b5ab] text-[#111814]"
                             />
-                            <div className="absolute right-2 top-1/2 -translate-y-1/2"><button className="p-2.5 rounded-full border bg-gray-50 border-gray-100 text-[#618972] hover:text-[#13ec6d] transition-colors shadow-sm"><Filter className="w-4 h-4" /></button></div>
+                            <div className="absolute right-2 top-1/2 -translate-y-1/2"><button className="p-2.5 rounded-full border bg-gray-50 border-gray-100 text-[#618972] hover:text-[#22C55E] transition-colors shadow-sm"><Filter className="w-4 h-4" /></button></div>
                         </div>
                     </div>
                 </div>
@@ -362,7 +362,7 @@ export default function DemoRestaurante() {
                                 key={idx}
                                 onClick={() => { setActiveCategory(cat.nombre); setSpecialFilter(null); }}
                                 className={`flex h-9 md:h-10 items-center justify-center gap-x-2 rounded-full px-4 md:px-5 transition-all active:scale-95 font-bold text-[12px] md:text-sm
-                  ${activeCategory === cat.nombre && specialFilter === null ? 'bg-[#13ec6d] text-[#111814] shadow-lg shadow-[#13ec6d]/20 scale-105' : 'bg-white border border-[#f0f4f2] text-[#618972] hover:border-[#13ec6d] hover:text-[#111814]'}`}
+                  ${activeCategory === cat.nombre && specialFilter === null ? 'bg-[#22C55E] text-[#111814] shadow-lg shadow-[#22C55E]/20 scale-105' : 'bg-white border border-[#f0f4f2] text-[#618972] hover:border-[#22C55E] hover:text-[#111814]'}`}
                             >
                                 <span className="text-base leading-none">{cat.icono}</span>
                                 <span>{cat.nombre}</span>
@@ -376,10 +376,10 @@ export default function DemoRestaurante() {
                     <>
                         <ProductSection title="Recomendados del Chef" items={destacados} icon={<Sparkles className="w-6 h-6 text-orange-400 fill-orange-400" />} onVerTodo={() => setSpecialFilter('destacados')} />
                         <ProductSection title="Ofertas Especiales" items={ofertas} icon={<Sparkles className="w-6 h-6 text-red-500" />} onVerTodo={() => setSpecialFilter('ofertas')} />
-                        <ProductSection title="Nuestros Productos" items={DEMO_PRODUCTS} icon={<CheckCircle2 className="w-6 h-6 text-[#13ec6d]" />} rows={3} />
+                        <ProductSection title="Nuestros Productos" items={DEMO_PRODUCTS} icon={<CheckCircle2 className="w-6 h-6 text-[#22C55E]" />} rows={3} />
                     </>
                 ) : (
-                    <ProductSection title={specialFilter === 'destacados' ? 'Recomendados del Chef' : (specialFilter === 'ofertas' ? 'Ofertas Especiales' : activeCategory)} items={filteredProducts} icon={<UtensilsCrossed className="w-6 h-6 text-[#13ec6d]" />} rows={Math.ceil(filteredProducts.length / 4)} />
+                    <ProductSection title={specialFilter === 'destacados' ? 'Recomendados del Chef' : (specialFilter === 'ofertas' ? 'Ofertas Especiales' : activeCategory)} items={filteredProducts} icon={<UtensilsCrossed className="w-6 h-6 text-[#22C55E]" />} rows={Math.ceil(filteredProducts.length / 4)} />
                 )}
             </main>
 
@@ -411,12 +411,12 @@ export default function DemoRestaurante() {
                                                 <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0"><img src={item.imagen} alt="" className="w-full h-full object-cover" /></div>
                                                 <div className="flex-1 min-w-0">
                                                     <h4 className="font-black text-gray-900 text-sm truncate">{item.nombre}</h4>
-                                                    <p className="text-[#13ec6d] font-black text-sm">{formatCurrency(item.precio)}</p>
+                                                    <p className="text-[#22C55E] font-black text-sm">{formatCurrency(item.precio)}</p>
                                                     <div className="mt-2 flex items-center justify-between">
                                                         <div className="flex items-center gap-3 bg-white rounded-full p-1 border shadow-sm">
-                                                            <button onClick={() => updateQuantity(item.id, -1)} className="p-1 hover:text-[#13ec6d]"><Minus className="w-4 h-4" /></button>
+                                                            <button onClick={() => updateQuantity(item.id, -1)} className="p-1 hover:text-[#22C55E]"><Minus className="w-4 h-4" /></button>
                                                             <span className="font-black text-xs w-4 text-center">{item.quantity}</span>
-                                                            <button onClick={() => updateQuantity(item.id, 1)} className="p-1 hover:text-[#13ec6d]"><Plus className="w-4 h-4" /></button>
+                                                            <button onClick={() => updateQuantity(item.id, 1)} className="p-1 hover:text-[#22C55E]"><Plus className="w-4 h-4" /></button>
                                                         </div>
                                                         <button onClick={() => removeFromCart(item.id)} className="text-gray-400 hover:text-red-500 text-[10px] font-black uppercase tracking-wider">Eliminar</button>
                                                     </div>
@@ -428,23 +428,23 @@ export default function DemoRestaurante() {
 
                                 {step === 'checkout' && (
                                     <div className="space-y-6">
-                                        <div className="p-4 bg-[#13ec6d]/10 border border-[#13ec6d]/20 rounded-2xl">
-                                            <p className="text-[10px] font-black text-[#13ec6d] uppercase tracking-widest mb-1">Información de Entrega</p>
+                                        <div className="p-4 bg-[#22C55E]/10 border border-[#22C55E]/20 rounded-2xl">
+                                            <p className="text-[10px] font-black text-[#22C55E] uppercase tracking-widest mb-1">Información de Entrega</p>
                                             <p className="text-xs font-medium text-[#111814]/70">Completa tus datos para simular el envío del pedido.</p>
                                         </div>
 
                                         <div className="space-y-4">
                                             <div className="space-y-2">
                                                 <label className="text-xs font-black text-gray-400 uppercase tracking-wider flex items-center gap-2"><User className="w-3 h-3" /> Tu Nombre</label>
-                                                <input type="text" value={checkoutData.nombre} onChange={(e) => setCheckoutData({ ...checkoutData, nombre: e.target.value })} placeholder="Ej: Luis Sarabia" className="w-full h-12 bg-gray-50 border-gray-100 rounded-xl px-4 text-sm font-bold focus:border-[#13ec6d] focus:ring-0 outline-none transition-all" />
+                                                <input type="text" value={checkoutData.nombre} onChange={(e) => setCheckoutData({ ...checkoutData, nombre: e.target.value })} placeholder="Ej: Luis Sarabia" className="w-full h-12 bg-gray-50 border-gray-100 rounded-xl px-4 text-sm font-bold focus:border-[#22C55E] focus:ring-0 outline-none transition-all" />
                                             </div>
                                             <div className="space-y-2">
                                                 <label className="text-xs font-black text-gray-400 uppercase tracking-wider flex items-center gap-2"><MapPin className="w-3 h-3" /> Dirección</label>
-                                                <input type="text" value={checkoutData.direccion} onChange={(e) => setCheckoutData({ ...checkoutData, direccion: e.target.value })} placeholder="Ej: Calle 10 # 5-20" className="w-full h-12 bg-gray-50 border-gray-100 rounded-xl px-4 text-sm font-bold focus:border-[#13ec6d] focus:ring-0 outline-none transition-all" />
+                                                <input type="text" value={checkoutData.direccion} onChange={(e) => setCheckoutData({ ...checkoutData, direccion: e.target.value })} placeholder="Ej: Calle 10 # 5-20" className="w-full h-12 bg-gray-50 border-gray-100 rounded-xl px-4 text-sm font-bold focus:border-[#22C55E] focus:ring-0 outline-none transition-all" />
                                             </div>
                                             <div className="space-y-2">
                                                 <label className="text-xs font-black text-gray-400 uppercase tracking-wider flex items-center gap-2"><Phone className="w-3 h-3" /> WhatsApp / Teléfono</label>
-                                                <input type="tel" value={checkoutData.telefono} onChange={(e) => setCheckoutData({ ...checkoutData, telefono: e.target.value })} placeholder="Ej: 3001234567" className="w-full h-12 bg-gray-50 border-gray-100 rounded-xl px-4 text-sm font-bold focus:border-[#13ec6d] focus:ring-0 outline-none transition-all" />
+                                                <input type="tel" value={checkoutData.telefono} onChange={(e) => setCheckoutData({ ...checkoutData, telefono: e.target.value })} placeholder="Ej: 3001234567" className="w-full h-12 bg-gray-50 border-gray-100 rounded-xl px-4 text-sm font-bold focus:border-[#22C55E] focus:ring-0 outline-none transition-all" />
                                             </div>
                                         </div>
 
@@ -452,7 +452,7 @@ export default function DemoRestaurante() {
                                             <p className="text-xs font-black text-gray-400 uppercase tracking-wider mb-3">Resumen de Pago</p>
                                             <div className="p-4 bg-gray-50 rounded-2xl border border-dashed border-gray-200 space-y-2">
                                                 <div className="flex justify-between text-sm font-medium"><span>Subtotal</span><span>{formatCurrency(cartTotal)}</span></div>
-                                                <div className="flex justify-between text-sm font-medium"><span>Envío</span><span className="text-[#13ec6d]">GRATIS</span></div>
+                                                <div className="flex justify-between text-sm font-medium"><span>Envío</span><span className="text-[#22C55E]">GRATIS</span></div>
                                                 <div className="pt-2 border-t border-gray-200 flex justify-between text-lg font-black text-gray-900"><span>Total</span><span>{formatCurrency(cartTotal)}</span></div>
                                             </div>
                                         </div>
@@ -461,19 +461,19 @@ export default function DemoRestaurante() {
 
                                 {step === 'success' && (
                                     <div className="h-full flex flex-col items-center justify-center text-center px-4">
-                                        <div className="size-24 bg-[#13ec6d] rounded-full flex items-center justify-center mb-6 shadow-2xl shadow-[#13ec6d]/40 scale-110">
+                                        <div className="size-24 bg-[#22C55E] rounded-full flex items-center justify-center mb-6 shadow-2xl shadow-[#22C55E]/40 scale-110">
                                             <ChefHat className="w-12 h-12 text-[#111814]" />
                                         </div>
                                         <h3 className="text-3xl font-black text-gray-900 mb-4 tracking-tighter">¡Pedido Recibido!</h3>
                                         <p className="text-gray-500 font-medium mb-8 leading-relaxed">
-                                            Este es un <span className="text-[#13ec6d] font-bold">simulacro funcional</span>. En la vida real, el restaurante recibiría este pedido al instante por WhatsApp y su panel de control.
+                                            Este es un <span className="text-[#22C55E] font-bold">simulacro funcional</span>. En la vida real, el restaurante recibiría este pedido al instante por WhatsApp y su panel de control.
                                         </p>
                                         <div className="w-full p-4 bg-gray-50 rounded-2xl border border-gray-100 mb-8 space-y-2 text-left">
                                             <div className="flex justify-between text-xs font-bold"><span>Cliente</span><span className="text-gray-900">{checkoutData.nombre}</span></div>
                                             <div className="flex justify-between text-xs font-bold"><span>Orden #</span><span className="text-gray-900">DEMO-001</span></div>
-                                            <div className="flex justify-between text-xs font-bold"><span>Total</span><span className="text-[#13ec6d] font-black">{formatCurrency(cartTotal)}</span></div>
+                                            <div className="flex justify-between text-xs font-bold"><span>Total</span><span className="text-[#22C55E] font-black">{formatCurrency(cartTotal)}</span></div>
                                         </div>
-                                        <Button onClick={resetAll} className="w-full h-14 bg-white hover:bg-[#13ec6d] text-[#13ec6d] hover:text-white border-2 border-[#13ec6d] font-black rounded-2xl transition-all">Seguir Explorando</Button>
+                                        <Button onClick={resetAll} className="w-full h-14 bg-white hover:bg-[#22C55E] text-[#22C55E] hover:text-white border-2 border-[#22C55E] font-black rounded-2xl transition-all">Seguir Explorando</Button>
                                     </div>
                                 )}
                             </div>
@@ -487,7 +487,7 @@ export default function DemoRestaurante() {
                                     <Button
                                         disabled={cart.length === 0}
                                         onClick={handleConfirmOrder}
-                                        className="w-full h-16 bg-white hover:bg-[#13ec6d] text-[#13ec6d] hover:text-[#111814] border-2 border-[#13ec6d] font-black rounded-2xl text-lg flex items-center justify-center gap-3 transition-all shadow-xl hover:shadow-[#13ec6d]/20 active:scale-95"
+                                        className="w-full h-16 bg-white hover:bg-[#22C55E] text-[#22C55E] hover:text-[#111814] border-2 border-[#22C55E] font-black rounded-2xl text-lg flex items-center justify-center gap-3 transition-all shadow-xl hover:shadow-[#22C55E]/20 active:scale-95"
                                     >
                                         {step === 'cart' ? (
                                             <>Siguiente <ArrowRight className="w-6 h-6" /></>

@@ -116,7 +116,7 @@ export default function ClientProfilePage() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <Loader2 className="w-8 h-8 animate-spin text-[#13ec6d]" />
+                <Loader2 className="w-8 h-8 animate-spin text-[#22C55E]" />
             </div>
         );
     }
@@ -127,8 +127,8 @@ export default function ClientProfilePage() {
             <div className="min-h-screen bg-gray-50/30 flex flex-col items-center justify-center p-4 font-inter">
                 <div className="w-full max-w-md space-y-8">
                     <div className="text-center space-y-2">
-                        <div className="w-16 h-16 bg-[#13ec6d]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <ShieldCheck className="w-8 h-8 text-[#13ec6d]" />
+                        <div className="w-16 h-16 bg-[#22C55E]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <ShieldCheck className="w-8 h-8 text-[#22C55E]" />
                         </div>
                         <h1 className="text-2xl font-black text-[#111814]">
                             {authStep === 'phone' ? 'Bienvenido' : 'Verifica tu número'}
@@ -152,7 +152,7 @@ export default function ClientProfilePage() {
                                             <Input
                                                 type="tel"
                                                 placeholder="300 123 4567"
-                                                className="pl-12 h-12 rounded-xl bg-gray-50 border-gray-200 focus:ring-[#13ec6d]/20 focus:border-[#13ec6d]"
+                                                className="pl-12 h-12 rounded-xl bg-gray-50 border-gray-200 focus:ring-[#22C55E]/20 focus:border-[#22C55E]"
                                                 value={phone}
                                                 onChange={(e) => setPhone(e.target.value)}
                                             />
@@ -160,7 +160,7 @@ export default function ClientProfilePage() {
                                     </div>
                                     <Button
                                         type="submit"
-                                        className="w-full h-12 rounded-xl bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] font-black text-base shadow-lg shadow-[#13ec6d]/20"
+                                        className="w-full h-12 rounded-xl bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-black text-base shadow-lg shadow-[#22C55E]/20"
                                         disabled={submitting}
                                     >
                                         {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Continuar"}
@@ -173,7 +173,7 @@ export default function ClientProfilePage() {
                                         <Input
                                             type="text"
                                             placeholder="123456"
-                                            className="h-12 rounded-xl bg-gray-50 border-gray-200 focus:ring-[#13ec6d]/20 focus:border-[#13ec6d] text-center text-xl tracking-widest font-bold"
+                                            className="h-12 rounded-xl bg-gray-50 border-gray-200 focus:ring-[#22C55E]/20 focus:border-[#22C55E] text-center text-xl tracking-widest font-bold"
                                             value={otp}
                                             onChange={(e) => setOtp(e.target.value)}
                                             maxLength={6}
@@ -181,7 +181,7 @@ export default function ClientProfilePage() {
                                     </div>
                                     <Button
                                         type="submit"
-                                        className="w-full h-12 rounded-xl bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] font-black text-base shadow-lg shadow-[#13ec6d]/20"
+                                        className="w-full h-12 rounded-xl bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-black text-base shadow-lg shadow-[#22C55E]/20"
                                         disabled={submitting}
                                     >
                                         {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Verificar"}
@@ -258,11 +258,11 @@ export default function ClientProfilePage() {
                                     <h2 className="text-2xl font-black text-[#111814] tracking-tight">{user.nombre || 'Sin Nombre'}</h2>
                                     <div className="text-sm font-medium text-gray-500 flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-4">
                                         <span className="flex items-center gap-1">
-                                            <Phone className="w-3.5 h-3.5 text-[#13ec6d]" /> {user.telefono}
+                                            <Phone className="w-3.5 h-3.5 text-[#22C55E]" /> {user.telefono}
                                         </span>
                                         {user.email && (
                                             <span className="flex items-center gap-1">
-                                                <User className="w-3.5 h-3.5 text-[#13ec6d]" /> {user.email}
+                                                <User className="w-3.5 h-3.5 text-[#22C55E]" /> {user.email}
                                             </span>
                                         )}
                                     </div>
@@ -270,7 +270,7 @@ export default function ClientProfilePage() {
                             </div>
                             <Button
                                 onClick={() => navigate(`/${slug}/mi-cuenta/editar`)}
-                                className="rounded-xl px-6 bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] font-bold shadow-lg shadow-[#13ec6d]/20"
+                                className="rounded-xl px-6 bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-bold shadow-lg shadow-[#22C55E]/20"
                             >
                                 Editar Perfil
                             </Button>
@@ -288,7 +288,7 @@ export default function ClientProfilePage() {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between px-2">
                                 <h3 className="text-lg font-black text-[#111814] flex items-center gap-2">
-                                    <Package className="w-5 h-5 text-[#13ec6d]" />
+                                    <Package className="w-5 h-5 text-[#22C55E]" />
                                     Mis Pedidos Recientes
                                 </h3>
                             </div>
@@ -332,7 +332,7 @@ export default function ClientProfilePage() {
                         <div className="space-y-4 pt-2">
                             <div className="flex items-center justify-between px-2">
                                 <h3 className="text-lg font-black text-[#111814] flex items-center gap-2">
-                                    <Heart className="w-5 h-5 text-[#13ec6d]" />
+                                    <Heart className="w-5 h-5 text-[#22C55E]" />
                                     Mis Favoritos
                                 </h3>
                             </div>
@@ -365,10 +365,10 @@ export default function ClientProfilePage() {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between px-2">
                                 <h3 className="text-lg font-black text-[#111814] flex items-center gap-2">
-                                    <MapPin className="w-5 h-5 text-[#13ec6d]" />
+                                    <MapPin className="w-5 h-5 text-[#22C55E]" />
                                     Direcciones
                                 </h3>
-                                <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full bg-gray-100 text-gray-600 hover:bg-[#13ec6d] hover:text-[#111814]">
+                                <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full bg-gray-100 text-gray-600 hover:bg-[#22C55E] hover:text-[#111814]">
                                     <Plus className="w-4 h-4" />
                                 </Button>
                             </div>
@@ -380,13 +380,13 @@ export default function ClientProfilePage() {
                                         <Card key={addr.id} className="border-none shadow-sm hover:shadow-md transition-shadow rounded-[1.5rem] overflow-hidden group">
                                             <CardContent className="p-5 flex items-center gap-4">
                                                 <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center shrink-0">
-                                                    <Home className="w-5 h-5 text-[#13ec6d]" />
+                                                    <Home className="w-5 h-5 text-[#22C55E]" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2 mb-0.5">
                                                         <h4 className="font-bold text-[#111814] text-sm">{addr.nombre}</h4>
                                                         {addr.es_principal && (
-                                                            <Badge className="h-4 text-[9px] px-1.5 bg-[#13ec6d]/20 text-[#111814] hover:bg-[#13ec6d]/30 border-none shadow-none uppercase font-bold">
+                                                            <Badge className="h-4 text-[9px] px-1.5 bg-[#22C55E]/20 text-[#111814] hover:bg-[#22C55E]/30 border-none shadow-none uppercase font-bold">
                                                                 Principal
                                                             </Badge>
                                                         )}

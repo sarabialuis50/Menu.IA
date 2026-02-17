@@ -1,4 +1,4 @@
-# 🍽️ Menu.IA - Sistema de Gestión para Restaurantes
+# 🍽️ Menu.IA - Sistema de Gestión para Negocios
 
 Menu.IA es una plataforma integral diseñada para modernizar la operación de restaurantes, cafeterías y negocios gastronómicos. Permite gestionar pedidos, mesas, inventario y fidelizar clientes de forma eficiente y en tiempo real.
 

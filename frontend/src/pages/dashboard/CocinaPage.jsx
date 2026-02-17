@@ -52,7 +52,7 @@ export default function CocinaPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#25D366]" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#22C55E]" />
       </div>
     );
   }
@@ -62,7 +62,7 @@ export default function CocinaPage() {
       <header className="sticky top-0 z-50 bg-gray-800 border-b border-gray-700">
         <div className="max-w-full mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#25D366] to-[#128C7E] flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#22C55E] to-[#16A34A] flex items-center justify-center">
               <ChefHat className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -143,7 +143,7 @@ function OrderCard({ order, onUpdateStatus }) {
     };
   }
   else if (order.estado === 'listo') config = { label: 'Listo', color: 'border-green-400 bg-green-50', headerColor: 'bg-green-500', nextAction: 'Enviado', nextStatus: 'enviado', btnColor: 'bg-purple-500 hover:bg-purple-600' };
-  else if (order.estado === 'enviado') config = { label: 'Enviado', color: 'border-purple-400 bg-purple-50', headerColor: 'bg-purple-500', nextAction: 'Entregado', nextStatus: 'entregado', btnColor: 'bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814]' };
+  else if (order.estado === 'enviado') config = { label: 'Enviado', color: 'border-purple-400 bg-purple-50', headerColor: 'bg-purple-500', nextAction: 'Entregado', nextStatus: 'entregado', btnColor: 'bg-[#22C55E] hover:bg-[#16A34A] text-[#111814]' };
   else config = { label: 'Entregado', color: 'border-gray-400 bg-gray-50', headerColor: 'bg-gray-500', nextAction: null, nextStatus: null, btnColor: '' };
 
   return (

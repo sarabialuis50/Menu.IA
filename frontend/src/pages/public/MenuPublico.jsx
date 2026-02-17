@@ -516,7 +516,7 @@ const MenuContent = () => {
         {/* Promotional Tag Badge */}
         {product.etiqueta && (
           <div className="absolute top-2 left-2 z-20">
-            <div className="bg-[#13ec6d] text-[#111814] text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg shadow-md border border-white/10 flex items-center gap-1 ring-1 ring-white/20">
+            <div className="bg-[#22C55E] text-[#111814] text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg shadow-md border border-white/10 flex items-center gap-1 ring-1 ring-white/20">
               <div className="size-1 rounded-full bg-white animate-pulse" />
               {product.etiqueta}
             </div>
@@ -544,7 +544,7 @@ const MenuContent = () => {
 
       <div className="p-5 flex flex-col flex-1">
         <div className="flex items-center justify-between mb-3">
-          <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#13ec6d]/10 text-[9px] font-black text-[#13ec6d] uppercase tracking-wider">
+          <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#22C55E]/10 text-[9px] font-black text-[#22C55E] uppercase tracking-wider">
             {product.categoria}
           </div>
           <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-full text-[#111814] text-[10px] font-black">
@@ -552,7 +552,7 @@ const MenuContent = () => {
             4.8
           </div>
         </div>
-        <h3 className="text-lg font-black text-[#111814] group-hover:text-[#13ec6d] transition-colors mb-2 leading-tight">
+        <h3 className="text-lg font-black text-[#111814] group-hover:text-[#22C55E] transition-colors mb-2 leading-tight">
           {product.nombre}
         </h3>
         <p className="text-[#618972] text-xs font-medium leading-relaxed mb-4 line-clamp-2">
@@ -567,7 +567,7 @@ const MenuContent = () => {
               </span>
             )}
           </div>
-          <div className="size-10 bg-[#13ec6d] rounded-full flex items-center justify-center shadow-lg shadow-[#13ec6d]/20 text-[#111814] group-hover:scale-110 transition-transform">
+          <div className="size-10 bg-[#22C55E] rounded-full flex items-center justify-center shadow-lg shadow-[#22C55E]/20 text-[#111814] group-hover:scale-110 transition-transform">
             <Plus className="w-5 h-5 stroke-[3]" />
           </div>
         </div>
@@ -583,7 +583,7 @@ const MenuContent = () => {
         </h2>
         <button
           onClick={onSeeAll}
-          className="flex h-8 items-center justify-center rounded-full px-4 bg-white border border-[#f0f4f2] text-[#618972] hover:border-[#13ec6d] hover:text-[#13ec6d] transition-all active:scale-95 text-[10px] font-black uppercase tracking-widest shadow-sm"
+          className="flex h-8 items-center justify-center rounded-full px-4 bg-white border border-[#f0f4f2] text-[#618972] hover:border-[#22C55E] hover:text-[#22C55E] transition-all active:scale-95 text-[10px] font-black uppercase tracking-widest shadow-sm"
         >
           Ver todo
         </button>
@@ -605,7 +605,7 @@ const MenuContent = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#f6f8f7]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#13ec6d]" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#22C55E]" />
       </div>
     );
   }
@@ -618,7 +618,7 @@ const MenuContent = () => {
         </div>
         <h1 className="text-2xl font-black text-[#111814] mb-2">Página no disponible</h1>
         <p className="text-[#618972] max-w-xs mb-8">El restaurante que buscas no existe o ha cambiado su nombre.</p>
-        <Button onClick={() => navigate('/')} className="bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] px-8 h-12 rounded-xl font-bold">
+        <Button onClick={() => navigate('/')} className="bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] px-8 h-12 rounded-xl font-bold">
           Ir al inicio
         </Button>
       </div>
@@ -628,17 +628,17 @@ const MenuContent = () => {
   return (
     <div className="min-h-screen bg-[#f6f8f7] font-sans text-[#111814] antialiased">
       {/* Top Header */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#f0f4f2] shadow-sm">
+      <header className="sticky top-0 z-50 bg-[#0F172A]/95 backdrop-blur-md border-b border-slate-800 shadow-sm">
         <div className="px-4 md:px-10 py-3 max-w-[1200px] mx-auto w-full flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <button
               onClick={handleBack}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors text-[#111814]"
+              className="p-2 hover:bg-slate-800 rounded-full transition-colors text-white"
             >
               <ArrowLeft className="w-6 h-6" />
             </button>
             <Link to={`/${slug}`} className="flex items-center gap-3 group">
-              <div className="size-10 rounded-xl overflow-hidden bg-gray-100 border border-gray-200 shrink-0">
+              <div className="size-10 rounded-xl overflow-hidden bg-slate-800 border border-slate-700 shrink-0">
                 <img
                   src={business.logo_url || `https://ui-avatars.com/api/?name=${business.nombre || 'MenuPro'}&background=22C55E&color=fff&bold=true`}
                   alt={business.nombre || 'Logo'}
@@ -657,7 +657,7 @@ const MenuContent = () => {
 
           <div className="flex-1 max-w-xl mx-8 hidden sm:block lg:hidden">
             <div className="relative group">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#618972] group-focus-within:text-[#13ec6d] transition-colors">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#618972] group-focus-within:text-[#22C55E] transition-colors">
                 <Search className="w-full h-full" />
               </div>
               <input
@@ -665,7 +665,7 @@ const MenuContent = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Buscar tu antojo..."
-                className="w-full h-11 bg-gray-100 border-none rounded-2xl pl-10 pr-4 text-sm focus:ring-2 focus:ring-[#13ec6d]/50 transition-all placeholder:text-[#618972]"
+                className="w-full h-11 bg-gray-100 border-none rounded-2xl pl-10 pr-4 text-sm focus:ring-2 focus:ring-[#22C55E]/50 transition-all placeholder:text-[#618972]"
               />
             </div>
           </div>
@@ -673,17 +673,17 @@ const MenuContent = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate(`/${slug}/mi-cuenta`)}
-              className="relative size-11 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-[#13ec6d]/10 hover:border-[#13ec6d] transition-all hover:scale-105 active:scale-95 group shadow-sm"
+              className="relative size-11 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-[#22C55E]/10 hover:border-[#22C55E] transition-all hover:scale-105 active:scale-95 group shadow-sm"
             >
-              <User className="w-5 h-5 text-[#111814] group-hover:text-[#13ec6d]" />
+              <User className="w-5 h-5 text-[#111814] group-hover:text-[#22C55E]" />
             </button>
             <button
               onClick={() => { setCartOpen(true); setCheckoutStep(1); }}
-              className="relative size-11 rounded-full bg-[#111814] flex items-center justify-center hover:bg-[#13ec6d] transition-all hover:scale-105 active:scale-95 group shadow-lg shadow-[#111814]/20"
+              className="relative size-11 rounded-full bg-[#111814] flex items-center justify-center hover:bg-[#22C55E] transition-all hover:scale-105 active:scale-95 group shadow-lg shadow-[#111814]/20"
             >
               <ShoppingCart className="w-5 h-5 text-white group-hover:text-[#111814]" />
               {itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#13ec6d] text-[10px] font-black text-[#111814] ring-2 ring-white group-hover:bg-white group-hover:text-[#13ec6d]">
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#22C55E] text-[10px] font-black text-[#111814] ring-2 ring-white group-hover:bg-white group-hover:text-[#22C55E]">
                   {itemCount}
                 </span>
               )}
@@ -695,7 +695,7 @@ const MenuContent = () => {
       <main className="max-w-[1200px] mx-auto px-4 md:px-10 py-8">
         {/* Table Info Banner */}
         {tableInfo && (
-          <div className="mb-8 p-3 rounded-2xl bg-[#13ec6d] text-[#111814] flex items-center justify-center gap-3 font-bold shadow-lg shadow-[#13ec6d]/20">
+          <div className="mb-8 p-3 rounded-2xl bg-[#22C55E] text-[#111814] flex items-center justify-center gap-3 font-bold shadow-lg shadow-[#22C55E]/20">
             <div className="bg-white/20 p-1 rounded-lg">
               <CheckCircle2 className="w-5 h-5" />
             </div>
@@ -713,7 +713,7 @@ const MenuContent = () => {
             />
 
             <div className="absolute top-6 left-6 z-20">
-              <span className="inline-flex items-center gap-2 px-4 py-2 text-[10px] font-black text-[#111814] bg-[#13ec6d] rounded-full uppercase tracking-[0.2em] shadow-lg shadow-[#13ec6d]/20">
+              <span className="inline-flex items-center gap-2 px-4 py-2 text-[10px] font-black text-[#111814] bg-[#22C55E] rounded-full uppercase tracking-[0.2em] shadow-lg shadow-[#22C55E]/20">
                 <Star className="w-3 h-3 fill-[#111814]" />
                 {business.banner_tag || 'Los mejores sabores'}
               </span>
@@ -730,7 +730,7 @@ const MenuContent = () => {
           {/* New Hero Search Bar */}
           <div className="relative z-30 -mt-10 max-w-3xl mx-auto px-4">
             <div className="relative group">
-              <div className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-[#618972] group-focus-within:text-[#13ec6d] transition-colors">
+              <div className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-[#618972] group-focus-within:text-[#22C55E] transition-colors">
                 <Search className="w-full h-full" />
               </div>
               <input
@@ -738,12 +738,12 @@ const MenuContent = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Busquemos la comida que te gusta..."
-                className="w-full h-14 bg-white border border-transparent rounded-full pl-14 pr-16 text-base font-medium shadow-xl hover:border-[#13ec6d] focus:outline-none focus:border-[#13ec6d] focus:ring-2 focus:ring-[#13ec6d]/50 transition-all placeholder:text-[#a0b5ab] text-[#111814]"
+                className="w-full h-14 bg-white border border-transparent rounded-full pl-14 pr-16 text-base font-medium shadow-xl hover:border-[#22C55E] focus:outline-none focus:border-[#22C55E] focus:ring-2 focus:ring-[#22C55E]/50 transition-all placeholder:text-[#a0b5ab] text-[#111814]"
               />
               <div className="absolute right-2 top-1/2 -translate-y-1/2">
                 <button
                   onClick={() => setFilterOpen(!filterOpen)}
-                  className={`p-2.5 rounded-full border transition-colors shadow-sm active:scale-95 ${filterOpen ? 'bg-[#13ec6d] border-[#13ec6d] text-[#111814]' : 'bg-gray-50 border-gray-100 text-[#618972] hover:text-[#13ec6d]'}`}
+                  className={`p-2.5 rounded-full border transition-colors shadow-sm active:scale-95 ${filterOpen ? 'bg-[#22C55E] border-[#22C55E] text-[#111814]' : 'bg-gray-50 border-gray-100 text-[#618972] hover:text-[#22C55E]'}`}
                 >
                   <Filter className="w-4 h-4" />
                 </button>
@@ -764,7 +764,7 @@ const MenuContent = () => {
                               setActiveCategory(catName);
                               setFilterOpen(false);
                             }}
-                            className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50 ${activeCategory === catName ? 'text-[#13ec6d]' : 'text-[#111814]'
+                            className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50 ${activeCategory === catName ? 'text-[#22C55E]' : 'text-[#111814]'
                               }`}
                           >
                             {catName}
@@ -799,8 +799,8 @@ const MenuContent = () => {
                   className={`
                     flex h-8 md:h-10 shrink-0 items-center justify-center gap-x-1.5 rounded-full px-4 md:px-5 transition-all active:scale-95 font-bold text-[9px] md:text-xs uppercase tracking-wide
                     ${activeCategory === catName
-                      ? 'bg-[#13ec6d] text-[#111814] shadow-md shadow-[#13ec6d]/20 scale-105 ring-2 ring-white'
-                      : 'bg-white border border-gray-100 text-gray-400 hover:border-[#13ec6d] hover:text-[#111814] shadow-sm'
+                      ? 'bg-[#22C55E] text-[#111814] shadow-md shadow-[#22C55E]/20 scale-105 ring-2 ring-white'
+                      : 'bg-white border border-gray-100 text-gray-400 hover:border-[#22C55E] hover:text-[#111814] shadow-sm'
                     }
                   `}
                 >
@@ -828,8 +828,8 @@ const MenuContent = () => {
             {tableInfo && (
               <div className="bg-white rounded-3xl p-6 shadow-xl border border-[#f0f4f2] mb-8">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="bg-[#13ec6d]/10 p-3 rounded-full">
-                    <User className="w-6 h-6 text-[#13ec6d]" />
+                  <div className="bg-[#22C55E]/10 p-3 rounded-full">
+                    <User className="w-6 h-6 text-[#22C55E]" />
                   </div>
                   <div>
                     <h3 className="font-black text-xl text-[#111814]">Bienvenido a la Mesa {tableInfo.numero}</h3>
@@ -870,16 +870,16 @@ const MenuContent = () => {
               <h2 className="text-2xl font-black text-[#111814] tracking-tighter flex items-center gap-2">
                 {(() => {
                   if (activeCategory === 'Destacados') {
-                    return <><Sparkles className="w-6 h-6 text-[#13ec6d]" /> <span>✨ Recomendados</span></>;
+                    return <><Sparkles className="w-6 h-6 text-[#22C55E]" /> <span>✨ Recomendados</span></>;
                   }
                   if (activeCategory === 'Ofertas') {
-                    return <><div className="text-[#13ec6d] text-xl">🔥</div> <span>Ofertas Especiales</span></>;
+                    return <><div className="text-[#22C55E] text-xl">🔥</div> <span>Ofertas Especiales</span></>;
                   }
                   if (activeCategory === 'Menu') {
-                    return <><CookingPot className="w-6 h-6 text-[#13ec6d]" /> <span>🥘 Nuestros Productos</span></>;
+                    return <><CookingPot className="w-6 h-6 text-[#22C55E]" /> <span>🥘 Nuestros Productos</span></>;
                   }
                   if (activeCategory === 'Todas') {
-                    return <><UtensilsCrossed className="w-6 h-6 text-[#13ec6d]" /> <span>Todas</span></>;
+                    return <><UtensilsCrossed className="w-6 h-6 text-[#22C55E]" /> <span>Todas</span></>;
                   }
 
                   const currentCat = categories.find(c => (c.nombre || c) === activeCategory);
@@ -894,11 +894,11 @@ const MenuContent = () => {
                       {isUrl ? (
                         <img src={catIcon} alt="" className="w-6 h-6 object-contain" />
                       ) : isLucide ? (
-                        <IconComp className="w-6 h-6 text-[#13ec6d]" />
+                        <IconComp className="w-6 h-6 text-[#22C55E]" />
                       ) : catIcon ? (
                         <span className="text-xl">{catIcon}</span>
                       ) : (
-                        <UtensilsCrossed className="w-6 h-6 text-[#13ec6d]" />
+                        <UtensilsCrossed className="w-6 h-6 text-[#22C55E]" />
                       )}
                       <span>{activeCategory}</span>
                     </>
@@ -908,7 +908,7 @@ const MenuContent = () => {
               {activeCategory !== 'Todas' && (
                 <button
                   onClick={() => setActiveCategory('Todas')}
-                  className="flex h-8 items-center justify-center rounded-full px-4 bg-white border border-[#f0f4f2] text-[#618972] hover:border-[#13ec6d] hover:text-[#13ec6d] transition-all active:scale-95 text-[10px] font-black uppercase tracking-widest shadow-sm"
+                  className="flex h-8 items-center justify-center rounded-full px-4 bg-white border border-[#f0f4f2] text-[#618972] hover:border-[#22C55E] hover:text-[#22C55E] transition-all active:scale-95 text-[10px] font-black uppercase tracking-widest shadow-sm"
                 >
                   Volver al inicio
                 </button>
@@ -937,7 +937,7 @@ const MenuContent = () => {
                     <button
                       key={i}
                       onClick={() => setCurrentPage(i + 1)}
-                      className={`size-10 rounded-xl font-black text-sm transition-all ${currentPage === i + 1 ? 'bg-[#13ec6d] text-[#111814] shadow-lg shadow-[#13ec6d]/20' : 'bg-white text-[#618972] border border-[#f0f4f2] hover:border-[#13ec6d]'}`}
+                      className={`size-10 rounded-xl font-black text-sm transition-all ${currentPage === i + 1 ? 'bg-[#22C55E] text-[#111814] shadow-lg shadow-[#22C55E]/20' : 'bg-white text-[#618972] border border-[#f0f4f2] hover:border-[#22C55E]'}`}
                     >
                       {i + 1}
                     </button>
@@ -980,11 +980,11 @@ const MenuContent = () => {
           >
             <button
               onClick={() => { setCartOpen(true); setCheckoutStep(1); }}
-              className="w-full max-w-md bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] rounded-full shadow-[0_20px_50px_rgba(19,236,109,0.3)] flex items-center pl-6 pr-8 py-4 gap-4 transform transition-all hover:scale-[1.02] active:scale-95 group border-2 border-white/20"
+              className="w-full max-w-md bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] rounded-full shadow-[0_20px_50px_rgba(19,236,109,0.3)] flex items-center pl-6 pr-8 py-4 gap-4 transform transition-all hover:scale-[1.02] active:scale-95 group border-2 border-white/20"
             >
               <div className="relative size-12 bg-white rounded-2xl flex items-center justify-center shadow-inner">
                 <ShoppingCart className="w-6 h-6" />
-                <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#111814] text-[11px] font-black text-white ring-2 ring-[#13ec6d]">
+                <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#111814] text-[11px] font-black text-white ring-2 ring-[#22C55E]">
                   {itemCount}
                 </span>
               </div>
@@ -1006,7 +1006,7 @@ const MenuContent = () => {
             <SheetHeader className="mb-8">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="size-12 rounded-2xl bg-[#13ec6d]/10 flex items-center justify-center text-[#13ec6d]">
+                  <div className="size-12 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
                     {checkoutStep === 0 && <ShoppingCart className="w-6 h-6" />}
                     {checkoutStep === 1 && <User className="w-6 h-6" />}
                   </div>
@@ -1023,7 +1023,7 @@ const MenuContent = () => {
                 {/* Mi Cesta Top Right Indicator */}
                 {checkoutStep === 1 && (
                   <div className="flex flex-col items-end">
-                    <div className="size-10 bg-[#13ec6d] rounded-full flex items-center justify-center text-[#111814] shadow-lg shadow-[#13ec6d]/30 mb-1">
+                    <div className="size-10 bg-[#22C55E] rounded-full flex items-center justify-center text-[#111814] shadow-lg shadow-[#22C55E]/30 mb-1">
                       <ShoppingCart className="w-5 h-5 stroke-[2.5]" />
                     </div>
                     <span className="text-[10px] font-black uppercase tracking-wider text-[#111814]">Mi Cesta</span>
@@ -1068,7 +1068,7 @@ const MenuContent = () => {
                             <div className="flex justify-between items-start mb-1">
                               <h4 className="font-bold text-[#111814] text-base leading-tight pr-6">{item.nombre}</h4>
                             </div>
-                            <p className="text-lg font-black text-[#13ec6d] mb-3">{formatCurrency(item.precio_unitario)}</p>
+                            <p className="text-lg font-black text-[#22C55E] mb-3">{formatCurrency(item.precio_unitario)}</p>
 
                             <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-1.5 w-fit">
                               <button
@@ -1108,7 +1108,7 @@ const MenuContent = () => {
                           value={customerInfo.nombre}
                           onChange={(e) => setCustomerInfo({ ...customerInfo, nombre: e.target.value })}
                           placeholder="Tu nombre"
-                          className="h-12 bg-white border-gray-200 rounded-2xl focus:ring-[#13ec6d]/20"
+                          className="h-12 bg-white border-gray-200 rounded-2xl focus:ring-[#22C55E]/20"
                         />
                       </div>
                       <div className="space-y-1">
@@ -1119,7 +1119,7 @@ const MenuContent = () => {
                           value={customerInfo.telefono}
                           onChange={(e) => setCustomerInfo({ ...customerInfo, telefono: e.target.value })}
                           placeholder="300 000 0000"
-                          className="h-12 bg-white border-gray-200 rounded-2xl focus:ring-[#13ec6d]/20"
+                          className="h-12 bg-white border-gray-200 rounded-2xl focus:ring-[#22C55E]/20"
                         />
                       </div>
                     </div>
@@ -1130,7 +1130,7 @@ const MenuContent = () => {
                         value={customerInfo.notas || ''}
                         onChange={(e) => setCustomerInfo({ ...customerInfo, notas: e.target.value })}
                         placeholder="Ej: Sin cebolla, extra salsa..."
-                        className="w-full min-h-[80px] p-4 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#13ec6d]/20 resize-y"
+                        className="w-full min-h-[80px] p-4 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#22C55E]/20 resize-y"
                       />
                     </div>
                   </div>
@@ -1151,7 +1151,7 @@ const MenuContent = () => {
                             value={direccion}
                             onChange={(e) => setDireccion(e.target.value)}
                             placeholder="Calle, Carrera, Edificio, Apto..."
-                            className="h-14 pl-12 bg-gray-50 border-gray-100 rounded-2xl text-base font-medium focus:ring-2 focus:ring-[#13ec6d]/20 transition-all"
+                            className="h-14 pl-12 bg-gray-50 border-gray-100 rounded-2xl text-base font-medium focus:ring-2 focus:ring-[#22C55E]/20 transition-all"
                           />
                         </div>
                       </div>
@@ -1160,21 +1160,21 @@ const MenuContent = () => {
                         variant="outline"
                         onClick={handleGetLocation}
                         disabled={calculatingDistance}
-                        className="w-full h-12 rounded-2xl border-2 border-dashed border-[#13ec6d]/30 text-[#618972] font-black text-xs gap-2 hover:bg-[#13ec6d]/5 transition-all"
+                        className="w-full h-12 rounded-2xl border-2 border-dashed border-[#22C55E]/30 text-[#618972] font-black text-xs gap-2 hover:bg-[#22C55E]/5 transition-all"
                       >
                         {calculatingDistance ? <Loader2 className="w-4 h-4 animate-spin" /> : <NavigationIcon className="w-4 h-4" />}
                         CALCULAR DISTANCIA CON MI CERCANÍA
                       </Button>
 
                       {distancia > 0 && (
-                        <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-[#13ec6d]/20 shadow-sm">
+                        <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-[#22C55E]/20 shadow-sm">
                           <div className="flex items-center gap-3">
-                            <div className="size-10 bg-[#13ec6d]/10 rounded-xl flex items-center justify-center text-[#13ec6d]">
+                            <div className="size-10 bg-[#22C55E]/10 rounded-xl flex items-center justify-center text-[#22C55E]">
                               <Truck className="w-5 h-5" />
                             </div>
                             <div>
                               <p className="text-xs font-black text-[#111814] uppercase tracking-tighter">Costo Envío ({distancia.toFixed(1)} km)</p>
-                              <p className="text-lg font-black text-[#13ec6d]">{formatCurrency(costoEnvio)}</p>
+                              <p className="text-lg font-black text-[#22C55E]">{formatCurrency(costoEnvio)}</p>
                             </div>
                           </div>
                           <div className="text-right">
@@ -1196,7 +1196,7 @@ const MenuContent = () => {
                               setTipoPedido('delivery');
                               setMetodoEntregaNombre('Domicilio');
                             }}
-                            className={`flex-1 md:flex-none md:w-48 min-w-[120px] py-3 px-4 rounded-2xl font-black text-[10px] tracking-widest transition-all border-2 ${tipoPedido === 'delivery' ? 'bg-[#13ec6d] border-[#13ec6d] text-[#111814] shadow-lg' : 'bg-white border-[#13ec6d]/30 text-[#111814] hover:border-[#13ec6d]'}`}
+                            className={`flex-1 md:flex-none md:w-48 min-w-[120px] py-3 px-4 rounded-2xl font-black text-[10px] tracking-widest transition-all border-2 ${tipoPedido === 'delivery' ? 'bg-[#22C55E] border-[#22C55E] text-[#111814] shadow-lg' : 'bg-white border-[#22C55E]/30 text-[#111814] hover:border-[#22C55E]'}`}
                           >
                             DOMICILIO
                           </button>
@@ -1207,7 +1207,7 @@ const MenuContent = () => {
                               setTipoPedido('takeaway');
                               setMetodoEntregaNombre('Para recoger');
                             }}
-                            className={`flex-1 md:flex-none md:w-48 min-w-[120px] py-3 px-4 rounded-2xl font-black text-[10px] tracking-widest transition-all border-2 ${tipoPedido === 'takeaway' ? 'bg-[#13ec6d] border-[#13ec6d] text-[#111814] shadow-lg' : 'bg-white border-[#13ec6d]/30 text-[#111814] hover:border-[#13ec6d]'}`}
+                            className={`flex-1 md:flex-none md:w-48 min-w-[120px] py-3 px-4 rounded-2xl font-black text-[10px] tracking-widest transition-all border-2 ${tipoPedido === 'takeaway' ? 'bg-[#22C55E] border-[#22C55E] text-[#111814] shadow-lg' : 'bg-white border-[#22C55E]/30 text-[#111814] hover:border-[#22C55E]'}`}
                           >
                             PARA RECOGER
                           </button>
@@ -1218,7 +1218,7 @@ const MenuContent = () => {
                               setTipoPedido('mesa');
                               setMetodoEntregaNombre('Mesa');
                             }}
-                            className={`flex-1 md:flex-none md:w-48 min-w-[120px] py-3 px-4 rounded-2xl font-black text-[10px] tracking-widest transition-all border-2 ${tipoPedido === 'mesa' ? 'bg-[#13ec6d] border-[#13ec6d] text-[#111814] shadow-lg' : 'bg-white border-[#13ec6d]/30 text-[#111814] hover:border-[#13ec6d]'}`}
+                            className={`flex-1 md:flex-none md:w-48 min-w-[120px] py-3 px-4 rounded-2xl font-black text-[10px] tracking-widest transition-all border-2 ${tipoPedido === 'mesa' ? 'bg-[#22C55E] border-[#22C55E] text-[#111814] shadow-lg' : 'bg-white border-[#22C55E]/30 text-[#111814] hover:border-[#22C55E]'}`}
                           >
                             MESA
                           </button>
@@ -1254,7 +1254,7 @@ const MenuContent = () => {
                             <button
                               key={m.key}
                               onClick={() => setMetodoPago(m.label)}
-                              className={`flex-1 md:flex-none md:w-48 min-w-[120px] py-3 px-4 rounded-2xl font-black text-[10px] tracking-widest transition-all border-2 ${metodoPago === m.label ? 'bg-[#13ec6d] text-[#111814] border-[#13ec6d] shadow-lg' : 'bg-white text-[#111814] border-[#13ec6d]/30 hover:border-[#13ec6d]'}`}
+                              className={`flex-1 md:flex-none md:w-48 min-w-[120px] py-3 px-4 rounded-2xl font-black text-[10px] tracking-widest transition-all border-2 ${metodoPago === m.label ? 'bg-[#22C55E] text-[#111814] border-[#22C55E] shadow-lg' : 'bg-white text-[#111814] border-[#22C55E]/30 hover:border-[#22C55E]'}`}
                             >
                               {m.label.toUpperCase()}
                             </button>
@@ -1269,15 +1269,15 @@ const MenuContent = () => {
                     <motion.div
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="bg-[#13ec6d]/5 rounded-[2rem] p-6 border border-[#13ec6d]/20"
+                      className="bg-[#22C55E]/5 rounded-[2rem] p-6 border border-[#22C55E]/20"
                     >
                       <div className="flex items-center gap-3 mb-4">
-                        <div className="size-10 bg-[#13ec6d] rounded-2xl flex items-center justify-center text-[#111814] shadow-lg shadow-[#13ec6d]/20">
+                        <div className="size-10 bg-[#22C55E] rounded-2xl flex items-center justify-center text-[#111814] shadow-lg shadow-[#22C55E]/20">
                           <Award className="w-5 h-5" />
                         </div>
                         <div>
                           <span className="font-black text-sm text-[#111814] block">Tus Puntos MenuPro</span>
-                          <span className="text-xs font-bold text-[#13ec6d]">{customerPoints.puntos_disponibles.toLocaleString()} disponibles</span>
+                          <span className="text-xs font-bold text-[#22C55E]">{customerPoints.puntos_disponibles.toLocaleString()} disponibles</span>
                         </div>
                       </div>
 
@@ -1288,7 +1288,7 @@ const MenuContent = () => {
                             value={redeemPoints}
                             onChange={(e) => handleRedeemChange(parseInt(e.target.value) || 0)}
                             max={customerPoints.puntos_disponibles}
-                            className="h-12 w-28 text-center font-black rounded-xl border-[#13ec6d]/30"
+                            className="h-12 w-28 text-center font-black rounded-xl border-[#22C55E]/30"
                           />
                           <div className="flex-1">
                             <p className="text-sm font-bold text-[#111814]">Canjear puntos</p>
@@ -1316,7 +1316,7 @@ const MenuContent = () => {
                       </div>
                     )}
                     {discount > 0 && (
-                      <div className="flex justify-between items-center text-sm font-medium text-[#13ec6d]">
+                      <div className="flex justify-between items-center text-sm font-medium text-[#22C55E]">
                         <span>Descuento Puntos</span>
                         <span>- {formatCurrency(discount)}</span>
                       </div>
@@ -1343,7 +1343,7 @@ const MenuContent = () => {
                   <Button
                     onClick={handleSubmitOrder}
                     disabled={submitting || !customerInfo.nombre || !customerInfo.telefono || (tipoPedido === 'delivery' && !direccion) || items.length === 0}
-                    className="w-full h-16 rounded-2xl bg-[#13ec6d] text-[#111814] font-black text-xl shadow-xl hover:bg-[#0fd660] disabled:opacity-50 disabled:bg-gray-200 transition-all mt-4 border-2 border-[#13ec6d]"
+                    className="w-full h-16 rounded-2xl bg-[#22C55E] text-[#111814] font-black text-xl shadow-xl hover:bg-[#16A34A] disabled:opacity-50 disabled:bg-gray-200 transition-all mt-4 border-2 border-[#22C55E]"
                   >
                     {submitting ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Pedir Ahora'}
                   </Button>
@@ -1353,12 +1353,12 @@ const MenuContent = () => {
               {/* Step 2: Success */}
               {checkoutStep === 2 && orderSuccess && (
                 <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-10">
-                  <div className="size-24 bg-[#13ec6d] rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-[#13ec6d]/40 relative">
+                  <div className="size-24 bg-[#22C55E] rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-[#22C55E]/40 relative">
                     <Check className="w-12 h-12 text-[#111814] stroke-[4]" />
                     <motion.div
                       animate={{ scale: [1, 1.2, 1] }}
                       transition={{ repeat: Infinity, duration: 2 }}
-                      className="absolute -inset-2 border-2 border-[#13ec6d] rounded-[2.5rem] opacity-30"
+                      className="absolute -inset-2 border-2 border-[#22C55E] rounded-[2.5rem] opacity-30"
                     />
                   </div>
                   <h3 className="text-3xl font-black text-[#111814] mb-2 tracking-tighter">¡Pedido Exitoso!</h3>
@@ -1367,7 +1367,7 @@ const MenuContent = () => {
                   <div className="bg-gray-50 rounded-[2rem] p-6 mb-8 border border-gray-100">
                     <div className="flex justify-between items-center mb-4">
                       <span className="text-xs font-black text-[#618972] uppercase tracking-widest">Resumen Total</span>
-                      <span className="text-2xl font-black text-[#13ec6d]">{formatCurrency(orderSuccess.total - (orderSuccess.discount || 0))}</span>
+                      <span className="text-2xl font-black text-[#22C55E]">{formatCurrency(orderSuccess.total - (orderSuccess.discount || 0))}</span>
                     </div>
                     {orderSuccess.discount > 0 && (
                       <p className="text-xs font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full inline-block">
@@ -1379,7 +1379,7 @@ const MenuContent = () => {
                   <div className="space-y-3">
                     <Button
                       onClick={() => navigate(`/${slug}/mis-pedidos?order=${orderSuccess.id}`)}
-                      className="w-full h-14 bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] rounded-2xl font-black text-lg gap-3 shadow-lg shadow-[#13ec6d]/20"
+                      className="w-full h-14 bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] rounded-2xl font-black text-lg gap-3 shadow-lg shadow-[#22C55E]/20"
                     >
                       Rastrear mi pedido
                       <ArrowRight className="w-5 h-5" />
@@ -1432,7 +1432,7 @@ const MenuContent = () => {
                 />
                 <button
                   onClick={() => setSelectedProduct(null)}
-                  className="absolute top-4 right-4 bg-[#13ec6d]/80 backdrop-blur-md text-[#111814] p-2 rounded-full hover:bg-[#13ec6d] transition-colors shadow-lg"
+                  className="absolute top-4 right-4 bg-[#22C55E]/80 backdrop-blur-md text-[#111814] p-2 rounded-full hover:bg-[#22C55E] transition-colors shadow-lg"
                 >
                   <ArrowRight className="w-5 h-5 rotate-180" />
                 </button>
@@ -1442,14 +1442,14 @@ const MenuContent = () => {
                 <div className="flex justify-between items-start mb-2">
                   <h2 className="text-2xl font-black text-[#111814] leading-tight">{selectedProduct.nombre}</h2>
                   {selectedProduct.etiqueta && (
-                    <span className="bg-[#13ec6d] text-[#111814] text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-wider ml-2 whitespace-nowrap">
+                    <span className="bg-[#22C55E] text-[#111814] text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-wider ml-2 whitespace-nowrap">
                       {selectedProduct.etiqueta}
                     </span>
                   )}
                 </div>
 
                 <div className="flex items-center gap-3 mb-6">
-                  <span className="text-2xl font-black text-[#13ec6d]">{formatCurrency(selectedProduct.precio)}</span>
+                  <span className="text-2xl font-black text-[#22C55E]">{formatCurrency(selectedProduct.precio)}</span>
                   {selectedProduct.precio_original && (
                     <span className="text-sm font-bold text-gray-400 line-through decoration-2">
                       {formatCurrency(selectedProduct.precio_original)}
@@ -1481,14 +1481,14 @@ const MenuContent = () => {
                       <span className="text-lg font-black text-[#111814] w-4 text-center">{qty}</span>
                       <button
                         onClick={() => setQty(qty + 1)}
-                        className="size-10 rounded-xl bg-[#13ec6d] text-[#111814] shadow-md flex items-center justify-center hover:bg-[#0fd660] active:scale-95 transition-all"
+                        className="size-10 rounded-xl bg-[#22C55E] text-[#111814] shadow-md flex items-center justify-center hover:bg-[#16A34A] active:scale-95 transition-all"
                       >
                         <Plus className="w-4 h-4 stroke-[3]" />
                       </button>
                     </div>
                     <Button
                       onClick={addToCartAndConfirm}
-                      className="flex-1 h-14 bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] rounded-2xl font-black text-sm tracking-wide shadow-lg shadow-[#13ec6d]/20 active:scale-95 transition-all"
+                      className="flex-1 h-14 bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] rounded-2xl font-black text-sm tracking-wide shadow-lg shadow-[#22C55E]/20 active:scale-95 transition-all"
                     >
                       Añadir {formatCurrency(selectedProduct.precio * qty)}
                     </Button>
@@ -1510,7 +1510,7 @@ const MenuContent = () => {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="mx-auto size-16 bg-[#13ec6d]/20 rounded-full flex items-center justify-center mb-4 text-[#13ec6d]">
+          <div className="mx-auto size-16 bg-[#22C55E]/20 rounded-full flex items-center justify-center mb-4 text-[#22C55E]">
             <CheckCircle2 className="w-8 h-8 stroke-[3]" />
           </div>
 
@@ -1521,7 +1521,7 @@ const MenuContent = () => {
                 setCartOpen(true);
                 setCheckoutStep(1); // CORRECT: Direct to combined checkout view
               }}
-              className="w-full h-12 bg-[#13ec6d] hover:bg-[#0fd660] text-[#111814] font-black rounded-xl shadow-lg shadow-[#13ec6d]/20"
+              className="w-full h-12 bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-black rounded-xl shadow-lg shadow-[#22C55E]/20"
             >
               Ver Cesta
             </Button>
