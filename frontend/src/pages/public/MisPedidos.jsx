@@ -27,7 +27,36 @@ export default function MisPedidos() {
       try {
         const response = await axios.get(`${API}/api/business/${slug}`);
         setBusiness(response.data);
+
         const orderId = searchParams.get('order');
+        const token = localStorage.getItem('client_token');
+
+        // If logged in, prioritize fetching via authenticated endpoint
+        if (token) {
+          try {
+            const api = axios.create({
+              baseURL: API || '',
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            const clientOrdersRes = await api.get('/api/client/orders');
+            if (clientOrdersRes.data && clientOrdersRes.data.length > 0) {
+              setOrders(clientOrdersRes.data);
+
+              if (orderId) {
+                const found = clientOrdersRes.data.find(o => o.id === orderId);
+                if (found) setSelectedOrder(found);
+              } else {
+                // Optional: Select most recent if no ID? User asked to track A order, so maybe not.
+              }
+              setLoading(false);
+              return; // Skip guest fetch if auth successful
+            }
+          } catch (e) {
+            console.error("Auth fetch failed", e);
+            // Fallback to guest logic
+          }
+        }
+
         if (orderId) {
           const orderRes = await axios.get(`${API}/api/orders/${slug}/track/${orderId}`);
           setSelectedOrder(orderRes.data);
@@ -200,7 +229,7 @@ function OrderTimeline({ order, onRefresh, onReset }) {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-2xl shadow-gray-200/50 mb-6"
+          className="bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-2xl shadow-gray-200/50 mb-1"
         >
           <div className="h-64 relative bg-gray-50">
             <DeliveryMap
@@ -287,7 +316,7 @@ function OrderTimeline({ order, onRefresh, onReset }) {
       <Button
         variant="ghost"
         onClick={onReset}
-        className="w-full h-14 rounded-2xl text-[#618972] font-black uppercase text-[10px] tracking-widest hover:bg-gray-100"
+        className="w-full h-14 rounded-2xl text-[#618972] font-black uppercase text-[10px] tracking-widest hover:bg-[#22C55E] hover:text-white transition-colors"
       >
         Buscar otro pedido
       </Button>

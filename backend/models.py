@@ -282,6 +282,20 @@ class OrderUpdate(BaseModel):
     repartidor_lng: Optional[float] = None
 
 
+
+class ClientFavorite(BaseModel):
+    id: Optional[str] = None
+    usuario_telefono: str # Use phone or client_id? client_id is cleaner. but existing endpoints heavily use phone. 
+    negocio_id: str
+    created_at: Optional[datetime] = None
+    
+    # Optional fields for frontend display
+    negocio_nombre: Optional[str] = None
+    negocio_slug: Optional[str] = None
+    negocio_logo: Optional[str] = None
+    negocio_categoria: Optional[str] = None
+
+
 class Order(OrderBase):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=generate_id)
@@ -296,6 +310,11 @@ class Order(OrderBase):
     total: float = 0.0
     created_at: datetime = Field(default_factory=get_utc_now)
     updated_at: datetime = Field(default_factory=get_utc_now)
+    
+    # Extra fields for list view
+    negocio_nombre: Optional[str] = None
+    negocio_logo: Optional[str] = None
+    mesero_nombre: Optional[str] = None
 
 
 # Analytics Models
@@ -375,6 +394,7 @@ class CustomerPoints(BaseModel):
     telefono: str  # Identificador del cliente
     nombre: Optional[str] = None
     email: Optional[str] = None
+    avatar_url: Optional[str] = None
     fecha_nacimiento: Optional[str] = None
     puntos_totales: int = 0
     puntos_actuales: int = 0
@@ -400,6 +420,7 @@ class CustomerPointsPublic(BaseModel):
     puntos_canjeados: int = 0
     total_compras: float = 0.0
     cantidad_pedidos: int = 0
+    visit_context: Optional[str] = None
     created_at: Optional[datetime] = None
 
 

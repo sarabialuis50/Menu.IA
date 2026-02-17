@@ -271,11 +271,23 @@ async def search_products(negocio_id: str, query: str) -> str:
 
 def send_whatsapp_response(to_number: str, body: str):
     try:
+        # Sanitize and format number
+        clean_number = to_number.replace(' ', '').replace('+', '').replace('-', '')
+        
+        # Default to Colombia (+57) if 10 digits
+        if len(clean_number) == 10 and clean_number.startswith('3'):
+            formatted_number = f"+57{clean_number}"
+        elif len(clean_number) == 12 and clean_number.startswith('57'):
+            formatted_number = f"+{clean_number}"
+        else:
+            # Fallback (maybe user provided another country code or it is international)
+            formatted_number = f"+{clean_number}" if not to_number.startswith('+') else to_number
+
         message = twilio_client.messages.create(
             from_=twilio_number,
             body=body,
-            to=f"whatsapp:{to_number}"
+            to=f"whatsapp:{formatted_number}"
         )
-        logger.info(f"Mensaje enviado a {to_number}: {message.sid}")
+        logger.info(f"Mensaje enviado a {formatted_number}: {message.sid}")
     except Exception as e:
         logger.error(f"Error enviando respuesta WA: {e}")

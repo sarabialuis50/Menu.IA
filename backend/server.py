@@ -235,6 +235,11 @@ async def get_current_client(credentials: HTTPAuthorizationCredentials = Depends
     except jwt.PyJWTError as e:
         logger.error(f"JWT Error: {e}")
         raise HTTPException(status_code=401, detail="Token de cliente inválido o expirado")
+    except Exception as e:
+        logger.error(f"Error validating client token: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error interno validando sesión: {str(e)}")
 
 
 def serialize_datetime(obj):
@@ -1399,6 +1404,7 @@ async def get_customer_points(slug: str, telefono: str):
         puntos_canjeados=max(0, puntos_totales - puntos_actuales),
         total_compras=total_compras,
         cantidad_pedidos=cantidad_pedidos,
+        visit_context=c.get('visit_context'),
         created_at=c.get('created_at')
     )
 
@@ -2046,6 +2052,13 @@ async def request_otp(data: OTPRequest):
     # Expires in 10 mins
     expires = datetime.now(timezone.utc) + timedelta(minutes=10)
     
+    # Log OTP for debugging
+    try:
+        with open("otp_log.txt", "a") as f:
+            f.write(f"{datetime.now().isoformat()} - {phone} - {otp}\n")
+    except:
+        pass
+    
     # Save to auth_otps
     try:
         supabase.table('auth_otps').insert({
@@ -2134,6 +2147,61 @@ async def update_client_profile(data: ClienteUpdate, client: Cliente = Depends(g
         
     return res.data[0]
     
+@api_router.post("/client/upload-avatar")
+async def upload_client_avatar(
+    file: UploadFile = File(...),
+    negocio_id: Optional[str] = Query(None), # Optional business context
+    client: Cliente = Depends(get_current_client)
+):
+    try:
+        # Generate unique filename
+        file_ext = file.filename.split('.')[-1]
+        unique_id = str(uuid.uuid4())
+        file_name = f"{client.id}/{unique_id}.{file_ext}"
+
+        # Upload
+        content = await file.read()
+        
+        # Ensure bucket exists (simplified check)
+        try:
+             supabase.storage.create_bucket('avatars', options={"public": True})
+        except:
+             pass
+
+        res = supabase.storage.from_('avatars').upload(
+            file_name,
+            content,
+            {"content-type": file.content_type, "upsert": "true"}
+        )
+        
+        # Get Public URL
+        public_url = supabase.storage.from_('avatars').get_public_url(file_name)
+        
+        # Update Main Client Profile
+        supabase.table('clientes').update({'avatar_url': public_url}).eq('id', client.id).execute()
+        
+        # If business context exists, also try to update business-specific customer record if it exists
+        # This assumes there is a table linking clients and businesses (e.g. 'clientes_negocio' or similar)
+        # Or that 'clientes' table is global but we want to ensure consistency.
+        # Based on your prompt "enlaced to business", let's check if we need to update a specific 
+        # table 'puntos_clientes' or similar which holds the business-customer relationship.
+        
+        if negocio_id:
+             try:
+                 supabase.table('puntos_clientes') \
+                     .update({'avatar_url': public_url}) \
+                     .eq('telefono', client.telefono) \
+                     .eq('negocio_id', negocio_id) \
+                     .execute()
+             except Exception as e:
+                 logger.warning(f"Could not update business-specific avatar: {e}")
+        
+        return {"url": public_url}
+
+    except Exception as e:
+        logger.error(f"Error uploading avatar: {e}")
+        raise HTTPException(status_code=500, detail=f"Error al subir imagen: {str(e)}")
+
 @api_router.get("/client/addresses", response_model=List[Address])
 async def get_client_addresses(client: Cliente = Depends(get_current_client)):
     res = supabase.table('cliente_direcciones').select('*').eq('cliente_id', client.id).execute()
@@ -2153,9 +2221,6 @@ async def create_client_address(data: AddressCreate, client: Cliente = Depends(g
 
 @api_router.get("/client/orders")
 async def get_client_orders(slug: str = None, client: Cliente = Depends(get_current_client)):
-    # If slug is provided, filter by business? Or just return all?
-    # For now, let's return all orders for this phone
-    
     query = supabase.table('pedidos').select('*').eq('cliente_telefono', client.telefono).order('created_at', desc=True)
     
     if slug:
@@ -2165,7 +2230,119 @@ async def get_client_orders(slug: str = None, client: Cliente = Depends(get_curr
             query = query.eq('negocio_id', biz_res.data[0]['id'])
             
     res = query.execute()
-    return res.data
+    orders = res.data
+    
+    if not orders:
+        return []
+
+    # Enrich with business info
+    b_ids = list(set([o['negocio_id'] for o in orders if o.get('negocio_id')]))
+    
+    b_map = {}
+    if b_ids:
+        try:
+            b_res = supabase.table('negocios').select('id, nombre, logo_url, slug').in_('id', b_ids).execute()
+            for b in b_res.data:
+                b_map[b['id']] = b
+        except Exception as e:
+            logger.error(f"Error fetching businesses for orders: {e}")
+            
+    for o in orders:
+        if o.get('negocio_id') in b_map:
+            b = b_map[o['negocio_id']]
+            o['negocio_nombre'] = b['nombre']
+            o['negocio_logo'] = b['logo_url']
+            o['negocio_slug'] = b['slug']
+            
+    return orders
+
+# Favorites Endpoints
+
+@api_router.get("/client/favorites")
+async def get_client_favorites(client: Cliente = Depends(get_current_client)):
+    try:
+        # Fetch favorites relation
+        favs = supabase.table('clientes_favoritos').select('*').eq('cliente_id', client.id).execute()
+        if not favs.data:
+            return []
+            
+        negocio_ids = [f['negocio_id'] for f in favs.data]
+        if not negocio_ids:
+            return []
+            
+        # Fetch businesses
+        businesses = supabase.table('negocios').select('id, nombre, slug, logo_url, categoria').in_('id', negocio_ids).execute()
+        
+        result = []
+        for b in businesses.data:
+            result.append({
+                "negocio_id": b['id'],
+                "usuario_telefono": client.telefono, # mapping to model
+                "negocio_nombre": b['nombre'],
+                "negocio_slug": b['slug'],
+                "negocio_logo": b['logo_url'],
+                "negocio_categoria": b.get('categoria', 'Restaurante')
+            })
+        return result
+    except Exception as e:
+        logger.error(f"Error fetching favorites: {e}")
+        return []
+
+@api_router.get("/client/favorites/{slug}/check")
+async def check_client_favorite(slug: str, client: Cliente = Depends(get_current_client)):
+    try:
+        biz_res = supabase.table('negocios').select('id').eq('slug', slug).execute()
+        if not biz_res.data:
+            return {"is_favorite": False}
+        
+        biz_id = biz_res.data[0]['id']
+        
+        fav = supabase.table('clientes_favoritos').select('*').match({
+            "cliente_id": client.id,
+            "negocio_id": biz_id
+        }).execute()
+        
+        return {"is_favorite": bool(fav.data)}
+    except Exception as e:
+        logger.error(f"Error checking favorite: {e}")
+        return {"is_favorite": False}
+
+@api_router.post("/client/favorites/{slug}")
+async def toggle_client_favorite(slug: str, client: Cliente = Depends(get_current_client)):
+    try:
+        biz_res = supabase.table('negocios').select('id').eq('slug', slug).execute()
+        if not biz_res.data:
+            raise HTTPException(status_code=404, detail="Negocio no encontrado")
+        
+        biz_id = biz_res.data[0]['id']
+        
+        # Check if exists
+        fav = supabase.table('clientes_favoritos').select('*').match({
+            "cliente_id": client.id,
+            "negocio_id": biz_id
+        }).execute()
+        
+        if fav.data:
+            # Delete
+            supabase.table('clientes_favoritos').delete().match({
+                "cliente_id": client.id,
+                "negocio_id": biz_id
+            }).execute()
+            return {"is_favorite": False, "message": "Eliminado de favoritos"}
+        else:
+            # Add
+            supabase.table('clientes_favoritos').insert({
+                "cliente_id": client.id,
+                "negocio_id": biz_id,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }).execute()
+            return {"is_favorite": True, "message": "Agregado a favoritos"}
+            
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"Error toggling favorite: {e}")
+        raise HTTPException(status_code=500, detail="Error al actualizar favoritos")
 
 
 app.include_router(api_router)

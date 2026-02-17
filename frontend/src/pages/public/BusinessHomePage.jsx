@@ -18,7 +18,8 @@ import {
     UtensilsCrossed,
     Verified,
     Store,
-    Navigation
+    Navigation,
+    Heart
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -54,6 +55,45 @@ const BusinessHomePageContent = () => {
             // toast.error('Error al cargar la información');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const [isFavorite, setIsFavorite] = useState(false);
+    const token = localStorage.getItem('client_token');
+
+    useEffect(() => {
+        if (token && slug) {
+            checkFavoriteStatus();
+        }
+    }, [token, slug]);
+
+    const checkFavoriteStatus = async () => {
+        try {
+            const res = await axios.get(`${API}/api/client/favorites/${slug}/check`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setIsFavorite(res.data.is_favorite);
+        } catch (e) {
+            console.error("Error checking favorite:", e);
+        }
+    };
+
+    const toggleFavorite = async () => {
+        if (!token) {
+            toast.error("Inicia sesión para guardar favoritos");
+            navigate(`/${slug}/mi-cuenta`);
+            return;
+        }
+
+        try {
+            const res = await axios.post(`${API}/api/client/favorites/${slug}`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setIsFavorite(res.data.is_favorite);
+            toast.success(res.data.message);
+        } catch (e) {
+            console.error("Error toggling favorite:", e);
+            toast.error("Error al actualizar favoritos");
         }
     };
 
@@ -101,6 +141,14 @@ const BusinessHomePageContent = () => {
                             className="w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#102218]/60 via-transparent to-transparent" />
+
+                        {/* Favorite Button */}
+                        <button
+                            onClick={toggleFavorite}
+                            className="absolute top-4 right-4 z-20 p-3 rounded-full bg-white/20 backdrop-blur-md hover:bg-white/30 transition-all active:scale-95 shadow-lg border border-white/10 group/heart"
+                        >
+                            <Heart className={`w-6 h-6 transition-all duration-300 ${isFavorite ? 'fill-[#22C55E] text-[#22C55E] scale-110' : 'text-white group-hover/heart:scale-110'}`} />
+                        </button>
                     </div>
 
                     {/* Profile Info Container */}

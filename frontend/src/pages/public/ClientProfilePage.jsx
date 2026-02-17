@@ -30,11 +30,9 @@ export default function ClientProfilePage() {
     // Data State
     const [orders, setOrders] = useState([]);
     const [addresses, setAddresses] = useState([]);
-    // Mock Favorites for now as we don't have endpoints
-    const favorites = [
-        { id: 1, name: "Tacos El Califa", category: "Mexicana", rating: 4.8, bgColor: "bg-orange-100" },
-        { id: 2, name: "Sushi Roll", category: "Japonesa", rating: 4.5, bgColor: "bg-rose-100" }
-    ];
+    // Favorites State
+    const [favorites, setFavorites] = useState([]);
+    const [loyalty, setLoyalty] = useState(null);
 
     useEffect(() => {
         if (token) {
@@ -52,15 +50,21 @@ export default function ClientProfilePage() {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            const [profileRes, ordersRes, addrRes] = await Promise.all([
-                api.get('/client/me'),
+            const profileRes = await api.get('/client/me');
+            const currentUser = profileRes.data;
+            setUser(currentUser);
+
+            const [ordersRes, addrRes, favRes, pointsRes] = await Promise.all([
                 api.get('/client/orders'),
-                api.get('/client/addresses')
+                api.get('/client/addresses'),
+                api.get('/client/favorites'),
+                api.get(`/loyalty/${slug}/points/${currentUser.telefono}`)
             ]);
 
-            setUser(profileRes.data);
             setOrders(ordersRes.data);
             setAddresses(addrRes.data);
+            setFavorites(favRes.data || []);
+            setLoyalty(pointsRes.data);
         } catch (error) {
             console.error(error);
             if (error.response?.status === 401) {
@@ -256,7 +260,7 @@ export default function ClientProfilePage() {
                                 </div>
                                 <div className="space-y-1">
                                     <h2 className="text-2xl font-black text-[#111814] tracking-tight">{user.nombre || 'Sin Nombre'}</h2>
-                                    <div className="text-sm font-medium text-gray-500 flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-4">
+                                    <div className="text-sm font-medium text-gray-500 flex flex-col items-center md:items-start gap-1">
                                         <span className="flex items-center gap-1">
                                             <Phone className="w-3.5 h-3.5 text-[#22C55E]" /> {user.telefono}
                                         </span>
@@ -270,7 +274,7 @@ export default function ClientProfilePage() {
                             </div>
                             <Button
                                 onClick={() => navigate(`/${slug}/mi-cuenta/editar`)}
-                                className="rounded-xl px-6 bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-bold shadow-lg shadow-[#22C55E]/20"
+                                className="rounded-xl px-6 bg-white border-2 border-[#22C55E] text-[#22C55E] hover:bg-[#22C55E] hover:text-white font-bold transition-all shadow-md active:scale-95"
                             >
                                 Editar Perfil
                             </Button>
@@ -291,6 +295,13 @@ export default function ClientProfilePage() {
                                     <Package className="w-5 h-5 text-[#22C55E]" />
                                     Mis Pedidos Recientes
                                 </h3>
+                                <Button
+                                    variant="ghost"
+                                    className="text-xs font-bold text-[#22C55E] hover:text-[#16A34A] hover:bg-green-50 rounded-lg ml-auto"
+                                    onClick={() => navigate(`/${slug}/mi-cuenta/pedidos`)}
+                                >
+                                    Ver todo
+                                </Button>
                             </div>
                             <div className="space-y-4">
                                 {orders.length === 0 ? (
@@ -301,23 +312,71 @@ export default function ClientProfilePage() {
                                     </Card>
                                 ) : (
                                     orders.map((order) => (
-                                        <Card key={order.id} className="border-none shadow-sm hover:shadow-md transition-shadow rounded-[1.5rem] overflow-hidden group">
+                                        <Card key={order.id} className="border-none shadow-sm hover:shadow-md transition-shadow rounded-[1.5rem] overflow-hidden group cursor-pointer" onClick={() => navigate(`/${order.negocio_slug || slug}/mis-pedidos?order=${order.id}`)}>
                                             <CardContent className="p-6">
-                                                <div className="flex items-start justify-between gap-4">
-                                                    <div className="flex items-start gap-4">
-                                                        <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center shrink-0">
+                                                <div className="flex gap-4">
+                                                    {/* Icon */}
+                                                    <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center shrink-0">
+                                                        {order.negocio_logo ? (
+                                                            <img src={order.negocio_logo} alt="Logo" className="w-full h-full object-cover rounded-2xl" />
+                                                        ) : (
                                                             <Package className="w-6 h-6 text-gray-400" />
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <h4 className="font-bold text-[#111814] leading-tight">
-                                                                {order.items?.length > 0 ? `${order.items[0].nombre} ${order.items.length > 1 ? `+ ${order.items.length - 1} más` : ''}` : 'Pedido sin items'}
-                                                            </h4>
-                                                            <p className="text-xs text-gray-500 font-medium">
-                                                                {new Date(order.created_at).toLocaleDateString()} • ${order.total?.toLocaleString()}
-                                                            </p>
-                                                            <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide mt-2 bg-gray-100 text-gray-700`}>
-                                                                {order.estado}
+                                                        )}
+                                                    </div>
+
+                                                    {/* Content */}
+                                                    <div className="flex-1 min-w-0">
+                                                        {/* Top Row: Product Name + Date */}
+                                                        <div className="flex justify-between items-start">
+                                                            <div className="flex items-center gap-2 min-w-0 pr-4">
+                                                                <h4 className="font-bold text-[#111814] leading-tight truncate text-base">
+                                                                    {order.items?.length > 0 ? `${order.items[0].nombre} ${order.items.length > 1 ? `+ ${order.items.length - 1}` : ''}` : 'Pedido'}
+                                                                </h4>
+                                                                <span className="text-[10px] font-bold text-gray-400 shrink-0 bg-gray-100 px-1.5 py-0.5 rounded">#{order.id?.slice(-6).toUpperCase()}</span>
                                                             </div>
+                                                            <span className="text-xs text-gray-500 font-medium shrink-0">
+                                                                {(() => {
+                                                                    const d = new Date(order.created_at);
+                                                                    const today = new Date();
+                                                                    const isToday = d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
+                                                                    const yesterday = new Date(today);
+                                                                    yesterday.setDate(yesterday.getDate() - 1);
+                                                                    const isYesterday = d.toDateString() === yesterday.toDateString();
+
+                                                                    if (isToday) return `Hoy, ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+                                                                    if (isYesterday) return 'Ayer';
+                                                                    return d.toLocaleDateString();
+                                                                })()}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Middle Row: Business Info + Price */}
+                                                        <p className="text-sm text-gray-500 mt-1 truncate">
+                                                            {order.negocio_nombre || 'Restaurante'} • {order.items?.length || 0} items • <span className="text-gray-900 font-bold ml-1">${order.total?.toLocaleString()}</span>
+                                                        </p>
+
+                                                        {/* Bottom Row: Status + Action */}
+                                                        <div className="flex items-center gap-3 mt-3">
+                                                            <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-gray-100 ${['entregado'].includes(order.estado) ? 'text-gray-500' : 'text-green-700 bg-green-50'}`}>
+                                                                {order.estado?.replace('_', ' ')}
+                                                            </div>
+
+                                                            {['pendiente', 'en_proceso', 'en_camino'].includes(order.estado) && (
+                                                                <button
+                                                                    className="text-sm font-bold text-[#2563EB] hover:text-[#22C55E] transition-colors"
+                                                                    onClick={(e) => { e.stopPropagation(); navigate(`/${order.negocio_slug || slug}/mis-pedidos?order=${order.id}`); }}
+                                                                >
+                                                                    Rastrear pedido
+                                                                </button>
+                                                            )}
+                                                            {['entregado', 'cancelado'].includes(order.estado) && (
+                                                                <button
+                                                                    className="text-sm font-bold text-[#22C55E] hover:text-[#16A34A] transition-colors"
+                                                                    onClick={(e) => { e.stopPropagation(); navigate(`/${order.negocio_slug || slug}/menu-completo`); }}
+                                                                >
+                                                                    Volver a pedir
+                                                                </button>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -328,90 +387,116 @@ export default function ClientProfilePage() {
                             </div>
                         </div>
 
-                        {/* Favorites (Static for now) */}
-                        <div className="space-y-4 pt-2">
-                            <div className="flex items-center justify-between px-2">
-                                <h3 className="text-lg font-black text-[#111814] flex items-center gap-2">
-                                    <Heart className="w-5 h-5 text-[#22C55E]" />
-                                    Mis Favoritos
-                                </h3>
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                {favorites.map((fav) => (
-                                    <Card key={fav.id} className="border-none shadow-sm hover:shadow-md transition-shadow rounded-[1.5rem] overflow-hidden">
-                                        <CardContent className="p-5 flex items-center gap-4">
-                                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${fav.bgColor}`}>
-                                                <span className="font-black text-lg opacity-40">{fav.name.charAt(0)}</span>
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <h4 className="font-bold text-[#111814] truncate">{fav.name}</h4>
-                                                <p className="text-xs text-gray-500 font-medium truncate">{fav.category}</p>
-                                                <div className="flex items-center gap-1 mt-1">
-                                                    <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                                                    <span className="text-[10px] font-bold text-gray-600">{fav.rating}</span>
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                ))}
-                            </div>
-                        </div>
                     </div>
 
                     {/* Right Column */}
-                    <div className="md:col-span-12 lg:col-span-5 space-y-6">
-
-                        {/* Addresses */}
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between px-2">
-                                <h3 className="text-lg font-black text-[#111814] flex items-center gap-2">
-                                    <MapPin className="w-5 h-5 text-[#22C55E]" />
-                                    Direcciones
-                                </h3>
-                                <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full bg-gray-100 text-gray-600 hover:bg-[#22C55E] hover:text-[#111814]">
-                                    <Plus className="w-4 h-4" />
-                                </Button>
-                            </div>
-                            <div className="space-y-3">
-                                {addresses.length === 0 ? (
-                                    <div className="text-center py-4 text-sm text-gray-400 font-medium">No hay direcciones guardadas</div>
-                                ) : (
-                                    addresses.map((addr) => (
-                                        <Card key={addr.id} className="border-none shadow-sm hover:shadow-md transition-shadow rounded-[1.5rem] overflow-hidden group">
-                                            <CardContent className="p-5 flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center shrink-0">
-                                                    <Home className="w-5 h-5 text-[#22C55E]" />
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2 mb-0.5">
-                                                        <h4 className="font-bold text-[#111814] text-sm">{addr.nombre}</h4>
-                                                        {addr.es_principal && (
-                                                            <Badge className="h-4 text-[9px] px-1.5 bg-[#22C55E]/20 text-[#111814] hover:bg-[#22C55E]/30 border-none shadow-none uppercase font-bold">
-                                                                Principal
-                                                            </Badge>
-                                                        )}
+                    <div className="md:col-span-12 lg:col-span-5 flex flex-col">
+                        <div className="space-y-6">
+                            {/* Addresses */}
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between px-2">
+                                    <h3 className="text-lg font-black text-[#111814] flex items-center gap-2">
+                                        <MapPin className="w-5 h-5 text-[#22C55E]" />
+                                        Direcciones
+                                    </h3>
+                                    <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full bg-gray-100 text-gray-600 hover:bg-[#22C55E] hover:text-[#111814]">
+                                        <Plus className="w-4 h-4" />
+                                    </Button>
+                                </div>
+                                <div className="space-y-3">
+                                    {addresses.length === 0 ? (
+                                        <div className="text-center py-4 text-sm text-gray-400 font-medium">No hay direcciones guardadas</div>
+                                    ) : (
+                                        addresses.map((addr) => (
+                                            <Card key={addr.id} className="border-none shadow-sm hover:shadow-md transition-shadow rounded-[1.5rem] overflow-hidden group">
+                                                <CardContent className="p-5 flex items-center gap-4">
+                                                    <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center shrink-0">
+                                                        <Home className="w-5 h-5 text-[#22C55E]" />
                                                     </div>
-                                                    <p className="text-xs text-gray-500 font-medium leading-relaxed line-clamp-2">{addr.direccion}</p>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    ))
-                                )}
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-2 mb-0.5">
+                                                            <h4 className="font-bold text-[#111814] text-sm">{addr.nombre}</h4>
+                                                            {addr.es_principal && (
+                                                                <Badge className="h-4 text-[9px] px-1.5 bg-[#22C55E]/20 text-[#111814] hover:bg-[#22C55E]/30 border-none shadow-none uppercase font-bold">
+                                                                    Principal
+                                                                </Badge>
+                                                            )}
+                                                        </div>
+                                                        <p className="text-xs text-gray-500 font-medium leading-relaxed line-clamp-2">{addr.direccion}</p>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        ))
+                                    )}
+                                </div>
                             </div>
                         </div>
 
-                        {/* Coupons */}
-                        <Card className="border-none rounded-[2rem] bg-[#111814] text-white overflow-hidden relative shadow-lg">
+                        {/* Spacer to push points card down */}
+                        <div className="flex-1 min-h-[1.5rem]" />
+
+                        {/* Loyalty Points */}
+                        <Card className="border-none rounded-[2rem] bg-[#22C55E] text-white overflow-hidden relative shadow-lg">
                             <CardContent className="p-8 relative z-10 text-center space-y-4">
                                 <div className="space-y-1">
-                                    <h3 className="text-xl font-black">Cupones</h3>
-                                    <p className="text-gray-400 text-sm font-medium">Próximamente disponible.</p>
+                                    <h3 className="text-xl font-black">Puntos Acumulados</h3>
+                                    <div className="flex flex-col items-center">
+                                        <span className="text-5xl font-black drop-shadow-md">{loyalty?.puntos_actuales || 0}</span>
+                                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-80 mt-1">Puntos Disponibles</span>
+                                    </div>
+                                    <p className="text-white/90 text-sm font-medium pt-2">
+                                        {loyalty?.puntos_actuales > 0
+                                            ? `¡Tienes $${(loyalty.puntos_actuales * 100).toLocaleString()} para tu próxima compra!`
+                                            : "¡Empieza a sumar puntos con tus pedidos!"
+                                        }
+                                    </p>
                                 </div>
                             </CardContent>
                         </Card>
                     </div>
                 </div>
-            </main>
-        </div>
+
+                {/* Favorites Section (Outside grid for full width) */}
+                <div className="space-y-4 pt-4">
+                    <div className="flex items-center justify-between px-2">
+                        <h3 className="text-lg font-black text-[#111814] flex items-center gap-2">
+                            <Heart className="w-5 h-5 text-[#22C55E]" />
+                            Mis Favoritos
+                        </h3>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {favorites.length === 0 ? (
+                            <Card className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4 border-none shadow-sm rounded-[1.5rem] bg-gray-50/50">
+                                <CardContent className="p-12 text-center text-gray-500 font-medium">
+                                    No tienes favoritos aún
+                                </CardContent>
+                            </Card>
+                        ) : (
+                            favorites.map((fav) => (
+                                <Card key={fav.negocio_id} className="border-none shadow-sm hover:shadow-md transition-shadow rounded-[1.5rem] overflow-hidden cursor-pointer group" onClick={() => window.location.href = `/${fav.negocio_slug}`}>
+                                    <CardContent className="p-5 flex items-center gap-4">
+                                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-gray-50 overflow-hidden group-hover:scale-110 transition-transform`}>
+                                            {fav.negocio_logo ? (
+                                                <img src={fav.negocio_logo} alt={fav.negocio_nombre} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <span className="font-black text-lg opacity-40">{fav.negocio_nombre?.charAt(0)}</span>
+                                            )}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="font-bold text-[#111814] truncate">{fav.negocio_nombre}</h4>
+                                            <p className="text-xs text-gray-500 font-medium truncate">{fav.negocio_categoria}</p>
+                                            <div className="flex items-center gap-1 mt-1">
+                                                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                                <span className="text-[10px] font-bold text-gray-600">4.9</span>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))
+                        )}
+                    </div>
+                </div>
+            </main >
+        </div >
     );
 }

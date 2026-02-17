@@ -37,6 +37,7 @@ import MeseroApp from "@/pages/waiter/MeseroApp";
 import DespachoPage from "@/pages/delivery/DespachoPage";
 import ClientProfilePage from "@/pages/public/ClientProfilePage";
 import ClientEditProfilePage from "@/pages/public/ClientEditProfilePage";
+import ClientOrdersPage from "@/pages/public/ClientOrdersPage";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -119,6 +120,7 @@ function AppRoutes() {
       <Route path="/:slug/mis-pedidos" element={<MisPedidos />} />
       <Route path="/:slug/mi-cuenta" element={<ClientProfilePage />} />
       <Route path="/:slug/mi-cuenta/editar" element={<ClientEditProfilePage />} />
+      <Route path="/:slug/mi-cuenta/pedidos" element={<ClientOrdersPage />} />
 
       {/* Demo routes */}
       <Route path="/demo" element={<Navigate to="/demo-restaurante" replace />} />

@@ -17,6 +17,8 @@ export default function ClientEditProfilePage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [businessId, setBusinessId] = useState(null);
+    const [initialData, setInitialData] = useState(null);
 
     // Auth
     const [token] = useState(localStorage.getItem('client_token'));
@@ -34,19 +36,29 @@ export default function ClientEditProfilePage() {
             return;
         }
         fetchProfile();
-    }, [token]);
+    }, [token, slug]);
 
     const fetchProfile = async () => {
         try {
+            // First get business ID from slug to have context
+            try {
+                const businessRes = await axios.get(`/api/business/${slug}`);
+                setBusinessId(businessRes.data.id);
+            } catch (err) {
+                console.error("Could not fetch business context:", err);
+            }
+
             const res = await axios.get('/api/client/me', {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setFormData({
+            const profileData = {
                 nombre: res.data.nombre || "",
                 email: res.data.email || "",
                 telefono: res.data.telefono || "",
                 avatar_url: res.data.avatar_url || ""
-            });
+            };
+            setFormData(profileData);
+            setInitialData(profileData);
         } catch (error) {
             console.error(error);
             if (error.response?.status === 401) {
@@ -75,9 +87,43 @@ export default function ClientEditProfilePage() {
     };
 
     const handleAvatarChange = () => {
-        // Implement real file upload if needed, for now just UI
         document.getElementById('avatar-upload').click();
-        toast.info("La carga de imágenes se implementará pronto.");
+    };
+
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error("La imagen no debe superar los 5MB");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const toastId = toast.loading("Subiendo imagen...");
+
+        try {
+            // Include business context if available
+            let url = '/api/client/upload-avatar';
+            if (businessId) {
+                url += `?negocio_id=${businessId}`;
+            }
+
+            const res = await axios.post(url, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            setFormData(prev => ({ ...prev, avatar_url: res.data.url }));
+            toast.success("Imagen subida correctamente", { id: toastId });
+        } catch (error) {
+            console.error(error);
+            toast.error("Error al subir imagen", { id: toastId });
+        }
     };
 
     if (loading) {
@@ -130,6 +176,7 @@ export default function ClientEditProfilePage() {
                                 id="avatar-upload"
                                 className="hidden"
                                 accept="image/*"
+                                onChange={handleFileChange}
                             />
                         </div>
                         <p className="text-sm font-medium text-gray-400">PNG, JPG hasta 5MB</p>
@@ -198,14 +245,17 @@ export default function ClientEditProfilePage() {
                             type="button"
                             variant="outline"
                             onClick={() => navigate(`/${slug}/mi-cuenta`)}
-                            className="flex-1 h-12 rounded-xl font-bold border-gray-200 text-gray-700 hover:bg-gray-50"
+                            className="flex-1 h-12 rounded-xl font-bold border-2 border-gray-200 text-gray-700 hover:border-[#22C55E] hover:text-[#22C55E] hover:bg-white transition-all"
                         >
                             Cancelar
                         </Button>
                         <Button
                             type="submit"
                             disabled={saving}
-                            className="flex-1 h-12 rounded-xl bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-black shadow-lg shadow-[#22C55E]/20"
+                            className={`flex-1 h-12 rounded-xl border-2 border-[#22C55E] font-black transition-all shadow-md active:scale-95 ${initialData && JSON.stringify(initialData) !== JSON.stringify(formData)
+                                    ? "bg-[#22C55E] text-white shadow-[#22C55E]/20"
+                                    : "bg-white text-[#111814] hover:bg-[#22C55E] hover:text-white"
+                                }`}
                         >
                             {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : "Guardar Cambios"}
                         </Button>
