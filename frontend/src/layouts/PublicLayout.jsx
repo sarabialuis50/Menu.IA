@@ -1,7 +1,16 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { UtensilsCrossed, ArrowLeft } from 'lucide-react';
+import { FloatingWA } from '@/components/FloatingWA';
 
-export const PublicLayout = ({ children, businessName, businessLogo, slug }) => {
+export const PublicLayout = ({
+  children,
+  businessName,
+  businessLogo,
+  slug,
+  whatsapp,
+  aiEnabled,
+  aiSaludo
+}) => {
   const navigate = useNavigate();
 
   const handleBack = () => {
@@ -62,6 +71,14 @@ export const PublicLayout = ({ children, businessName, businessLogo, slug }) => 
       <main className="flex-1">
         {children}
       </main>
+
+      {/* Floating WA AI Agent */}
+      <FloatingWA
+        businessName={businessName}
+        whatsapp={whatsapp}
+        aiEnabled={aiEnabled}
+        aiSaludo={aiSaludo}
+      />
 
       {/* Shared Footer or Spacing */}
       <div className="h-24 md:h-28" />

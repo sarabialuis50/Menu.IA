@@ -6,9 +6,17 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { MessageSquareMore, Megaphone, Zap, BarChart, Plus, Copy, Smartphone, Users, Award, AlertCircle, Check, Sparkles, Send, Save, Trash2, LayoutGrid, Calendar, MessageSquare, CheckCircle, ExternalLink } from 'lucide-react';
+import { MessageSquareMore, Megaphone, Zap, BarChart, Plus, Copy, Smartphone, Users, Award, AlertCircle, Check, Sparkles, Send, Save, Trash2, LayoutGrid, Calendar, MessageSquare, CheckCircle, ExternalLink, Lock } from 'lucide-react';
 import { toast } from 'sonner';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog";
 
 export default function WhatsappHubPage() {
     const { user } = useAuth();
@@ -21,6 +29,10 @@ export default function WhatsappHubPage() {
     const [selectedSegment, setSelectedSegment] = useState(null);
     const [campaignMessage, setCampaignMessage] = useState('');
     const [isSendingCampaign, setIsSendingCampaign] = useState(false);
+
+    // Purchase Modal state
+    const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
+    const [isCreatingLink, setIsCreatingLink] = useState(false);
 
     const tags = ['[Nombre]', '[Puntos]', '[Saldo]', '[Premio]', '[Codigo]', '[Nivel]'];
 
@@ -124,6 +136,24 @@ export default function WhatsappHubPage() {
         setCampaignMessage(segment.defaultMessage);
     };
 
+    const { api } = useAuth();
+    const handlePurchasePack = async (amount) => {
+        try {
+            setIsCreatingLink(true);
+            const response = await api().post('/payments/create-wa-pack-link', { amount });
+            if (response.data.init_point) {
+                window.location.href = response.data.init_point;
+            } else {
+                toast.error("No se pudo generar el link de pago");
+            }
+        } catch (error) {
+            console.error("Error creating pack payment:", error);
+            toast.error("Error al procesar la compra");
+        } finally {
+            setIsCreatingLink(false);
+        }
+    };
+
     return (
         <DashboardLayout>
             <div className="max-w-7xl mx-auto space-y-8 pb-10">
@@ -152,17 +182,27 @@ export default function WhatsappHubPage() {
                                 <div className="space-y-4 py-2">
                                     <div className="flex flex-col gap-1">
                                         <div className="flex items-center justify-between">
-                                            <h3 className="text-3xl font-black leading-none">850/1000</h3>
+                                            <h3 className="text-3xl font-black leading-none">
+                                                {user?.wa_messages_count || 0}/{(user?.wa_messages_limit || 0) + (user?.wa_credits || 0)}
+                                            </h3>
                                             <Badge className="bg-white/20 text-white text-[7px] font-black tracking-widest border-none px-2 py-0.5 text-center ml-2">MES ACTUAL</Badge>
                                         </div>
                                         <p className="text-[9px] font-bold text-white/60 uppercase tracking-widest px-1">Mensajes consumidos</p>
                                     </div>
                                     <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden">
-                                        <div className="h-full bg-white rounded-full w-[85%] shadow-[0_0_15px_rgba(255,255,255,0.4)]" />
+                                        <div
+                                            className="h-full bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-1000"
+                                            style={{ width: `${Math.min(100, ((user?.wa_messages_count || 0) / ((user?.wa_messages_limit || 1) + (user?.wa_credits || 0))) * 100)}%` }}
+                                        />
                                     </div>
                                     <p className="text-[9px] font-bold text-white/80 italic text-center">
-                                        ✨ Has usado el 85.0% de tu cupo disponible.
+                                        ✨ Has usado el {(((user?.wa_messages_count || 0) / ((user?.wa_messages_limit || 1) + (user?.wa_credits || 0))) * 100).toFixed(1)}% de tu cupo disponible.
                                     </p>
+                                    {user?.wa_credits > 0 && (
+                                        <p className="text-[8px] font-black text-white bg-white/10 p-1 rounded-lg text-center uppercase tracking-tighter">
+                                            Incluye {user.wa_credits} mensajes extra comprados
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div className="bg-white/10 rounded-2xl p-4 flex items-center justify-between border border-white/10">
@@ -178,7 +218,7 @@ export default function WhatsappHubPage() {
 
                                 <div className="grid grid-cols-2 gap-3 pt-2">
                                     <Button
-                                        onClick={() => toast.success('Módulo de compra cargando...')}
+                                        onClick={() => setIsPurchaseModalOpen(true)}
                                         className="bg-white text-[#22C55E] border-2 border-transparent hover:bg-transparent hover:text-white hover:border-white font-black text-[9px] uppercase h-10 rounded-xl tracking-wider shadow-xl shadow-green-900/10 transition-all px-2"
                                     >
                                         Comprar
@@ -251,13 +291,16 @@ export default function WhatsappHubPage() {
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('campaigns')}
-                                    className={`px-6 py-2.5 text-[10px] font-black tracking-widest transition-all flex items-center gap-2 rounded-full ${activeTab === 'campaigns'
+                                    className={`px-6 py-2.5 text-[10px] font-black tracking-widest transition-all flex items-center gap-2 rounded-full relative ${activeTab === 'campaigns'
                                         ? 'bg-[#22C55E] text-white shadow-lg shadow-green-100'
                                         : 'text-gray-400 hover:text-gray-600'
                                         }`}
                                 >
                                     <MessageSquareMore className={`w-3 h-3 ${activeTab === 'campaigns' ? 'fill-current' : ''}`} />
                                     CAMPAÑAS MASIVAS
+                                    {(!user?.wa_credits || user?.wa_credits <= 0) && (
+                                        <Lock className="w-2.5 h-2.5 absolute -top-1 -right-1 text-amber-500 bg-white rounded-full p-0.5 shadow-sm" />
+                                    )}
                                 </button>
                             </div>
                         </div>
@@ -383,109 +426,132 @@ export default function WhatsappHubPage() {
                                 )}
                             </>
                         ) : (
-                            <>
-                                {/* Selector de Audiencia - CON BORDES PRONUNCIADOS */}
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-2 text-[#22C55E]">
-                                        <Users className="w-3.5 h-3.5 fill-current" />
-                                        <h3 className="text-[10px] font-black uppercase tracking-widest text-[#23a352]">Audiencia Objetivo</h3>
-                                        <div className="ml-auto px-2 py-0.5 bg-green-50 rounded-full text-[9px] font-black border border-green-100 uppercase tracking-tighter text-[#22C55E]">
-                                            {selectedSegment?.count} CLIENTES SELECCIONADOS
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-4 gap-3 border-2 border-gray-200 p-2 rounded-[1.5rem] bg-gray-50/30">
-                                        {segments.map((segment) => (
-                                            <button
-                                                key={segment.id}
-                                                onClick={() => handleSegmentChange(segment)}
-                                                className={`p-4 rounded-2xl border transition-all flex flex-col items-center gap-2 text-center ${selectedSegment?.id === segment.id
-                                                    ? 'bg-white border-[#22C55E] border-2 shadow-lg shadow-green-100 ring-4 ring-green-50/50'
-                                                    : 'bg-white border-transparent border-2 hover:border-gray-200 shadow-sm'
-                                                    }`}
+                            <div className="relative">
+                                {(!user?.wa_credits || user.wa_credits <= 0) && (
+                                    <div className="absolute inset-x-0 -top-4 -bottom-4 z-50 backdrop-blur-[2px] bg-white/40 flex items-center justify-center p-6 rounded-[2.5rem]">
+                                        <div className="max-w-sm w-full bg-white border-2 border-amber-100 shadow-2xl rounded-[2rem] p-8 text-center flex flex-col items-center gap-4">
+                                            <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center">
+                                                <Lock className="w-8 h-8 text-amber-500" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight mb-2">Módulo Bloqueado</h3>
+                                                <p className="text-sm text-gray-500 font-medium">
+                                                    Las campañas masivas requieren un pack de mensajes activo. Recarga ahora para empezar a impactar a tus clientes.
+                                                </p>
+                                            </div>
+                                            <Button
+                                                onClick={() => setIsPurchaseModalOpen(true)}
+                                                className="w-full h-12 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl uppercase tracking-widest text-[10px]"
                                             >
-                                                <div className={`p-2 rounded-xl ${selectedSegment?.id === segment.id ? 'bg-[#22C55E] text-white shadow-md' : 'bg-gray-50 text-gray-300'}`}>
-                                                    {segment.icon}
-                                                </div>
-                                                <div>
-                                                    <p className={`font-black text-[9px] uppercase tracking-tighter leading-none mb-1 ${selectedSegment?.id === segment.id ? 'text-[#22C55E]' : 'text-gray-500'}`}>{segment.name}</p>
-                                                    <p className="text-[11px] font-black text-gray-900">{segment.count}</p>
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Editor de Mensaje de Campaña - CON BORDES PRONUNCIADOS */}
-                                <div className="space-y-4 flex flex-col flex-1">
-                                    <div className="flex items-center gap-3 px-1">
-                                        <div className="w-9 h-9 rounded-full bg-white border-2 border-[#22C55E] text-[#22C55E] flex items-center justify-center font-black shadow-sm">
-                                            <Send className="w-4 h-4" />
+                                                Adquirir Pack de Marketing
+                                            </Button>
                                         </div>
-                                        <h3 className="font-black text-gray-900 text-base uppercase tracking-tight">Personaliza el mensaje de campaña</h3>
+                                    </div>
+                                )}
+                                <div className={(!user?.wa_credits || user.wa_credits <= 0) ? 'opacity-30 pointer-events-none' : ''}>
+                                    {/* Selector de Audiencia */}
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2 text-[#22C55E]">
+                                            <Users className="w-3.5 h-3.5 fill-current" />
+                                            <h3 className="text-[10px] font-black uppercase tracking-widest text-[#23a352]">Audiencia Objetivo</h3>
+                                            <div className="ml-auto px-2 py-0.5 bg-green-50 rounded-full text-[9px] font-black border border-green-100 uppercase tracking-tighter text-[#22C55E]">
+                                                {selectedSegment?.count} CLIENTES SELECCIONADOS
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-4 gap-3 border-2 border-gray-200 p-2 rounded-[1.5rem] bg-gray-50/30">
+                                            {segments.map((segment) => (
+                                                <button
+                                                    key={segment.id}
+                                                    onClick={() => handleSegmentChange(segment)}
+                                                    className={`p-4 rounded-2xl border transition-all flex flex-col items-center gap-2 text-center ${selectedSegment?.id === segment.id
+                                                        ? 'bg-white border-[#22C55E] border-2 shadow-lg shadow-green-100 ring-4 ring-green-50/50'
+                                                        : 'bg-white border-transparent border-2 hover:border-gray-200 shadow-sm'
+                                                        }`}
+                                                >
+                                                    <div className={`p-2 rounded-xl ${selectedSegment?.id === segment.id ? 'bg-[#22C55E] text-white shadow-md' : 'bg-gray-50 text-gray-300'}`}>
+                                                        {segment.icon}
+                                                    </div>
+                                                    <div>
+                                                        <p className={`font-black text-[9px] uppercase tracking-tighter leading-none mb-1 ${selectedSegment?.id === segment.id ? 'text-[#22C55E]' : 'text-gray-500'}`}>{segment.name}</p>
+                                                        <p className="text-[11px] font-black text-gray-900">{segment.count}</p>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
 
-                                    <Card className="border-2 border-gray-200 shadow-xl shadow-gray-200/50 overflow-hidden bg-white flex flex-col flex-1 min-h-[500px] rounded-[1.5rem]">
-                                        <div className="p-7 flex-1 flex flex-col space-y-6">
-                                            <div className="bg-gray-50/80 rounded-2xl p-5 border-2 border-dashed border-gray-200 flex flex-col gap-3">
-                                                <div className="flex items-center gap-3">
-                                                    <AlertCircle className="w-5 h-5 text-[#22C55E] shrink-0" />
-                                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-tight leading-relaxed">
-                                                        {selectedSegment?.desc}
-                                                    </p>
-                                                </div>
+                                    {/* Editor de Mensaje de Campaña */}
+                                    <div className="space-y-4 flex flex-col flex-1 mt-6">
+                                        <div className="flex items-center gap-3 px-1">
+                                            <div className="w-9 h-9 rounded-full bg-white border-2 border-[#22C55E] text-[#22C55E] flex items-center justify-center font-black shadow-sm">
+                                                <Send className="w-4 h-4" />
                                             </div>
+                                            <h3 className="font-black text-gray-900 text-base uppercase tracking-tight">Personaliza el mensaje de campaña</h3>
+                                        </div>
 
-                                            <div className="flex-1 border-2 border-gray-50 rounded-2xl p-4 bg-gray-50/10">
-                                                <textarea
-                                                    value={campaignMessage}
-                                                    onChange={(e) => setCampaignMessage(e.target.value)}
-                                                    className="w-full h-full min-h-[180px] bg-transparent resize-none border-none focus:ring-0 text-gray-800 placeholder:text-gray-300 text-lg font-medium leading-relaxed scrollbar-hide"
-                                                    placeholder="Escribe el mensaje que recibirán todos los clientes seleccionados..."
-                                                />
-                                            </div>
-
-                                            <div className="pt-6 border-t-2 border-gray-100 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-6">
-                                                <div className="space-y-3 min-w-0 flex-1">
-                                                    <div className="flex items-center gap-2">
-                                                        <Sparkles className="w-3.5 h-3.5 text-gray-400" />
-                                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Etiquetas Inteligentes</span>
-                                                    </div>
-                                                    <div className="flex flex-wrap items-center gap-2">
-                                                        {tags.map(tag => (
-                                                            <button
-                                                                key={tag}
-                                                                onClick={() => setCampaignMessage(campaignMessage + ' ' + tag)}
-                                                                className="whitespace-nowrap text-[10px] font-bold px-3 py-1.5 bg-white border-2 border-gray-100 hover:border-[#22C55E] hover:text-[#22C55E] hover:shadow-sm text-gray-600 rounded-xl transition-all"
-                                                            >
-                                                                {tag}
-                                                            </button>
-                                                        ))}
+                                        <Card className="border-2 border-gray-200 shadow-xl shadow-gray-200/50 overflow-hidden bg-white flex flex-col flex-1 min-h-[500px] rounded-[1.5rem]">
+                                            <div className="p-7 flex-1 flex flex-col space-y-6">
+                                                <div className="bg-gray-50/80 rounded-2xl p-5 border-2 border-dashed border-gray-200 flex flex-col gap-3">
+                                                    <div className="flex items-center gap-3">
+                                                        <AlertCircle className="w-5 h-5 text-[#22C55E] shrink-0" />
+                                                        <p className="text-xs text-gray-500 font-bold uppercase tracking-tight leading-relaxed">
+                                                            {selectedSegment?.desc}
+                                                        </p>
                                                     </div>
                                                 </div>
 
-                                                <div className="md:pl-6 md:border-l-2 border-gray-100 flex flex-col items-center md:items-end gap-3 shrink-0">
-                                                    <Button
-                                                        onClick={handleSendCampaign}
-                                                        disabled={isSendingCampaign || !campaignMessage.trim()}
-                                                        className="h-11 px-6 rounded-xl bg-[#22C55E] hover:bg-[#16A34A] text-white font-black flex items-center gap-2 transition-all shadow-lg shadow-green-100 disabled:opacity-50 text-[11px] tracking-widest"
-                                                    >
-                                                        {isSendingCampaign ? (
-                                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                                        ) : (
-                                                            <Send className="w-4 h-4" />
-                                                        )}
-                                                        ENVIAR CAMPAÑA
-                                                    </Button>
-                                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center md:text-right">
-                                                        {campaignMessage.length} <span className="text-gray-200">/</span> 500 caract.
-                                                    </span>
+                                                <div className="flex-1 border-2 border-gray-50 rounded-2xl p-4 bg-gray-50/10">
+                                                    <textarea
+                                                        value={campaignMessage}
+                                                        onChange={(e) => setCampaignMessage(e.target.value)}
+                                                        className="w-full h-full min-h-[180px] bg-transparent resize-none border-none focus:ring-0 text-gray-800 placeholder:text-gray-300 text-lg font-medium leading-relaxed scrollbar-hide"
+                                                        placeholder="Escribe el mensaje que recibirán todos los clientes seleccionados..."
+                                                    />
+                                                </div>
+
+                                                <div className="pt-6 border-t-2 border-gray-100 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-6">
+                                                    <div className="space-y-3 min-w-0 flex-1">
+                                                        <div className="flex items-center gap-2">
+                                                            <Sparkles className="w-3.5 h-3.5 text-gray-400" />
+                                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Etiquetas Inteligentes</span>
+                                                        </div>
+                                                        <div className="flex flex-wrap items-center gap-2">
+                                                            {tags.map(tag => (
+                                                                <button
+                                                                    key={tag}
+                                                                    onClick={() => setCampaignMessage(campaignMessage + ' ' + tag)}
+                                                                    className="whitespace-nowrap text-[10px] font-bold px-3 py-1.5 bg-white border-2 border-gray-100 hover:border-[#22C55E] hover:text-[#22C55E] hover:shadow-sm text-gray-600 rounded-xl transition-all"
+                                                                >
+                                                                    {tag}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="md:pl-6 md:border-l-2 border-gray-100 flex flex-col items-center md:items-end gap-3 shrink-0">
+                                                        <Button
+                                                            onClick={handleSendCampaign}
+                                                            disabled={isSendingCampaign || !campaignMessage.trim()}
+                                                            className="h-11 px-6 rounded-xl bg-[#22C55E] hover:bg-[#16A34A] text-white font-black flex items-center gap-2 transition-all shadow-lg shadow-green-100 disabled:opacity-50 text-[11px] tracking-widest"
+                                                        >
+                                                            {isSendingCampaign ? (
+                                                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                            ) : (
+                                                                <Send className="w-4 h-4" />
+                                                            )}
+                                                            ENVIAR CAMPAÑA
+                                                        </Button>
+                                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center md:text-right">
+                                                            {campaignMessage.length} <span className="text-gray-200">/</span> 500 caract.
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </Card>
+                                        </Card>
+                                    </div>
                                 </div>
-                            </>
+                            </div>
                         )}
                     </div>
 
@@ -534,6 +600,59 @@ export default function WhatsappHubPage() {
                     </div>
                 </div>
             </div>
+
+            <Dialog open={isPurchaseModalOpen} onOpenChange={setIsPurchaseModalOpen}>
+                <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden">
+                    <div className="bg-[#22C55E] p-8 text-white relative">
+                        <div className="absolute top-0 right-0 p-8 opacity-10">
+                            <MessageSquareMore className="w-24 h-24" />
+                        </div>
+                        <DialogHeader>
+                            <DialogTitle className="text-2xl font-black uppercase tracking-tight">Recargar Mensajes</DialogTitle>
+                            <DialogDescription className="text-white/80 font-bold text-xs uppercase tracking-widest mt-2">
+                                Elige el pack que mejor se adapte a tu próxima campaña
+                            </DialogDescription>
+                        </DialogHeader>
+                    </div>
+
+                    <div className="p-8 space-y-4 bg-[#FAFAF9]">
+                        {[
+                            { amount: 1000, price: "$150.000", desc: "Ideal para avisos puntuales" },
+                            { amount: 5000, price: "$650.000", desc: "Perfecto para campañas mensuales", popular: true },
+                            { amount: 10000, price: "$1.100.000", desc: "Para grandes lanzamientos" }
+                        ].map((pack) => (
+                            <button
+                                key={pack.amount}
+                                onClick={() => handlePurchasePack(pack.amount)}
+                                disabled={isCreatingLink}
+                                className={`w-full p-4 rounded-2xl border-2 transition-all flex items-center justify-between text-left group
+                                    ${pack.popular ? 'bg-white border-[#22C55E] shadow-lg shadow-green-100' : 'bg-white border-gray-100 hover:border-gray-200'}
+                                    ${isCreatingLink ? 'opacity-50 cursor-not-allowed' : 'active:scale-[0.98]'}`}
+                            >
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-black text-gray-900 text-lg">{pack.amount.toLocaleString()}</span>
+                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter">MENSAJES</span>
+                                        {pack.popular && <Badge className="bg-[#22C55E] text-white text-[7px] font-black px-2 border-none">POPULAR</Badge>}
+                                    </div>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight leading-none">{pack.desc}</p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="font-black text-[#22C55E] text-xl leading-none">{pack.price}</p>
+                                    <p className="text-[8px] font-bold text-gray-300 uppercase tracking-widest mt-1">COP</p>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="px-8 pb-8 bg-[#FAFAF9]">
+                        <p className="text-[9px] text-gray-400 font-bold text-center uppercase tracking-widest leading-relaxed">
+                            🔒 Pago seguro vía MercadoPago. <br />
+                            Los mensajes se añaden inmediatamente a tu cuenta.
+                        </p>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </DashboardLayout>
     );
 }

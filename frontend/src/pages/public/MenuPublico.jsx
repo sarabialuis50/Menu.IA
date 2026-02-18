@@ -62,6 +62,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { MapPicker } from '@/components/MapPicker';
 import { PlacesAutocomplete } from '@/components/PlacesAutocomplete';
+import { FloatingWA } from '@/components/FloatingWA';
 
 const AvailableIcons = {
   UtensilsCrossed,
@@ -1566,6 +1567,14 @@ const MenuContent = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Floating WA AI Agent */}
+      <FloatingWA
+        businessName={business?.nombre}
+        whatsapp={business?.whatsapp}
+        aiEnabled={business?.ai_habilitado}
+        aiSaludo={business?.ai_saludo}
+      />
     </div>
   );
 };

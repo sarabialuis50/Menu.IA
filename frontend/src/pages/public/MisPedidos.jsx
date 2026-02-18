@@ -116,7 +116,14 @@ export default function MisPedidos() {
   }
 
   return (
-    <PublicLayout businessName={business?.nombre} businessLogo={business?.logo_url} slug={slug}>
+    <PublicLayout
+      businessName={business?.nombre}
+      businessLogo={business?.logo_url}
+      slug={slug}
+      whatsapp={business?.whatsapp}
+      aiEnabled={business?.ai_habilitado}
+      aiSaludo={business?.ai_saludo}
+    >
       <div className="max-w-lg mx-auto px-6 py-10 min-h-[80vh]">
         {/* Header Section */}
         <div className="flex items-center justify-between mb-10">

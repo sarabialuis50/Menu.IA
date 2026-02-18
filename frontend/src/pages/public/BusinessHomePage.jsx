@@ -129,7 +129,14 @@ const BusinessHomePageContent = () => {
     }
 
     return (
-        <PublicLayout businessName={business.nombre} businessLogo={business.logo_url} slug={slug}>
+        <PublicLayout
+            businessName={business.nombre}
+            businessLogo={business.logo_url}
+            slug={slug}
+            whatsapp={business.whatsapp}
+            aiEnabled={business.ai_habilitado}
+            aiSaludo={business.ai_saludo}
+        >
             <div className="bg-[#f6f8f7] min-h-screen pb-20">
                 {/* Hero Section */}
                 <section className="max-w-[1200px] mx-auto w-full px-4 md:px-10 pt-6">
@@ -357,22 +364,22 @@ const BusinessHomePageContent = () => {
                 <motion.div
                     initial={{ y: 100 }}
                     animate={{ y: 0 }}
-                    className="fixed bottom-0 left-0 w-full z-50 bg-white/80 dark:bg-[#1a2e22]/95 backdrop-blur-xl border-t border-[#f0f4f2] py-5 px-4 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)]"
+                    className="fixed bottom-0 left-0 w-full z-50 bg-white/80 dark:bg-[#1a2e22]/95 backdrop-blur-xl border-t border-[#f0f4f2] py-3 px-4 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)]"
                 >
-                    <div className="max-w-[1200px] mx-auto flex items-center justify-between gap-6 px-4 md:px-6">
+                    <div className="max-w-[1200px] mx-auto flex items-center justify-between gap-6 px-2 md:px-6">
                         <div className="hidden sm:flex flex-col">
                             <span className="text-[10px] text-[#618972] uppercase tracking-[0.2em] font-black">¿Tienes hambre?</span>
                             <span className="text-sm font-bold text-[#111814]">Explora nuestra carta completa</span>
                         </div>
                         <Button
                             onClick={() => navigate(`/${slug}/menu-completo`)}
-                            className="flex-1 sm:flex-none sm:min-w-[280px] h-14 bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] text-lg font-black rounded-2xl shadow-xl shadow-[#22C55E]/30 transform active:scale-95 transition-all flex items-center gap-3 overflow-hidden group"
+                            className="flex-1 sm:flex-none sm:min-w-[200px] h-11 bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] text-sm font-black rounded-xl shadow-lg shadow-[#22C55E]/30 transform active:scale-95 transition-all flex items-center justify-center gap-2 overflow-hidden group mr-16 sm:mr-0"
                         >
-                            <div className="bg-white/20 p-2 rounded-xl group-hover:rotate-12 transition-transform">
-                                <UtensilsCrossed className="w-5 h-5" />
+                            <div className="bg-white/20 p-1.5 rounded-lg group-hover:rotate-12 transition-transform">
+                                <UtensilsCrossed className="w-4 h-4" />
                             </div>
-                            <span>VER MENÚ COMPLETO</span>
-                            <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                            <span>VER MENÚ</span>
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
                         </Button>
                     </div>
                 </motion.div>

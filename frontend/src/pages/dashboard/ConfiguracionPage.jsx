@@ -1547,965 +1547,964 @@ export default function ConfiguracionPage() {
                                     <MapPin className="w-4 h-4 flex-shrink-0" />
                                     USAR MI UBICACIÓN ACTUAL
                                 </Button>
-                            </div>
 
-                            <div className="flex justify-end pt-6">
-                                <Button
-                                    onClick={handleSaveBusiness}
-                                    disabled={saving}
-                                    className={getButtonStyle(hasChanges())}
-                                >
-                                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                                    GUARDAR LOGÍSTICA
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-
-                {/* MÉTODOS DE ENTREGA TAB */}
-                <TabsContent value="entrega" className="space-y-6 outline-none">
-                    <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                        <CardHeader className="pt-10 px-10 pb-4">
-                            <CardTitle className="text-2xl flex items-center gap-3 font-black tracking-tighter">
-                                <div className="size-10 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
-                                    <Package className="w-6 h-6" />
+                                <div className="flex justify-end pt-6">
+                                    <Button
+                                        onClick={handleSaveBusiness}
+                                        disabled={saving}
+                                        className={getButtonStyle(hasChanges())}
+                                    >
+                                        {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                        GUARDAR LOGÍSTICA
+                                    </Button>
                                 </div>
-                                Configuración de Servicios
-                            </CardTitle>
-                            <CardDescription>Habilita o deshabilita los canales de venta según tu modelo de negocio.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="px-10 pb-10 space-y-8">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {/* Domicilio Switch */}
-                                <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.domicilio ? 'border-[#22C55E] bg-[#22C55E]/5' : 'border-gray-100 bg-gray-50'}`}
-                                    onClick={() => setBusinessData({
-                                        ...businessData,
-                                        metodos_entrega: { ...businessData.metodos_entrega, domicilio: !businessData.metodos_entrega?.domicilio }
-                                    })}>
-                                    <div className={`size-16 rounded-3xl flex items-center justify-center transition-all ${businessData.metodos_entrega?.domicilio ? 'bg-[#22C55E] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
-                                        <Truck className="w-8 h-8" />
-                                    </div>
-                                    <div>
-                                        <p className="font-black text-sm uppercase tracking-tight">Domicilio</p>
-                                        <p className="text-[10px] text-[#618972] mt-1 font-medium">Activa logística y rastreo GPS.</p>
-                                    </div>
-                                    <Switch
-                                        activeColor="#22C55E"
-                                        checked={businessData.metodos_entrega?.domicilio || false}
-                                        onCheckedChange={(checked) => setBusinessData({
-                                            ...businessData,
-                                            metodos_entrega: { ...businessData.metodos_entrega, domicilio: checked }
-                                        })}
-                                    />
-                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
 
-                                {/* Recoger Switch */}
-                                <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.recoger ? 'border-[#22C55E] bg-[#22C55E]/5' : 'border-gray-100 bg-gray-50'}`}
-                                    onClick={() => setBusinessData({
-                                        ...businessData,
-                                        metodos_entrega: { ...businessData.metodos_entrega, recoger: !businessData.metodos_entrega?.recoger }
-                                    })}>
-                                    <div className={`size-16 rounded-3xl flex items-center justify-center transition-all ${businessData.metodos_entrega?.recoger ? 'bg-[#22C55E] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
-                                        <ShoppingBag className="w-8 h-8" />
+                    {/* MÉTODOS DE ENTREGA TAB */}
+                    <TabsContent value="entrega" className="space-y-6 outline-none">
+                        <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
+                            <CardHeader className="pt-10 px-10 pb-4">
+                                <CardTitle className="text-2xl flex items-center gap-3 font-black tracking-tighter">
+                                    <div className="size-10 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
+                                        <Package className="w-6 h-6" />
                                     </div>
-                                    <div>
-                                        <p className="font-black text-sm uppercase tracking-tight">Recoger en local</p>
-                                        <p className="text-[10px] text-[#618972] mt-1 font-medium">El cliente retira su pedido.</p>
-                                    </div>
-                                    <Switch
-                                        activeColor="#22C55E"
-                                        checked={businessData.metodos_entrega?.recoger || false}
-                                        onCheckedChange={(checked) => setBusinessData({
-                                            ...businessData,
-                                            metodos_entrega: { ...businessData.metodos_entrega, recoger: checked }
-                                        })}
-                                    />
-                                </div>
-
-                                {/* Mesa Switch */}
-                                <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.mesa ? 'border-[#22C55E] bg-[#22C55E]/5' : 'border-gray-100 bg-gray-50'}`}
-                                    onClick={() => setBusinessData({
-                                        ...businessData,
-                                        metodos_entrega: { ...businessData.metodos_entrega, mesa: !businessData.metodos_entrega?.mesa }
-                                    })}>
-                                    <div className={`size-16 rounded-3xl flex items-center justify-center transition-all ${businessData.metodos_entrega?.mesa ? 'bg-[#22C55E] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
-                                        <Utensils className="w-8 h-8" />
-                                    </div>
-                                    <div>
-                                        <p className="font-black text-sm uppercase tracking-tight">Servicio en Mesa</p>
-                                        <p className="text-[10px] text-[#618972] mt-1 font-medium">Pedidos mediante código QR.</p>
-                                    </div>
-                                    <Switch
-                                        activeColor="#22C55E"
-                                        checked={businessData.metodos_entrega?.mesa || false}
-                                        onCheckedChange={(checked) => setBusinessData({
-                                            ...businessData,
-                                            metodos_entrega: { ...businessData.metodos_entrega, mesa: checked }
-                                        })}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="flex justify-end pt-4 border-t border-gray-100">
-                                <Button
-                                    onClick={handleSaveBusiness}
-                                    disabled={saving}
-                                    className={getButtonStyle(hasChanges())}
-                                >
-                                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                                    GUARDAR CONFIGURACIÓN
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-
-                {/* MÉTODOS DE PAGO TAB */}
-                <TabsContent value="pagos" className="space-y-6 outline-none">
-                    <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                        <CardHeader className="pt-10 px-10 pb-4">
-                            <CardTitle className="text-2xl flex items-center gap-3 font-black tracking-tighter">
-                                <div className="size-10 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
-                                    <CreditCardIcon className="w-6 h-6" />
-                                </div>
-                                Gestión de Pagos
-                            </CardTitle>
-                            <CardDescription>Habilita los medios de pago que tus clientes podrán usar.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="px-10 pb-10 space-y-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {/* Predefined Payment Methods */}
-                                {[
-                                    { key: 'efectivo', label: 'Efectivo', desc: 'Pago físico en caja.', icon: Banknote },
-                                    { key: 'nequi', label: 'Nequi', desc: 'Plataforma digital.', icon: Smartphone },
-                                    { key: 'daviplata', label: 'Daviplata', desc: 'Billetera virtual.', icon: Wallet },
-                                    { key: 'transferencia', label: 'Transferencia', desc: 'Bancolombia/Otros.', icon: Coins },
-                                    { key: 'tarjeta', label: 'Tarjeta / Datáfono', desc: 'Débito o Crédito.', icon: CreditCardIcon },
-                                    { key: 'link', label: 'Bre-B', desc: 'Pagos Inteligentes.', icon: LinkIcon }
-                                ].map((method) => (
-                                    <div
-                                        key={method.key}
-                                        className={`p-6 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-3 ${businessData.metodos_pago?.[method.key] ? 'border-[#22C55E] bg-[#22C55E]/5' : 'border-gray-100 bg-gray-50'}`}
+                                    Configuración de Servicios
+                                </CardTitle>
+                                <CardDescription>Habilita o deshabilita los canales de venta según tu modelo de negocio.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="px-10 pb-10 space-y-8">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    {/* Domicilio Switch */}
+                                    <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.domicilio ? 'border-[#22C55E] bg-[#22C55E]/5' : 'border-gray-100 bg-gray-50'}`}
                                         onClick={() => setBusinessData({
                                             ...businessData,
-                                            metodos_pago: { ...businessData.metodos_pago, [method.key]: !businessData.metodos_pago?.[method.key] }
-                                        })}
-                                    >
-                                        <div className={`size-14 rounded-2xl flex items-center justify-center transition-all ${businessData.metodos_pago?.[method.key] ? 'bg-[#22C55E] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
-                                            <method.icon className="w-6 h-6" />
+                                            metodos_entrega: { ...businessData.metodos_entrega, domicilio: !businessData.metodos_entrega?.domicilio }
+                                        })}>
+                                        <div className={`size-16 rounded-3xl flex items-center justify-center transition-all ${businessData.metodos_entrega?.domicilio ? 'bg-[#22C55E] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
+                                            <Truck className="w-8 h-8" />
                                         </div>
                                         <div>
-                                            <p className="font-black text-sm uppercase tracking-tight">{method.label}</p>
-                                            <p className="text-[10px] text-[#618972] mt-1 font-medium">{method.desc}</p>
+                                            <p className="font-black text-sm uppercase tracking-tight">Domicilio</p>
+                                            <p className="text-[10px] text-[#618972] mt-1 font-medium">Activa logística y rastreo GPS.</p>
                                         </div>
                                         <Switch
                                             activeColor="#22C55E"
-                                            checked={businessData.metodos_pago?.[method.key] || false}
+                                            checked={businessData.metodos_entrega?.domicilio || false}
                                             onCheckedChange={(checked) => setBusinessData({
                                                 ...businessData,
-                                                metodos_pago: { ...businessData.metodos_pago, [method.key]: checked }
+                                                metodos_entrega: { ...businessData.metodos_entrega, domicilio: checked }
                                             })}
                                         />
                                     </div>
-                                ))}
-                            </div>
 
-                            <div className="flex justify-center md:justify-end pt-4 border-t border-gray-100">
-                                <Button
-                                    onClick={handleSaveBusiness}
-                                    disabled={saving}
-                                    className={`${getButtonStyle(hasChanges())} w-auto`}
-                                >
-                                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                                    GUARDAR MÉTODOS DE PAGO
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-
-                {/* EXPERIENCIA CLIENTE TAB */}
-                <TabsContent value="experiencia" className="space-y-8 outline-none text-[#111814]">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* Canal 1: Menú Digital */}
-                        <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                            <CardHeader className="pt-10 px-10 pb-4">
-                                <div className="flex items-center gap-4 mb-2">
-                                    <div className="size-12 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
-                                        <Globe className="w-6 h-6" />
+                                    {/* Recoger Switch */}
+                                    <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.recoger ? 'border-[#22C55E] bg-[#22C55E]/5' : 'border-gray-100 bg-gray-50'}`}
+                                        onClick={() => setBusinessData({
+                                            ...businessData,
+                                            metodos_entrega: { ...businessData.metodos_entrega, recoger: !businessData.metodos_entrega?.recoger }
+                                        })}>
+                                        <div className={`size-16 rounded-3xl flex items-center justify-center transition-all ${businessData.metodos_entrega?.recoger ? 'bg-[#22C55E] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
+                                            <ShoppingBag className="w-8 h-8" />
+                                        </div>
+                                        <div>
+                                            <p className="font-black text-sm uppercase tracking-tight">Recoger en local</p>
+                                            <p className="text-[10px] text-[#618972] mt-1 font-medium">El cliente retira su pedido.</p>
+                                        </div>
+                                        <Switch
+                                            activeColor="#22C55E"
+                                            checked={businessData.metodos_entrega?.recoger || false}
+                                            onCheckedChange={(checked) => setBusinessData({
+                                                ...businessData,
+                                                metodos_entrega: { ...businessData.metodos_entrega, recoger: checked }
+                                            })}
+                                        />
                                     </div>
-                                    <div>
-                                        <CardTitle className="text-2xl font-black tracking-tight">Catálogo Digital</CardTitle>
-                                        <CardDescription>Tu carta interactiva abierta al mundo.</CardDescription>
+
+                                    {/* Mesa Switch */}
+                                    <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.mesa ? 'border-[#22C55E] bg-[#22C55E]/5' : 'border-gray-100 bg-gray-50'}`}
+                                        onClick={() => setBusinessData({
+                                            ...businessData,
+                                            metodos_entrega: { ...businessData.metodos_entrega, mesa: !businessData.metodos_entrega?.mesa }
+                                        })}>
+                                        <div className={`size-16 rounded-3xl flex items-center justify-center transition-all ${businessData.metodos_entrega?.mesa ? 'bg-[#22C55E] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
+                                            <Utensils className="w-8 h-8" />
+                                        </div>
+                                        <div>
+                                            <p className="font-black text-sm uppercase tracking-tight">Servicio en Mesa</p>
+                                            <p className="text-[10px] text-[#618972] mt-1 font-medium">Pedidos mediante código QR.</p>
+                                        </div>
+                                        <Switch
+                                            activeColor="#22C55E"
+                                            checked={businessData.metodos_entrega?.mesa || false}
+                                            onCheckedChange={(checked) => setBusinessData({
+                                                ...businessData,
+                                                metodos_entrega: { ...businessData.metodos_entrega, mesa: checked }
+                                            })}
+                                        />
                                     </div>
                                 </div>
+
+                                <div className="flex justify-end pt-4 border-t border-gray-100">
+                                    <Button
+                                        onClick={handleSaveBusiness}
+                                        disabled={saving}
+                                        className={getButtonStyle(hasChanges())}
+                                    >
+                                        {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                        GUARDAR CONFIGURACIÓN
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* MÉTODOS DE PAGO TAB */}
+                    <TabsContent value="pagos" className="space-y-6 outline-none">
+                        <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
+                            <CardHeader className="pt-10 px-10 pb-4">
+                                <CardTitle className="text-2xl flex items-center gap-3 font-black tracking-tighter">
+                                    <div className="size-10 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
+                                        <CreditCardIcon className="w-6 h-6" />
+                                    </div>
+                                    Gestión de Pagos
+                                </CardTitle>
+                                <CardDescription>Habilita los medios de pago que tus clientes podrán usar.</CardDescription>
                             </CardHeader>
                             <CardContent className="px-10 pb-10 space-y-8">
-                                <div className="space-y-4">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#618972]">Enlace Público de tu Menú</Label>
-                                    <div className="flex gap-2">
-                                        <Input
-                                            readOnly
-                                            value={`${window.location.origin}/${slug}/menu-completo`}
-                                            className="h-14 rounded-2xl bg-gray-50 border-gray-100 font-mono text-xs pr-12"
-                                        />
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {/* Predefined Payment Methods */}
+                                    {[
+                                        { key: 'efectivo', label: 'Efectivo', desc: 'Pago físico en caja.', icon: Banknote },
+                                        { key: 'nequi', label: 'Nequi', desc: 'Plataforma digital.', icon: Smartphone },
+                                        { key: 'daviplata', label: 'Daviplata', desc: 'Billetera virtual.', icon: Wallet },
+                                        { key: 'transferencia', label: 'Transferencia', desc: 'Bancolombia/Otros.', icon: Coins },
+                                        { key: 'tarjeta', label: 'Tarjeta / Datáfono', desc: 'Débito o Crédito.', icon: CreditCardIcon },
+                                        { key: 'link', label: 'Bre-B', desc: 'Pagos Inteligentes.', icon: LinkIcon }
+                                    ].map((method) => (
+                                        <div
+                                            key={method.key}
+                                            className={`p-6 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-3 ${businessData.metodos_pago?.[method.key] ? 'border-[#22C55E] bg-[#22C55E]/5' : 'border-gray-100 bg-gray-50'}`}
+                                            onClick={() => setBusinessData({
+                                                ...businessData,
+                                                metodos_pago: { ...businessData.metodos_pago, [method.key]: !businessData.metodos_pago?.[method.key] }
+                                            })}
+                                        >
+                                            <div className={`size-14 rounded-2xl flex items-center justify-center transition-all ${businessData.metodos_pago?.[method.key] ? 'bg-[#22C55E] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
+                                                <method.icon className="w-6 h-6" />
+                                            </div>
+                                            <div>
+                                                <p className="font-black text-sm uppercase tracking-tight">{method.label}</p>
+                                                <p className="text-[10px] text-[#618972] mt-1 font-medium">{method.desc}</p>
+                                            </div>
+                                            <Switch
+                                                activeColor="#22C55E"
+                                                checked={businessData.metodos_pago?.[method.key] || false}
+                                                onCheckedChange={(checked) => setBusinessData({
+                                                    ...businessData,
+                                                    metodos_pago: { ...businessData.metodos_pago, [method.key]: checked }
+                                                })}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="flex justify-center md:justify-end pt-4 border-t border-gray-100">
+                                    <Button
+                                        onClick={handleSaveBusiness}
+                                        disabled={saving}
+                                        className={`${getButtonStyle(hasChanges())} w-auto`}
+                                    >
+                                        {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                        GUARDAR MÉTODOS DE PAGO
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* EXPERIENCIA CLIENTE TAB */}
+                    <TabsContent value="experiencia" className="space-y-8 outline-none text-[#111814]">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            {/* Canal 1: Menú Digital */}
+                            <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
+                                <CardHeader className="pt-10 px-10 pb-4">
+                                    <div className="flex items-center gap-4 mb-2">
+                                        <div className="size-12 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
+                                            <Globe className="w-6 h-6" />
+                                        </div>
+                                        <div>
+                                            <CardTitle className="text-2xl font-black tracking-tight">Catálogo Digital</CardTitle>
+                                            <CardDescription>Tu carta interactiva abierta al mundo.</CardDescription>
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="px-10 pb-10 space-y-8">
+                                    <div className="space-y-4">
+                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#618972]">Enlace Público de tu Menú</Label>
+                                        <div className="flex gap-2">
+                                            <Input
+                                                readOnly
+                                                value={`${window.location.origin}/${slug}/menu-completo`}
+                                                className="h-14 rounded-2xl bg-gray-50 border-gray-100 font-mono text-xs pr-12"
+                                            />
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#22C55E]/5 hover:text-[#22C55E] transition-all"
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(`${window.location.origin}/${slug}/menu-completo`);
+                                                    toast.success("Enlace copiado al portapapeles");
+                                                }}
+                                            >
+                                                <Copy className="w-5 h-5" />
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#22C55E]/5 hover:text-[#22C55E] transition-all"
+                                                onClick={() => window.open(`/${slug}/menu-completo`, '_blank')}
+                                            >
+                                                <ExternalLink className="w-5 h-5" />
+                                            </Button>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-8 bg-gray-50 rounded-[2rem] border border-dashed border-gray-200 flex flex-col items-center gap-6">
+                                        <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100" id="qr-menu-container">
+                                            <QRCodeSVG
+                                                value={`${window.location.origin}/${slug}/menu-completo`}
+                                                size={200}
+                                                level="H"
+                                                includeMargin={true}
+                                                imageSettings={{
+                                                    src: businessData.logo_url || "/favicon.svg",
+                                                    x: undefined,
+                                                    y: undefined,
+                                                    height: 40,
+                                                    width: 40,
+                                                    excavate: true,
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="text-center space-y-2">
+                                            <p className="font-black text-sm uppercase tracking-widest">QR del Menú Digital</p>
+                                            <p className="text-[10px] text-[#618972]">Descarga este código e imprímelo para tus mesas.</p>
+                                        </div>
                                         <Button
                                             variant="outline"
-                                            size="icon"
-                                            className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#22C55E]/5 hover:text-[#22C55E] transition-all"
+                                            className="w-full h-12 rounded-2xl border-[#22C55E] text-[#22C55E] font-black gap-2 hover:bg-[#22C55E]/5"
                                             onClick={() => {
-                                                navigator.clipboard.writeText(`${window.location.origin}/${slug}/menu-completo`);
-                                                toast.success("Enlace copiado al portapapeles");
+                                                const svg = document.querySelector("#qr-menu-container svg");
+                                                const svgData = new XMLSerializer().serializeToString(svg);
+                                                const canvas = document.createElement("canvas");
+                                                const ctx = canvas.getContext("2d");
+                                                const img = new Image();
+                                                img.onload = () => {
+                                                    canvas.width = img.width;
+                                                    canvas.height = img.height;
+                                                    ctx.drawImage(img, 0, 0);
+                                                    const pngFile = canvas.toDataURL("image/png");
+                                                    const downloadLink = document.createElement("a");
+                                                    downloadLink.download = `QR-Menu-${slug}.png`;
+                                                    downloadLink.href = pngFile;
+                                                    downloadLink.click();
+                                                };
+                                                img.src = "data:image/svg+xml;base64," + btoa(svgData);
                                             }}
                                         >
-                                            <Copy className="w-5 h-5" />
+                                            <Download className="w-4 h-4" />
+                                            DESCARGAR QR PNG
                                         </Button>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Canal 2: Seguimiento de Pedidos */}
+                            <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
+                                <CardHeader className="pt-10 px-10 pb-4">
+                                    <div className="flex items-center gap-4 mb-2">
+                                        <div className="size-12 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
+                                            <Clock className="w-6 h-6" />
+                                        </div>
+                                        <div>
+                                            <CardTitle className="text-2xl font-black tracking-tight">Seguimiento Real-Time</CardTitle>
+                                            <CardDescription>Donde tus clientes ven el estado de sus pedidos.</CardDescription>
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="px-10 pb-10 space-y-8">
+                                    <div className="space-y-4">
+                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#618972]">Enlace de Seguimiento (Mis Pedidos)</Label>
+                                        <div className="flex gap-2">
+                                            <Input
+                                                readOnly
+                                                value={`${window.location.origin}/${slug}/mis-pedidos`}
+                                                className="h-14 rounded-2xl bg-gray-50 border-gray-100 font-mono text-xs pr-12"
+                                            />
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#22C55E]/5 hover:text-[#22C55E] transition-all"
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(`${window.location.origin}/${slug}/mis-pedidos`);
+                                                    toast.success("Enlace de seguimiento copiado");
+                                                }}
+                                            >
+                                                <Copy className="w-5 h-5" />
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#22C55E]/5 hover:text-[#22C55E] transition-all"
+                                                onClick={() => window.open(`/${slug}/mis-pedidos`, '_blank')}
+                                            >
+                                                <ExternalLink className="w-5 h-5" />
+                                            </Button>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-8 bg-gray-50 rounded-[2rem] border border-dashed border-gray-200 flex flex-col items-center gap-6">
+                                        <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100" id="qr-tracking-container">
+                                            <QRCodeSVG
+                                                value={`${window.location.origin}/${slug}/mis-pedidos`}
+                                                size={200}
+                                                level="H"
+                                                includeMargin={true}
+                                                imageSettings={{
+                                                    src: businessData.logo_url || "/favicon.svg",
+                                                    x: undefined,
+                                                    y: undefined,
+                                                    height: 40,
+                                                    width: 40,
+                                                    excavate: true,
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="text-center space-y-2">
+                                            <p className="font-black text-sm uppercase tracking-widest">QR de Seguimiento</p>
+                                            <p className="text-[10px] text-[#618972]">Útil para que el cliente escanee y vea sus últimos pedidos.</p>
+                                        </div>
                                         <Button
                                             variant="outline"
-                                            size="icon"
-                                            className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#22C55E]/5 hover:text-[#22C55E] transition-all"
+                                            className="w-full h-12 rounded-2xl border-[#22C55E] text-[#22C55E] font-black gap-2 hover:bg-[#22C55E]/5"
+                                            onClick={() => {
+                                                const svg = document.querySelector("#qr-tracking-container svg");
+                                                const svgData = new XMLSerializer().serializeToString(svg);
+                                                const canvas = document.createElement("canvas");
+                                                const ctx = canvas.getContext("2d");
+                                                const img = new Image();
+                                                img.onload = () => {
+                                                    canvas.width = img.width;
+                                                    canvas.height = img.height;
+                                                    ctx.drawImage(img, 0, 0);
+                                                    const pngFile = canvas.toDataURL("image/png");
+                                                    const downloadLink = document.createElement("a");
+                                                    downloadLink.download = `QR-Tracking-${slug}.png`;
+                                                    downloadLink.href = pngFile;
+                                                    downloadLink.click();
+                                                };
+                                                img.src = "data:image/svg+xml;base64," + btoa(svgData);
+                                            }}
+                                        >
+                                            <Download className="w-4 h-4" />
+                                            DESCARGAR QR PNG
+                                        </Button>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        {/* Preview Section */}
+                        <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-[#111814] text-white">
+                            <div className="p-10 flex flex-col md:flex-row items-center gap-10">
+                                <div className="space-y-6 flex-1">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E] text-[10px] font-black uppercase tracking-widest">
+                                        <Sparkles className="w-3 h-3" /> Tip Pro
+                                    </div>
+                                    <h3 className="text-3xl font-black tracking-tighter leading-none">Tu menú vive en el bolsillo de tu cliente.</h3>
+                                    <p className="text-gray-400 font-medium leading-relaxed">
+                                        Aprovecha el enlace directo para enviarlo por WhatsApp al confirmar un pedido,
+                                        o imprimir los códigos QR para que tus comensales en mesa puedan pedir sin esperas.
+                                    </p>
+                                    <div className="flex gap-4">
+                                        <Button
+                                            className="bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-black rounded-2xl h-12 px-8 uppercase text-[10px] tracking-widest"
                                             onClick={() => window.open(`/${slug}/menu-completo`, '_blank')}
                                         >
-                                            <ExternalLink className="w-5 h-5" />
+                                            Ver mi Catálogo Digital
                                         </Button>
                                     </div>
                                 </div>
+                                <div className="w-full md:w-64 aspect-[9/18] bg-white rounded-[2.5rem] border-[8px] border-gray-800 shadow-2xl relative overflow-hidden group">
+                                    <div className="absolute inset-0 bg-[#f6f8f7]">
+                                        {/* Mockup content */}
+                                        <div className="h-16 bg-[#22C55E] px-4 pt-6 pb-2 shadow-sm rounded-b-[1.5rem] relative z-10 flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className="h-8 w-8 bg-white rounded-full p-0.5 shadow-sm flex items-center justify-center overflow-hidden">
+                                                    <img src={businessData.logo_url || "/favicon.svg"} className="size-full object-cover" />
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] font-black text-[#111814] leading-tight">Don Jediondo</span>
+                                                    <span className="text-[8px] font-medium text-[#111814]/70 leading-tight">Abierto • 20-30 min</span>
+                                                </div>
+                                            </div>
+                                            <div className="size-8 bg-white/20 rounded-full flex items-center justify-center text-[#111814]">
+                                                <Search className="w-3 h-3" />
+                                            </div>
+                                        </div>
 
-                                <div className="p-8 bg-gray-50 rounded-[2rem] border border-dashed border-gray-200 flex flex-col items-center gap-6">
-                                    <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100" id="qr-menu-container">
-                                        <QRCodeSVG
-                                            value={`${window.location.origin}/${slug}/menu-completo`}
-                                            size={200}
-                                            level="H"
-                                            includeMargin={true}
-                                            imageSettings={{
-                                                src: businessData.logo_url || "/favicon.svg",
-                                                x: undefined,
-                                                y: undefined,
-                                                height: 40,
-                                                width: 40,
-                                                excavate: true,
-                                            }}
-                                        />
+                                        <div className="p-3 space-y-3 overflow-hidden bg-[#f8fcf9] h-full">
+                                            {/* Categories */}
+                                            <div className="flex gap-2 mb-2 overflow-x-auto pb-1 no-scrollbar">
+                                                <div className="px-3 py-1 bg-[#111814] rounded-full flex items-center shadow-lg shadow-black/10">
+                                                    <span className="text-[9px] font-bold text-white whitespace-nowrap">Todos</span>
+                                                </div>
+                                                <div className="px-3 py-1 bg-white border border-gray-100 rounded-full flex items-center">
+                                                    <span className="text-[9px] font-bold text-gray-500 whitespace-nowrap">Burgers</span>
+                                                </div>
+                                                <div className="px-3 py-1 bg-white border border-gray-100 rounded-full flex items-center">
+                                                    <span className="text-[9px] font-bold text-gray-500 whitespace-nowrap">Pizzas</span>
+                                                </div>
+                                                <div className="px-3 py-1 bg-white border border-gray-100 rounded-full flex items-center">
+                                                    <span className="text-[9px] font-bold text-gray-500 whitespace-nowrap">Bebidas</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Product 1 */}
+                                            <div className="bg-white p-2.5 rounded-2xl shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-gray-50 flex gap-3 items-center">
+                                                <div className="size-14 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0 shadow-sm relative group">
+                                                    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&q=80" className="w-full h-full object-cover" />
+                                                </div>
+                                                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                                                    <h4 className="text-[10px] font-black text-gray-900 leading-tight truncate">Hamburguesa Doble</h4>
+                                                    <p className="text-[8px] text-gray-500 leading-tight line-clamp-1 mt-0.5">Queso cheddar, tocineta, salsas...</p>
+                                                    <p className="text-[10px] font-black text-[#22C55E] mt-1">$24.900</p>
+                                                </div>
+                                                <div className="size-7 bg-[#22C55E] rounded-full flex items-center justify-center text-[#111814] shadow-lg shadow-[#22C55E]/20 active:scale-90 transition-transform">
+                                                    <Plus className="w-3.5 h-3.5" />
+                                                </div>
+                                            </div>
+
+                                            {/* Product 2 */}
+                                            <div className="bg-white p-2.5 rounded-2xl shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-gray-50 flex gap-3 items-center">
+                                                <div className="size-14 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0 shadow-sm">
+                                                    <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&q=80" className="w-full h-full object-cover" />
+                                                </div>
+                                                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                                                    <h4 className="text-[10px] font-black text-gray-900 leading-tight truncate">Pizza Pepperoni</h4>
+                                                    <p className="text-[8px] text-gray-500 leading-tight line-clamp-1 mt-0.5">Masa madre, queso mozzarella...</p>
+                                                    <p className="text-[10px] font-black text-[#22C55E] mt-1">$32.000</p>
+                                                </div>
+                                                <div className="size-7 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center hover:bg-[#22C55E] hover:text-[#111814] transition-colors">
+                                                    <Plus className="w-3.5 h-3.5" />
+                                                </div>
+                                            </div>
+
+                                            {/* Product 3 */}
+                                            <div className="bg-white p-2.5 rounded-2xl shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-gray-50 flex gap-3 items-center opacity-80">
+                                                <div className="size-14 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0 shadow-sm">
+                                                    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&q=80" className="w-full h-full object-cover" />
+                                                </div>
+                                                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                                                    <h4 className="text-[10px] font-black text-gray-900 leading-tight truncate">Ensalada César</h4>
+                                                    <p className="text-[8px] text-gray-500 leading-tight line-clamp-1 mt-0.5">Pollo grillé, crutones, parmesano...</p>
+                                                    <p className="text-[10px] font-black text-[#22C55E] mt-1">$18.500</p>
+                                                </div>
+                                                <div className="size-7 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center">
+                                                    <Plus className="w-3.5 h-3.5" />
+                                                </div>
+                                            </div>
+
+                                            {/* Floating Cart Pill */}
+                                            <div className="mx-auto w-max bg-[#111814] rounded-full px-4 py-2 mt-4 flex items-center gap-2 shadow-xl">
+                                                <div className="size-4 rounded-full bg-[#22C55E] text-[#111814] text-[8px] font-black flex items-center justify-center">1</div>
+                                                <span className="text-[9px] font-bold text-white">Ver pedido</span>
+                                                <span className="text-[9px] font-bold text-white/60 pl-2 border-l border-white/10">$24.900</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="text-center space-y-2">
-                                        <p className="font-black text-sm uppercase tracking-widest">QR del Menú Digital</p>
-                                        <p className="text-[10px] text-[#618972]">Descarga este código e imprímelo para tus mesas.</p>
+                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center text-center p-6">
+                                        <p className="font-black text-xs">Así se ve tu negocio en el móvil del cliente</p>
                                     </div>
-                                    <Button
-                                        variant="outline"
-                                        className="w-full h-12 rounded-2xl border-[#22C55E] text-[#22C55E] font-black gap-2 hover:bg-[#22C55E]/5"
-                                        onClick={() => {
-                                            const svg = document.querySelector("#qr-menu-container svg");
-                                            const svgData = new XMLSerializer().serializeToString(svg);
-                                            const canvas = document.createElement("canvas");
-                                            const ctx = canvas.getContext("2d");
-                                            const img = new Image();
-                                            img.onload = () => {
-                                                canvas.width = img.width;
-                                                canvas.height = img.height;
-                                                ctx.drawImage(img, 0, 0);
-                                                const pngFile = canvas.toDataURL("image/png");
-                                                const downloadLink = document.createElement("a");
-                                                downloadLink.download = `QR-Menu-${slug}.png`;
-                                                downloadLink.href = pngFile;
-                                                downloadLink.click();
-                                            };
-                                            img.src = "data:image/svg+xml;base64," + btoa(svgData);
-                                        }}
-                                    >
-                                        <Download className="w-4 h-4" />
-                                        DESCARGAR QR PNG
-                                    </Button>
                                 </div>
-                            </CardContent>
+                            </div>
                         </Card>
+                    </TabsContent>
 
-                        {/* Canal 2: Seguimiento de Pedidos */}
+                    {/* BOT CONFIG TAB */}
+                    <TabsContent value="ai" className="space-y-6 outline-none">
                         <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                            <CardHeader className="pt-10 px-10 pb-4">
-                                <div className="flex items-center gap-4 mb-2">
-                                    <div className="size-12 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
-                                        <Clock className="w-6 h-6" />
+                            <CardHeader className="pt-8 px-6 md:pt-10 md:px-10 pb-4 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0 bg-white">
+                                <div className="text-center md:text-left">
+                                    <div className="flex flex-col md:flex-row items-center gap-2 mb-2 justify-center md:justify-start">
+                                        <div className="p-2 bg-[#22C55E]/10 rounded-xl">
+                                            <Sparkles className="w-5 h-5 text-[#22C55E]" />
+                                        </div>
+                                        <CardTitle className="text-xl md:text-2xl font-black text-[#111814]">Configuración del Bot IA</CardTitle>
                                     </div>
-                                    <div>
-                                        <CardTitle className="text-2xl font-black tracking-tight">Seguimiento Real-Time</CardTitle>
-                                        <CardDescription>Donde tus clientes ven el estado de sus pedidos.</CardDescription>
-                                    </div>
+                                    <CardDescription className="text-xs md:text-sm text-center md:text-left">Personaliza cómo tu asistente responde por WhatsApp.</CardDescription>
+                                </div>
+
+                                <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-2xl border border-gray-100 w-full md:w-auto justify-between md:justify-start">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-[#618972]">Estado del Bot</span>
+                                    <Switch
+                                        checked={businessData.ai_habilitado}
+                                        onCheckedChange={(val) => setBusinessData({ ...businessData, ai_habilitado: val })}
+                                        className="data-[state=checked]:bg-[#22C55E]"
+                                    />
                                 </div>
                             </CardHeader>
-                            <CardContent className="px-10 pb-10 space-y-8">
-                                <div className="space-y-4">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#618972]">Enlace de Seguimiento (Mis Pedidos)</Label>
-                                    <div className="flex gap-2">
-                                        <Input
-                                            readOnly
-                                            value={`${window.location.origin}/${slug}/mis-pedidos`}
-                                            className="h-14 rounded-2xl bg-gray-50 border-gray-100 font-mono text-xs pr-12"
+
+                            <CardContent className="px-6 md:px-10 pb-8 md:pb-10 space-y-8">
+                                <div className="grid grid-cols-1 gap-8 max-w-xl mx-auto">
+                                    {/* Personalidad */}
+                                    <div className="space-y-3 text-center">
+                                        <Label className="text-xs font-black uppercase tracking-widest text-[#111814]">Personalidad del Bot</Label>
+                                        <Select
+                                            value={businessData.ai_personalidad}
+                                            onValueChange={(val) => setBusinessData({ ...businessData, ai_personalidad: val })}
+                                        >
+                                            <SelectTrigger className="h-11 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium text-xs text-center justify-center">
+                                                <SelectValue placeholder="Selecciona una personalidad" />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-2xl border-gray-100 text-xs font-medium">
+                                                <SelectItem value="Amigable y cercano (Recomendado)">Amigable y cercano (Recomendado)</SelectItem>
+                                                <SelectItem value="Formal y profesional">Formal y profesional</SelectItem>
+                                                <SelectItem value="Divertido y entusiasta">Divertido y entusiasta</SelectItem>
+                                                <SelectItem value="Elegante y sofisticado">Elegante y sofisticado</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <p className="text-[10px] text-[#618972] font-medium italic">Define el tono de voz que usará el bot.</p>
+                                    </div>
+
+                                    {/* Saludo */}
+                                    <div className="space-y-3 text-center">
+                                        <Label className="text-xs font-black uppercase tracking-widest text-[#111814]">Saludo Automático</Label>
+                                        <Textarea
+                                            value={businessData.ai_saludo || ''}
+                                            onChange={(e) => setBusinessData({ ...businessData, ai_saludo: e.target.value })}
+                                            placeholder="¡Hola! Soy el asistente de su negocio 🍕 ¿En qué puedo ayudarte hoy?"
+                                            className="min-h-[80px] rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium leading-relaxed text-xs text-center placeholder:text-center"
                                         />
-                                        <Button
-                                            variant="outline"
-                                            size="icon"
-                                            className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#22C55E]/5 hover:text-[#22C55E] transition-all"
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(`${window.location.origin}/${slug}/mis-pedidos`);
-                                                toast.success("Enlace de seguimiento copiado");
-                                            }}
-                                        >
-                                            <Copy className="w-5 h-5" />
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            size="icon"
-                                            className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#22C55E]/5 hover:text-[#22C55E] transition-all"
-                                            onClick={() => window.open(`/${slug}/mis-pedidos`, '_blank')}
-                                        >
-                                            <ExternalLink className="w-5 h-5" />
-                                        </Button>
+                                        <p className="text-[10px] text-[#618972] font-medium italic">Este mensaje se enviará al iniciar.</p>
+                                    </div>
+
+                                    {/* Conocimiento */}
+                                    <div className="space-y-3 text-center">
+                                        <div className="flex flex-col items-center gap-2">
+                                            <Label className="text-xs font-black uppercase tracking-widest text-[#111814]">Conocimiento de la IA</Label>
+                                            <span className="text-[9px] font-black text-[#22C55E] uppercase bg-[#22C55E]/10 px-2 py-0.5 rounded-full">Mejora la Precisión</span>
+                                        </div>
+                                        <Textarea
+                                            value={businessData.ai_conocimiento || ''}
+                                            onChange={(e) => setBusinessData({ ...businessData, ai_conocimiento: e.target.value })}
+                                            placeholder="Describe detalles únicos de tu negocio, políticas, especialidades o curiosidades..."
+                                            className="min-h-[120px] rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium leading-relaxed text-xs p-4"
+                                        />
+                                        <p className="text-[10px] text-[#618972] font-medium italic">Describe detalles únicos para que la IA los use.</p>
                                     </div>
                                 </div>
 
-                                <div className="p-8 bg-gray-50 rounded-[2rem] border border-dashed border-gray-200 flex flex-col items-center gap-6">
-                                    <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100" id="qr-tracking-container">
-                                        <QRCodeSVG
-                                            value={`${window.location.origin}/${slug}/mis-pedidos`}
-                                            size={200}
-                                            level="H"
-                                            includeMargin={true}
-                                            imageSettings={{
-                                                src: businessData.logo_url || "/favicon.svg",
-                                                x: undefined,
-                                                y: undefined,
-                                                height: 40,
-                                                width: 40,
-                                                excavate: true,
-                                            }}
-                                        />
+                                {/* Footer / Actions */}
+                                <div className="pt-6 border-t border-gray-100 flex flex-col items-center gap-6">
+                                    <div className="flex gap-8 justify-center w-full">
+                                        <div className="flex flex-col items-center gap-2">
+                                            <div className="size-10 rounded-xl bg-[#22C55E]/10 flex items-center justify-center">
+                                                <Check className="w-5 h-5 text-[#22C55E]" />
+                                            </div>
+                                            <span className="text-[9px] font-bold text-[#618972]">Bot Activo</span>
+                                        </div>
+                                        <div className="flex flex-col items-center gap-2">
+                                            <div className="size-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                                                <Globe className="w-5 h-5 text-blue-500" />
+                                            </div>
+                                            <span className="text-[9px] font-bold text-[#618972]">Multilingüe</span>
+                                        </div>
                                     </div>
-                                    <div className="text-center space-y-2">
-                                        <p className="font-black text-sm uppercase tracking-widest">QR de Seguimiento</p>
-                                        <p className="text-[10px] text-[#618972]">Útil para que el cliente escanee y vea sus últimos pedidos.</p>
-                                    </div>
+
                                     <Button
-                                        variant="outline"
-                                        className="w-full h-12 rounded-2xl border-[#22C55E] text-[#22C55E] font-black gap-2 hover:bg-[#22C55E]/5"
-                                        onClick={() => {
-                                            const svg = document.querySelector("#qr-tracking-container svg");
-                                            const svgData = new XMLSerializer().serializeToString(svg);
-                                            const canvas = document.createElement("canvas");
-                                            const ctx = canvas.getContext("2d");
-                                            const img = new Image();
-                                            img.onload = () => {
-                                                canvas.width = img.width;
-                                                canvas.height = img.height;
-                                                ctx.drawImage(img, 0, 0);
-                                                const pngFile = canvas.toDataURL("image/png");
-                                                const downloadLink = document.createElement("a");
-                                                downloadLink.download = `QR-Tracking-${slug}.png`;
-                                                downloadLink.href = pngFile;
-                                                downloadLink.click();
-                                            };
-                                            img.src = "data:image/svg+xml;base64," + btoa(svgData);
-                                        }}
+                                        onClick={handleSaveBusiness}
+                                        disabled={saving}
+                                        className={`${getButtonStyle(hasChanges(), "small")} w-full md:w-auto justify-center h-11 px-8 text-[10px]`}
                                     >
-                                        <Download className="w-4 h-4" />
-                                        DESCARGAR QR PNG
+                                        {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" /> : <Save className="w-3.5 h-3.5 mr-2" />}
+                                        GUARDAR CONFIGURACIÓN
                                     </Button>
                                 </div>
                             </CardContent>
                         </Card>
-                    </div>
+                    </TabsContent>
+                </Tabs>
 
-                    {/* Preview Section */}
-                    <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-[#111814] text-white">
-                        <div className="p-10 flex flex-col md:flex-row items-center gap-10">
-                            <div className="space-y-6 flex-1">
-                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E] text-[10px] font-black uppercase tracking-widest">
-                                    <Sparkles className="w-3 h-3" /> Tip Pro
-                                </div>
-                                <h3 className="text-3xl font-black tracking-tighter leading-none">Tu menú vive en el bolsillo de tu cliente.</h3>
-                                <p className="text-gray-400 font-medium leading-relaxed">
-                                    Aprovecha el enlace directo para enviarlo por WhatsApp al confirmar un pedido,
-                                    o imprimir los códigos QR para que tus comensales en mesa puedan pedir sin esperas.
-                                </p>
-                                <div className="flex gap-4">
-                                    <Button
-                                        className="bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-black rounded-2xl h-12 px-8 uppercase text-[10px] tracking-widest"
-                                        onClick={() => window.open(`/${slug}/menu-completo`, '_blank')}
-                                    >
-                                        Ver mi Catálogo Digital
-                                    </Button>
-                                </div>
-                            </div>
-                            <div className="w-full md:w-64 aspect-[9/18] bg-white rounded-[2.5rem] border-[8px] border-gray-800 shadow-2xl relative overflow-hidden group">
-                                <div className="absolute inset-0 bg-[#f6f8f7]">
-                                    {/* Mockup content */}
-                                    <div className="h-16 bg-[#22C55E] px-4 pt-6 pb-2 shadow-sm rounded-b-[1.5rem] relative z-10 flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <div className="h-8 w-8 bg-white rounded-full p-0.5 shadow-sm flex items-center justify-center overflow-hidden">
-                                                <img src={businessData.logo_url || "/favicon.svg"} className="size-full object-cover" />
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="text-[10px] font-black text-[#111814] leading-tight">Don Jediondo</span>
-                                                <span className="text-[8px] font-medium text-[#111814]/70 leading-tight">Abierto • 20-30 min</span>
-                                            </div>
-                                        </div>
-                                        <div className="size-8 bg-white/20 rounded-full flex items-center justify-center text-[#111814]">
-                                            <Search className="w-3 h-3" />
-                                        </div>
-                                    </div>
+                {/* PRODUCT MODAL */}
+                <Dialog open={isProductModalOpen} onOpenChange={setIsProductModalOpen}>
+                    <DialogContent className="rounded-[2.5rem] max-w-2xl p-0 overflow-hidden border-none" aria-describedby="product-modal-description">
+                        <DialogHeader className="p-10 pb-6 bg-gray-50 shrink-0">
+                            <DialogTitle className="text-3xl font-black tracking-tighter">
+                                {editingProduct ? 'Editar Producto' : 'Nuevo Producto'}
+                            </DialogTitle>
+                            <DialogDescription id="product-modal-description">
+                                Completa los detalles para actualizar tu catálogo en tiempo real.
+                            </DialogDescription>
+                        </DialogHeader>
 
-                                    <div className="p-3 space-y-3 overflow-hidden bg-[#f8fcf9] h-full">
-                                        {/* Categories */}
-                                        <div className="flex gap-2 mb-2 overflow-x-auto pb-1 no-scrollbar">
-                                            <div className="px-3 py-1 bg-[#111814] rounded-full flex items-center shadow-lg shadow-black/10">
-                                                <span className="text-[9px] font-bold text-white whitespace-nowrap">Todos</span>
-                                            </div>
-                                            <div className="px-3 py-1 bg-white border border-gray-100 rounded-full flex items-center">
-                                                <span className="text-[9px] font-bold text-gray-500 whitespace-nowrap">Burgers</span>
-                                            </div>
-                                            <div className="px-3 py-1 bg-white border border-gray-100 rounded-full flex items-center">
-                                                <span className="text-[9px] font-bold text-gray-500 whitespace-nowrap">Pizzas</span>
-                                            </div>
-                                            <div className="px-3 py-1 bg-white border border-gray-100 rounded-full flex items-center">
-                                                <span className="text-[9px] font-bold text-gray-500 whitespace-nowrap">Bebidas</span>
-                                            </div>
-                                        </div>
-
-                                        {/* Product 1 */}
-                                        <div className="bg-white p-2.5 rounded-2xl shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-gray-50 flex gap-3 items-center">
-                                            <div className="size-14 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0 shadow-sm relative group">
-                                                <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&q=80" className="w-full h-full object-cover" />
-                                            </div>
-                                            <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                                <h4 className="text-[10px] font-black text-gray-900 leading-tight truncate">Hamburguesa Doble</h4>
-                                                <p className="text-[8px] text-gray-500 leading-tight line-clamp-1 mt-0.5">Queso cheddar, tocineta, salsas...</p>
-                                                <p className="text-[10px] font-black text-[#22C55E] mt-1">$24.900</p>
-                                            </div>
-                                            <div className="size-7 bg-[#22C55E] rounded-full flex items-center justify-center text-[#111814] shadow-lg shadow-[#22C55E]/20 active:scale-90 transition-transform">
-                                                <Plus className="w-3.5 h-3.5" />
-                                            </div>
-                                        </div>
-
-                                        {/* Product 2 */}
-                                        <div className="bg-white p-2.5 rounded-2xl shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-gray-50 flex gap-3 items-center">
-                                            <div className="size-14 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0 shadow-sm">
-                                                <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&q=80" className="w-full h-full object-cover" />
-                                            </div>
-                                            <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                                <h4 className="text-[10px] font-black text-gray-900 leading-tight truncate">Pizza Pepperoni</h4>
-                                                <p className="text-[8px] text-gray-500 leading-tight line-clamp-1 mt-0.5">Masa madre, queso mozzarella...</p>
-                                                <p className="text-[10px] font-black text-[#22C55E] mt-1">$32.000</p>
-                                            </div>
-                                            <div className="size-7 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center hover:bg-[#22C55E] hover:text-[#111814] transition-colors">
-                                                <Plus className="w-3.5 h-3.5" />
-                                            </div>
-                                        </div>
-
-                                        {/* Product 3 */}
-                                        <div className="bg-white p-2.5 rounded-2xl shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-gray-50 flex gap-3 items-center opacity-80">
-                                            <div className="size-14 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0 shadow-sm">
-                                                <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&q=80" className="w-full h-full object-cover" />
-                                            </div>
-                                            <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                                <h4 className="text-[10px] font-black text-gray-900 leading-tight truncate">Ensalada César</h4>
-                                                <p className="text-[8px] text-gray-500 leading-tight line-clamp-1 mt-0.5">Pollo grillé, crutones, parmesano...</p>
-                                                <p className="text-[10px] font-black text-[#22C55E] mt-1">$18.500</p>
-                                            </div>
-                                            <div className="size-7 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center">
-                                                <Plus className="w-3.5 h-3.5" />
-                                            </div>
-                                        </div>
-
-                                        {/* Floating Cart Pill */}
-                                        <div className="mx-auto w-max bg-[#111814] rounded-full px-4 py-2 mt-4 flex items-center gap-2 shadow-xl">
-                                            <div className="size-4 rounded-full bg-[#22C55E] text-[#111814] text-[8px] font-black flex items-center justify-center">1</div>
-                                            <span className="text-[9px] font-bold text-white">Ver pedido</span>
-                                            <span className="text-[9px] font-bold text-white/60 pl-2 border-l border-white/10">$24.900</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center text-center p-6">
-                                    <p className="font-black text-xs">Así se ve tu negocio en el móvil del cliente</p>
-                                </div>
-                            </div>
-                        </div>
-                    </Card>
-                </TabsContent>
-
-                {/* BOT CONFIG TAB */}
-                <TabsContent value="ai" className="space-y-6 outline-none">
-                    <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                        <CardHeader className="pt-8 px-6 md:pt-10 md:px-10 pb-4 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0 bg-white">
-                            <div className="text-center md:text-left">
-                                <div className="flex flex-col md:flex-row items-center gap-2 mb-2 justify-center md:justify-start">
-                                    <div className="p-2 bg-[#22C55E]/10 rounded-xl">
-                                        <Sparkles className="w-5 h-5 text-[#22C55E]" />
-                                    </div>
-                                    <CardTitle className="text-xl md:text-2xl font-black text-[#111814]">Configuración del Bot IA</CardTitle>
-                                </div>
-                                <CardDescription className="text-xs md:text-sm text-center md:text-left">Personaliza cómo tu asistente responde por WhatsApp.</CardDescription>
-                            </div>
-
-                            <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-2xl border border-gray-100 w-full md:w-auto justify-between md:justify-start">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-[#618972]">Estado del Bot</span>
-                                <Switch
-                                    checked={businessData.ai_habilitado}
-                                    onCheckedChange={(val) => setBusinessData({ ...businessData, ai_habilitado: val })}
-                                    className="data-[state=checked]:bg-[#22C55E]"
-                                />
-                            </div>
-                        </CardHeader>
-
-                        <CardContent className="px-6 md:px-10 pb-8 md:pb-10 space-y-8">
-                            <div className="grid grid-cols-1 gap-8 max-w-xl mx-auto">
-                                {/* Personalidad */}
-                                <div className="space-y-3 text-center">
-                                    <Label className="text-xs font-black uppercase tracking-widest text-[#111814]">Personalidad del Bot</Label>
-                                    <Select
-                                        value={businessData.ai_personalidad}
-                                        onValueChange={(val) => setBusinessData({ ...businessData, ai_personalidad: val })}
-                                    >
-                                        <SelectTrigger className="h-11 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium text-xs text-center justify-center">
-                                            <SelectValue placeholder="Selecciona una personalidad" />
-                                        </SelectTrigger>
-                                        <SelectContent className="rounded-2xl border-gray-100 text-xs font-medium">
-                                            <SelectItem value="Amigable y cercano (Recomendado)">Amigable y cercano (Recomendado)</SelectItem>
-                                            <SelectItem value="Formal y profesional">Formal y profesional</SelectItem>
-                                            <SelectItem value="Divertido y entusiasta">Divertido y entusiasta</SelectItem>
-                                            <SelectItem value="Elegante y sofisticado">Elegante y sofisticado</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <p className="text-[10px] text-[#618972] font-medium italic">Define el tono de voz que usará el bot.</p>
-                                </div>
-
-                                {/* Saludo */}
-                                <div className="space-y-3 text-center">
-                                    <Label className="text-xs font-black uppercase tracking-widest text-[#111814]">Saludo Automático</Label>
-                                    <Textarea
-                                        value={businessData.ai_saludo || ''}
-                                        onChange={(e) => setBusinessData({ ...businessData, ai_saludo: e.target.value })}
-                                        placeholder="¡Hola! Soy el asistente de su negocio 🍕 ¿En qué puedo ayudarte hoy?"
-                                        className="min-h-[80px] rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium leading-relaxed text-xs text-center placeholder:text-center"
-                                    />
-                                    <p className="text-[10px] text-[#618972] font-medium italic">Este mensaje se enviará al iniciar.</p>
-                                </div>
-
-                                {/* Conocimiento */}
-                                <div className="space-y-3 text-center">
-                                    <div className="flex flex-col items-center gap-2">
-                                        <Label className="text-xs font-black uppercase tracking-widest text-[#111814]">Conocimiento de la IA</Label>
-                                        <span className="text-[9px] font-black text-[#22C55E] uppercase bg-[#22C55E]/10 px-2 py-0.5 rounded-full">Mejora la Precisión</span>
-                                    </div>
-                                    <Textarea
-                                        value={businessData.ai_conocimiento || ''}
-                                        onChange={(e) => setBusinessData({ ...businessData, ai_conocimiento: e.target.value })}
-                                        placeholder="Describe detalles únicos de tu negocio, políticas, especialidades o curiosidades..."
-                                        className="min-h-[120px] rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium leading-relaxed text-xs p-4"
-                                    />
-                                    <p className="text-[10px] text-[#618972] font-medium italic">Describe detalles únicos para que la IA los use.</p>
-                                </div>
-                            </div>
-
-                            {/* Footer / Actions */}
-                            <div className="pt-6 border-t border-gray-100 flex flex-col items-center gap-6">
-                                <div className="flex gap-8 justify-center w-full">
-                                    <div className="flex flex-col items-center gap-2">
-                                        <div className="size-10 rounded-xl bg-[#22C55E]/10 flex items-center justify-center">
-                                            <Check className="w-5 h-5 text-[#22C55E]" />
-                                        </div>
-                                        <span className="text-[9px] font-bold text-[#618972]">Bot Activo</span>
-                                    </div>
-                                    <div className="flex flex-col items-center gap-2">
-                                        <div className="size-10 rounded-xl bg-blue-50 flex items-center justify-center">
-                                            <Globe className="w-5 h-5 text-blue-500" />
-                                        </div>
-                                        <span className="text-[9px] font-bold text-[#618972]">Multilingüe</span>
-                                    </div>
-                                </div>
-
-                                <Button
-                                    onClick={handleSaveBusiness}
-                                    disabled={saving}
-                                    className={`${getButtonStyle(hasChanges(), "small")} w-full md:w-auto justify-center h-11 px-8 text-[10px]`}
-                                >
-                                    {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" /> : <Save className="w-3.5 h-3.5 mr-2" />}
-                                    GUARDAR CONFIGURACIÓN
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-            </Tabs>
-
-            {/* PRODUCT MODAL */}
-            <Dialog open={isProductModalOpen} onOpenChange={setIsProductModalOpen}>
-                <DialogContent className="rounded-[2.5rem] max-w-2xl p-0 overflow-hidden border-none" aria-describedby="product-modal-description">
-                    <DialogHeader className="p-10 pb-6 bg-gray-50 shrink-0">
-                        <DialogTitle className="text-3xl font-black tracking-tighter">
-                            {editingProduct ? 'Editar Producto' : 'Nuevo Producto'}
-                        </DialogTitle>
-                        <DialogDescription id="product-modal-description">
-                            Completa los detalles para actualizar tu catálogo en tiempo real.
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    <div className="max-h-[60vh] overflow-y-auto custom-scrollbar">
-                        <form onSubmit={handleProductSubmit} className="p-10 pt-6 space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <Label className="font-bold">Nombre del Producto</Label>
-                                    <Input
-                                        value={productForm.nombre}
-                                        onChange={e => setProductForm({ ...productForm, nombre: e.target.value })}
-                                        required
-                                        className="h-12 rounded-2xl bg-gray-50 border-gray-100"
-                                        placeholder="Ej: Hamburguesa Suprema"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label className="font-bold text-[#111814]">Precio (COP)</Label>
-                                    <Input
-                                        type="text"
-                                        value={formatPrice(productForm.precio)}
-                                        onChange={e => {
-                                            const raw = e.target.value.replace(/\D/g, '');
-                                            setProductForm({ ...productForm, precio: raw });
-                                        }}
-                                        required
-                                        className="h-12 rounded-2xl bg-gray-50 border-gray-100 font-bold text-[#111814]"
-                                        placeholder="25.000"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <Label className="font-bold">Categoría</Label>
-                                    <Select
-                                        value={productForm.categoria}
-                                        onValueChange={val => setProductForm({ ...productForm, categoria: val })}
-                                    >
-                                        <SelectTrigger className="h-12 rounded-2xl bg-gray-50 border-gray-100">
-                                            <SelectValue placeholder="Seleccionar sección..." />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {categories.map((cat, idx) => {
-                                                const catName = typeof cat === 'object' ? cat.nombre : cat;
-                                                return <SelectItem key={`${catName}-${idx}`} value={catName}>{catName}</SelectItem>;
-                                            })}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label className="font-bold">Etiqueta (Opcional)</Label>
-                                    <Select
-                                        value={productForm.etiqueta}
-                                        onValueChange={val => setProductForm({ ...productForm, etiqueta: val })}
-                                    >
-                                        <SelectTrigger className="h-12 rounded-2xl bg-gray-100/50 border-gray-100 border-dashed">
-                                            <SelectValue placeholder="Sin etiqueta" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="none">Ninguna</SelectItem>
-                                            {tags.map(tag => (
-                                                <SelectItem key={tag} value={tag}>{tag}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label className="font-bold">Descripción / Ingredientes</Label>
-                                <Textarea
-                                    value={productForm.descripcion}
-                                    onChange={e => setProductForm({ ...productForm, descripcion: e.target.value })}
-                                    className="rounded-2xl bg-gray-50 border-gray-100 min-h-[100px]"
-                                    placeholder="Detalla lo que incluye el plato..."
-                                />
-                            </div>
-
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <Label className="font-bold">Imagen del Producto</Label>
-                                    <div className="flex items-center gap-2">
-                                        <input
-                                            type="file"
-                                            id="product-image-upload"
-                                            className="hidden"
-                                            accept="image/*"
-                                            onChange={handleImageUpload}
-                                            disabled={uploadingProductImage}
+                        <div className="max-h-[60vh] overflow-y-auto custom-scrollbar">
+                            <form onSubmit={handleProductSubmit} className="p-10 pt-6 space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <Label className="font-bold">Nombre del Producto</Label>
+                                        <Input
+                                            value={productForm.nombre}
+                                            onChange={e => setProductForm({ ...productForm, nombre: e.target.value })}
+                                            required
+                                            className="h-12 rounded-2xl bg-gray-50 border-gray-100"
+                                            placeholder="Ej: Hamburguesa Suprema"
                                         />
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="sm"
-                                            className="h-8 rounded-xl border-[#22C55E]/20 text-[#22C55E] hover:bg-[#22C55E]/5 font-bold gap-2 text-[10px]"
-                                            onClick={() => document.getElementById('product-image-upload').click()}
-                                            disabled={uploadingProductImage}
-                                        >
-                                            {uploadingProductImage ? (
-                                                <Loader2 className="w-3 h-3 animate-spin" />
-                                            ) : (
-                                                <Upload className="w-3 h-3" />
-                                            )}
-                                            {uploadingProductImage ? 'SUBIENDO...' : 'SUBIR'}
-                                        </Button>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="font-bold text-[#111814]">Precio (COP)</Label>
+                                        <Input
+                                            type="text"
+                                            value={formatPrice(productForm.precio)}
+                                            onChange={e => {
+                                                const raw = e.target.value.replace(/\D/g, '');
+                                                setProductForm({ ...productForm, precio: raw });
+                                            }}
+                                            required
+                                            className="h-12 rounded-2xl bg-gray-50 border-gray-100 font-bold text-[#111814]"
+                                            placeholder="25.000"
+                                        />
+                                    </div>
+                                </div>
 
-                                        {productForm.imagen && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <Label className="font-bold">Categoría</Label>
+                                        <Select
+                                            value={productForm.categoria}
+                                            onValueChange={val => setProductForm({ ...productForm, categoria: val })}
+                                        >
+                                            <SelectTrigger className="h-12 rounded-2xl bg-gray-50 border-gray-100">
+                                                <SelectValue placeholder="Seleccionar sección..." />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {categories.map((cat, idx) => {
+                                                    const catName = typeof cat === 'object' ? cat.nombre : cat;
+                                                    return <SelectItem key={`${catName}-${idx}`} value={catName}>{catName}</SelectItem>;
+                                                })}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="font-bold">Etiqueta (Opcional)</Label>
+                                        <Select
+                                            value={productForm.etiqueta}
+                                            onValueChange={val => setProductForm({ ...productForm, etiqueta: val })}
+                                        >
+                                            <SelectTrigger className="h-12 rounded-2xl bg-gray-100/50 border-gray-100 border-dashed">
+                                                <SelectValue placeholder="Sin etiqueta" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="none">Ninguna</SelectItem>
+                                                {tags.map(tag => (
+                                                    <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="font-bold">Descripción / Ingredientes</Label>
+                                    <Textarea
+                                        value={productForm.descripcion}
+                                        onChange={e => setProductForm({ ...productForm, descripcion: e.target.value })}
+                                        className="rounded-2xl bg-gray-50 border-gray-100 min-h-[100px]"
+                                        placeholder="Detalla lo que incluye el plato..."
+                                    />
+                                </div>
+
+                                <div className="space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <Label className="font-bold">Imagen del Producto</Label>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="file"
+                                                id="product-image-upload"
+                                                className="hidden"
+                                                accept="image/*"
+                                                onChange={handleImageUpload}
+                                                disabled={uploadingProductImage}
+                                            />
                                             <Button
                                                 type="button"
                                                 variant="outline"
                                                 size="sm"
-                                                onClick={() => setProductForm({ ...productForm, imagen: '' })}
-                                                className="h-8 rounded-xl border-red-100 text-red-500 hover:bg-red-50 font-bold gap-2 text-[10px]"
+                                                className="h-8 rounded-xl border-[#22C55E]/20 text-[#22C55E] hover:bg-[#22C55E]/5 font-bold gap-2 text-[10px]"
+                                                onClick={() => document.getElementById('product-image-upload').click()}
+                                                disabled={uploadingProductImage}
                                             >
-                                                <Trash2 className="w-3 h-3" />
-                                                ELIMINAR
+                                                {uploadingProductImage ? (
+                                                    <Loader2 className="w-3 h-3 animate-spin" />
+                                                ) : (
+                                                    <Upload className="w-3 h-3" />
+                                                )}
+                                                {uploadingProductImage ? 'SUBIENDO...' : 'SUBIR'}
                                             </Button>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="flex gap-4 items-center">
-                                    <div className="flex-1 relative">
-                                        <Input
-                                            value={productForm.imagen}
-                                            onChange={e => setProductForm({ ...productForm, imagen: e.target.value })}
-                                            className="h-12 rounded-2xl bg-gray-50 border-gray-100 text-xs font-mono pr-10"
-                                            placeholder="https://images.unsplash... o sube una imagen"
-                                        />
-                                        <ImageIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                                    </div>
-                                    <div className="size-12 rounded-xl border border-gray-100 overflow-hidden bg-gray-50 shrink-0 shadow-sm flex items-center justify-center">
-                                        {productForm.imagen ? (
-                                            <img src={productForm.imagen} className="w-full h-full object-cover" />
-                                        ) : (
-                                            <ImageIcon className="w-5 h-5 text-gray-200" />
-                                        )}
-                                    </div>
-                                </div>
-                                <p className="text-[10px] text-[#618972] italic px-1">Sugerencia: Usa imágenes de 800x600px para mejor rendimiento.</p>
-                            </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-2">
-                                <div className="space-y-2">
-                                    <Label className="font-bold flex items-center gap-1">
-                                        Oferta (%)
-                                    </Label>
-                                    <div className="relative">
-                                        <Input
-                                            type="number"
-                                            value={productForm.oferta_porcentaje}
-                                            onChange={e => setProductForm({ ...productForm, oferta_porcentaje: e.target.value })}
-                                            className="h-12 rounded-2xl bg-gray-50 border-gray-100 pr-10"
-                                            placeholder="Ej: 15"
-                                            min="0"
-                                            max="100"
-                                        />
-                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 font-black text-[#618972]">%</div>
+                                            {productForm.imagen && (
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => setProductForm({ ...productForm, imagen: '' })}
+                                                    className="h-8 rounded-xl border-red-100 text-red-500 hover:bg-red-50 font-bold gap-2 text-[10px]"
+                                                >
+                                                    <Trash2 className="w-3 h-3" />
+                                                    ELIMINAR
+                                                </Button>
+                                            )}
+                                        </div>
                                     </div>
+                                    <div className="flex gap-4 items-center">
+                                        <div className="flex-1 relative">
+                                            <Input
+                                                value={productForm.imagen}
+                                                onChange={e => setProductForm({ ...productForm, imagen: e.target.value })}
+                                                className="h-12 rounded-2xl bg-gray-50 border-gray-100 text-xs font-mono pr-10"
+                                                placeholder="https://images.unsplash... o sube una imagen"
+                                            />
+                                            <ImageIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                                        </div>
+                                        <div className="size-12 rounded-xl border border-gray-100 overflow-hidden bg-gray-50 shrink-0 shadow-sm flex items-center justify-center">
+                                            {productForm.imagen ? (
+                                                <img src={productForm.imagen} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <ImageIcon className="w-5 h-5 text-gray-200" />
+                                            )}
+                                        </div>
+                                    </div>
+                                    <p className="text-[10px] text-[#618972] italic px-1">Sugerencia: Usa imágenes de 800x600px para mejor rendimiento.</p>
                                 </div>
-                                <div className="flex flex-col justify-center gap-3">
-                                    <div className="flex items-center gap-3 mt-4">
-                                        <Switch
-                                            checked={productForm.destacado}
-                                            onCheckedChange={checked => setProductForm({ ...productForm, destacado: checked })}
-                                            className="data-[state=checked]:bg-[#22C55E]"
-                                        />
-                                        <Label className="font-bold cursor-pointer" onClick={() => setProductForm({ ...productForm, destacado: !productForm.destacado })}>
-                                            Marcar como Producto Destacado
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-2">
+                                    <div className="space-y-2">
+                                        <Label className="font-bold flex items-center gap-1">
+                                            Oferta (%)
                                         </Label>
+                                        <div className="relative">
+                                            <Input
+                                                type="number"
+                                                value={productForm.oferta_porcentaje}
+                                                onChange={e => setProductForm({ ...productForm, oferta_porcentaje: e.target.value })}
+                                                className="h-12 rounded-2xl bg-gray-50 border-gray-100 pr-10"
+                                                placeholder="Ej: 15"
+                                                min="0"
+                                                max="100"
+                                            />
+                                            <div className="absolute right-4 top-1/2 -translate-y-1/2 font-black text-[#618972]">%</div>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col justify-center gap-3">
+                                        <div className="flex items-center gap-3 mt-4">
+                                            <Switch
+                                                checked={productForm.destacado}
+                                                onCheckedChange={checked => setProductForm({ ...productForm, destacado: checked })}
+                                                className="data-[state=checked]:bg-[#22C55E]"
+                                            />
+                                            <Label className="font-bold cursor-pointer" onClick={() => setProductForm({ ...productForm, destacado: !productForm.destacado })}>
+                                                Marcar como Producto Destacado
+                                            </Label>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="flex items-center gap-4 py-2 border-t border-gray-50 pt-6">
-                                <Switch
-                                    checked={productForm.disponible}
-                                    onCheckedChange={checked => setProductForm({ ...productForm, disponible: checked })}
-                                    className="data-[state=checked]:bg-[#22C55E]"
-                                />
-                                <div>
-                                    <Label className="font-bold">Disponible para la venta</Label>
-                                    <p className="text-xs text-[#618972]">Si lo desactivas, aparecerá como "Agotado" en el menú.</p>
+                                <div className="flex items-center gap-4 py-2 border-t border-gray-50 pt-6">
+                                    <Switch
+                                        checked={productForm.disponible}
+                                        onCheckedChange={checked => setProductForm({ ...productForm, disponible: checked })}
+                                        className="data-[state=checked]:bg-[#22C55E]"
+                                    />
+                                    <div>
+                                        <Label className="font-bold">Disponible para la venta</Label>
+                                        <p className="text-xs text-[#618972]">Si lo desactivas, aparecerá como "Agotado" en el menú.</p>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="flex gap-4 pt-4 sticky bottom-0 bg-white/80 backdrop-blur-sm py-4 border-t mt-auto">
-                                <Button type="button" variant="ghost" className="flex-1 h-12 rounded-2xl font-bold" onClick={() => setIsProductModalOpen(false)}>Cancelar</Button>
-                                <Button type="submit" disabled={saving} className={getModalButtonStyle(hasProductChanges())}>
-                                    {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : editingProduct ? 'GUARDAR PRODUCTO' : 'CREAR PRODUCTO'}
-                                </Button>
-                            </div>
-                        </form>
-                    </div>
-                </DialogContent>
-            </Dialog>
+                                <div className="flex gap-4 pt-4 sticky bottom-0 bg-white/80 backdrop-blur-sm py-4 border-t mt-auto">
+                                    <Button type="button" variant="ghost" className="flex-1 h-12 rounded-2xl font-bold" onClick={() => setIsProductModalOpen(false)}>Cancelar</Button>
+                                    <Button type="submit" disabled={saving} className={getModalButtonStyle(hasProductChanges())}>
+                                        {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : editingProduct ? 'GUARDAR PRODUCTO' : 'CREAR PRODUCTO'}
+                                    </Button>
+                                </div>
+                            </form>
+                        </div>
+                    </DialogContent>
+                </Dialog>
 
-            {/* CATEGORY MODAL */}
-            <Dialog open={isCategoryModalOpen} onOpenChange={setIsCategoryModalOpen}>
-                <DialogContent className="rounded-[2.5rem] max-w-md border-none overflow-hidden max-h-[90vh] flex flex-col" aria-describedby="category-modal-description">
-                    <DialogHeader className="p-8 pb-4 shrink-0">
-                        <DialogTitle className="text-2xl font-black">{editingCategory ? 'Renombrar Categoría' : 'Nueva Categoría'}</DialogTitle>
-                        <DialogDescription id="category-modal-description">Las categorías ayudan a tus clientes a navegar el menú.</DialogDescription>
-                    </DialogHeader>
-                    <div className="overflow-y-auto custom-scrollbar">
-                        <form onSubmit={handleCategorySubmit} className="p-8 pt-4 space-y-6">
+                {/* CATEGORY MODAL */}
+                <Dialog open={isCategoryModalOpen} onOpenChange={setIsCategoryModalOpen}>
+                    <DialogContent className="rounded-[2.5rem] max-w-md border-none overflow-hidden max-h-[90vh] flex flex-col" aria-describedby="category-modal-description">
+                        <DialogHeader className="p-8 pb-4 shrink-0">
+                            <DialogTitle className="text-2xl font-black">{editingCategory ? 'Renombrar Categoría' : 'Nueva Categoría'}</DialogTitle>
+                            <DialogDescription id="category-modal-description">Las categorías ayudan a tus clientes a navegar el menú.</DialogDescription>
+                        </DialogHeader>
+                        <div className="overflow-y-auto custom-scrollbar">
+                            <form onSubmit={handleCategorySubmit} className="p-8 pt-4 space-y-6">
+                                <div className="space-y-2">
+                                    <Label className="font-bold">Nombre de la Categoría</Label>
+                                    <Input
+                                        value={categoryName}
+                                        onChange={e => setCategoryName(e.target.value)}
+                                        placeholder="Ej: Postres de Autor"
+                                        className="h-12 rounded-2xl bg-gray-50"
+                                        required
+                                    />
+                                    {editingCategory && (
+                                        <p className="text-[10px] text-orange-500 font-bold bg-orange-50 p-3 rounded-xl border border-orange-100">
+                                            Aviso: Al renombrar una categoría, todos los productos asociados se actualizarán automáticamente.
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-4">
+                                    <Label className="font-bold">Icono</Label>
+                                    <Tabs defaultValue="icons" className="w-full">
+                                        <TabsList className="grid w-full grid-cols-3 mb-4 h-11 p-1 bg-gray-100 rounded-xl">
+                                            <TabsTrigger value="icons" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm text-xs font-bold">Iconos</TabsTrigger>
+                                            <TabsTrigger value="emojis" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm text-xs font-bold">Emojis</TabsTrigger>
+                                            <TabsTrigger value="upload" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm text-xs font-bold">Subir</TabsTrigger>
+                                        </TabsList>
+
+                                        <TabsContent value="icons" className="mt-0">
+                                            <div className="grid grid-cols-6 gap-2 max-h-48 overflow-y-auto p-1">
+                                                {Object.entries(AvailableIcons).map(([name, Icon]) => (
+                                                    <button
+                                                        key={name}
+                                                        type="button"
+                                                        onClick={() => setCategoryIcon(name)}
+                                                        className={`p-2 rounded-xl border flex items-center justify-center transition-all ${categoryIcon === name
+                                                            ? 'bg-[#22C55E]/10 border-[#22C55E] text-[#22C55E] ring-2 ring-[#22C55E]/20'
+                                                            : 'bg-white border-gray-100 hover:border-gray-300 text-gray-500'
+                                                            }`}
+                                                    >
+                                                        <Icon className="w-5 h-5" />
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </TabsContent>
+
+                                        <TabsContent value="emojis" className="mt-0 space-y-3">
+                                            <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-2xl p-6 gap-4 bg-gray-50/50">
+                                                <Input
+                                                    value={(!AvailableIcons[categoryIcon] && !categoryIcon?.includes('/')) ? categoryIcon : ''}
+                                                    onChange={(e) => setCategoryIcon(e.target.value)}
+                                                    className="w-24 h-24 text-6xl text-center rounded-2xl border-gray-200 focus:border-[#22C55E] bg-white shadow-sm"
+                                                    placeholder="😁"
+                                                />
+                                                <p className="text-xs text-gray-500 text-center font-medium mt-2">
+                                                    Usa <span className="font-bold text-[#111814]">Tecla Windows</span> + <span className="font-bold text-[#111814]">Punto (.)</span> para abrir el panel de emojis
+                                                </p>
+                                            </div>
+                                        </TabsContent>
+
+                                        <TabsContent value="upload" className="mt-0 space-y-3">
+                                            <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-2xl p-6 gap-4 bg-gray-50/50 hover:bg-gray-50 transition-colors relative cursor-pointer group"
+                                                onClick={() => document.getElementById('cat-icon-upload').click()}>
+
+                                                <input
+                                                    type="file"
+                                                    id="cat-icon-upload"
+                                                    className="hidden"
+                                                    accept="image/*"
+                                                    onChange={handleCategoryIconUpload}
+                                                />
+
+                                                {categoryIcon?.includes('/') || categoryIcon?.includes('http') ? (
+                                                    <div className="relative">
+                                                        <img src={categoryIcon} alt="Icon Preview" className="w-20 h-20 object-contain" />
+                                                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 group-hover:opacity-100 rounded-lg transition-opacity">
+                                                            <Edit2 className="w-6 h-6" />
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex flex-col items-center gap-2 text-gray-400 group-hover:text-[#22C55E] transition-colors">
+                                                        <div className="p-4 bg-white rounded-full shadow-sm group-hover:shadow-md transition-all">
+                                                            <Upload className="w-6 h-6" />
+                                                        </div>
+                                                        <span className="text-xs font-bold uppercase tracking-wider">Subir Imagen</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <p className="text-[10px] text-center text-gray-400">Recomendado: Imágenes cuadradas, PNG transparente, máx 1MB.</p>
+                                        </TabsContent>
+                                    </Tabs>
+
+                                    {/* Preview of Selection */}
+                                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest flex-1">Vista Previa:</span>
+                                        <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
+                                            {(() => {
+                                                const isUrl = categoryIcon?.includes('/') || categoryIcon?.includes('http');
+                                                const isLucide = AvailableIcons[categoryIcon];
+                                                const IconComponent = isLucide ? AvailableIcons[categoryIcon] : Utensils;
+
+                                                if (isUrl) return <img src={categoryIcon} className="w-5 h-5 object-contain" />;
+                                                if (isLucide) return <IconComponent className="w-5 h-5 text-[#22C55E]" />;
+                                                return <span className="text-lg leading-none">{categoryIcon}</span>;
+                                            })()}
+                                            <span className="text-sm font-bold text-[#111814]">{categoryName || 'Nombre Categoría'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-4">
+                                    <Button type="button" variant="ghost" className="flex-1 h-12 rounded-2xl" onClick={() => setIsCategoryModalOpen(false)}>Cancelar</Button>
+                                    <Button type="submit" disabled={saving} className={getModalButtonStyle(categoryName !== originalCategoryName || (editingCategory && categoryIcon !== (typeof editingCategory === 'object' ? editingCategory.icono : 'Utensils')))}>
+                                        {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'GUARDAR SECCIÓN'}
+                                    </Button>
+                                </div>
+                            </form>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+
+                {/* TAG MODAL */}
+                <Dialog open={isTagModalOpen} onOpenChange={setIsTagModalOpen}>
+                    <DialogContent className="rounded-[2.5rem] max-w-md border-none overflow-hidden" aria-describedby="tag-modal-description">
+                        <DialogHeader className="p-8 pb-4">
+                            <DialogTitle className="text-2xl font-black">{editingTag ? 'Renombrar Etiqueta' : 'Nueva Etiqueta'}</DialogTitle>
+                            <DialogDescription id="tag-modal-description">Las etiquetas sirven para resaltar promociones o estados especiales.</DialogDescription>
+                        </DialogHeader>
+                        <form onSubmit={handleTagSubmit} className="p-8 pt-4 space-y-6">
                             <div className="space-y-2">
-                                <Label className="font-bold">Nombre de la Categoría</Label>
+                                <Label className="font-bold">Nombre de la Etiqueta</Label>
                                 <Input
-                                    value={categoryName}
-                                    onChange={e => setCategoryName(e.target.value)}
-                                    placeholder="Ej: Postres de Autor"
+                                    value={tagName}
+                                    onChange={e => setTagName(e.target.value)}
+                                    placeholder="Ej: Oferta, Nuevo, Recomendado"
                                     className="h-12 rounded-2xl bg-gray-50"
                                     required
                                 />
-                                {editingCategory && (
+                                {editingTag && (
                                     <p className="text-[10px] text-orange-500 font-bold bg-orange-50 p-3 rounded-xl border border-orange-100">
-                                        Aviso: Al renombrar una categoría, todos los productos asociados se actualizarán automáticamente.
+                                        Aviso: Al renombrar una etiqueta, todos los productos que la usen se actualizarán automáticamente.
                                     </p>
                                 )}
                             </div>
-
-                            <div className="space-y-4">
-                                <Label className="font-bold">Icono</Label>
-                                <Tabs defaultValue="icons" className="w-full">
-                                    <TabsList className="grid w-full grid-cols-3 mb-4 h-11 p-1 bg-gray-100 rounded-xl">
-                                        <TabsTrigger value="icons" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm text-xs font-bold">Iconos</TabsTrigger>
-                                        <TabsTrigger value="emojis" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm text-xs font-bold">Emojis</TabsTrigger>
-                                        <TabsTrigger value="upload" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm text-xs font-bold">Subir</TabsTrigger>
-                                    </TabsList>
-
-                                    <TabsContent value="icons" className="mt-0">
-                                        <div className="grid grid-cols-6 gap-2 max-h-48 overflow-y-auto p-1">
-                                            {Object.entries(AvailableIcons).map(([name, Icon]) => (
-                                                <button
-                                                    key={name}
-                                                    type="button"
-                                                    onClick={() => setCategoryIcon(name)}
-                                                    className={`p-2 rounded-xl border flex items-center justify-center transition-all ${categoryIcon === name
-                                                        ? 'bg-[#22C55E]/10 border-[#22C55E] text-[#22C55E] ring-2 ring-[#22C55E]/20'
-                                                        : 'bg-white border-gray-100 hover:border-gray-300 text-gray-500'
-                                                        }`}
-                                                >
-                                                    <Icon className="w-5 h-5" />
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </TabsContent>
-
-                                    <TabsContent value="emojis" className="mt-0 space-y-3">
-                                        <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-2xl p-6 gap-4 bg-gray-50/50">
-                                            <Input
-                                                value={(!AvailableIcons[categoryIcon] && !categoryIcon?.includes('/')) ? categoryIcon : ''}
-                                                onChange={(e) => setCategoryIcon(e.target.value)}
-                                                className="w-24 h-24 text-6xl text-center rounded-2xl border-gray-200 focus:border-[#22C55E] bg-white shadow-sm"
-                                                placeholder="😁"
-                                            />
-                                            <p className="text-xs text-gray-500 text-center font-medium mt-2">
-                                                Usa <span className="font-bold text-[#111814]">Tecla Windows</span> + <span className="font-bold text-[#111814]">Punto (.)</span> para abrir el panel de emojis
-                                            </p>
-                                        </div>
-                                    </TabsContent>
-
-                                    <TabsContent value="upload" className="mt-0 space-y-3">
-                                        <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-2xl p-6 gap-4 bg-gray-50/50 hover:bg-gray-50 transition-colors relative cursor-pointer group"
-                                            onClick={() => document.getElementById('cat-icon-upload').click()}>
-
-                                            <input
-                                                type="file"
-                                                id="cat-icon-upload"
-                                                className="hidden"
-                                                accept="image/*"
-                                                onChange={handleCategoryIconUpload}
-                                            />
-
-                                            {categoryIcon?.includes('/') || categoryIcon?.includes('http') ? (
-                                                <div className="relative">
-                                                    <img src={categoryIcon} alt="Icon Preview" className="w-20 h-20 object-contain" />
-                                                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 group-hover:opacity-100 rounded-lg transition-opacity">
-                                                        <Edit2 className="w-6 h-6" />
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className="flex flex-col items-center gap-2 text-gray-400 group-hover:text-[#22C55E] transition-colors">
-                                                    <div className="p-4 bg-white rounded-full shadow-sm group-hover:shadow-md transition-all">
-                                                        <Upload className="w-6 h-6" />
-                                                    </div>
-                                                    <span className="text-xs font-bold uppercase tracking-wider">Subir Imagen</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                        <p className="text-[10px] text-center text-gray-400">Recomendado: Imágenes cuadradas, PNG transparente, máx 1MB.</p>
-                                    </TabsContent>
-                                </Tabs>
-
-                                {/* Preview of Selection */}
-                                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
-                                    <span className="text-xs font-bold text-gray-500 uppercase tracking-widest flex-1">Vista Previa:</span>
-                                    <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
-                                        {(() => {
-                                            const isUrl = categoryIcon?.includes('/') || categoryIcon?.includes('http');
-                                            const isLucide = AvailableIcons[categoryIcon];
-                                            const IconComponent = isLucide ? AvailableIcons[categoryIcon] : Utensils;
-
-                                            if (isUrl) return <img src={categoryIcon} className="w-5 h-5 object-contain" />;
-                                            if (isLucide) return <IconComponent className="w-5 h-5 text-[#22C55E]" />;
-                                            return <span className="text-lg leading-none">{categoryIcon}</span>;
-                                        })()}
-                                        <span className="text-sm font-bold text-[#111814]">{categoryName || 'Nombre Categoría'}</span>
-                                    </div>
-                                </div>
-                            </div>
-
                             <div className="flex gap-4">
-                                <Button type="button" variant="ghost" className="flex-1 h-12 rounded-2xl" onClick={() => setIsCategoryModalOpen(false)}>Cancelar</Button>
-                                <Button type="submit" disabled={saving} className={getModalButtonStyle(categoryName !== originalCategoryName || (editingCategory && categoryIcon !== (typeof editingCategory === 'object' ? editingCategory.icono : 'Utensils')))}>
-                                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'GUARDAR SECCIÓN'}
+                                <Button type="button" variant="ghost" className="flex-1 h-12 rounded-2xl" onClick={() => setIsTagModalOpen(false)}>Cancelar</Button>
+                                <Button type="submit" disabled={saving} className={getModalButtonStyle(tagName !== originalTagName)}>
+                                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'GUARDAR ETIQUETA'}
                                 </Button>
                             </div>
                         </form>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            {/* TAG MODAL */}
-            <Dialog open={isTagModalOpen} onOpenChange={setIsTagModalOpen}>
-                <DialogContent className="rounded-[2.5rem] max-w-md border-none overflow-hidden" aria-describedby="tag-modal-description">
-                    <DialogHeader className="p-8 pb-4">
-                        <DialogTitle className="text-2xl font-black">{editingTag ? 'Renombrar Etiqueta' : 'Nueva Etiqueta'}</DialogTitle>
-                        <DialogDescription id="tag-modal-description">Las etiquetas sirven para resaltar promociones o estados especiales.</DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleTagSubmit} className="p-8 pt-4 space-y-6">
-                        <div className="space-y-2">
-                            <Label className="font-bold">Nombre de la Etiqueta</Label>
-                            <Input
-                                value={tagName}
-                                onChange={e => setTagName(e.target.value)}
-                                placeholder="Ej: Oferta, Nuevo, Recomendado"
-                                className="h-12 rounded-2xl bg-gray-50"
-                                required
-                            />
-                            {editingTag && (
-                                <p className="text-[10px] text-orange-500 font-bold bg-orange-50 p-3 rounded-xl border border-orange-100">
-                                    Aviso: Al renombrar una etiqueta, todos los productos que la usen se actualizarán automáticamente.
-                                </p>
-                            )}
-                        </div>
-                        <div className="flex gap-4">
-                            <Button type="button" variant="ghost" className="flex-1 h-12 rounded-2xl" onClick={() => setIsTagModalOpen(false)}>Cancelar</Button>
-                            <Button type="submit" disabled={saving} className={getModalButtonStyle(tagName !== originalTagName)}>
-                                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'GUARDAR ETIQUETA'}
-                            </Button>
-                        </div>
-                    </form>
-                </DialogContent>
-            </Dialog>
-        </div>
+                    </DialogContent>
+                </Dialog>
+            </div>
         </DashboardLayout >
     );
 }

@@ -138,10 +138,19 @@ class Business(BusinessBase):
     created_at: datetime = Field(default_factory=get_utc_now)
     plan: Optional[str] = "free"
     is_active: bool = True 
+    wa_messages_count: int = 0
+    wa_messages_limit: int = 100
+    wa_credits: int = 0
+    plan_expires_at: Optional[datetime] = None
 
 class BusinessPublic(BusinessBase):
     model_config = ConfigDict(extra="ignore", populate_by_name=True)
     id: str
+    plan: Optional[str] = "free"
+    wa_messages_count: int = 0
+    wa_messages_limit: int = 100
+    wa_credits: int = 0
+    plan_expires_at: Optional[datetime] = None
 
 
 # Product Models

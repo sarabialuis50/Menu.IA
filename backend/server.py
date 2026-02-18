@@ -47,10 +47,16 @@ url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_SERVICE_ROLE_KEY") or os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
-# JWT Config
-SECRET_KEY = os.environ.get('JWT_SECRET', 'menu.ia-secret-key-2024')
+import mercadopago
+
+# --- CONFIG ---
+SECRET_KEY = os.environ.get("JWT_SECRET", "secret-key")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_HOURS = 24 * 7
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 30 # 30 days
+ACCESS_TOKEN_EXPIRE_HOURS = 24 * 30
+
+# Initialize MercadoPago SDK
+mp_sdk = mercadopago.SDK(os.environ.get("MERCADOPAGO_ACCESS_TOKEN"))
 
 # Security
 security = HTTPBearer()
@@ -165,6 +171,29 @@ async def get_current_business(credentials: HTTPAuthorizationCredentials = Depen
             raise HTTPException(status_code=401, detail="Negocio no encontrado")
         
         business_doc = response.data[0]
+        
+        # PLAN EXPIRATION CHECK
+        plan_expires_at = business_doc.get('plan_expires_at')
+        current_plan = business_doc.get('plan', 'free')
+        
+        if plan_expires_at and current_plan != 'trial': # Trial might be handled separately
+            from datetime import datetime, timezone
+            try:
+                # Handle ISO format strings from Supabase
+                expires_dt = datetime.fromisoformat(plan_expires_at.replace('Z', '+00:00'))
+                if expires_dt < datetime.now(timezone.utc):
+                    logger.info(f"Plan for business {business_id} has expired ({plan_expires_at}). Downgrading to trial.")
+                    # Update DB
+                    supabase.table('negocios').update({
+                        'plan': 'trial',
+                        'plan_expires_at': None
+                    }).eq('id', business_id).execute()
+                    # Update local object
+                    business_doc['plan'] = 'trial'
+                    business_doc['plan_expires_at'] = None
+            except Exception as exp_err:
+                logger.error(f"Error checking plan expiration: {exp_err}")
+
         if 'password_hash' in business_doc:
             del business_doc['password_hash']
             
@@ -1076,12 +1105,40 @@ async def create_order(slug: str, data: OrderCreate, background_tasks: Backgroun
     try:
         logger.info(f"Creating order for slug: {slug}")
         
-        response = supabase.table('negocios').select('id', 'nombre').eq('slug', slug).execute()
+        response = supabase.table('negocios').select('id', 'nombre', 'telefono', 'whatsapp').eq('slug', slug).execute()
         if not response.data:
             raise HTTPException(status_code=404, detail="Negocio no encontrado")
         business_id = response.data[0]['id']
         business_name = response.data[0]['nombre']
+        business_phone = response.data[0].get('whatsapp') or response.data[0].get('telefono')
+        # Validate Plan Limits (Orders)
+        # Count orders for this business in the current month
+        # Get start/end of current month
+        today = datetime.now(timezone.utc)
+        start_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         
+        count_res = supabase.table('pedidos').select('id', count='exact')\
+            .eq('negocio_id', business_id)\
+            .gte('created_at', start_month.isoformat())\
+            .execute()
+            
+        order_count = count_res.count or 0
+        biz_plan = business.get('plan', 'trial') # Default to trial
+        
+        # Plan Limits
+        LIMITS = {
+            'trial': 50,      # Trial limit (optional, user said trial allows functionality but no WA)
+            'impulso': 100,
+            'pro': 400,
+            'elite': 999999,
+            'business': 999999 # Alias for elite
+        }
+        
+        limit = LIMITS.get(biz_plan, 50) # Default to lowest if unknown
+        
+        if order_count >= limit:
+             raise HTTPException(status_code=402, detail=f"Has alcanzado el límite de {limit} pedidos de tu plan {biz_plan}. Actualiza tu plan para seguir vendiendo.")
+
         # Calculate total
         subtotal = sum((item.cantidad or 0) * (item.precio_unitario or 0) for item in data.items)
         total = subtotal + (data.costo_envio or 0)
@@ -1113,9 +1170,8 @@ async def create_order(slug: str, data: OrderCreate, background_tasks: Backgroun
             "data": order_dict
         })
 
-        # Send WhatsApp summary to customer in background
-        if order.cliente_telefono:
-            background_tasks.add_task(send_order_wa_background, business_name, order)
+        # Send WhatsApp notifications (Client + Business)
+        background_tasks.add_task(send_order_wa_background, business_name, order, business_phone)
         
         return order
     except Exception as e:
@@ -1123,14 +1179,60 @@ async def create_order(slug: str, data: OrderCreate, background_tasks: Backgroun
         logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=f"Error creando pedido: {str(e)}")
 
-def send_order_wa_background(business_name: str, order: Order):
-    try:
-        wa_message = format_order_summary_wa(business_name, order)
-        send_whatsapp_response(order.cliente_telefono, wa_message)
-        logger.info(f"WhatsApp summary sent to {order.cliente_telefono}")
-    except Exception as wa_err:
-        logger.error(f"Error sending WhatsApp summary: {wa_err}")
-        logger.error(traceback.format_exc())
+def format_order_notification_business(order: Order, business_name: str) -> str:
+    """Format notification message for the business owner"""
+    fecha = datetime.now().strftime("%d/%m/%Y, %H:%M")
+    cliente = order.cliente_nombre or "Cliente"
+    telefono = order.cliente_telefono or "No registrado"
+    
+    msg = f"🔔 *NUEVO PEDIDO RECIBIDO*\n"
+    msg += f"🏢 *{business_name}*\n"
+    msg += f"📅 {fecha}\n\n"
+    
+    msg += f"👤 *Cliente:* {cliente}\n"
+    msg += f"📱 *Teléfono:* {telefono}\n"
+    
+    if order.tipo == "delivery":
+         msg += f"🛵 *Domicilio*\n"
+         msg += f"📍 *Dirección:* {order.direccion or 'No especificada'}\n"
+         if order.notas:
+             msg += f"📝 *Notas:* {order.notas}\n"
+    elif order.tipo == "mesa":
+         msg += f"🍽️ *Mesa:* {order.mesa_numero or 'Sin numero'}\n"
+    elif order.tipo == "takeaway":
+         msg += f"🛍️ *Para Llevar*\n"
+         
+    msg += "\n*--- DETALLE DEL PEDIDO ---*\n"
+    for item in order.items:
+        msg += f"• {item.cantidad}x {item.nombre}\n"
+        if item.notas: msg += f"  (Nota: {item.notas})\n"
+        
+    msg += f"\n💰 *TOTAL: ${order.total:,.0f}*\n"
+    msg += f"💳 *Pago:* {order.metodo_pago}\n"
+    
+    return msg
+
+def send_order_wa_background(business_name: str, order: Order, business_phone: str = None):
+    """Send order notifications to Client and Business"""
+    # 1. Send to Client
+    if order.cliente_telefono:
+        try:
+            wa_message = format_order_summary_wa(business_name, order)
+            send_whatsapp_response(order.cliente_telefono, wa_message)
+            logger.info(f"WhatsApp summary sent to client {order.cliente_telefono}")
+        except Exception as wa_err:
+            logger.error(f"Error sending WhatsApp to client: {wa_err}")
+            logger.error(traceback.format_exc())
+
+    # 2. Send to Business
+    if business_phone:
+        try:
+            biz_message = format_order_notification_business(order, business_name)
+            send_whatsapp_response(business_phone, biz_message)
+            logger.info(f"WhatsApp notification sent to business {business_phone}")
+        except Exception as wa_err:
+            logger.error(f"Error sending WhatsApp to business: {wa_err}")
+            logger.error(traceback.format_exc())
 
 def notify_delivery_update_background(slug: str, order_id: str, type: str, data: dict = None):
     """
@@ -1159,7 +1261,12 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
             
             link = f"{frontend_url}/reparto/{slug}/{order_id}"
             msg = f"🛵 *Nuevo Pedido Asignado*\n\nHola {rep['nombre']}, tienes un nuevo pedido para entregar (#ID: {order_id[:8].upper()}).\n\n📍 GESTIONAR AQUÍ: {link}"
-            send_whatsapp_response(rep.get('telefono') or biz['telefono'], msg) 
+            
+            phone = rep.get('telefono')
+            if phone:
+                send_whatsapp_response(phone, msg) 
+            else:
+                logger.warning(f"Repartidor {rep['nombre']} sin telefono") 
             
         elif type == 'enviado':
             # Notify Customer
@@ -1170,37 +1277,39 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
         elif type == 'entregado':
             # Notify Customer
             msg_cust = f"✅ *¡Pedido Entregado!* (#ID: {order_id[:8].upper()})\n\nEsperamos que disfrutes tu comida. ¡Gracias por elegir {biz['nombre']}!"
-            send_whatsapp_response(order['cliente_telefono'], msg_cust)
+            if order.get('cliente_telefono'):
+                send_whatsapp_response(order['cliente_telefono'], msg_cust)
             
             # Notify Admin/Business
-            msg_admin = f"💰 *ENTREGA COMPLETADA*\n\nEl pedido #{order_id[:8].upper()} ha sido entregado exitosamente al cliente {order['cliente_nombre']}."
-            send_whatsapp_response(biz['telefono'], msg_admin)
+            msg_admin = f"💰 *ENTREGA COMPLETADA*\n\nEl pedido #{order_id[:8].upper()} ha sido entregado exitosamente al cliente {order.get('cliente_nombre', 'Cliente')}."
+            biz_phone = biz.get('whatsapp') or biz.get('telefono')
+            if biz_phone:
+                send_whatsapp_response(biz_phone, msg_admin)
 
     except Exception as e:
         logger.error(f"Error in delivery notification background: {str(e)}")
 
 
 @api_router.put("/orders/{slug}/{order_id}", response_model=Order)
-async def update_order(slug: str, order_id: str, data: OrderUpdate):
+async def update_order(slug: str, order_id: str, data: OrderUpdate, background_tasks: BackgroundTasks):
     try:
         response = supabase.table('negocios').select('id').eq('slug', slug).execute()
         if not response.data:
             raise HTTPException(status_code=404, detail="Negocio no encontrado")
         business_id = response.data[0]['id']
         
-        update_data = {k: v.value if hasattr(v, 'value') else v for k, v in data.model_dump().items() if v is not None}
-        update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+        # Create update dict
+        update_data = {k: v for k, v in data.model_dump().items() if v is not None}
         
-        response = supabase.table('pedidos').update(update_data).match({
-            "id": order_id, 
-            "negocio_id": business_id
-        }).execute()
-        
-        if not response.data:
+        if not update_data:
+             raise HTTPException(status_code=400, detail="No data to update")
+            
+        res = supabase.table('pedidos').update(update_data).eq('id', order_id).execute()
+        if not res.data:
             raise HTTPException(status_code=404, detail="Pedido no encontrado")
-        
-        order_doc = response.data[0]
-        order = Order(**order_doc)
+            
+        updated_order = res.data[0]
+        order = Order(**updated_order)
         
         # If order is delivered or cancelled, free the table
         if data.estado in [OrderStatus.ENTREGADO, OrderStatus.CANCELADO] and order.mesa_id:
@@ -1218,21 +1327,9 @@ async def update_order(slug: str, order_id: str, data: OrderUpdate):
             )
         
         # Broadcast order update
-        broadcast_data = serialize_doc(order.model_dump())
+        broadcast_data = serialize_doc(Order(**updated_order).model_dump())
         if points_info:
             broadcast_data['puntos_ganados'] = points_info
-        
-        await manager.broadcast(business_id, {
-            "type": "order_updated",
-            "data": broadcast_data
-        })
-        
-        # Trigger background notifications
-        from fastapi import BackgroundTasks
-        # We need access to background_tasks here, but we are inside an async def.
-        # FastAPI handles this if we add it to the params.
-        # Wait, I can't easily change the signature of standard update_order if I don't see it all.
-        # But I can just use asyncio.create_task for a simple background execution if I don't want to change signature.
         
         if 'repartidor_id' in update_data:
             asyncio.create_task(asyncio.to_thread(notify_delivery_update_background, slug, order_id, 'assignment'))
@@ -1309,6 +1406,11 @@ async def get_loyalty_config(slug: str):
             valor_punto_descuento=100
         )
     
+    # Check plan for loyalty access
+    # We need to fetch the business plan first if not joined in previous query
+    # Since we already fetched business_id from slug, let's just assume we can get plan easily or check it here
+    # Optimization: The initial query for business_id could fetch the plan.
+    
     return LoyaltyConfig(**response.data[0])
 
 
@@ -1317,6 +1419,10 @@ async def create_or_update_loyalty_config(slug: str, data: LoyaltyConfigCreate, 
     """Create or update loyalty program configuration"""
     if business.slug != slug:
         raise HTTPException(status_code=403, detail="No autorizado")
+
+    # PLAN CHECK: Loyalty requires 'pro' or 'elite'/'business'
+    if business.plan in ['trial', 'impulso']:
+         raise HTTPException(status_code=403, detail="Esta función requiere el plan Crecimiento Pro o superior.")
     
     existing_response = supabase.table('fidelizacion_config').select('*').eq('negocio_id', business.id).execute()
     
@@ -1342,6 +1448,10 @@ async def update_loyalty_config(slug: str, data: LoyaltyConfigUpdate, business: 
     """Update loyalty program configuration"""
     if business.slug != slug:
         raise HTTPException(status_code=403, detail="No autorizado")
+
+    # PLAN CHECK: Loyalty requires 'pro' or 'elite'/'business'
+    if business.plan in ['trial', 'impulso']:
+         raise HTTPException(status_code=403, detail="Esta función requiere el plan Crecimiento Pro o superior.")
     
     update_data = {k: v for k, v in data.model_dump().items() if v is not None}
     if not update_data:
@@ -1801,14 +1911,20 @@ async def handle_whatsapp_webhook(request: Request):
         # TODO: Lookup business by 'To' number or assume default for single-tenant dev
         # For now, we fetch the most recent business created to use as context
         try:
-             # Fetch the latest business created to serve as the default strict context
-             response = supabase.table('negocios') \
-                 .select('id') \
-                 .order('created_at', desc=True) \
-                 .limit(1) \
-                 .execute()
-             
              if not response.data:
+                 logger.error("No business found in database to link agent")
+                 return {"status": "error", "reason": "no_business_found"}
+             
+             business_data = response.data[0]
+             negocio_id = business_data['id']
+             biz_plan = business_data.get('plan', 'trial')
+
+             # PLAN CHECK: WhatsApp is disabled for 'trial'
+             if biz_plan == 'trial':
+                 # Optionally send a message saying "Activate your plan"
+                 return {"status": "blocked", "reason": "trial_plan_no_whatsapp"}
+             
+             # Process with AI Agent
                  logger.error("No business found in database to link agent")
                  return {"status": "error", "reason": "no_business_found"}
              
@@ -1852,6 +1968,24 @@ genai.configure(api_key=os.environ.get("GOOGLE_GEMINI_API_KEY"))
 async def get_ai_insights(negocio_id: str, business: Business = Depends(get_current_business)):
     if business.id != negocio_id:
         raise HTTPException(status_code=403, detail="No autorizado")
+    
+    # PLAN CHECK: Insights requires 'pro' or 'elite'
+    if business.plan in ['trial', 'impulso', 'free']:
+        # Return a dummy response or error depending on frontend handling
+        # For insights, we return a structured error that the frontend can display nicely
+        return {
+            "resumen_dia": {"ventas": 0, "pedidos": 0, "ticket_promedio": 0},
+            "top_platos": [],
+            "horas_pico": [],
+            "mesas_alerta": [],
+            "meseros_top": [],
+            "acciones_sugeridas": [
+                "🔒 **FUNCIÓN PREMIUM:** El análisis con IA está disponible en los planes Pro y Business.",
+                "💡 **ACTUALIZA TU PLAN:** Obtén insights detallados para mejorar tu rentabilidad.",
+                "🚀 ve a Configuración > Suscripción para mejorar tu plan."
+            ],
+            "tendencias_semana": {"dia_mas_fuerte": "N/A", "categoria_en_crecimiento": "N/A"}
+        }
 
     try:
         # 1. Recopilar datos de las últimas 24 horas
@@ -1981,6 +2115,10 @@ class ChatRequest(BaseModel):
 async def chat_with_consultant(negocio_id: str, request: ChatRequest, business: Business = Depends(get_current_business)):
     if business.id != negocio_id:
         raise HTTPException(status_code=403, detail="No autorizado")
+
+    # PLAN CHECK: Consultant requires 'pro' or 'elite'
+    if business.plan in ['trial', 'impulso', 'free']:
+         return {"reply": "🔒 Esta función es exclusiva de los planes Pro y Elite. Por favor actualiza tu plan para chatear con el consultor IA."}
 
     try:
         # 1. Gather Context (Lighter version of Insights)
@@ -2146,6 +2284,291 @@ async def public_landing_chat(request: LandingChatRequest):
         logger.error(f"Error en Landing Chat: {str(e)}")
         return {"reply": "¡Hola! 👋 Soy el asistente de Menu.IA. Estoy experimentando mucha demanda, pero puedes registrarte gratis en nuestra página para conocer todos los beneficios."}
 
+
+# ============ MERCADOPAGO SUBSCRIPTIONS ============
+
+class SubscriptionRequest(BaseModel):
+    plan_id: str # 'impulso', 'pro', 'elite'
+    frequency: str = 'monthly' # 'monthly', 'annual'
+
+class WhatsAppPackRequest(BaseModel):
+    amount: int # 1000, 5000, 10000
+
+@api_router.post("/payments/create-subscription")
+async def create_subscription_link(data: SubscriptionRequest, business: Business = Depends(get_current_business)):
+    """Generate a MercadoPago Preapproval (Subscription) Link"""
+    try:
+        # Define Plan Details
+        # NOTE: For production, better to fetch from DB or MP Plans API
+        PLAN_DETAILS = {
+            'impulso': {
+                'reason': 'Plan Impulso - Menu.IA',
+                'price_monthly': 39900,
+                'price_annual': 399000, 
+                'back_url': f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/configuracion?status=success"
+            },
+            'pro': {
+                'reason': 'Plan Crecimiento Pro - Menu.IA',
+                'price_monthly': 79900,
+                'price_annual': 799000,
+                'back_url': f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/configuracion?status=success"
+            },
+            'elite': {
+                'reason': 'Plan Dominio Total - Menu.IA',
+                'price_monthly': 179900,
+                'price_annual': 1799000,
+                'back_url': f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/configuracion?status=success"
+            }
+        }
+        
+        selected_plan = PLAN_DETAILS.get(data.plan_id)
+        if not selected_plan:
+             raise HTTPException(status_code=400, detail="Plan no válido")
+             
+        amount = selected_plan['price_annual'] if data.frequency == 'annual' else selected_plan['price_monthly']
+        
+        # Create Preapproval Data
+        subscription_data = {
+            "reason": selected_plan['reason'],
+            "external_reference": f"{business.id}:{data.plan_id}", # Identify User logic
+            "payer_email": business.email, 
+            "auto_recurring": {
+                "frequency": 1,
+                "frequency_type": "months",
+                "transaction_amount": amount,
+                "currency_id": "COP"
+            },
+            "back_url": selected_plan['back_url'],
+            "status": "pending"
+        }
+        
+        # Adjust frequency for annual if needed. Usually frequency=12, frequency_type='months' implies billing every 12 months
+        if data.frequency == 'annual':
+             subscription_data['auto_recurring']['frequency'] = 12
+        
+        # Call SDK
+        preference_response = mp_sdk.preapproval().create(subscription_data)
+        preference = preference_response["response"]
+        
+        # Debug Log
+        logger.info(f"MP Preference Created: {preference}")
+        
+        if "init_point" not in preference:
+             raise HTTPException(status_code=500, detail="Error al conectar con MercadoPago")
+             
+        return {"init_point": preference["init_point"]}
+
+    except Exception as e:
+        logger.error(f"Error creating subscription: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/payments/create-payment-link")
+async def create_payment_link(data: SubscriptionRequest, business: Business = Depends(get_current_business)):
+    """Generate a MercadoPago Preference Link (For PSE, Nequi, etc - Single Payment)"""
+    try:
+        # Define Plan Details
+        PLAN_DETAILS = {
+            'impulso': {
+                'reason': 'Plan Básico (Mes Prepago) - Menu.IA',
+                'price_monthly': 39900,
+                'price_annual': 399000
+            },
+            'pro': {
+                'reason': 'Plan Pro (Mes Prepago) - Menu.IA',
+                'price_monthly': 79900,
+                'price_annual': 799000
+            },
+            'elite': {
+                'reason': 'Plan Premium (Mes Prepago) - Menu.IA',
+                'price_monthly': 179900,
+                'price_annual': 1799000
+            }
+        }
+        
+        selected_plan = PLAN_DETAILS.get(data.plan_id)
+        if not selected_plan:
+             raise HTTPException(status_code=400, detail="Plan no válido")
+             
+        amount = selected_plan['price_annual'] if data.frequency == 'annual' else selected_plan['price_monthly']
+        
+        # Create Preference Payload
+        preference_data = {
+            "items": [
+                {
+                    "title": selected_plan['reason'],
+                    "quantity": 1,
+                    "unit_price": amount,
+                    "currency_id": "COP"
+                }
+            ],
+            "payer": {
+                "email": business.email
+            },
+            "external_reference": f"{business.id}:{data.plan_id}:{data.frequency}",
+            "back_urls": {
+                "success": f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/configuracion?status=success",
+                "failure": f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/configuracion?status=failure",
+                "pending": f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/configuracion?status=pending"
+            },
+            "auto_return": "all",
+            "notification_url": f"{os.environ.get('BACKEND_URL')}/api/payments/webhook"
+        }
+        
+        # Call SDK to create preference
+        preference_response = mp_sdk.preference().create(preference_data)
+        preference = preference_response["response"]
+        
+        if "init_point" not in preference:
+             raise HTTPException(status_code=500, detail="Error al crear preferencia en MercadoPago")
+             
+        return {"init_point": preference["init_point"]}
+
+    except Exception as e:
+        logger.error(f"Error creating single payment: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/payments/create-wa-pack-link")
+async def create_wa_pack_link(data: WhatsAppPackRequest, business: Business = Depends(get_current_business)):
+    """Generate a MercadoPago Preference Link for WhatsApp Message Packs"""
+    try:
+        # Updated pricing for packs (Price in COP)
+        PACK_PRICING = {
+            1000: 150000,
+            5000: 650000,
+            10000: 1100000
+        }
+        
+        price = PACK_PRICING.get(data.amount)
+        if not price:
+             raise HTTPException(status_code=400, detail="Cantidad de mensajes no válida")
+             
+        # Create Preference Payload
+        preference_data = {
+            "items": [
+                {
+                    "title": f"Pack de {data.amount:,} Mensajes WhatsApp - Menu.IA",
+                    "quantity": 1,
+                    "unit_price": price,
+                    "currency_id": "COP"
+                }
+            ],
+            "payer": {
+                "email": business.email
+            },
+            "external_reference": f"PACK:{business.id}:{data.amount}",
+            "back_urls": {
+                "success": f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/marketing?status=success",
+                "failure": f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/marketing?status=failure",
+                "pending": f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/marketing?status=pending"
+            },
+            "auto_return": "all",
+            "notification_url": f"{os.environ.get('BACKEND_URL')}/api/payments/webhook"
+        }
+        
+        preference_response = mp_sdk.preference().create(preference_data)
+        preference = preference_response["response"]
+        
+        return {"init_point": preference["init_point"]}
+
+    except Exception as e:
+        logger.error(f"Error creating WA pack payment: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/payments/webhook")
+async def mercadopago_webhook(request: Request):
+    try:
+        data = await request.json()
+        logger.info(f"Webhook received: {data}")
+        
+        topic = request.query_params.get("topic") or data.get("type")
+        resource_id = request.query_params.get("id") or data.get("data", {}).get("id")
+
+        if topic == "preapproval":
+             # Handle Subscriptions
+             sub_res = mp_sdk.preapproval().get(resource_id)
+             sub_data = sub_res["response"]
+             external_ref = sub_data.get("external_reference")
+             status = sub_data.get("status")
+             
+             if external_ref and ":" in external_ref:
+                 parts = external_ref.split(":")
+                 business_id = parts[0]
+                 plan_id = parts[1]
+                 
+                 new_plan = 'free'
+                 if status == 'authorized':
+                     new_plan = plan_id
+                 
+                 supabase.table('negocios').update({
+                     'plan': new_plan,
+                     'plan_expires_at': None # Subscriptions don't use this expiration usually
+                 }).eq('id', business_id).execute()
+                 logger.info(f"Subscription Webhook: Updated Business {business_id} to Plan {new_plan}")
+
+        elif topic == "payment":
+             # Handle Single Payments (PSE, Nequi)
+             payment_res = mp_sdk.payment().get(resource_id)
+             payment_data = payment_res["response"]
+             
+             status = payment_data.get("status")
+             external_ref = payment_data.get("external_reference")
+             
+             if status == "approved" and external_ref:
+                 parts = external_ref.split(":")
+                 
+                 if parts[0] == "PACK":
+                     # Handle WhatsApp Pack Purchase
+                     business_id = parts[1]
+                     amount = int(parts[2])
+                     
+                     # Increment wa_credits
+                     # Get current credits first to be safe (or use SQL increment)
+                     supabase.rpc('increment_wa_credits', {
+                         'row_id': business_id,
+                         'val': amount
+                     }).execute()
+                     
+                     # If RPC doesn't exist, we can do a normal update (less atomic but works for now)
+                     res = supabase.table('negocios').select('wa_credits').eq('id', business_id).single().execute()
+                     current = res.data.get('wa_credits', 0) if res.data else 0
+                     
+                     supabase.table('negocios').update({
+                         'wa_credits': current + amount
+                     }).eq('id', business_id).execute()
+                     
+                     logger.info(f"Pack Webhook: Added {amount} credits to Business {business_id}")
+                 
+                 elif len(parts) >= 2:
+                     # Handle Plan Payment (Old Logic)
+                     business_id = parts[0]
+                     plan_id = parts[1]
+                     frequency = parts[2] if len(parts) > 2 else 'monthly'
+                     
+                     from datetime import datetime, timedelta
+                     now = datetime.now()
+                     expiration = now + timedelta(days=365 if frequency == 'annual' else 31)
+                     
+                     # Set default limits based on plan
+                     limits = {
+                         'impulso': 500,
+                         'pro': 1500,
+                         'elite': 5000
+                     }
+                     
+                     supabase.table('negocios').update({
+                         'plan': plan_id,
+                         'plan_expires_at': expiration.isoformat(),
+                         'wa_messages_limit': limits.get(plan_id, 100)
+                     }).eq('id', business_id).execute()
+                     logger.info(f"Payment Webhook: Updated {business_id} Plan to {plan_id} expiring {expiration}")
+
+        return {"status": "ok"}
+    except Exception as e:
+        logger.error(f"Webhook Error: {e}")
+        return {"status": "error"}
 
 # ============ CLIENT AUTH & PROFILE ROUTES ============
 
