@@ -159,7 +159,7 @@ export default function PreciosPage() {
                         <div className="flex items-center gap-4">
                             {!user && (
                                 <>
-                                    <Link to="/login" className="text-sm font-bold text-gray-500">Log in</Link>
+                                    <Link to="/login" className="text-sm font-bold text-gray-600 hover:bg-[#22C55E] hover:text-white px-4 py-2 rounded-xl transition-colors">Iniciar sesión</Link>
                                     <Button onClick={() => navigate('/register')} className="bg-[#22C55E] hover:bg-green-600">Registrarse</Button>
                                 </>
                             )}

@@ -182,27 +182,24 @@ export default function WhatsappHubPage() {
                                 <div className="space-y-4 py-2">
                                     <div className="flex flex-col gap-1">
                                         <div className="flex items-center justify-between">
-                                            <h3 className="text-3xl font-black leading-none">
-                                                {user?.wa_messages_count || 0}/{(user?.wa_messages_limit || 0) + (user?.wa_credits || 0)}
+                                            <h3 className="text-4xl font-black leading-none">
+                                                {user?.wa_credits?.toLocaleString() || 0}
                                             </h3>
-                                            <Badge className="bg-white/20 text-white text-[7px] font-black tracking-widest border-none px-2 py-0.5 text-center ml-2">MES ACTUAL</Badge>
+                                            <Badge className="bg-white/20 text-white text-[7px] font-black tracking-widest border-none px-2 py-0.5 text-center ml-2 uppercase">Saldo Disponible</Badge>
                                         </div>
-                                        <p className="text-[9px] font-bold text-white/60 uppercase tracking-widest px-1">Mensajes consumidos</p>
+                                        <p className="text-[9px] font-bold text-white/60 uppercase tracking-widest px-1">Créditos de Campaña</p>
                                     </div>
                                     <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden">
                                         <div
                                             className="h-full bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-1000"
-                                            style={{ width: `${Math.min(100, ((user?.wa_messages_count || 0) / ((user?.wa_messages_limit || 1) + (user?.wa_credits || 0))) * 100)}%` }}
+                                            style={{ width: user?.wa_credits > 0 ? '100%' : '0%' }}
                                         />
                                     </div>
                                     <p className="text-[9px] font-bold text-white/80 italic text-center">
-                                        ✨ Has usado el {(((user?.wa_messages_count || 0) / ((user?.wa_messages_limit || 1) + (user?.wa_credits || 0))) * 100).toFixed(1)}% de tu cupo disponible.
+                                        {user?.wa_credits > 0
+                                            ? `🚀 Tienes ${user.wa_credits.toLocaleString()} mensajes listos para enviar.`
+                                            : "⚠️ No tienes créditos para campañas masivas."}
                                     </p>
-                                    {user?.wa_credits > 0 && (
-                                        <p className="text-[8px] font-black text-white bg-white/10 p-1 rounded-lg text-center uppercase tracking-tighter">
-                                            Incluye {user.wa_credits} mensajes extra comprados
-                                        </p>
-                                    )}
                                 </div>
 
                                 <div className="bg-white/10 rounded-2xl p-4 flex items-center justify-between border border-white/10">

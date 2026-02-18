@@ -358,16 +358,19 @@ export default function DashboardPage() {
               <div className="space-y-4 py-2">
                 <div className="flex items-end justify-between">
                   <div>
-                    <h3 className="text-4xl font-black leading-none">850/1000</h3>
-                    <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest mt-2 px-1">Mensajes consumidos</p>
+                    <h3 className="text-4xl font-black leading-none">{user?.wa_messages_count || 0}/{user?.wa_messages_limit || 0}</h3>
+                    <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest mt-2 px-1">Mensajes Venta/Soporte</p>
                   </div>
-                  <Badge className="bg-white/20 text-white text-[9px] font-black tracking-widest border-none px-2 py-0.5 mb-1">MES ACTUAL</Badge>
+                  <Badge className="bg-white/20 text-white text-[9px] font-black tracking-widest border-none px-2 py-0.5 mb-1">PLAN {user?.plan?.toUpperCase() || 'GRATUITO'}</Badge>
                 </div>
                 <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden">
-                  <div className="h-full bg-white rounded-full w-[85%] shadow-[0_0_15px_rgba(255,255,255,0.4)]" />
+                  <div
+                    className="h-full bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-1000"
+                    style={{ width: `${Math.min(100, ((user?.wa_messages_count || 0) / (user?.wa_messages_limit || 1)) * 100)}%` }}
+                  />
                 </div>
                 <p className="text-[9px] font-bold text-white/80 italic text-center">
-                  ✨ Has usado el 85.0% de tu cupo disponible.
+                  ✨ Has usado el {(((user?.wa_messages_count || 0) / (user?.wa_messages_limit || 1)) * 100).toFixed(1)}% de tu cupo incluido.
                 </p>
               </div>
 

@@ -1908,44 +1908,52 @@ async def handle_whatsapp_webhook(request: Request):
         if not sender_phone or not message_body:
             return {"status": "ignored", "reason": "missing_data"}
 
-        # TODO: Lookup business by 'To' number or assume default for single-tenant dev
-        # For now, we fetch the most recent business created to use as context
-        try:
-             if not response.data:
-                 logger.error("No business found in database to link agent")
-                 return {"status": "error", "reason": "no_business_found"}
-             
-             business_data = response.data[0]
-             negocio_id = business_data['id']
-             biz_plan = business_data.get('plan', 'trial')
+        # 1. Identificar el negocio
+        to_number = form_data.get('To', '').replace('whatsapp:', '')
+        
+        # Buscar por número configurado o fallback al más reciente (para desarrollo)
+        biz_res = supabase.table('negocios').select('*').eq('whatsapp', to_number).execute()
+        if not biz_res.data:
+             biz_res = supabase.table('negocios').select('*').order('created_at', desc=True).limit(1).execute()
 
-             # PLAN CHECK: WhatsApp is disabled for 'trial'
-             if biz_plan == 'trial':
-                 # Optionally send a message saying "Activate your plan"
-                 return {"status": "blocked", "reason": "trial_plan_no_whatsapp"}
-             
-             # Process with AI Agent
-                 logger.error("No business found in database to link agent")
-                 return {"status": "error", "reason": "no_business_found"}
-             
-             negocio_id = response.data[0]['id']
-             
-             # Process with AI Agent
-             response_text = await process_whatsapp_message(message_body, sender_phone, negocio_id)
-             
-             # Send response back via Twilio
-             if response_text:
-                 send_whatsapp_response(sender_phone, response_text)
-                 
-             return {"status": "processed", "response": response_text}
+        if not biz_res.data:
+             logger.error("No business found in database to link agent")
+             return {"status": "error", "reason": "no_business_found"}
+        
+        business_data = biz_res.data[0]
+        negocio_id = business_data['id']
+        biz_plan = business_data.get('plan', 'trial')
+        wa_count = business_data.get('wa_messages_count', 0)
+        wa_limit = business_data.get('wa_messages_limit', 100)
 
-        except Exception as e:
-            logger.error(f"Error fetching business or processing AI: {e}")
-            return {"status": "error", "detail": str(e)}
+        # PLAN CHECK: WhatsApp disabled for 'trial'
+        if biz_plan == 'trial':
+             return {"status": "blocked", "reason": "trial_plan_no_whatsapp"}
+        
+        # 2. Verificar límites de mensajes operativos
+        if wa_count >= wa_limit:
+            logger.warning(f"Business {negocio_id} has reached its WhatsApp message limit ({wa_limit})")
+            # Podríamos enviar un mensaje de "Límite alcanzado"
+            return {"status": "limit_reached", "reason": "operational_limit_exceeded"}
+
+        # 3. Procesar con IA
+        response_text = await process_whatsapp_message(message_body, sender_phone, negocio_id)
+        
+        # 4. Enviar respuesta y actualizar contador
+        if response_text:
+            send_whatsapp_response(sender_phone, response_text)
+            
+            # Incrementar contador de uso
+            supabase.table('negocios').update({
+                "wa_messages_count": wa_count + 1
+            }).eq('id', negocio_id).execute()
+            
+        return {"status": "processed", "response": response_text}
 
     except Exception as e:
         logger.error(f"Error handling webhook: {e}")
-        return {"status": "error", "detail": str(e)}
+        logger.error(traceback.format_exc())
+        return {"status": "error", "detail": f"{str(e)} - {traceback.format_exc()}"}
 
 
 # ============ WEBSOCKET FOR REALTIME ============
