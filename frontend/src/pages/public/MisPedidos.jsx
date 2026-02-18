@@ -6,6 +6,7 @@ import { Clock, Check, ChefHat, Truck, Package, RefreshCw, Phone, ArrowLeft, Sma
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useGoogleMaps } from '@/hooks/useGoogleMaps';
 
 // Backend API URL
 const API = (import.meta.env?.VITE_BACKEND_URL || import.meta.env?.REACT_APP_BACKEND_URL) || '';
@@ -237,6 +238,8 @@ function OrderTimeline({ order, onRefresh, onReset }) {
               lng={order.repartidor_lng}
               businessLat={order.business_lat}
               businessLng={order.business_lng}
+              clienteLat={order.cliente_lat}
+              clienteLng={order.cliente_lng}
               isDelivered={order.estado === 'entregado'}
             />
             <div className="absolute top-4 left-4 z-[1000] flex items-center gap-2">
@@ -324,69 +327,112 @@ function OrderTimeline({ order, onRefresh, onReset }) {
   );
 }
 
-function DeliveryMap({ lat, lng, businessLat, businessLng, isDelivered }) {
+function DeliveryMap({ lat, lng, businessLat, businessLng, clienteLat, clienteLng, isDelivered }) {
+  const { isLoaded, loadError } = useGoogleMaps();
+  const [map, setMap] = useState(null);
   const mapRef = useState(null);
-  const [mapInstance, setMapInstance] = useState(null);
-  const [markers, setMarkers] = useState({ courier: null, store: null });
 
   useEffect(() => {
-    if (!window.L) return;
-
-    // Initialize map if not exists
-    if (!mapInstance) {
-      const el = document.getElementById('map-container');
-      if (!el) return;
-
-      const initialLat = lat || businessLat || 4.6097; // Fallback Bogota
+    if (isLoaded && !map && document.getElementById('map-container')) {
+      const initialLat = lat || businessLat || 4.6097;
       const initialLng = lng || businessLng || -74.0817;
 
-      const map = window.L.map('map-container', {
+      const mapInstance = new window.google.maps.Map(document.getElementById('map-container'), {
+        center: { lat: initialLat, lng: initialLng },
+        zoom: 15,
+        disableDefaultUI: true,
         zoomControl: false,
-        attributionControl: false
-      }).setView([initialLat, initialLng], 15);
-
-      window.L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 20
-      }).addTo(map);
-
-      setMapInstance(map);
+        styles: [
+          {
+            "featureType": "all",
+            "elementType": "labels.text.fill",
+            "stylers": [{ "color": "#111814" }]
+          },
+          {
+            "featureType": "water",
+            "elementType": "geometry",
+            "stylers": [{ "color": "#e9e9e9" }]
+          },
+          {
+            "featureType": "landscape",
+            "elementType": "geometry",
+            "stylers": [{ "color": "#f5f5f5" }]
+          }
+        ]
+      });
+      setMap(mapInstance);
     }
-  }, [mapInstance, lat, lng]);
+  }, [isLoaded, map]);
 
   useEffect(() => {
-    if (!mapInstance || !window.L) return;
+    if (!map) return;
 
-    // Update business marker
-    if (!markers.store && (businessLat && businessLng)) {
-      const storeIcon = window.L.divIcon({
-        className: 'custom-div-icon',
-        html: `<div style="background-color: #111814; width: 30px; height: 30px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; border: 2px solid white; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>`,
-        iconSize: [30, 30],
-        iconAnchor: [15, 15]
-      });
-      const storeMarker = window.L.marker([businessLat, businessLng], { icon: storeIcon }).addTo(mapInstance);
-      setMarkers(prev => ({ ...prev, store: storeMarker }));
-    }
+    // Clear existing markers if any (using a simple approach for this demo)
+    // In a real app we'd keep track of marker objects
 
-    // Update Courier Marker
-    if (lat && lng) {
-      if (!markers.courier) {
-        const courierIcon = window.L.divIcon({
-          className: 'custom-div-icon',
-          html: `<div style="background-color: #22C55E; width: 40px; height: 40px; border-radius: 15px; display: flex; align-items: center; justify-content: center; color: #111814; border: 3px solid white; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg></div>`,
-          iconSize: [40, 40],
-          iconAnchor: [20, 20]
-        });
-        const m = window.L.marker([lat, lng], { icon: courierIcon }).addTo(mapInstance);
-        setMarkers(prev => ({ ...prev, courier: m }));
-      } else {
-        markers.courier.setLatLng([lat, lng]);
-        if (!isDelivered) {
-          mapInstance.panTo([lat, lng]);
+    const bounds = new window.google.maps.LatLngBounds();
+    let hasPoints = false;
+
+    // Business Marker
+    if (businessLat && businessLng) {
+      new window.google.maps.Marker({
+        position: { lat: businessLat, lng: businessLng },
+        map: map,
+        title: "Restaurante",
+        icon: {
+          path: window.google.maps.SymbolPath.CIRCLE,
+          fillColor: "#111814",
+          fillOpacity: 1,
+          strokeWeight: 2,
+          strokeColor: "#FFFFFF",
+          scale: 10
         }
-      }
+      });
+      bounds.extend({ lat: businessLat, lng: businessLng });
+      hasPoints = true;
     }
-  }, [mapInstance, lat, lng, businessLat, businessLng, isDelivered]);
+
+    // Customer Marker
+    if (clienteLat && clienteLng) {
+      new window.google.maps.Marker({
+        position: { lat: clienteLat, lng: clienteLng },
+        map: map,
+        title: "Tú",
+        icon: {
+          path: window.google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+          fillColor: "#22C55E",
+          fillOpacity: 1,
+          strokeWeight: 2,
+          strokeColor: "#FFFFFF",
+          scale: 6
+        }
+      });
+      bounds.extend({ lat: clienteLat, lng: clienteLng });
+      hasPoints = true;
+    }
+
+    // Courier Marker
+    if (lat && lng) {
+      new window.google.maps.Marker({
+        position: { lat, lng },
+        map: map,
+        title: "Repartidor",
+        icon: {
+          url: "https://maps.google.com/mapfiles/ms/icons/motorcycling.png", // Icono de moto
+          scaledSize: new window.google.maps.Size(40, 40)
+        }
+      });
+      bounds.extend({ lat, lng });
+      hasPoints = true;
+    }
+
+    if (hasPoints && !isDelivered) {
+      map.fitBounds(bounds, { top: 50, bottom: 50, left: 50, right: 50 });
+    }
+  }, [map, lat, lng, businessLat, businessLng, clienteLat, clienteLng, isDelivered]);
+
+  if (loadError) return <div className="p-4 text-center text-red-500">Error cargando el mapa</div>;
+  if (!isLoaded) return <div className="p-4 text-center"><RefreshCw className="w-6 h-6 animate-spin mx-auto text-[#22C55E]" /></div>;
 
   return <div id="map-container" className="w-full h-full z-0" />;
 }

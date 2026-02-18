@@ -75,6 +75,7 @@ class BusinessBase(BaseModel):
     ai_personalidad: Optional[str] = "Amigable y cercano (Recomendado)"
     ai_saludo: Optional[str] = None
     ai_conocimiento: Optional[str] = None
+    google_maps_review_url: Optional[str] = None
 
     @field_validator('metodos_entrega', mode='before')
     @classmethod
@@ -268,6 +269,8 @@ class OrderBase(BaseModel):
     direccion: Optional[str] = None
     distancia: Optional[float] = None
     costo_envio: Optional[float] = 0.0
+    cliente_lat: Optional[float] = None
+    cliente_lng: Optional[float] = None
 
 
 class OrderCreate(OrderBase):

@@ -60,6 +60,8 @@ import {
   Filter
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { MapPicker } from '@/components/MapPicker';
+import { PlacesAutocomplete } from '@/components/PlacesAutocomplete';
 
 const AvailableIcons = {
   UtensilsCrossed,
@@ -432,6 +434,8 @@ const MenuContent = () => {
         direccion: tipoPedido === 'delivery' ? direccion : null,
         distancia: tipoPedido === 'delivery' ? distancia : null,
         costo_envio: tipoPedido === 'delivery' ? costoEnvio : 0,
+        cliente_lat: customerInfo.lat || null,
+        cliente_lng: customerInfo.lng || null,
         notas: [
           customerInfo.notas,
           discount > 0 ? `Descuento: ${formatCurrency(discount)} (${redeemPoints} pts)` : null,
@@ -679,7 +683,7 @@ const MenuContent = () => {
             </button>
             <button
               onClick={() => { setCartOpen(true); setCheckoutStep(1); }}
-              className="relative size-11 rounded-full bg-[#111814] flex items-center justify-center hover:bg-[#22C55E] transition-all hover:scale-105 active:scale-95 group shadow-lg shadow-[#111814]/20"
+              className="relative size-11 rounded-full bg-[#111814] border border-[#22C55E] flex items-center justify-center hover:bg-[#22C55E] transition-all hover:scale-105 active:scale-95 group shadow-lg shadow-[#111814]/20"
             >
               <ShoppingCart className="w-5 h-5 text-white group-hover:text-[#111814]" />
               {itemCount > 0 && (
@@ -712,14 +716,11 @@ const MenuContent = () => {
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
 
-            <div className="absolute top-6 left-6 z-20">
+            <div className="absolute bottom-0 left-0 p-6 md:p-12 z-20 w-full pb-20 md:pb-24 flex flex-col items-start gap-4">
               <span className="inline-flex items-center gap-2 px-4 py-2 text-[10px] font-black text-[#111814] bg-[#22C55E] rounded-full uppercase tracking-[0.2em] shadow-lg shadow-[#22C55E]/20">
                 <Star className="w-3 h-3 fill-[#111814]" />
                 {business.banner_tag || 'Los mejores sabores'}
               </span>
-            </div>
-
-            <div className="absolute bottom-0 left-0 p-6 md:p-12 z-20 w-full pb-20 md:pb-24">
               <h1 className="text-3xl md:text-6xl font-black text-white mb-2 tracking-tighter leading-none">{business.banner_title || 'Nuestro Menú'}</h1>
               <p className="text-gray-300 text-sm md:text-lg max-w-xl font-medium leading-relaxed line-clamp-2 md:line-clamp-none">
                 {business.banner_description || business.slogan || "Descubre una explosión de sabores preparados con pasión."}
@@ -1142,29 +1143,59 @@ const MenuContent = () => {
                       animate={{ opacity: 1, height: 'auto' }}
                       className="space-y-4 overflow-hidden"
                     >
-                      <div className="relative group">
-                        <Label htmlFor="direccion" className="text-xs font-black uppercase tracking-widest text-[#618972] ml-2 mb-2 block">Dirección de Entrega</Label>
-                        <div className="relative">
-                          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#618972]" />
-                          <Input
-                            id="direccion"
+                      <div className="space-y-4">
+                        <div className="relative group">
+                          <Label htmlFor="direccion" className="text-xs font-black uppercase tracking-widest text-[#618972] ml-2 mb-2 block">Dirección de Entrega</Label>
+                          <PlacesAutocomplete
                             value={direccion}
-                            onChange={(e) => setDireccion(e.target.value)}
                             placeholder="Calle, Carrera, Edificio, Apto..."
+                            onChange={(val) => setDireccion(val)}
+                            onPlaceSelected={({ address, lat, lng }) => {
+                              setDireccion(address);
+                              setCustomerInfo(prev => ({ ...prev, lat, lng }));
+                              if (business?.lat && business?.lng) {
+                                const dist = calculateDistance(business.lat, business.lng, lat, lng);
+                                setDistancia(dist);
+                                const precioKm = business.precio_km || 0;
+                                const costoMin = business.costo_minimo_domicilio || 0;
+                                const calculado = dist * precioKm;
+                                setCostoEnvio(Math.max(calculado, costoMin));
+                              }
+                              toast.success("Dirección validada");
+                            }}
                             className="h-14 pl-12 bg-gray-50 border-gray-100 rounded-2xl text-base font-medium focus:ring-2 focus:ring-[#22C55E]/20 transition-all"
                           />
                         </div>
-                      </div>
 
-                      <Button
-                        variant="outline"
-                        onClick={handleGetLocation}
-                        disabled={calculatingDistance}
-                        className="w-full h-12 rounded-2xl border-2 border-dashed border-[#22C55E]/30 text-[#618972] font-black text-xs gap-2 hover:bg-[#22C55E]/5 transition-all"
-                      >
-                        {calculatingDistance ? <Loader2 className="w-4 h-4 animate-spin" /> : <NavigationIcon className="w-4 h-4" />}
-                        CALCULAR DISTANCIA CON MI CERCANÍA
-                      </Button>
+                        <Button
+                          variant="outline"
+                          onClick={handleGetLocation}
+                          disabled={calculatingDistance}
+                          className="w-full h-12 rounded-2xl border-2 border-dashed border-[#22C55E]/30 text-[#618972] font-black text-xs gap-2 hover:bg-[#22C55E]/5 transition-all"
+                        >
+                          {calculatingDistance ? <Loader2 className="w-4 h-4 animate-spin" /> : <NavigationIcon className="w-4 h-4" />}
+                          USAR MI UBICACIÓN ACTUAL
+                        </Button>
+
+                        <div className="space-y-2">
+                          <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Ajusta tu ubicación en el mapa</Label>
+                          <MapPicker
+                            lat={customerInfo.lat}
+                            lng={customerInfo.lng}
+                            onChange={({ lat, lng }) => {
+                              setCustomerInfo(prev => ({ ...prev, lat, lng }));
+                              if (business?.lat && business?.lng) {
+                                const dist = calculateDistance(business.lat, business.lng, lat, lng);
+                                setDistancia(dist);
+                                const precioKm = business.precio_km || 0;
+                                const costoMin = business.costo_minimo_domicilio || 0;
+                                const calculado = dist * precioKm;
+                                setCostoEnvio(Math.max(calculado, costoMin));
+                              }
+                            }}
+                          />
+                        </div>
+                      </div>
 
                       {distancia > 0 && (
                         <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-[#22C55E]/20 shadow-sm">
