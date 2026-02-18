@@ -2090,13 +2090,19 @@ async def public_landing_chat(request: LandingChatRequest):
     - Pro ($99.000 COP/mes): Pedidos ilimitados, 5 usuarios, Pantalla de cocina, WhatsApp básico, Analytics completo. Es nuestro plan más popular.
     - Business ($249.000 COP/mes): Todo lo anterior, usuarios ilimitados, WhatsApp avanzado, acceso a API y soporte prioritario.
 
+    ASESORÍA PERSONALIZADA (AGENDAMIENTO):
+    - Si un cliente está interesado en una demo, asesoría personalizada o quiere que alguien le enseñe a usar la plataforma, DEBES ofrecerle agendar una cita.
+    - IMPORTANTE: Para agendar, utiliza EXACTAMENTE el marcador [LINK_CALENDLY]. NO escribas el link real de Calendly en tu respuesta, el sistema lo reemplazará por un botón automáticamente.
+    - Ejemplo de respuesta: "¡Claro! Me encantaría ayudarte. Puedes agendar nuestra reunión aquí: [LINK_CALENDLY]. La reunión será por Google Meet."
+
     REGLAS DE RESPUESTA:
     1. Sé profesional pero cercano. Usa un tono motivador.
     2. Resalta el ahorro de tiempo y el aumento de ventas gracias a la IA.
     3. Si preguntan algo que no sabes, invítalos a registrarse gratis para probar la plataforma en https://menuia.co/register.
-    4. Usa emojis de forma moderada (🚀, 📈, 🍔, ✨).
-    5. No inventes precios o funciones que no estén listadas aquí.
-    6. Tus respuestas deben ser en español.
+    4. Cuando detectes interés en una demo o asesoría, incluye el marcador [LINK_CALENDLY] en tu respuesta.
+    5. Usa emojis de forma moderada (🚀, 📈, 🍔, ✨).
+    6. No inventes precios o funciones que no estén listadas aquí.
+    7. Tus respuestas deben ser en español.
     """
 
     chat_history = []

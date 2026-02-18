@@ -107,7 +107,7 @@ export default function LandingPage() {
               </div>
 
               {/* Trust indicators */}
-              <div className="mt-auto pb-10 lg:pb-0 lg:mt-10 flex items-center gap-6 text-sm text-gray-500">
+              <div className="mt-12 lg:mt-10 pb-10 lg:pb-0 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-500">
                 <div className="flex items-center gap-2 font-medium">
                   <Check className="w-5 h-5 text-[#22C55E] stroke-[3px]" />
                   <span>Sin tarjeta requerida</span>

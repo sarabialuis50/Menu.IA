@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Loader2, Minimize2 } from 'lucide-react';
+import { MessageCircle, X, Send, Loader2, Minimize2, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import axios from 'axios';
@@ -62,7 +62,7 @@ export default function LandingAgent() {
                                 <div className="w-10 h-10 rounded-full bg-white p-0.5 overflow-hidden border-2 border-[#22C55E]">
                                     <img src="/logos/logo agente.png" alt="Agente Menu.IA" className="w-full h-full object-cover" />
                                 </div>
-                                <div>
+                                <div className="">
                                     <h3 className="font-black text-sm tracking-tight text-white leading-none">Asistente Menu.IA</h3>
                                     <div className="flex items-center gap-1.5 mt-1.5">
                                         <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
@@ -92,11 +92,24 @@ export default function LandingAgent() {
                                     key={i}
                                     className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                                 >
-                                    <div className={`max-w-[85%] p-4 rounded-[1.5rem] text-sm font-medium shadow-sm ${msg.role === 'user'
+                                    <div className={`max-w-[85%] p-4 rounded-[1.5rem] text-sm font-medium shadow-sm flex flex-col gap-3 ${msg.role === 'user'
                                         ? 'bg-[#22C55E] text-white rounded-tr-none'
                                         : 'bg-white text-[#111814] rounded-tl-none border border-gray-100'
                                         }`}>
-                                        {msg.content}
+                                        <div>{msg.content.replace('[LINK_CALENDLY]', '')}</div>
+
+                                        {/* Botón de Agendamiento Automático */}
+                                        {msg.role === 'model' && (msg.content.includes('calendly.com') || msg.content.includes('[LINK_CALENDLY]')) && (
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => window.open('https://calendly.com/sarabialuis50/asesoria-personalizada-menu-ia', '_blank')}
+                                                className="bg-[#22B8CF] hover:bg-[#1DA1B8] text-white border-none rounded-xl h-10 font-black text-[11px] uppercase tracking-wider flex items-center justify-center gap-2 mt-1"
+                                            >
+                                                <ExternalLink className="w-4 h-4" />
+                                                Agendar Asesoría Gratis
+                                            </Button>
+                                        )}
                                     </div>
                                 </motion.div>
                             ))}
