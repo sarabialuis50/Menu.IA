@@ -334,10 +334,10 @@ export default function MesasPage() {
 
         {/* Create Table Modal */}
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-md" aria-describedby="mesa-modal-description">
             <DialogHeader>
               <DialogTitle>{selectedTable ? 'Editar mesa' : 'Nueva mesa'}</DialogTitle>
-              <DialogDescription>
+              <DialogDescription id="mesa-modal-description">
                 {selectedTable
                   ? 'Modifica los detalles de la mesa o cambia su asignación.'
                   : 'Ingresa los detalles para registrar una nueva mesa en el sistema.'}
@@ -437,10 +437,10 @@ export default function MesasPage() {
 
         {/* QR Code Modal */}
         <Dialog open={qrModalOpen} onOpenChange={setQrModalOpen}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-md" aria-describedby="qr-modal-description">
             <DialogHeader>
               <DialogTitle className="text-center">Mesa {selectedTable?.numero}</DialogTitle>
-              <DialogDescription className="text-center">
+              <DialogDescription id="qr-modal-description" className="text-center">
                 Escanea este código QR para acceder al menú digital.
               </DialogDescription>
             </DialogHeader>

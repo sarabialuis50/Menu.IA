@@ -339,11 +339,14 @@ export default function CatalogoPage() {
 
         {/* Product Modal */}
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent className="sm:max-w-lg">
+          <DialogContent className="sm:max-w-lg" aria-describedby="catalog-modal-description">
             <DialogHeader>
               <DialogTitle>
                 {editingProduct ? 'Editar producto' : 'Nuevo producto'}
               </DialogTitle>
+              <DialogDescription id="catalog-modal-description" className="sr-only">
+                Formulario para crear o editar productos de tu catálogo digital.
+              </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">

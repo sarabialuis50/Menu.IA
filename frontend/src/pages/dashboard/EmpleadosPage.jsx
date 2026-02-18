@@ -287,9 +287,12 @@ export default function EmpleadosPage() {
 
         {/* Create Employee Modal */}
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-md" aria-describedby="employee-modal-description">
             <DialogHeader>
               <DialogTitle>{selectedEmployee ? 'Editar empleado' : 'Nuevo empleado'}</DialogTitle>
+              <DialogDescription id="employee-modal-description" className="sr-only">
+                Formulario para gestionar los datos de tus empleados y su acceso al sistema.
+              </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">

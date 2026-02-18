@@ -73,7 +73,7 @@ export const DashboardLayout = ({ children }) => {
             <span className="text-[#22B8CF]">.IA</span>
           </span>
         </div>
-        <div className="size-10 rounded-xl bg-slate-800" />
+        <div className="size-10 invisible" />
       </header>
 
       {/* Mobile Sidebar Overlay */}

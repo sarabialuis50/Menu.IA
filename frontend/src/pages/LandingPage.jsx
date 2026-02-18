@@ -85,7 +85,7 @@ export default function LandingPage() {
               <p className="text-base sm:text-lg text-slate-600 mb-8 lg:mb-10 max-w-lg font-medium leading-snug">
                 Optimiza tus pedidos, fideliza clientes con IA y automatiza tu comunicación por WhatsApp en un solo lugar.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 lg:gap-4 w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 lg:gap-4 w-full sm:w-auto">
                 <Button
                   size="lg"
                   onClick={() => navigate('/register')}
@@ -107,7 +107,7 @@ export default function LandingPage() {
               </div>
 
               {/* Trust indicators */}
-              <div className="mt-12 lg:mt-10 pb-10 lg:pb-0 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-500">
+              <div className="mt-16 lg:mt-10 pb-10 lg:pb-0 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-500">
                 <div className="flex items-center gap-2 font-medium">
                   <Check className="w-5 h-5 text-[#22C55E] stroke-[3px]" />
                   <span>Sin tarjeta requerida</span>

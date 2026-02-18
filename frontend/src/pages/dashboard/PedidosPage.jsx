@@ -577,10 +577,10 @@ export default function PedidosPage() {
 
             {/* Modal para Ver Pedido (DETALLES DEL PEDIDO) */}
             <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
-                <DialogContent className="max-w-2xl rounded-[2rem] border-none p-0 overflow-hidden bg-[#F8F9FA] shadow-2xl">
+                <DialogContent className="max-w-2xl rounded-[2rem] border-none p-0 overflow-hidden bg-[#F8F9FA] shadow-2xl" aria-describedby="order-details-description">
                     <DialogHeader className="hidden">
                         <DialogTitle>Detalles del Pedido</DialogTitle>
-                        <DialogDescription>Vista detallada de la información del pedido y del cliente.</DialogDescription>
+                        <DialogDescription id="order-details-description">Vista detallada de la información del pedido y del cliente.</DialogDescription>
                     </DialogHeader>
                     <div className="flex items-center gap-4 p-6 bg-white border-b border-gray-100">
                         <Button variant="ghost" size="icon" onClick={() => setShowViewModal(false)} className="rounded-full">
@@ -714,10 +714,10 @@ export default function PedidosPage() {
 
             {/* Modal para Seguimiento de Pedido (Tracking) */}
             <Dialog open={showTrackingModal} onOpenChange={setShowTrackingModal}>
-                <DialogContent className="max-w-xl rounded-[2rem] border-none p-0 overflow-hidden bg-[#F8F9FA] shadow-2xl">
+                <DialogContent className="max-w-xl rounded-[2rem] border-none p-0 overflow-hidden bg-[#F8F9FA] shadow-2xl" aria-describedby="tracking-modal-description">
                     <DialogHeader className="hidden">
                         <DialogTitle>Seguimiento a Pedido</DialogTitle>
-                        <DialogDescription>Actualización del estado del flujo del pedido.</DialogDescription>
+                        <DialogDescription id="tracking-modal-description">Actualización del estado del flujo del pedido.</DialogDescription>
                     </DialogHeader>
                     <div className="flex items-center gap-4 p-6 bg-white border-b border-gray-100">
                         <Button variant="ghost" size="icon" onClick={() => setShowTrackingModal(false)} className="rounded-full">
@@ -824,7 +824,7 @@ export default function PedidosPage() {
 
             {/* Modal para Asignar Mensajero */}
             <Dialog open={showAssignModal} onOpenChange={setShowAssignModal}>
-                <DialogContent className="sm:max-w-md rounded-[3rem] border-none p-8 bg-white shadow-2xl overflow-hidden">
+                <DialogContent className="sm:max-w-md rounded-[3rem] border-none p-8 bg-white shadow-2xl overflow-hidden" aria-describedby="assign-messenger-description">
                     <div className="absolute top-0 right-0 p-8">
                         <Button variant="ghost" size="icon" onClick={() => setShowAssignModal(false)} className="rounded-full">
                             <X className="w-5 h-5 text-gray-400" />
@@ -838,7 +838,7 @@ export default function PedidosPage() {
                             </div>
                             Despachar Pedido
                         </DialogTitle>
-                        <DialogDescription className="text-gray-500 font-bold uppercase tracking-widest text-[10px] mt-4">
+                        <DialogDescription id="assign-messenger-description" className="text-gray-500 font-bold uppercase tracking-widest text-[10px] mt-4">
                             Asignar mensajero al pedido #{selectedOrder?.id?.slice(0, 8).toUpperCase()}
                         </DialogDescription>
                     </DialogHeader>
