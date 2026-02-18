@@ -8,8 +8,12 @@ from twilio.rest import Client
 from supabase import create_client, Client as SupabaseClient
 from ai_base import get_shared_instructions, get_fallback_message
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# Configuración de logging
+logging.basicConfig(
+    filename='agent.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
 # Initialize OpenAI
@@ -52,6 +56,7 @@ FUNCIONES DISPONIBLES:
 - get_product_details(product_id): Obtiene detalles de un producto específico.
 - create_order(order_details): Crea un nuevo pedido.
 - get_order_status(order_id): Consulta el estado de un pedido.
+- register_customer(nombre, email, telefono, fecha_nacimiento): Registra a un cliente.
 
 HOY ES: {current_date}
 """
@@ -103,7 +108,35 @@ TOOLS = [
             }
         }
     },
-    # TODO: Add more tools for order creation and status check
+    {
+        "type": "function",
+        "function": {
+            "name": "register_customer",
+            "description": "Registra a un nuevo cliente en el programa de fidelización del negocio para que pueda acumular puntos y recibir beneficios.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "nombre": {
+                        "type": "string",
+                        "description": "Nombre completo del cliente"
+                    },
+                    "email": {
+                        "type": "string",
+                        "description": "Correo electrónico del cliente"
+                    },
+                    "telefono": {
+                        "type": "string",
+                        "description": "Número de teléfono para el registro (formato internacional ej: 573...)"
+                    },
+                    "fecha_nacimiento": {
+                        "type": "string",
+                        "description": "Fecha de nacimiento (opcional, formato AAAA-MM-DD)"
+                    }
+                },
+                "required": ["nombre", "email", "telefono"]
+            }
+        }
+    }
 ]
 
 async def get_customer_name(phone: str) -> Optional[str]:
@@ -116,6 +149,91 @@ async def get_customer_name(phone: str) -> Optional[str]:
         return None
     except Exception:
         return None
+
+# --- HISTORY MANAGEMENT ---
+
+async def get_or_create_conversation(negocio_id: str, phone: str) -> str:
+    """Get active conversation ID or create new one"""
+    try:
+        # Check for active conversation
+        res = supabase.table('agent_conversations') \
+            .select('id') \
+            .eq('negocio_id', negocio_id) \
+            .eq('phone_number', phone) \
+            .eq('status', 'active') \
+            .order('last_message_at', desc=True) \
+            .limit(1) \
+            .execute()
+        
+        if res.data:
+            return res.data[0]['id']
+        
+        # Create new conversation
+        try:
+            supabase.table('agent_conversations').insert({
+                "negocio_id": negocio_id,
+                "phone_number": phone,
+                "status": "active"
+            }).execute()
+        except Exception as e:
+            # PGRST204 means success but no return body, which crashes python client sometimes
+            if "PGRST204" not in str(e):
+                logger.error(f"Error creating conversation: {e}")
+        
+        # Fetch the ID again to be sure
+        res = supabase.table('agent_conversations') \
+            .select('id') \
+            .eq('negocio_id', negocio_id) \
+            .eq('phone_number', phone) \
+            .order('created_at', desc=True) \
+            .limit(1) \
+            .execute()
+            
+        if res.data:
+            return res.data[0]['id']
+        return None
+    except Exception as e:
+        logger.error(f"Error managing conversation: {e}")
+        return None
+
+async def save_message(conversation_id: str, direction: str, content: str):
+    """Save message to history"""
+    try:
+        supabase.table('agent_messages').insert({
+            "conversation_id": conversation_id,
+            "direction": direction, # 'inbound' or 'outbound'
+            "content": content,
+            "message_type": "text"
+        }).execute()
+        
+        # Update conversation timestamp
+        supabase.table('agent_conversations').update({
+            "last_message_at": datetime.now(timezone.utc).isoformat()
+        }).eq('id', conversation_id).execute()
+        
+    except Exception as e:
+        logger.error(f"Error saving message: {e}")
+
+async def get_recent_messages(conversation_id: str, limit: int = 10) -> List[Dict]:
+    """Get recent messages formatted for OpenAI"""
+    try:
+        res = supabase.table('agent_messages') \
+            .select('direction, content') \
+            .eq('conversation_id', conversation_id) \
+            .order('created_at', desc=True) \
+            .limit(limit) \
+            .execute()
+        
+        history = []
+        # Reverse to get chronological order
+        for msg in reversed(res.data):
+            role = "user" if msg['direction'] == 'inbound' else "assistant"
+            history.append({"role": role, "content": msg['content']})
+            
+        return history
+    except Exception as e:
+        logger.error(f"Error fetching history: {e}")
+        return []
 
 async def process_whatsapp_message(message_body: str, sender_phone: str, negocio_id: str):
     """
@@ -144,13 +262,23 @@ async def process_whatsapp_message(message_body: str, sender_phone: str, negocio
         now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
         
         system_prompt = f"""
-Eres Menu.IA Bot, el asistente virtual oficial de {biz_name}. Tu objetivo es ayudar a los clientes a realizar pedidos de manera eficiente.
+Eres Menu.IA Bot, el asistente virtual oficial de {biz_name}. Tu objetivo es ayudar a los clientes a realizar pedidos de manera eficiente y gestionar su fidelización.
 
 TU PERSONALIDAD:
 {ai_personalidad}
 
 CONOCIMIENTO ESPECIAL SOBRE EL NEGOCIO (ENTRENAMIENTO):
 {ai_conocimiento if ai_conocimiento else 'Eres un asistente de restaurante estándar. Consulta el menú para dar información exacta.'}
+
+REGISTRO DE CLIENTES Y FIDELIZACIÓN:
+- Si detectas que el cliente no está registrado (el nombre actual es '{customer_name if customer_name else 'cliente'}'), invítalo amablemente a registrarse.
+- Explica los beneficios: acumular puntos por cada compra, descuentos exclusivos y atención personalizada.
+- Si el cliente acepta, pídele: Nombre completo, Correo electrónico y su Fecha de cumpleaños (menciona que la fecha es opcional para enviarle sorpresas).
+- IMPORTANTE: Pregunta si desea usar su número actual de WhatsApp ({sender_phone}) para el registro o uno diferente.
+- UNA VEZ TENGAS LOS DATOS (Nombre, Email, Teléfono), DEBES EJECUTAR LA FUNCIÓN 'register_customer'.
+- NO confirmes el registro con texto SIN antes llamar a la función.
+- Si la función devuelve éxito, entonces sí confirma al usuario.
+- Si el usuario YA ESTÁ REGISTRADO y pide registrarse de nuevo, explícale que ya es parte del programa y pregúntale en qué más puedes ayudarle.
 
 REGLAS DE INTERACCIÓN:
 - Saluda amablemente.
@@ -162,10 +290,32 @@ REGLAS DE INTERACCIÓN:
 HOY ES: {now} (UTC)
 """
         
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": message_body}
-        ]
+        # 1.1 Gestionar Historial
+        conversation_id = await get_or_create_conversation(negocio_id, sender_phone)
+        
+        # Save Incoming Message
+        if conversation_id:
+            await save_message(conversation_id, 'inbound', message_body)
+            
+        # Fetch History
+        history_messages = []
+        if conversation_id:
+            # We fetch previous messages (excluding the one we just saved if we want, 
+            # but wait, fetching limit=10 will include it. 
+            # OpenAI expects the last message to be user? 
+            # Actually, standard chat format is list of messages.
+            # If we saved 'inbound', get_recent_messages will return it as the last item.
+            # So we don't need to append message_body manually to 'messages'.
+            history_messages = await get_recent_messages(conversation_id, limit=10)
+        
+        # If history extraction failed or returned empty (unlikely if we just saved), fallback using message_body
+        if not history_messages:
+             messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": message_body}
+            ]
+        else:
+            messages = [{"role": "system", "content": system_prompt}] + history_messages
 
         # 2. Llamada inicial a OpenAI
         response = openai_client.chat.completions.create(
@@ -177,6 +327,8 @@ HOY ES: {now} (UTC)
         
         response_message = response.choices[0].message
         tool_calls = response_message.tool_calls
+        
+        logger.info(f"OpenAI response tool_calls: {tool_calls}")
 
         # 3. Manejar llamadas a herramientas (Function Calling Loop)
         if tool_calls:
@@ -199,6 +351,14 @@ HOY ES: {now} (UTC)
                     function_response = await get_products_by_category(negocio_id, function_args.get("category"))
                 elif function_name == "search_products":
                     function_response = await search_products(negocio_id, function_args.get("query"))
+                elif function_name == "register_customer":
+                    function_response = await register_customer(
+                        negocio_id, 
+                        function_args.get("nombre"),
+                        function_args.get("email"),
+                        function_args.get("telefono"),
+                        function_args.get("fecha_nacimiento")
+                    )
                 else:
                     function_response = json.dumps({"error": "Función no implementada"})
 
@@ -218,10 +378,23 @@ HOY ES: {now} (UTC)
                 messages=messages,
             )
             
-            return second_response.choices[0].message.content
+            final_response = second_response.choices[0].message.content
+            
+            # Save Outbound Response (after tool execution)
+            if conversation_id and final_response:
+                 await save_message(conversation_id, 'outbound', final_response)
+
+            return final_response
 
         # 4. Si no hubo herramientas, devolver texto directo
-        return response_message.content
+        # 4. Si no hubo herramientas, devolver texto directo
+        final_response = response_message.content
+        
+        # Save Outbound Response
+        if conversation_id and final_response:
+             await save_message(conversation_id, 'outbound', final_response)
+             
+        return final_response
 
     except Exception as e:
         logger.error(f"Error procesando mensaje WA: {e}")
@@ -269,6 +442,74 @@ async def search_products(negocio_id: str, query: str) -> str:
         logger.error(f"Error search_products: {e}")
         return json.dumps({"error": str(e)})
 
+async def register_customer(negocio_id: str, nombre: str, email: str, telefono: str, fecha_nacimiento: str = None) -> str:
+    try:
+        # Sanitize phone
+        clean_phone = str(telefono).replace('whatsapp:', '').replace('+', '').replace(' ', '').strip()
+        
+        # Sanitize date
+        birth_date = fecha_nacimiento
+        import re
+        if not birth_date or birth_date.strip() == "":
+            birth_date = None
+        elif not re.match(r'^\d{4}-\d{2}-\d{2}$', birth_date):
+            logger.warning(f"Invalid date format: {birth_date}. Setting to None.")
+            birth_date = None
+        
+        # 1. Update/Insert in 'clientes' (Global)
+        try:
+            supabase.table('clientes').upsert({
+                "telefono": clean_phone,
+                "nombre": nombre,
+                "email": email
+            }, on_conflict='telefono').execute()
+        except Exception as e:
+            if "PGRST204" not in str(e):
+                logger.error(f"Error upserting cliente: {e}")
+        
+        # 2. Check existence in 'clientes_puntos'
+        existing_cp = supabase.table('clientes_puntos') \
+            .select('id') \
+            .eq('negocio_id', negocio_id) \
+            .eq('telefono', clean_phone) \
+            .execute()
+        
+        cp_data = {
+            "negocio_id": negocio_id,
+            "telefono": clean_phone,
+            "nombre": nombre,
+            "email": email,
+            "fecha_nacimiento": birth_date,
+            "puntos_actuales": 0,
+            "puntos_totales": 0,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        logger.info(f"Attempting upsert clientes_puntos: {cp_data}")
+        # 2. Update/Insert in 'clientes_puntos' using RPC (safer/atomic)
+        try:
+            rpc_params = {
+                "p_negocio_id": negocio_id,
+                "p_telefono": clean_phone,
+                "p_nombre": nombre,
+                "p_email": email,
+                "p_fecha_nacimiento": birth_date
+            }
+            logger.info(f"Calling RPC register_client_points with: {rpc_params}")
+            supabase.rpc("register_client_points", rpc_params).execute()
+        except Exception as e:
+            logger.error(f"Error executing RPC register_client_points: {e}")
+            # If RPC fails, we still consider global registration? 
+            # Better to report error
+            raise e
+        
+        return json.dumps({"status": "success", "message": f"¡Excelente! Ya te he registrado como {nombre}. Ahora puedes acumular puntos en tus compras."})
+    except Exception as e:
+        logger.error(f"Error register_customer: {e}")
+        with open("error_log.txt", "a") as f:
+            f.write(f"Error register_customer: {str(e)}\n")
+        return json.dumps({"status": "error", "message": f"Lo siento, hubo un error al registrarte: {str(e)}"})
+
 def send_whatsapp_response(to_number: str, body: str):
     try:
         # Sanitize and format number
@@ -280,7 +521,7 @@ def send_whatsapp_response(to_number: str, body: str):
         elif len(clean_number) == 12 and clean_number.startswith('57'):
             formatted_number = f"+{clean_number}"
         else:
-            # Fallback (maybe user provided another country code or it is international)
+            # Fallback
             formatted_number = f"+{clean_number}" if not to_number.startswith('+') else to_number
 
         message = twilio_client.messages.create(
