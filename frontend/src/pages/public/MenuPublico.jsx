@@ -649,7 +649,7 @@ const MenuContent = () => {
                   }}
                 />
               </div>
-              <h2 className="hidden md:block text-xl font-black tracking-tighter text-[#111814] truncate max-w-[200px]">
+              <h2 className="hidden md:block text-xl font-black tracking-tighter text-white truncate max-w-[200px]">
                 {business.nombre}
               </h2>
             </Link>

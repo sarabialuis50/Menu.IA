@@ -7,10 +7,10 @@ load_dotenv()
 api_key = os.environ.get("GOOGLE_GEMINI_API_KEY")
 genai.configure(api_key=api_key)
 
-print("Listing ALL models:")
 try:
-    models = genai.list_models()
-    for m in models:
-        print(f"Model: {m.name} - Methods: {m.supported_generation_methods}")
+    print("Listing models...")
+    for m in genai.list_models():
+        if 'generateContent' in m.supported_generation_methods:
+            print(m.name)
 except Exception as e:
     print(f"Error: {e}")

@@ -22,6 +22,7 @@ import {
   Heart
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import LandingAgent from '@/components/LandingAgent';
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -338,6 +339,7 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+      <LandingAgent />
     </div>
   );
 }

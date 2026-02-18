@@ -1916,10 +1916,21 @@ async def get_ai_insights(negocio_id: str, business: Business = Depends(get_curr
         try:
             # --- TRY GEMINI FIRST ---
             logger.info("Intentando generar insights con Gemini...")
-            model = genai.GenerativeModel('gemini-1.5-flash')
-            response = model.generate_content(prompt)
-            clean_text = response.text.replace('```json', '').replace('```', '').strip()
-            return json.loads(clean_text)
+            models_to_try = ['gemini-2.0-flash', 'gemini-1.5-flash']
+            success = False
+            
+            for model_name in models_to_try:
+                try:
+                    model = genai.GenerativeModel(model_name)
+                    response = model.generate_content(prompt)
+                    clean_text = response.text.replace('```json', '').replace('```', '').strip()
+                    return json.loads(clean_text)
+                except Exception as e:
+                    logger.warning(f"Insights: {model_name} falló: {e}")
+                    continue
+            
+            if not success:
+                raise Exception("Gemini falló en todos los modelos para insights")
 
         except Exception as gemini_err:
             logger.warning(f"Gemini falló en Insights: {str(gemini_err)}. Usando respaldo OpenAI...")
@@ -2007,10 +2018,23 @@ async def chat_with_consultant(negocio_id: str, request: ChatRequest, business: 
         try:
             # --- TRY GEMINI FIRST ---
             logger.info("Intentando chat con Gemini...")
-            model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=system_instructions)
-            chat = model.start_chat(history=chat_history)
-            response = chat.send_message(request.message)
-            return {"reply": response.text, "provider": "gemini"}
+            
+            # List of models to try in order of preference
+            models_to_try = ['gemini-2.0-flash', 'gemini-1.5-flash']
+            response = None
+            
+            for model_name in models_to_try:
+                try:
+                    model = genai.GenerativeModel(model_name, system_instruction=system_instructions)
+                    chat = model.start_chat(history=chat_history)
+                    response = chat.send_message(request.message)
+                    return {"reply": response.text, "provider": f"gemini-{model_name}"}
+                except Exception as e:
+                    logger.warning(f"Consultancy chat: {model_name} falló: {e}")
+                    continue
+            
+            if not response:
+                raise Exception("No se pudo conectar con ningún modelo de Gemini")
             
         except Exception as gemini_err:
             logger.warning(f"Gemini falló: {str(gemini_err)}. Usando respaldo OpenAI...")
@@ -2037,6 +2061,84 @@ async def chat_with_consultant(negocio_id: str, request: ChatRequest, business: 
         logger.error(f"Error CRÍTICO en ambos proveedores de IA: {str(e)}")
         logger.error(traceback.format_exc())
         return {"reply": get_fallback_message()}
+
+# --- LANDING PAGE CHAT AGENT ---
+
+class LandingChatRequest(BaseModel):
+    message: str
+    history: List[Dict[str, Any]] = []
+
+@api_router.post("/public/landing-chat")
+async def public_landing_chat(request: LandingChatRequest):
+    # System prompt for prospective business owners
+    system_instructions = """
+    Eres el Asistente Experto de Menu.IA (MenuPro), un consultor para dueños de negocios del sector gastronómico (restaurantes, cafés, bares, etc.) en Colombia.
+    Tu objetivo es convencer a los dueños de negocios de las ventajas de usar nuestra plataforma y resolver sus dudas técnicas o comerciales de forma profesional, amable y persuasiva.
+
+    INFORMACIÓN CLAVE DE MENU.IA:
+    - Qué es: Plataforma de gestión inteligente para restaurantes.
+    - Funciones Principales:
+        * Menú QR Inteligente: Los clientes piden desde su celular sin apps.
+        * Pantalla de Cocina (KDS): Gestión eficiente de pedidos en cocina.
+        * App de Meseros: Toma de pedidos rápida desde cualquier dispositivo.
+        * WhatsApp Integrado: Notificaciones automáticas y atención por IA.
+        * Analítica Avanzada: Reportes de ventas, platos top y rendimiento.
+        * Fidelización: Sistema de puntos ajustable por el negocio.
+
+    PLANES Y PRECIOS (Pesos Colombianos - COP):
+    - Starter (Gratis): Hasta 50 pedidos/mes, 1 usuario, Menú QR básico. Ideal para pequeños emprendimientos.
+    - Pro ($99.000 COP/mes): Pedidos ilimitados, 5 usuarios, Pantalla de cocina, WhatsApp básico, Analytics completo. Es nuestro plan más popular.
+    - Business ($249.000 COP/mes): Todo lo anterior, usuarios ilimitados, WhatsApp avanzado, acceso a API y soporte prioritario.
+
+    REGLAS DE RESPUESTA:
+    1. Sé profesional pero cercano. Usa un tono motivador.
+    2. Resalta el ahorro de tiempo y el aumento de ventas gracias a la IA.
+    3. Si preguntan algo que no sabes, invítalos a registrarse gratis para probar la plataforma en https://menuia.co/register.
+    4. Usa emojis de forma moderada (🚀, 📈, 🍔, ✨).
+    5. No inventes precios o funciones que no estén listadas aquí.
+    6. Tus respuestas deben ser en español.
+    """
+
+    chat_history = []
+    for msg in request.history:
+         role = "user" if msg.get("role") == "user" else "model"
+         content = msg.get("content", "")
+         if content:
+             chat_history.append({"role": role, "parts": [content]})
+
+    try:
+        # Try Gemini 2.0 Flash first, then 1.5
+        models_to_try = ['gemini-2.0-flash', 'gemini-1.5-flash']
+        
+        for model_name in models_to_try:
+            try:
+                model = genai.GenerativeModel(model_name, system_instruction=system_instructions)
+                chat = model.start_chat(history=chat_history)
+                response = chat.send_message(request.message)
+                return {"reply": response.text, "provider": f"gemini-{model_name}"}
+            except Exception as e:
+                logger.warning(f"Landing chat: {model_name} falló: {e}")
+                continue
+                
+        # If Gemini fails, fallback to OpenAI
+        client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+        openai_history = [{"role": "system", "content": system_instructions}]
+        for msg in request.history:
+            openai_history.append({
+                "role": "user" if msg.get("role") == "user" else "assistant",
+                "content": msg.get("content", "")
+            })
+        openai_history.append({"role": "user", "content": request.message})
+        
+        res = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=openai_history
+        )
+        return {"reply": res.choices[0].message.content, "provider": "openai"}
+
+    except Exception as e:
+        logger.error(f"Error en Landing Chat: {str(e)}")
+        return {"reply": "¡Hola! 👋 Soy el asistente de Menu.IA. Estoy experimentando mucha demanda, pero puedes registrarte gratis en nuestra página para conocer todos los beneficios."}
 
 
 # ============ CLIENT AUTH & PROFILE ROUTES ============
