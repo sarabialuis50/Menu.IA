@@ -68,19 +68,28 @@ app = FastAPI(title="Menu.IA API", version="1.0.0")
 async def health_check():
     return {"status": "ok", "message": "Menu.IA API is running"}
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
+# Configure CORS based on environment variables
+cors_origins_str = os.environ.get("CORS_ORIGINS", "")
+if cors_origins_str:
+    cors_origins = [origin.strip() for origin in cors_origins_str.split(",")]
+else:
+    # Fallback to hardcoded list if env var is missing
+    cors_origins = [
         "https://menuia.co",
         "https://www.menuia.co",
         "https://menuia-production.up.railway.app",
         "http://localhost:3000",
         "http://localhost:5173",
         "http://localhost:8000"
-    ],
+    ]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"] # Ensure all headers are exposed
 )
 
 # Create a router with the /api prefix
@@ -92,6 +101,8 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+logger.info(f"Allowed CORS origins: {cors_origins}")
 
 
 # WebSocket Manager for Real-time updates
