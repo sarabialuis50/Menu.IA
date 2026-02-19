@@ -64,7 +64,7 @@ const OrderStatusBadge = ({ status }) => {
 
 export default function DashboardPage() {
   const { slug } = useParams();
-  const { api } = useAuth();
+  const { user, api } = useAuth();
   const [analytics, setAnalytics] = useState(null);
   const [recentOrders, setRecentOrders] = useState([]);
   const [loading, setLoading] = useState(true);

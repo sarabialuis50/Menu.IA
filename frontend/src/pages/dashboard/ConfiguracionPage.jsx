@@ -963,15 +963,47 @@ export default function ConfiguracionPage() {
                                             <p className="text-xs text-[#618972]">Se mostrará en la parte superior de tu página pública.</p>
                                         </div>
                                     </div>
-                                    <div className="relative aspect-[21/7] rounded-[2rem] overflow-hidden border border-gray-100 group shadow-inner bg-gray-50">
+                                    <div className="relative aspect-[21/9] md:aspect-[21/7] rounded-[2.5rem] overflow-hidden border border-gray-100 group shadow-2xl bg-gray-900">
                                         <img
                                             src={businessData.banner_url || defaultImages[1]}
-                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-60 group-hover:opacity-40"
                                         />
-                                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all flex items-center justify-center cursor-pointer" onClick={() => document.getElementById('banner-upload').click()}>
-                                            <div className="bg-white/90 p-3 rounded-2xl shadow-xl flex items-center gap-2 font-bold text-sm text-[#111814] scale-90 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-300">
+
+                                        {/* Real-time Banner UI Preview */}
+                                        <div className="absolute inset-0 p-8 flex flex-col justify-end pointer-events-none">
+                                            <div className="space-y-2">
+                                                {businessData.banner_tag && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, y: 10 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        className="inline-flex px-3 py-1 rounded-full bg-[#22C55E] text-[#111814] text-[9px] font-black uppercase tracking-widest shadow-lg shadow-[#22C55E]/20"
+                                                    >
+                                                        {businessData.banner_tag}
+                                                    </motion.div>
+                                                )}
+                                                <motion.h2
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    className="text-2xl md:text-4xl font-black text-white tracking-tighter drop-shadow-lg"
+                                                >
+                                                    {businessData.banner_title || 'Tu Título Aquí'}
+                                                </motion.h2>
+                                                {businessData.banner_description && (
+                                                    <motion.p
+                                                        initial={{ opacity: 0, y: 10 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        className="text-xs md:text-sm text-gray-200 font-medium max-w-sm drop-shadow-md line-clamp-2"
+                                                    >
+                                                        {businessData.banner_description}
+                                                    </motion.p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="absolute inset-0 bg-transparent flex items-center justify-center cursor-pointer" onClick={() => document.getElementById('banner-upload').click()}>
+                                            <div className="bg-white/95 p-3 rounded-2xl shadow-xl flex items-center gap-2 font-black text-[10px] text-[#111814] scale-90 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-300 uppercase tracking-widest pointer-events-auto">
                                                 <Camera className="w-4 h-4" />
-                                                Actualizar Banner
+                                                Actualizar Imagen de Fondo
                                             </div>
                                         </div>
                                     </div>
@@ -2092,18 +2124,29 @@ export default function ConfiguracionPage() {
                                     </div>
 
                                     {/* Conocimiento */}
-                                    <div className="space-y-3 text-center">
-                                        <div className="flex flex-col items-center gap-2">
-                                            <Label className="text-xs font-black uppercase tracking-widest text-[#111814]">Conocimiento de la IA</Label>
-                                            <span className="text-[9px] font-black text-[#22C55E] uppercase bg-[#22C55E]/10 px-2 py-0.5 rounded-full">Mejora la Precisión</span>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="size-10 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
+                                                <Search className="w-5 h-5" />
+                                            </div>
+                                            <div className="text-left">
+                                                <Label className="text-sm font-black uppercase tracking-widest text-[#111814]">Base de Conocimiento</Label>
+                                                <p className="text-[10px] text-[#618972] font-medium">Instrucciones específicas que el bot recordará.</p>
+                                            </div>
                                         </div>
-                                        <Textarea
-                                            value={businessData.ai_conocimiento || ''}
-                                            onChange={(e) => setBusinessData({ ...businessData, ai_conocimiento: e.target.value })}
-                                            placeholder="Describe detalles únicos de tu negocio, políticas, especialidades o curiosidades..."
-                                            className="min-h-[120px] rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium leading-relaxed text-xs p-4"
-                                        />
-                                        <p className="text-[10px] text-[#618972] font-medium italic">Describe detalles únicos para que la IA los use.</p>
+                                        <div className="relative">
+                                            <Textarea
+                                                value={businessData.ai_conocimiento || ''}
+                                                onChange={(e) => setBusinessData({ ...businessData, ai_conocimiento: e.target.value })}
+                                                placeholder="Ej: 'Ofrecemos 2x1 en pizzas los jueves', 'Estamos ubicados frente al parque principal', 'No tenemos opciones veganas por ahora'..."
+                                                className="min-h-[150px] rounded-3xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium leading-relaxed text-sm p-6"
+                                            />
+                                            <div className="absolute right-6 bottom-6">
+                                                <div className="px-3 py-1 rounded-full bg-[#22C55E]/5 border border-[#22C55E]/10 text-[#22C55E] text-[10px] font-black uppercase tracking-widest">
+                                                    Entrena a tu IA
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -2291,34 +2334,63 @@ export default function ConfiguracionPage() {
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-2">
-                                    <div className="space-y-2">
-                                        <Label className="font-bold flex items-center gap-1">
-                                            Oferta (%)
-                                        </Label>
-                                        <div className="relative">
-                                            <Input
-                                                type="number"
-                                                value={productForm.oferta_porcentaje}
-                                                onChange={e => setProductForm({ ...productForm, oferta_porcentaje: e.target.value })}
-                                                className="h-12 rounded-2xl bg-gray-50 border-gray-100 pr-10"
-                                                placeholder="Ej: 15"
-                                                min="0"
-                                                max="100"
-                                            />
-                                            <div className="absolute right-4 top-1/2 -translate-y-1/2 font-black text-[#618972]">%</div>
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col justify-center gap-3">
-                                        <div className="flex items-center gap-3 mt-4">
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-3">
                                             <Switch
+                                                checked={!!productForm.oferta_porcentaje}
+                                                onCheckedChange={checked => setProductForm({
+                                                    ...productForm,
+                                                    oferta_porcentaje: checked ? '10' : ''
+                                                })}
+                                                className="data-[state=checked]:bg-[#22C55E]"
+                                            />
+                                            <Label className="font-bold cursor-pointer">Producto en Oferta</Label>
+                                        </div>
+
+                                        <AnimatePresence>
+                                            {!!productForm.oferta_porcentaje && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, height: 0 }}
+                                                    animate={{ opacity: 1, height: 'auto' }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                    className="overflow-hidden"
+                                                >
+                                                    <div className="space-y-2 pt-2">
+                                                        <Label className="text-[10px] font-black uppercase tracking-widest text-[#618972]">Descuento (%)</Label>
+                                                        <div className="relative">
+                                                            <Input
+                                                                type="number"
+                                                                value={productForm.oferta_porcentaje}
+                                                                onChange={e => setProductForm({ ...productForm, oferta_porcentaje: e.target.value })}
+                                                                className="h-12 rounded-2xl bg-[#22C55E]/5 border-[#22C55E]/20 pr-10 font-bold text-[#22C55E]"
+                                                                placeholder="Ej: 15"
+                                                                min="1"
+                                                                max="100"
+                                                            />
+                                                            <div className="absolute right-4 top-1/2 -translate-y-1/2 font-black text-[#22C55E]">%</div>
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+
+                                    <div className="space-y-4 pt-1">
+                                        <div className="flex items-center gap-3">
+                                            <Switch
+                                                id="featured-toggle"
                                                 checked={productForm.destacado}
                                                 onCheckedChange={checked => setProductForm({ ...productForm, destacado: checked })}
                                                 className="data-[state=checked]:bg-[#22C55E]"
                                             />
-                                            <Label className="font-bold cursor-pointer" onClick={() => setProductForm({ ...productForm, destacado: !productForm.destacado })}>
-                                                Marcar como Producto Destacado
+                                            <Label htmlFor="featured-toggle" className="font-bold cursor-pointer flex items-center gap-2">
+                                                <Star className={`w-4 h-4 ${productForm.destacado ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
+                                                Producto Destacado
                                             </Label>
                                         </div>
+                                        <p className="text-[10px] text-[#618972] leading-tight pl-11">
+                                            Aparecerá en la sección principal de Recomendados de tu página.
+                                        </p>
                                     </div>
                                 </div>
 
