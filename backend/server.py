@@ -2310,19 +2310,19 @@ async def create_subscription_link(data: SubscriptionRequest, business: Business
         # NOTE: For production, better to fetch from DB or MP Plans API
         PLAN_DETAILS = {
             'impulso': {
-                'reason': 'Plan Impulso - Menu.IA',
+                'reason': 'Plan Básico (Suscripción) - Menu.IA',
                 'price_monthly': 39900,
                 'price_annual': 399000, 
                 'back_url': f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/configuracion?status=success"
             },
             'pro': {
-                'reason': 'Plan Crecimiento Pro - Menu.IA',
+                'reason': 'Plan Pro (Suscripción) - Menu.IA',
                 'price_monthly': 79900,
                 'price_annual': 799000,
                 'back_url': f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/configuracion?status=success"
             },
             'elite': {
-                'reason': 'Plan Dominio Total - Menu.IA',
+                'reason': 'Plan Premium (Suscripción) - Menu.IA',
                 'price_monthly': 179900,
                 'price_annual': 1799000,
                 'back_url': f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/configuracion?status=success"
@@ -2336,10 +2336,12 @@ async def create_subscription_link(data: SubscriptionRequest, business: Business
         amount = selected_plan['price_annual'] if data.frequency == 'annual' else selected_plan['price_monthly']
         
         # Create Preapproval Data
+        payer_email = business.email if business.email else "soporte@menuia.co"
+        
         subscription_data = {
             "reason": selected_plan['reason'],
             "external_reference": f"{business.id}:{data.plan_id}", # Identify User logic
-            "payer_email": business.email, 
+            "payer_email": payer_email, 
             "auto_recurring": {
                 "frequency": 1,
                 "frequency_type": "months",
@@ -2401,6 +2403,8 @@ async def create_payment_link(data: SubscriptionRequest, business: Business = De
         amount = selected_plan['price_annual'] if data.frequency == 'annual' else selected_plan['price_monthly']
         
         # Create Preference Payload
+        payer_email = business.email if business.email else "soporte@menuia.co"
+        
         preference_data = {
             "items": [
                 {
@@ -2411,7 +2415,7 @@ async def create_payment_link(data: SubscriptionRequest, business: Business = De
                 }
             ],
             "payer": {
-                "email": business.email
+                "email": payer_email
             },
             "external_reference": f"{business.id}:{data.plan_id}:{data.frequency}",
             "back_urls": {
@@ -2419,16 +2423,26 @@ async def create_payment_link(data: SubscriptionRequest, business: Business = De
                 "failure": f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/configuracion?status=failure",
                 "pending": f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/configuracion?status=pending"
             },
-            "auto_return": "all",
-            "notification_url": f"{os.environ.get('BACKEND_URL')}/api/payments/webhook"
+            "auto_return": "all"
         }
+
+        # Solo añadir notification_url si es una URL pública válida (HTTPS)
+        backend_url = os.environ.get('BACKEND_URL', '')
+        if backend_url.startswith('https://'):
+            preference_data["notification_url"] = f"{backend_url}/api/payments/webhook"
         
         # Call SDK to create preference
         preference_response = mp_sdk.preference().create(preference_data)
+        
+        if preference_response["status"] < 200 or preference_response["status"] >= 300:
+             logger.error(f"MercadoPago Error: {preference_response}")
+             raise HTTPException(status_code=500, detail=f"Error en MercadoPago: {preference_response.get('response', {}).get('message', 'Sin mensaje')}")
+
         preference = preference_response["response"]
         
         if "init_point" not in preference:
-             raise HTTPException(status_code=500, detail="Error al crear preferencia en MercadoPago")
+             logger.error(f"MercadoPago response missing init_point: {preference}")
+             raise HTTPException(status_code=500, detail="Error al crear preferencia en MercadoPago (missing init_point)")
              
         return {"init_point": preference["init_point"]}
 
@@ -2453,6 +2467,8 @@ async def create_wa_pack_link(data: WhatsAppPackRequest, business: Business = De
              raise HTTPException(status_code=400, detail="Cantidad de mensajes no válida")
              
         # Create Preference Payload
+        payer_email = business.email if business.email else "soporte@menuia.co"
+        
         preference_data = {
             "items": [
                 {
@@ -2463,7 +2479,7 @@ async def create_wa_pack_link(data: WhatsAppPackRequest, business: Business = De
                 }
             ],
             "payer": {
-                "email": business.email
+                "email": payer_email
             },
             "external_reference": f"PACK:{business.id}:{data.amount}",
             "back_urls": {
@@ -2471,9 +2487,13 @@ async def create_wa_pack_link(data: WhatsAppPackRequest, business: Business = De
                 "failure": f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/marketing?status=failure",
                 "pending": f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/marketing?status=pending"
             },
-            "auto_return": "all",
-            "notification_url": f"{os.environ.get('BACKEND_URL')}/api/payments/webhook"
+            "auto_return": "all"
         }
+
+        # Solo añadir notification_url si es una URL pública válida (HTTPS)
+        backend_url = os.environ.get('BACKEND_URL', '')
+        if backend_url.startswith('https://'):
+            preference_data["notification_url"] = f"{backend_url}/api/payments/webhook"
         
         preference_response = mp_sdk.preference().create(preference_data)
         preference = preference_response["response"]
