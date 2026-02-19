@@ -56,7 +56,14 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 30 # 30 days
 ACCESS_TOKEN_EXPIRE_HOURS = 24 * 30
 
 # Initialize MercadoPago SDK
-mp_sdk = mercadopago.SDK(os.environ.get("MERCADOPAGO_ACCESS_TOKEN"))
+mp_access_token = os.environ.get("MERCADOPAGO_ACCESS_TOKEN")
+if not mp_access_token:
+    logger.warning("MERCADOPAGO_ACCESS_TOKEN not found in environment variables. MercadoPago features will be disabled.")
+    # Initialize with a dummy string to avoid ValueError if the SDK is called, 
+    # but we should handle this in the payment routes too.
+    mp_sdk = mercadopago.SDK("MISSING_TOKEN")
+else:
+    mp_sdk = mercadopago.SDK(mp_access_token)
 
 # Security
 security = HTTPBearer()
@@ -2316,6 +2323,8 @@ class WhatsAppPackRequest(BaseModel):
 @api_router.post("/payments/create-subscription")
 async def create_subscription_link(data: SubscriptionRequest, business: Business = Depends(get_current_business)):
     """Generate a MercadoPago Preapproval (Subscription) Link"""
+    if not os.environ.get("MERCADOPAGO_ACCESS_TOKEN"):
+         raise HTTPException(status_code=503, detail="El sistema de pagos de MercadoPago no está configurado.")
     try:
         # Define Plan Details
         # NOTE: For production, better to fetch from DB or MP Plans API
@@ -2387,6 +2396,8 @@ async def create_subscription_link(data: SubscriptionRequest, business: Business
 @api_router.post("/payments/create-payment-link")
 async def create_payment_link(data: SubscriptionRequest, business: Business = Depends(get_current_business)):
     """Generate a MercadoPago Preference Link (For PSE, Nequi, etc - Single Payment)"""
+    if not os.environ.get("MERCADOPAGO_ACCESS_TOKEN"):
+         raise HTTPException(status_code=503, detail="El sistema de pagos de MercadoPago no está configurado.")
     try:
         # Define Plan Details
         PLAN_DETAILS = {
@@ -2465,6 +2476,8 @@ async def create_payment_link(data: SubscriptionRequest, business: Business = De
 @api_router.post("/payments/create-wa-pack-link")
 async def create_wa_pack_link(data: WhatsAppPackRequest, business: Business = Depends(get_current_business)):
     """Generate a MercadoPago Preference Link for WhatsApp Message Packs"""
+    if not os.environ.get("MERCADOPAGO_ACCESS_TOKEN"):
+         raise HTTPException(status_code=503, detail="El sistema de pagos de MercadoPago no está configurado.")
     try:
         # Updated pricing for packs (Price in COP)
         PACK_PRICING = {
