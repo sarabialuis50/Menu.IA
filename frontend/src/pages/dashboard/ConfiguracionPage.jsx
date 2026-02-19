@@ -1118,31 +1118,43 @@ export default function ConfiguracionPage() {
                                     </Button>
                                 </CardHeader>
                                 <CardContent className="px-8 pb-8">
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex flex-wrap gap-3">
                                         {categories.map((cat, idx) => {
-                                            const catName = typeof cat === 'string' ? cat : cat.nombre;
+                                            const catName = typeof cat === 'object' ? cat.nombre : cat;
                                             const catIcon = typeof cat === 'object' ? cat.icono : 'Utensils';
                                             const isUrl = catIcon?.includes('/') || catIcon?.includes('http');
                                             const isLucide = AvailableIcons[catIcon];
                                             const IconComponent = isLucide ? AvailableIcons[catIcon] : Utensils;
 
                                             return (
-                                                <div key={`${catName}-${idx}`} className="group flex items-center gap-2 bg-gray-50 border border-gray-100 pl-3 pr-1 py-1.5 rounded-xl hover:border-[#22C55E] transition-all">
-                                                    {isUrl ? (
-                                                        <img src={catIcon} alt="" className="w-4 h-4 object-contain" />
-                                                    ) : isLucide ? (
-                                                        <IconComponent className="w-4 h-4 text-gray-500" />
-                                                    ) : (
-                                                        <span className="text-sm leading-none">{catIcon}</span>
-                                                    )}
-                                                    <span className="font-bold text-xs text-[#111814]">{catName}</span>
+                                                <motion.div
+                                                    initial={{ opacity: 0, scale: 0.9 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    key={`${catName}-${idx}`}
+                                                    className="group flex items-center gap-3 bg-white border border-gray-100 pl-4 pr-2 py-2.5 rounded-2xl hover:border-[#22C55E] hover:shadow-xl hover:shadow-[#22C55E]/5 transition-all cursor-default"
+                                                >
+                                                    <div className="size-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-[#22C55E]/10 group-hover:text-[#22C55E] transition-colors shrink-0 overflow-hidden">
+                                                        {isUrl ? (
+                                                            <img src={catIcon} alt="" className="w-6 h-6 object-contain" />
+                                                        ) : isLucide ? (
+                                                            <IconComponent className="w-5 h-5" />
+                                                        ) : (
+                                                            <span className="text-xl leading-none">{catIcon || '🍽️'}</span>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex flex-col min-w-0 pr-2">
+                                                        <span className="font-black text-xs text-[#111814] truncate">{catName}</span>
+                                                        <span className="text-[9px] text-[#618972] font-bold uppercase tracking-widest">
+                                                            {products.filter(p => p.categoria === catName).length} Productos
+                                                        </span>
+                                                    </div>
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" size="icon" className="size-6 rounded-lg hover:bg-gray-100">
-                                                                <MoreVertical className="w-3 h-3 text-gray-400" />
+                                                            <Button variant="ghost" size="icon" className="size-8 rounded-xl hover:bg-gray-100 shrink-0">
+                                                                <MoreVertical className="w-4 h-4 text-gray-400" />
                                                             </Button>
                                                         </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end" className="rounded-2xl p-2 border-gray-100 shadow-xl">
+                                                        <DropdownMenuContent align="end" className="rounded-2xl p-2 border-gray-100 shadow-2xl min-w-[140px]">
                                                             <DropdownMenuItem
                                                                 onClick={() => {
                                                                     setEditingCategory(cat);
@@ -1151,26 +1163,29 @@ export default function ConfiguracionPage() {
                                                                     setCategoryIcon(catIcon || 'Utensils');
                                                                     setIsCategoryModalOpen(true);
                                                                 }}
-                                                                className="rounded-xl font-bold text-sm cursor-pointer gap-2"
+                                                                className="rounded-xl font-bold text-xs cursor-pointer gap-2 py-2.5"
                                                             >
-                                                                <Edit2 className="w-4 h-4" />
+                                                                <Edit2 className="w-3.5 h-3.5" />
                                                                 Editar
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem
                                                                 onClick={() => handleDeleteCategory(cat)}
-                                                                className="rounded-xl font-bold text-sm cursor-pointer gap-2 text-red-500 focus:text-red-600 focus:bg-red-50"
+                                                                className="rounded-xl font-bold text-xs cursor-pointer gap-2 py-2.5 text-red-500 focus:text-red-600 focus:bg-red-50"
                                                             >
-                                                                <Trash2 className="w-4 h-4" />
+                                                                <Trash2 className="w-3.5 h-3.5" />
                                                                 Eliminar
                                                             </DropdownMenuItem>
                                                         </DropdownMenuContent>
                                                     </DropdownMenu>
-                                                </div>
+                                                </motion.div>
                                             );
                                         })}
                                         {categories.length === 0 && (
-                                            <div className="w-full text-center py-8 text-gray-400 text-sm">
-                                                No hay categorías creadas.
+                                            <div className="w-full text-center py-12 border-2 border-dashed border-gray-100 rounded-[2.5rem] bg-gray-50/30">
+                                                <div className="size-16 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center mx-auto mb-4">
+                                                    <FolderPlus className="w-6 h-6 text-gray-300" />
+                                                </div>
+                                                <p className="text-[#618972] text-sm font-medium">No hay categorías. Crea una para organizar tu menú.</p>
                                             </div>
                                         )}
                                     </div>
@@ -2496,44 +2511,50 @@ export default function ConfiguracionPage() {
                                                 />
 
                                                 {categoryIcon?.includes('/') || categoryIcon?.includes('http') ? (
-                                                    <div className="relative">
-                                                        <img src={categoryIcon} alt="Icon Preview" className="w-20 h-20 object-contain" />
-                                                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 group-hover:opacity-100 rounded-lg transition-opacity">
-                                                            <Edit2 className="w-6 h-6" />
+                                                    <div className="relative group">
+                                                        <img src={categoryIcon} alt="Icon Preview" className="w-24 h-24 object-contain rounded-2xl shadow-xl transition-transform group-hover:scale-110" />
+                                                        <div className="absolute -top-2 -right-2 bg-[#22C55E] text-white p-1 rounded-full shadow-lg">
+                                                            <Check className="w-3 h-3" />
                                                         </div>
                                                     </div>
                                                 ) : (
-                                                    <div className="flex flex-col items-center gap-2 text-gray-400 group-hover:text-[#22C55E] transition-colors">
-                                                        <div className="p-4 bg-white rounded-full shadow-sm group-hover:shadow-md transition-all">
-                                                            <Upload className="w-6 h-6" />
+                                                    <div className="flex flex-col items-center gap-3">
+                                                        <div className="size-20 rounded-[2rem] bg-white shadow-xl flex items-center justify-center text-gray-300 border border-gray-100">
+                                                            <Upload className="w-8 h-8" />
                                                         </div>
-                                                        <span className="text-xs font-bold uppercase tracking-wider">Subir Imagen</span>
+                                                        <p className="text-[10px] font-black text-[#618972] uppercase tracking-widest">JPG, PNG o SVG</p>
                                                     </div>
                                                 )}
+
+                                                <div className="text-center">
+                                                    <p className="font-black text-xs uppercase tracking-tight text-[#111814]">
+                                                        {categoryIcon?.includes('/') ? 'Imagen subida' : 'Seleccionar archivo'}
+                                                    </p>
+                                                    <p className="text-[10px] text-[#618972] font-medium mt-1">Sube una ilustración o icono personalizado</p>
+                                                </div>
                                             </div>
-                                            <p className="text-[10px] text-center text-gray-400">Recomendado: Imágenes cuadradas, PNG transparente, máx 1MB.</p>
                                         </TabsContent>
                                     </Tabs>
+                                </div>
 
-                                    {/* Preview of Selection */}
-                                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
-                                        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest flex-1">Vista Previa:</span>
-                                        <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
-                                            {(() => {
-                                                const isUrl = categoryIcon?.includes('/') || categoryIcon?.includes('http');
-                                                const isLucide = AvailableIcons[categoryIcon];
-                                                const IconComponent = isLucide ? AvailableIcons[categoryIcon] : Utensils;
+                                {/* Preview of Selection */}
+                                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                    <span className="text-xs font-bold text-gray-500 uppercase tracking-widest flex-1">Vista Previa:</span>
+                                    <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
+                                        {(() => {
+                                            const isUrl = categoryIcon?.includes('/') || categoryIcon?.includes('http');
+                                            const isLucide = AvailableIcons[categoryIcon];
+                                            const IconComponent = isLucide ? AvailableIcons[categoryIcon] : Utensils;
 
-                                                if (isUrl) return <img src={categoryIcon} className="w-5 h-5 object-contain" />;
-                                                if (isLucide) return <IconComponent className="w-5 h-5 text-[#22C55E]" />;
-                                                return <span className="text-lg leading-none">{categoryIcon}</span>;
-                                            })()}
-                                            <span className="text-sm font-bold text-[#111814]">{categoryName || 'Nombre Categoría'}</span>
-                                        </div>
+                                            if (isUrl) return <img src={categoryIcon} className="w-5 h-5 object-contain" />;
+                                            if (isLucide) return <IconComponent className="w-5 h-5 text-[#22C55E]" />;
+                                            return <span className="text-lg leading-none">{categoryIcon || '🍽️'}</span>;
+                                        })()}
+                                        <span className="text-sm font-bold text-[#111814]">{categoryName || 'Nombre Categoría'}</span>
                                     </div>
                                 </div>
 
-                                <div className="flex gap-4">
+                                <div className="flex gap-4 pt-4 border-t">
                                     <Button type="button" variant="ghost" className="flex-1 h-12 rounded-2xl" onClick={() => setIsCategoryModalOpen(false)}>Cancelar</Button>
                                     <Button type="submit" disabled={saving} className={getModalButtonStyle(categoryName !== originalCategoryName || (editingCategory && categoryIcon !== (typeof editingCategory === 'object' ? editingCategory.icono : 'Utensils')))}>
                                         {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'GUARDAR SECCIÓN'}
@@ -2577,6 +2598,8 @@ export default function ConfiguracionPage() {
                     </DialogContent>
                 </Dialog>
             </div>
-        </DashboardLayout >
+        </DashboardLayout>
     );
-}
+};
+
+export default ConfiguracionPage;

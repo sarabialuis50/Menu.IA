@@ -1013,3 +1013,9 @@ postgrest.exceptions.APIError: {'message': 'column negocios.wa_number does not e
 2026-02-19 12:01:16,366 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/pedidos?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc&offset=0&limit=5 "HTTP/2 200 OK"
 2026-02-19 12:03:12,803 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
 2026-02-19 12:03:15,119 - server - ERROR - Error creating WA pack payment: 'init_point'
+2026-02-19 12:15:30,567 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-19 12:15:32,853 - server - ERROR - Error creating WA pack payment: 'init_point'
+2026-02-19 12:15:42,093 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-19 12:15:42,296 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-19 12:15:48,210 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-19 12:15:52,809 - server - ERROR - Error creating WA pack payment: 'init_point'
