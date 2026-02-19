@@ -93,7 +93,7 @@ export default function LandingAgent() {
                                     className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                                 >
                                     <div className={`max-w-[85%] p-4 rounded-[1.5rem] text-sm font-medium shadow-sm flex flex-col gap-3 ${msg.role === 'user'
-                                        ? 'bg-[#22C55E] text-white rounded-tr-none'
+                                        ? 'bg-[#4ADE80] text-[#111814] rounded-tr-none'
                                         : 'bg-white text-[#111814] rounded-tl-none border border-gray-100'
                                         }`}>
                                         <div>{msg.content.replace('[LINK_CALENDLY]', '')}</div>
@@ -136,7 +136,7 @@ export default function LandingAgent() {
                                     type="submit"
                                     size="icon"
                                     disabled={!message.trim() || isLoading}
-                                    className="absolute right-1.5 h-9 w-9 bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-lg transition-all"
+                                    className="absolute right-1.5 h-9 w-9 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] rounded-lg transition-all"
                                 >
                                     <Send className="w-4 h-4" />
                                 </Button>
@@ -164,7 +164,7 @@ export default function LandingAgent() {
                     <X className="w-7 h-7 text-gray-400" />
                 ) : (
                     <>
-                        <div className="absolute inset-0 bg-[#22C55E]/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-full" />
+                        <div className="absolute inset-0 bg-[#4ADE80]/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-full" />
                         <img
                             src="/logos/logo agente.png"
                             alt="Chat"
@@ -176,8 +176,8 @@ export default function LandingAgent() {
                 {/* Notification Badge - Moved further outside */}
                 {!isOpen && (
                     <span className="absolute -top-2 -right-2 flex h-6 w-6 z-20">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#22C55E] opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-6 w-6 bg-[#22C55E] text-[11px] items-center justify-center font-black text-white shadow-lg ring-2 ring-white">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#4ADE80] opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-6 w-6 bg-[#4ADE80] text-[11px] items-center justify-center font-black text-[#111814] shadow-lg ring-2 ring-white">
                             1
                         </span>
                     </span>

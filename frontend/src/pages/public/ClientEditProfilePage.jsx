@@ -168,7 +168,7 @@ export default function ClientEditProfilePage() {
                                     <Camera className="w-8 h-8 text-white" />
                                 </div>
                             </div>
-                            <div className="absolute bottom-0 right-2 w-10 h-10 bg-[#22C55E] rounded-full flex items-center justify-center border-4 border-white shadow-lg text-[#111814]">
+                            <div className="absolute bottom-0 right-2 w-10 h-10 bg-[#4ADE80] rounded-full flex items-center justify-center border-4 border-white shadow-lg text-[#111814]">
                                 <Camera className="w-5 h-5" />
                             </div>
                             <input
@@ -253,8 +253,8 @@ export default function ClientEditProfilePage() {
                             type="submit"
                             disabled={saving}
                             className={`flex-1 h-12 rounded-xl border-2 border-[#22C55E] font-black transition-all shadow-md active:scale-95 ${initialData && JSON.stringify(initialData) !== JSON.stringify(formData)
-                                    ? "bg-[#22C55E] text-white shadow-[#22C55E]/20"
-                                    : "bg-white text-[#111814] hover:bg-[#22C55E] hover:text-white"
+                                    ? "bg-[#4ADE80] text-[#111814] shadow-[#4ADE80]/20"
+                                    : "bg-white text-[#111814] hover:bg-[#4ADE80] hover:text-[#111814]"
                                 }`}
                         >
                             {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : "Guardar Cambios"}

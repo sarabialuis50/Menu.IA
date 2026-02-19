@@ -214,7 +214,7 @@ export default function DemoRestaurante() {
                 />
                 {product.etiqueta && (
                     <div className="absolute top-4 left-4 z-20">
-                        <div className="bg-[#22C55E] text-[#111814] text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl shadow-xl border border-white/10 flex items-center gap-1.5 ring-1 ring-white/20">
+                        <div className="bg-[#4ADE80] text-[#111814] text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl shadow-xl border border-white/10 flex items-center gap-1.5 ring-1 ring-white/20">
                             <div className="size-1 rounded-full bg-white animate-pulse" />
                             {product.etiqueta}
                         </div>
@@ -231,7 +231,7 @@ export default function DemoRestaurante() {
             </div>
             <div className="p-5 flex flex-col flex-1">
                 <div className="flex items-center justify-between mb-3">
-                    <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#22C55E]/10 text-[9px] font-black text-[#22C55E] uppercase tracking-wider">
+                    <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#4ADE80]/10 text-[9px] font-black text-[#22C55E] uppercase tracking-wider">
                         {product.categoria}
                     </div>
                     <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-full text-[#111814] text-[10px] font-black">
@@ -254,7 +254,7 @@ export default function DemoRestaurante() {
                             </span>
                         )}
                     </div>
-                    <div className="size-10 bg-[#22C55E] rounded-full flex items-center justify-center shadow-lg shadow-[#22C55E]/20 text-[#111814] group-hover:scale-110 transition-transform">
+                    <div className="size-10 bg-[#4ADE80] rounded-full flex items-center justify-center shadow-lg shadow-[#4ADE80]/20 text-[#111814] group-hover:scale-110 transition-transform">
                         <Plus className="w-5 h-5 stroke-[3]" />
                     </div>
                 </div>
@@ -307,7 +307,7 @@ export default function DemoRestaurante() {
                         </div>
                     </div>
                     <div className="flex items-center gap-4">
-                        <button className="relative size-11 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center hover:bg-[#22C55E]/10 hover:border-[#22C55E] transition-all hover:scale-105 active:scale-95 group shadow-sm">
+                        <button className="relative size-11 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center hover:bg-[#4ADE80]/10 hover:border-[#4ADE80] transition-all hover:scale-105 active:scale-95 group shadow-sm">
                             <User className="w-5 h-5 text-white group-hover:text-[#22C55E]" />
                         </button>
                         <button
@@ -315,10 +315,10 @@ export default function DemoRestaurante() {
                                 setIsCartOpen(true);
                                 setStep('cart');
                             }}
-                            className="relative size-11 rounded-full bg-white border-2 border-[#22C55E] flex items-center justify-center hover:bg-[#22C55E] transition-all hover:scale-105 active:scale-95 group shadow-lg shadow-[#22C55E]/10"
+                            className="relative size-11 rounded-full bg-white border-2 border-[#4ADE80] flex items-center justify-center hover:bg-[#4ADE80] transition-all hover:scale-105 active:scale-95 group shadow-lg shadow-[#4ADE80]/10"
                         >
                             <ShoppingCart className="w-5 h-5 text-[#22C55E] group-hover:text-white" />
-                            {cartCount > 0 && <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#22C55E] text-[10px] font-black text-white ring-2 ring-white">{cartCount}</span>}
+                            {cartCount > 0 && <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#4ADE80] text-[10px] font-black text-[#111814] ring-2 ring-white">{cartCount}</span>}
                         </button>
                     </div>
                 </div>
@@ -331,7 +331,7 @@ export default function DemoRestaurante() {
                         <div className="absolute inset-0 bg-gradient-to-t from-[#102218]/80 via-[#102218]/20 to-transparent z-10" />
                         <img src={DEMO_BUSINESS.banner_url} alt="Banner" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                         <div className="absolute bottom-0 left-0 p-8 md:p-12 z-20 w-full pb-16 md:pb-24">
-                            <span className="inline-flex items-center gap-2 px-4 py-1.5 mb-4 text-[10px] font-black text-[#111814] bg-[#22C55E] rounded-full uppercase tracking-[0.2em] shadow-lg shadow-[#22C55E]/20">
+                            <span className="inline-flex items-center gap-2 px-4 py-1.5 mb-4 text-[10px] font-black text-[#111814] bg-[#4ADE80] rounded-full uppercase tracking-[0.2em] shadow-lg shadow-[#4ADE80]/20">
                                 <Star className="w-3 h-3 fill-[#111814]" />
                                 {DEMO_BUSINESS.banner_tag}
                             </span>
@@ -362,7 +362,7 @@ export default function DemoRestaurante() {
                                 key={idx}
                                 onClick={() => { setActiveCategory(cat.nombre); setSpecialFilter(null); }}
                                 className={`flex h-9 md:h-10 items-center justify-center gap-x-2 rounded-full px-4 md:px-5 transition-all active:scale-95 font-bold text-[12px] md:text-sm
-                  ${activeCategory === cat.nombre && specialFilter === null ? 'bg-[#22C55E] text-[#111814] shadow-lg shadow-[#22C55E]/20 scale-105' : 'bg-white border border-[#f0f4f2] text-[#618972] hover:border-[#22C55E] hover:text-[#111814]'}`}
+                  ${activeCategory === cat.nombre && specialFilter === null ? 'bg-[#4ADE80] text-[#111814] shadow-lg shadow-[#4ADE80]/20 scale-105' : 'bg-white border border-[#f0f4f2] text-[#618972] hover:border-[#4ADE80] hover:text-[#111814]'}`}
                             >
                                 <span className="text-base leading-none">{cat.icono}</span>
                                 <span>{cat.nombre}</span>
@@ -428,7 +428,7 @@ export default function DemoRestaurante() {
 
                                 {step === 'checkout' && (
                                     <div className="space-y-6">
-                                        <div className="p-4 bg-[#22C55E]/10 border border-[#22C55E]/20 rounded-2xl">
+                                        <div className="p-4 bg-[#4ADE80]/10 border border-[#4ADE80]/20 rounded-2xl">
                                             <p className="text-[10px] font-black text-[#22C55E] uppercase tracking-widest mb-1">Información de Entrega</p>
                                             <p className="text-xs font-medium text-[#111814]/70">Completa tus datos para simular el envío del pedido.</p>
                                         </div>
@@ -461,7 +461,7 @@ export default function DemoRestaurante() {
 
                                 {step === 'success' && (
                                     <div className="h-full flex flex-col items-center justify-center text-center px-4">
-                                        <div className="size-24 bg-[#22C55E] rounded-full flex items-center justify-center mb-6 shadow-2xl shadow-[#22C55E]/40 scale-110">
+                                        <div className="size-24 bg-[#4ADE80] rounded-full flex items-center justify-center mb-6 shadow-2xl shadow-[#4ADE80]/40 scale-110">
                                             <ChefHat className="w-12 h-12 text-[#111814]" />
                                         </div>
                                         <h3 className="text-3xl font-black text-gray-900 mb-4 tracking-tighter">¡Pedido Recibido!</h3>
@@ -473,7 +473,7 @@ export default function DemoRestaurante() {
                                             <div className="flex justify-between text-xs font-bold"><span>Orden #</span><span className="text-gray-900">DEMO-001</span></div>
                                             <div className="flex justify-between text-xs font-bold"><span>Total</span><span className="text-[#22C55E] font-black">{formatCurrency(cartTotal)}</span></div>
                                         </div>
-                                        <Button onClick={resetAll} className="w-full h-14 bg-white hover:bg-[#22C55E] text-[#22C55E] hover:text-white border-2 border-[#22C55E] font-black rounded-2xl transition-all">Seguir Explorando</Button>
+                                        <Button onClick={resetAll} className="w-full h-14 bg-white hover:bg-[#4ADE80] text-[#22C55E] hover:text-[#111814] border-2 border-[#4ADE80] font-black rounded-2xl transition-all">Seguir Explorando</Button>
                                     </div>
                                 )}
                             </div>
@@ -487,7 +487,7 @@ export default function DemoRestaurante() {
                                     <Button
                                         disabled={cart.length === 0}
                                         onClick={handleConfirmOrder}
-                                        className="w-full h-16 bg-white hover:bg-[#22C55E] text-[#22C55E] hover:text-[#111814] border-2 border-[#22C55E] font-black rounded-2xl text-lg flex items-center justify-center gap-3 transition-all shadow-xl hover:shadow-[#22C55E]/20 active:scale-95"
+                                        className="w-full h-16 bg-white hover:bg-[#4ADE80] text-[#22C55E] hover:text-[#111814] border-2 border-[#4ADE80] font-black rounded-2xl text-lg flex items-center justify-center gap-3 transition-all shadow-xl hover:shadow-[#4ADE80]/20 active:scale-95"
                                     >
                                         {step === 'cart' ? (
                                             <>Siguiente <ArrowRight className="w-6 h-6" /></>

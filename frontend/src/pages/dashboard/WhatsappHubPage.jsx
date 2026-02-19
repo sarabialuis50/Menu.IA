@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { DashboardLayout } from '@/layouts/DashboardLayout';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -20,6 +20,7 @@ import {
 
 export default function WhatsappHubPage() {
     const { user } = useAuth();
+    const [searchParams] = useSearchParams();
     const [activeTab, setActiveTab] = useState('templates'); // 'templates' | 'campaigns'
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [templates, setTemplates] = useState([]);
@@ -114,7 +115,12 @@ export default function WhatsappHubPage() {
         setSelectedTemplate(initialTemplates[0]);
         setSelectedSegment(segments[0]);
         setCampaignMessage(segments[0].defaultMessage);
-    }, []);
+
+        // Auto-open purchase modal if requested via URL
+        if (searchParams.get('purchase') === 'true') {
+            setIsPurchaseModalOpen(true);
+        }
+    }, [searchParams]);
 
     const handleSaveTemplate = async () => {
         setIsSavingTemplate(true);
@@ -161,7 +167,7 @@ export default function WhatsappHubPage() {
                     {/* Phone Preview - TOP on mobile */}
                     <div className="lg:col-span-4 order-1 lg:order-2">
                         {/* WhatsApp Usage Card */}
-                        <Card className="rounded-[2rem] border-none shadow-2xl bg-[#22C55E] overflow-hidden text-white group mb-6">
+                        <Card className="rounded-[2rem] border-none shadow-2xl bg-[#4ADE80] overflow-hidden text-[#111814] group mb-6">
                             <CardContent className="p-8 flex flex-col h-full space-y-6">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
@@ -185,7 +191,7 @@ export default function WhatsappHubPage() {
                                             <h3 className="text-4xl font-black leading-none">
                                                 {user?.wa_credits?.toLocaleString() || 0}
                                             </h3>
-                                            <Badge className="bg-white/20 text-white text-[7px] font-black tracking-widest border-none px-2 py-0.5 text-center ml-2 uppercase">Saldo Disponible</Badge>
+                                            <Badge className="bg-white/20 text-white text-[7px] font-black tracking-widest border-white border-2 px-2 py-0.5 text-center ml-2 uppercase">Saldo Disponible</Badge>
                                         </div>
                                         <p className="text-[9px] font-bold text-white/60 uppercase tracking-widest px-1">Créditos de Campaña</p>
                                     </div>
@@ -213,21 +219,12 @@ export default function WhatsappHubPage() {
                                     <ExternalLink className="w-4 h-4 text-white/40" />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-3 pt-2">
-                                    <Button
-                                        onClick={() => setIsPurchaseModalOpen(true)}
-                                        className="bg-white text-[#22C55E] border-2 border-transparent hover:bg-transparent hover:text-white hover:border-white font-black text-[9px] uppercase h-10 rounded-xl tracking-wider shadow-xl shadow-green-900/10 transition-all px-2"
-                                    >
-                                        Comprar
-                                    </Button>
-                                    <Button
-                                        onClick={() => toast.info('Generando reporte...')}
-                                        variant="outline"
-                                        className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-[#22C55E] font-black text-[9px] uppercase h-10 rounded-xl tracking-wider transition-all px-2"
-                                    >
-                                        Reporte
-                                    </Button>
-                                </div>
+                                <Button
+                                    onClick={() => setIsPurchaseModalOpen(true)}
+                                    className="col-span-2 bg-white text-[#22C55E] border-2 border-transparent hover:bg-transparent hover:text-white hover:border-white font-black text-[9px] uppercase h-10 rounded-xl tracking-wider shadow-xl shadow-green-900/10 transition-all px-2 w-full"
+                                >
+                                    ADQUIRIR PACK DE MENSAJES
+                                </Button>
                             </CardContent>
                         </Card>
 
@@ -248,7 +245,7 @@ export default function WhatsappHubPage() {
                                         <div className="max-w-[90%] bg-white rounded-2xl rounded-tl-sm p-4 shadow-md relative border-b-2 border-gray-100">
                                             <div className="flex items-center gap-1.5 mb-2">
                                                 <span className="text-[9px] font-black text-[#22C55E] uppercase tracking-widest">OFICIAL</span>
-                                                <div className="w-1.5 h-1.5 rounded-full bg-[#22C55E]" />
+                                                <div className="w-1.5 h-1.5 rounded-full bg-[#4ADE80]" />
                                             </div>
                                             <p className="text-sm text-gray-800 font-medium leading-relaxed whitespace-pre-wrap">
                                                 {activeTab === 'templates'
@@ -279,7 +276,7 @@ export default function WhatsappHubPage() {
                                 <button
                                     onClick={() => setActiveTab('templates')}
                                     className={`px-6 py-2.5 text-[10px] font-black tracking-widest transition-all flex items-center gap-2 rounded-full ${activeTab === 'templates'
-                                        ? 'bg-[#22C55E] text-white shadow-lg shadow-green-100'
+                                        ? 'bg-[#4ADE80] text-[#111814] shadow-lg shadow-green-100'
                                         : 'text-gray-400 hover:text-gray-600'
                                         }`}
                                 >
@@ -289,7 +286,7 @@ export default function WhatsappHubPage() {
                                 <button
                                     onClick={() => setActiveTab('campaigns')}
                                     className={`px-6 py-2.5 text-[10px] font-black tracking-widest transition-all flex items-center gap-2 rounded-full relative ${activeTab === 'campaigns'
-                                        ? 'bg-[#22C55E] text-white shadow-lg shadow-green-100'
+                                        ? 'bg-[#4ADE80] text-[#111814] shadow-lg shadow-green-100'
                                         : 'text-gray-400 hover:text-gray-600'
                                         }`}
                                 >
@@ -324,7 +321,7 @@ export default function WhatsappHubPage() {
                                                     : 'bg-white border-gray-100 border-2 hover:border-gray-200 shadow-sm'
                                                     }`}
                                             >
-                                                <div className={`p-2 rounded-xl shrink-0 ${selectedTemplate?.id === template.id ? 'bg-[#22C55E] text-white shadow-md' : 'bg-gray-50 text-gray-300'}`}>
+                                                <div className={`p-2 rounded-xl shrink-0 ${selectedTemplate?.id === template.id ? 'bg-[#4ADE80] text-[#111814] shadow-md' : 'bg-gray-50 text-gray-300'}`}>
                                                     <Zap className="w-4 h-4" />
                                                 </div>
                                                 <div className="min-w-0">
@@ -359,7 +356,7 @@ export default function WhatsappHubPage() {
                                                 <Switch
                                                     checked={selectedTemplate.status}
                                                     onCheckedChange={(checked) => setSelectedTemplate({ ...selectedTemplate, status: checked })}
-                                                    className="data-[state=checked]:bg-[#22C55E]"
+                                                    className="data-[state=checked]:bg-[#4ADE80]"
                                                 />
                                             </div>
                                         </div>
@@ -403,7 +400,7 @@ export default function WhatsappHubPage() {
                                                         <Button
                                                             onClick={handleSaveTemplate}
                                                             disabled={isSavingTemplate}
-                                                            className="h-11 px-6 rounded-xl bg-[#22C55E] hover:bg-[#16A34A] text-white font-black flex items-center gap-2 transition-all shadow-lg shadow-green-100 disabled:opacity-50 text-[11px] tracking-widest"
+                                                            className="h-11 px-6 rounded-xl bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black flex items-center gap-2 transition-all shadow-lg shadow-green-100 disabled:opacity-50 text-[11px] tracking-widest"
                                                         >
                                                             {isSavingTemplate ? (
                                                                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -466,7 +463,7 @@ export default function WhatsappHubPage() {
                                                         : 'bg-white border-transparent border-2 hover:border-gray-200 shadow-sm'
                                                         }`}
                                                 >
-                                                    <div className={`p-2 rounded-xl ${selectedSegment?.id === segment.id ? 'bg-[#22C55E] text-white shadow-md' : 'bg-gray-50 text-gray-300'}`}>
+                                                    <div className={`p-2 rounded-xl ${selectedSegment?.id === segment.id ? 'bg-[#4ADE80] text-[#111814] shadow-md' : 'bg-gray-50 text-gray-300'}`}>
                                                         {segment.icon}
                                                     </div>
                                                     <div>
@@ -530,7 +527,7 @@ export default function WhatsappHubPage() {
                                                         <Button
                                                             onClick={handleSendCampaign}
                                                             disabled={isSendingCampaign || !campaignMessage.trim()}
-                                                            className="h-11 px-6 rounded-xl bg-[#22C55E] hover:bg-[#16A34A] text-white font-black flex items-center gap-2 transition-all shadow-lg shadow-green-100 disabled:opacity-50 text-[11px] tracking-widest"
+                                                            className="h-11 px-6 rounded-xl bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black flex items-center gap-2 transition-all shadow-lg shadow-green-100 disabled:opacity-50 text-[11px] tracking-widest"
                                                         >
                                                             {isSendingCampaign ? (
                                                                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -600,7 +597,7 @@ export default function WhatsappHubPage() {
 
             <Dialog open={isPurchaseModalOpen} onOpenChange={setIsPurchaseModalOpen}>
                 <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden">
-                    <div className="bg-[#22C55E] p-8 text-white relative">
+                    <div className="bg-[#4ADE80] p-8 text-[#111814] relative">
                         <div className="absolute top-0 right-0 p-8 opacity-10">
                             <MessageSquareMore className="w-24 h-24" />
                         </div>
@@ -630,7 +627,7 @@ export default function WhatsappHubPage() {
                                     <div className="flex items-center gap-2">
                                         <span className="font-black text-gray-900 text-lg">{pack.amount.toLocaleString()}</span>
                                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter">MENSAJES</span>
-                                        {pack.popular && <Badge className="bg-[#22C55E] text-white text-[7px] font-black px-2 border-none">POPULAR</Badge>}
+                                        {pack.popular && <Badge className="bg-[#4ADE80] text-[#111814] text-[7px] font-black px-2 border-none">POPULAR</Badge>}
                                     </div>
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight leading-none">{pack.desc}</p>
                                 </div>

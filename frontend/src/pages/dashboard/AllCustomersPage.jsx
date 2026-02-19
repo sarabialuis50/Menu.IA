@@ -605,7 +605,7 @@ export default function AllCustomersPage() {
                             </Button>
                             <Button
                                 type="submit"
-                                className="h-12 flex-1 rounded-xl bg-[#22C55E] hover:bg-[#1da850] border-none font-black text-[11px] tracking-widest shadow-lg shadow-green-100"
+                                className="h-12 flex-1 rounded-xl bg-[#4ADE80] hover:bg-[#1da850] border-none font-black text-[11px] tracking-widest shadow-lg shadow-green-100"
                             >
                                 REGISTRAR CLIENTE
                             </Button>

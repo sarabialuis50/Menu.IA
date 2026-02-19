@@ -44,18 +44,18 @@ export default function LandingPage() {
             </Link>
 
             <div className="flex items-center gap-1 sm:gap-3">
-              <Link to="/precios" className="text-sm font-bold text-gray-600 hover:bg-[#22C55E] hover:text-white px-4 py-2 rounded-xl transition-colors">Precios</Link>
+              <Link to="/precios" className="text-sm font-bold text-gray-600 hover:bg-[#4ADE80] hover:text-[#111814] px-4 py-2 rounded-xl transition-colors">Precios</Link>
               <Button
                 variant="ghost"
                 onClick={() => navigate('/login')}
-                className="border-[#22C55E] border-2 sm:border-0 hover:bg-[#22C55E] hover:text-white px-4 py-2 rounded-xl text-sm font-bold text-[#22C55E] sm:text-gray-600 transition-colors"
+                className="border-[#4ADE80] border-2 sm:border-0 hover:bg-[#4ADE80] hover:text-[#111814] px-4 py-2 rounded-xl text-sm font-bold text-[#22C55E] sm:text-gray-600 transition-colors"
                 data-testid="login-nav-btn"
               >
                 Iniciar sesión
               </Button>
               <Button
                 onClick={() => navigate('/register')}
-                className="bg-[#22C55E] hover:bg-transparent text-white hover:text-[#22C55E] border-2 border-[#22C55E] hidden sm:flex transition-colors"
+                className="bg-[#4ADE80] hover:bg-transparent text-[#111814] hover:text-[#22C55E] border-2 border-[#4ADE80] hidden sm:flex transition-colors"
                 data-testid="register-nav-btn"
               >
                 Comenzar gratis
@@ -76,7 +76,7 @@ export default function LandingPage() {
               transition={{ duration: 0.6 }}
               className="text-left flex flex-col lg:block lg:justify-start"
             >
-              <span className="inline-block px-4 py-1.5 rounded-full bg-[#22C55E]/10 text-[#22C55E] text-xs font-black uppercase tracking-wider mt-6 sm:mt-0 mb-6 transition-all">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-[#4ADE80]/10 text-[#22C55E] text-xs font-black uppercase tracking-wider mt-6 sm:mt-0 mb-6 transition-all">
                 Gestión Inteligente para tu Negocio
               </span>
               <h1 className="font-heading text-4xl sm:text-5xl lg:text-[56px] font-extrabold text-[#0F172A] tracking-tight mb-6 lg:mb-8 leading-[1.05]">
@@ -89,7 +89,7 @@ export default function LandingPage() {
                 <Button
                   size="lg"
                   onClick={() => navigate('/register')}
-                  className="bg-[#22C55E] hover:bg-transparent text-white hover:text-[#22C55E] border-2 border-[#22C55E] text-lg px-8 h-14 rounded-xl shadow-lg shadow-green-500/20 transition-all w-full sm:w-auto"
+                  className="bg-[#4ADE80] hover:bg-transparent text-[#111814] hover:text-[#22C55E] border-2 border-[#4ADE80] text-lg px-8 h-14 rounded-xl shadow-lg shadow-green-500/20 transition-all w-full sm:w-auto"
                   data-testid="hero-cta-btn"
                 >
                   Comenzar gratis
@@ -128,7 +128,7 @@ export default function LandingPage() {
             >
               <div className="flex flex-col items-center gap-16 lg:block lg:relative lg:w-full lg:h-[520px] lg:scale-95 lg:origin-right">
                 {/* Background blur decorations - Hidden on small mobile to avoid clutter */}
-                <div className="hidden lg:block absolute top-10 right-10 w-64 h-64 bg-[#22C55E]/20 rounded-full blur-3xl animate-pulse" />
+                <div className="hidden lg:block absolute top-10 right-10 w-64 h-64 bg-[#4ADE80]/20 rounded-full blur-3xl animate-pulse" />
                 <div className="hidden lg:block absolute bottom-10 left-10 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl" />
 
                 {/* The mockups are now relative on mobile (stacking) and absolute on desktop (overlapping) */}
@@ -155,7 +155,7 @@ export default function LandingPage() {
                       <div className="px-5 pt-2">
                         <h4 className="font-black text-lg text-gray-900 tracking-tight">Nuestra Carta</h4>
                         <div className="flex gap-2 mt-3 overflow-x-hidden">
-                          <span className="px-3 py-1 bg-[#22C55E] text-white rounded-full text-[10px] font-black uppercase">Populares</span>
+                          <span className="px-3 py-1 bg-[#4ADE80] text-[#111814] rounded-full text-[10px] font-black uppercase">Populares</span>
                           <span className="px-3 py-1 bg-gray-100 text-gray-400 rounded-full text-[10px] font-black uppercase">Drinks</span>
                         </div>
                         <div className="mt-5 space-y-3 pb-8">
@@ -258,7 +258,7 @@ export default function LandingPage() {
                                 initial={{ height: 0 }}
                                 animate={{ height: `${h}%` }}
                                 transition={{ duration: 1, delay: 1 + (i * 0.1) }}
-                                className={`w-full rounded-t-lg ${i === 6 ? 'bg-[#22C55E]' : 'bg-[#A7F3D0]'}`}
+                                className={`w-full rounded-t-lg ${i === 6 ? 'bg-[#4ADE80]' : 'bg-[#A7F3D0]'}`}
                               />
                               <span className="text-[8px] font-bold text-gray-400">
                                 {['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'][i]}
@@ -312,7 +312,7 @@ export default function LandingPage() {
           <Button
             size="lg"
             onClick={() => navigate('/register')}
-            className="bg-[#22C55E] hover:bg-transparent text-white hover:text-[#22C55E] border-2 border-[#22C55E] text-lg px-10 h-16 rounded-2xl shadow-[0_20px_40px_rgba(34,197,94,0.2)] transition-all hover:scale-105 active:scale-95"
+            className="bg-[#4ADE80] hover:bg-transparent text-[#111814] hover:text-[#22C55E] border-2 border-[#4ADE80] text-lg px-10 h-16 rounded-2xl shadow-[0_20px_40px_rgba(34,197,94,0.2)] transition-all hover:scale-105 active:scale-95"
           >
             Comenzar gratis ahora
             <ArrowRight className="ml-2 w-5 h-5" />
@@ -352,7 +352,7 @@ function FeatureCard({ icon: Icon, title, description }) {
       viewport={{ once: true }}
       className="group p-6 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-lg border border-transparent hover:border-gray-100 transition-all"
     >
-      <div className="w-12 h-12 rounded-xl bg-[#22C55E]/10 flex items-center justify-center mb-4 group-hover:bg-[#22C55E] transition-colors">
+      <div className="w-12 h-12 rounded-xl bg-[#4ADE80]/10 flex items-center justify-center mb-4 group-hover:bg-[#4ADE80] transition-colors">
         <Icon className="w-6 h-6 text-[#22C55E] group-hover:text-white transition-colors" />
       </div>
       <h3 className="font-heading font-bold text-xl mb-2">{title}</h3>

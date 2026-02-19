@@ -250,7 +250,7 @@ export default function AllProductsPage() {
                                                 <Switch
                                                     checked={p.disponible}
                                                     onCheckedChange={() => toggleAvailability(p.id, p.disponible)}
-                                                    className="data-[state=checked]:bg-[#22C55E]"
+                                                    className="data-[state=checked]:bg-[#4ADE80]"
                                                 />
                                             </div>
                                         </td>

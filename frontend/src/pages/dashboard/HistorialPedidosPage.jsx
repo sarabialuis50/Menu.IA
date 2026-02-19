@@ -262,7 +262,7 @@ export default function HistorialPedidosPage() {
                         <div className="lg:col-span-2">
                             <Button
                                 variant="outline"
-                                className="w-full border-2 border-[#22C55E] text-[#22C55E] hover:bg-[#22C55E]/5 rounded-2xl h-12 font-black text-[11px] uppercase tracking-widest gap-2 transition-all active:scale-95"
+                                className="w-full border-2 border-[#4ADE80] text-[#22C55E] hover:bg-[#4ADE80]/5 rounded-2xl h-12 font-black text-[11px] uppercase tracking-widest gap-2 transition-all active:scale-95"
                             >
                                 <Search className="w-4 h-4" />
                                 Filtrar
@@ -273,7 +273,7 @@ export default function HistorialPedidosPage() {
                         <div className="lg:col-span-3">
                             <Button
                                 onClick={exportToExcel}
-                                className="w-full bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-2xl h-12 font-black text-[11px] uppercase tracking-widest gap-2 shadow-lg shadow-green-100 transition-all active:scale-95"
+                                className="w-full bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] rounded-2xl h-12 font-black text-[11px] uppercase tracking-widest gap-2 shadow-lg shadow-green-100 transition-all active:scale-95"
                             >
                                 <Download className="w-4 h-4" />
                                 Exportar Excel
@@ -322,7 +322,7 @@ export default function HistorialPedidosPage() {
                                                 setFilterStatus(status);
                                                 setCurrentPage(1);
                                             }}
-                                            className={`rounded-xl px-4 py-2.5 text-[11px] font-bold cursor-pointer mb-1 last:mb-0 ${filterStatus === status ? 'bg-[#22C55E]/10 text-[#22C55E]' : 'text-gray-600 hover:bg-gray-50'
+                                            className={`rounded-xl px-4 py-2.5 text-[11px] font-bold cursor-pointer mb-1 last:mb-0 ${filterStatus === status ? 'bg-[#4ADE80]/10 text-[#22C55E]' : 'text-gray-600 hover:bg-gray-50'
                                                 }`}
                                         >
                                             {status}
@@ -608,7 +608,7 @@ export default function HistorialPedidosPage() {
                                         key={status.id}
                                         onClick={() => setSelectedStatus(status.id)}
                                         className={`w-full p-4 rounded-xl text-left font-bold transition-all border-2 ${selectedStatus === status.id
-                                            ? 'bg-[#22C55E] border-[#22C55E] text-white shadow-lg shadow-green-100 scale-[1.01]'
+                                            ? 'bg-[#4ADE80] border-[#4ADE80] text-[#111814] shadow-lg shadow-green-100 scale-[1.01]'
                                             : 'bg-white border-gray-100 text-gray-600 hover:border-green-200'
                                             }`}
                                     >
@@ -626,7 +626,7 @@ export default function HistorialPedidosPage() {
                                     setShowTrackingModal(false);
                                 }}
                                 className={`w-full h-14 rounded-2xl font-black text-sm tracking-widest transition-all shadow-lg ${selectedStatus && selectedStatus !== selectedOrder?.estado
-                                    ? 'bg-[#22C55E] hover:bg-[#16A34A] text-white'
+                                    ? 'bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814]'
                                     : 'bg-[#94A3B8] text-white opacity-50'
                                     }`}
                             >

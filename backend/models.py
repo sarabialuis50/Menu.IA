@@ -139,7 +139,7 @@ class Business(BusinessBase):
     plan: Optional[str] = "free"
     is_active: bool = True 
     wa_messages_count: int = 0
-    wa_messages_limit: int = 100
+    wa_messages_limit: int = 0
     wa_credits: int = 0
     plan_expires_at: Optional[datetime] = None
 
@@ -148,7 +148,7 @@ class BusinessPublic(BusinessBase):
     id: str
     plan: Optional[str] = "free"
     wa_messages_count: int = 0
-    wa_messages_limit: int = 100
+    wa_messages_limit: int = 0
     wa_credits: int = 0
     plan_expires_at: Optional[datetime] = None
 

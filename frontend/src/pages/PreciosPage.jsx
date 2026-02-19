@@ -159,8 +159,8 @@ export default function PreciosPage() {
                         <div className="flex items-center gap-4">
                             {!user && (
                                 <>
-                                    <Link to="/login" className="text-sm font-bold text-gray-600 hover:bg-[#22C55E] hover:text-white px-4 py-2 rounded-xl transition-colors">Iniciar sesión</Link>
-                                    <Button onClick={() => navigate('/register')} className="bg-[#22C55E] hover:bg-green-600">Registrarse</Button>
+                                    <Link to="/login" className="text-sm font-bold text-gray-600 hover:bg-[#4ADE80] hover:text-[#111814] px-4 py-2 rounded-xl transition-colors">Iniciar sesión</Link>
+                                    <Button onClick={() => navigate('/register')} className="bg-[#4ADE80] hover:bg-green-600">Registrarse</Button>
                                 </>
                             )}
                             {user && (
@@ -178,7 +178,7 @@ export default function PreciosPage() {
                     </h1>
                     <div className="flex items-center justify-center gap-4 mb-10">
                         <span className={`text-sm font-bold ${!isAnnual ? 'text-[#0F172A]' : 'text-gray-400'}`}>Mensual</span>
-                        <Switch checked={isAnnual} onCheckedChange={setIsAnnual} className="data-[state=checked]:bg-[#22C55E]" />
+                        <Switch checked={isAnnual} onCheckedChange={setIsAnnual} className="data-[state=checked]:bg-[#4ADE80]" />
                         <span className={`text-sm font-bold ${isAnnual ? 'text-[#0F172A]' : 'text-gray-400'}`}>Anual (-20%)</span>
                     </div>
 
@@ -188,7 +188,7 @@ export default function PreciosPage() {
                                 {plan.badge && (
                                     <div className={`absolute -top-4 left-1/2 transform -translate-x-1/2 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg ${plan.id === 'impulso' ? 'bg-white border-2 border-[#22C55E] text-[#22C55E]' :
                                         plan.id === 'elite' ? 'bg-[#22B8CF] text-white' :
-                                            'bg-[#22C55E] text-white'
+                                            'bg-[#4ADE80] text-[#111814]'
                                         }`}>
                                         {plan.badge}
                                     </div>
@@ -209,7 +209,7 @@ export default function PreciosPage() {
                                 <Button
                                     onClick={() => handleSelectPlan(plan.id)}
                                     disabled={loadingPlan !== null}
-                                    className={`h-12 rounded-xl font-bold ${plan.popular ? 'bg-[#22C55E]' : 'bg-white border-2 border-[#22C55E] text-[#22C55E] hover:bg-green-50'}`}
+                                    className={`h-12 rounded-xl font-bold ${plan.popular ? 'bg-[#4ADE80]' : 'bg-white border-2 border-[#4ADE80] text-[#22C55E] hover:bg-green-50'}`}
                                 >
                                     {loadingPlan === plan.id ? <Loader2 className="animate-spin" /> : `Activar ${plan.name}`}
                                 </Button>
@@ -218,7 +218,7 @@ export default function PreciosPage() {
                     </div>
 
                     <div className="max-w-7xl mx-auto border-t pt-24 text-center">
-                        <Badge className="bg-[#22C55E]/10 text-[#22C55E] border-none px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-4 transition-all hover:bg-[#22C55E] hover:text-white cursor-default">
+                        <Badge className="bg-[#4ADE80]/10 text-[#22C55E] border-none px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-4 transition-all hover:bg-[#4ADE80] hover:text-[#111814] cursor-default">
                             RECARGAS PREPAGO
                         </Badge>
                         <h2 className="text-3xl sm:text-5xl font-black text-[#0F172A] mb-4 uppercase tracking-tight">Packs de Campañas <span className="text-[#22C55E]">WhatsApp</span></h2>
@@ -233,7 +233,7 @@ export default function PreciosPage() {
                                     className={`relative p-8 rounded-[2.5rem] border-2 transition-all flex flex-col ${pack.popular ? 'border-[#22C55E] bg-white shadow-2xl scale-105 z-10' : 'border-gray-100 bg-white'}`}
                                 >
                                     {pack.popular && (
-                                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-[#22C55E] text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg whitespace-nowrap">
+                                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-[#4ADE80] text-[#111814] px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg whitespace-nowrap">
                                             Mejor Valor
                                         </div>
                                     )}
@@ -256,8 +256,8 @@ export default function PreciosPage() {
                                         onClick={() => handleSelectPack(pack.id)}
                                         disabled={loadingPlan !== null}
                                         className={`h-12 rounded-xl font-black transition-all ${pack.popular
-                                            ? 'bg-[#22C55E] text-white hover:bg-green-600'
-                                            : 'bg-white border-2 border-[#22C55E] text-[#22C55E] hover:bg-[#22C55E] hover:text-white'
+                                            ? 'bg-[#4ADE80] text-[#111814] hover:bg-green-600'
+                                            : 'bg-white border-2 border-[#4ADE80] text-[#22C55E] hover:bg-[#4ADE80] hover:text-[#111814]'
                                             }`}
                                     >
                                         {loadingPlan === `pack-${pack.id}` ? <Loader2 className="animate-spin" /> : "Comprar Pack"}

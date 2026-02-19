@@ -25,7 +25,8 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
 // Backend API URL
-const API = (import.meta.env?.VITE_BACKEND_URL || import.meta.env?.REACT_APP_BACKEND_URL) || '';
+// Consistent with AuthContext prefixing
+const API = (import.meta.env && (import.meta.env.VITE_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL)) || '/api';
 
 
 const BusinessHomePageContent = () => {
@@ -34,25 +35,35 @@ const BusinessHomePageContent = () => {
     const [business, setBusiness] = useState(null);
     const [featuredProducts, setFeaturedProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [products, setProducts] = useState([]); // Added new state for all products
 
     useEffect(() => {
         fetchData();
     }, [slug]);
 
     const fetchData = async () => {
+        if (!slug) return;
+        setLoading(true);
         try {
-            const [businessRes, productsRes] = await Promise.all([
-                axios.get(`${API}/api/business/${slug}`),
-                axios.get(`${API}/api/products/${slug}`)
-            ]);
-
+            // Fetch business first
+            const businessRes = await axios.get(`${API}/business/${slug}`);
             setBusiness(businessRes.data);
-            // Take first 4 products as featured (matching the 4 grid in HTML)
-            const productsData = Array.isArray(productsRes.data) ? productsRes.data : [];
-            setFeaturedProducts(productsData.filter(p => p.disponible).slice(0, 4));
+
+            // Fetch products separately so failure doesn't block the whole page
+            try {
+                const productsRes = await axios.get(`${API}/products/${slug}`);
+                const productsData = Array.isArray(productsRes.data) ? productsRes.data : [];
+                setProducts(productsData); // Set all products
+                // Take first 4 available products as featured
+                setFeaturedProducts(productsData.filter(p => p.disponible).slice(0, 4));
+            } catch (prodErr) {
+                console.warn('Error fetching products:', prodErr);
+                setProducts([]);
+                setFeaturedProducts([]);
+            }
         } catch (error) {
-            console.error('Error fetching data:', error);
-            // toast.error('Error al cargar la información');
+            console.error('Error fetching business data:', error);
+            // toast.error('Error al cargar la información del negocio'); // Consider adding a toast here
         } finally {
             setLoading(false);
         }
@@ -69,7 +80,7 @@ const BusinessHomePageContent = () => {
 
     const checkFavoriteStatus = async () => {
         try {
-            const res = await axios.get(`${API}/api/client/favorites/${slug}/check`, {
+            const res = await axios.get(`${API}/client/favorites/${slug}/check`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setIsFavorite(res.data.is_favorite);
@@ -86,7 +97,7 @@ const BusinessHomePageContent = () => {
         }
 
         try {
-            const res = await axios.post(`${API}/api/client/favorites/${slug}`, {}, {
+            const res = await axios.post(`${API}/client/favorites/${slug}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setIsFavorite(res.data.is_favorite);
@@ -121,7 +132,7 @@ const BusinessHomePageContent = () => {
                 </div>
                 <h1 className="font-heading text-3xl font-bold mb-3 text-[#111814]">Negocio no encontrado</h1>
                 <p className="text-[#618972] max-w-xs mb-8">El enlace que seguiste podría estar roto o el restaurante ya no está disponible.</p>
-                <Button onClick={() => navigate('/')} className="bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] px-8 h-12 rounded-xl font-bold">
+                <Button onClick={() => navigate('/')} className="bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] px-8 h-12 rounded-xl font-bold">
                     Ir al inicio
                 </Button>
             </div>
@@ -166,7 +177,7 @@ const BusinessHomePageContent = () => {
                             animate={{ scale: 1, opacity: 1 }}
                             className="size-32 md:size-40 rounded-full border-[6px] border-[#f6f8f7] bg-white shadow-2xl overflow-hidden flex items-center justify-center p-1"
                         >
-                            <div className="w-full h-full rounded-full overflow-hidden bg-[#22C55E]/10">
+                            <div className="w-full h-full rounded-full overflow-hidden bg-[#4ADE80]/10">
                                 <img
                                     src={business.logo_url || `https://ui-avatars.com/api/?name=${business.nombre}&background=22C55E&color=111814&bold=true&size=512`}
                                     alt="Logo"
@@ -277,7 +288,7 @@ const BusinessHomePageContent = () => {
                 <section className="max-w-[1200px] mx-auto px-4 md:px-10 mb-24">
                     <h2 className="text-2xl font-black text-[#111814] mb-8 tracking-tight">Ubicación y Horarios</h2>
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch">
-                        <div className="md:col-span-7 bg-white p-2 rounded-[2.5rem] shadow-sm border border-[#f0f4f2] h-[300px] md:h-auto overflow-hidden">
+                        <div className="md:col-span-7 bg-white p-2 rounded-[2.5rem] shadow-sm border border-[#f0f4f2] h-[300px] md:min-h-full overflow-hidden">
                             <div className="w-full h-full bg-gray-100 rounded-[2rem] relative overflow-hidden group">
                                 <iframe
                                     title="Ubicación del Negocio"
@@ -296,7 +307,7 @@ const BusinessHomePageContent = () => {
                         <div className="md:col-span-5 flex flex-col gap-4">
                             {/* Address Card */}
                             <div className="bg-white p-6 rounded-3xl shadow-sm border border-[#f0f4f2] flex gap-5 hover:border-[#22C55E]/30 transition-colors">
-                                <div className="bg-[#22C55E]/10 p-4 rounded-2xl h-fit text-[#22C55E]">
+                                <div className="bg-[#4ADE80]/10 p-4 rounded-2xl h-fit text-[#22C55E]">
                                     <Store className="w-6 h-6" />
                                 </div>
                                 <div>
@@ -307,7 +318,7 @@ const BusinessHomePageContent = () => {
 
                             {/* Contact Card */}
                             <div className="bg-white p-6 rounded-3xl shadow-sm border border-[#f0f4f2] flex gap-5 hover:border-[#22C55E]/30 transition-colors">
-                                <div className="bg-[#22C55E]/10 p-4 rounded-2xl h-fit text-[#22C55E]">
+                                <div className="bg-[#4ADE80]/10 p-4 rounded-2xl h-fit text-[#22C55E]">
                                     <Phone className="w-6 h-6" />
                                 </div>
                                 <div className="flex-1">
@@ -321,7 +332,7 @@ const BusinessHomePageContent = () => {
 
                             {/* Hours Card */}
                             <div className="bg-white p-6 rounded-3xl shadow-sm border border-[#f0f4f2] flex gap-5 hover:border-[#22C55E]/30 transition-colors">
-                                <div className="bg-[#22C55E]/10 p-4 rounded-2xl h-fit text-[#22C55E]">
+                                <div className="bg-[#4ADE80]/10 p-4 rounded-2xl h-fit text-[#22C55E]">
                                     <Clock className="w-6 h-6" />
                                 </div>
                                 <div>
@@ -373,7 +384,7 @@ const BusinessHomePageContent = () => {
                         </div>
                         <Button
                             onClick={() => navigate(`/${slug}/menu-completo`)}
-                            className="flex-1 sm:flex-none sm:min-w-[200px] h-11 bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] text-sm font-black rounded-xl shadow-lg shadow-[#22C55E]/30 transform active:scale-95 transition-all flex items-center justify-center gap-2 overflow-hidden group mr-16 sm:mr-0"
+                            className="flex-1 sm:flex-none sm:min-w-[200px] h-11 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] text-sm font-black rounded-xl shadow-lg shadow-[#4ADE80]/30 transform active:scale-95 transition-all flex items-center justify-center gap-2 overflow-hidden group mr-16 sm:mr-0"
                         >
                             <div className="bg-white/20 p-1.5 rounded-lg group-hover:rotate-12 transition-transform">
                                 <UtensilsCrossed className="w-4 h-4" />

@@ -136,7 +136,7 @@ export default function MisPedidos() {
             </Link>
             <h1 className="text-4xl font-black text-[#111814] tracking-tighter leading-none">Mis Pedidos</h1>
           </div>
-          <div className="size-14 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
+          <div className="size-14 rounded-2xl bg-[#4ADE80]/10 flex items-center justify-center text-[#22C55E]">
             <Smartphone className="w-8 h-8" />
           </div>
         </div>
@@ -191,7 +191,7 @@ function SearchSection({ phone, setPhone, searchOrders, searching }) {
         <Button
           onClick={searchOrders}
           disabled={searching}
-          className="w-full h-16 bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg shadow-[#22C55E]/20 transition-all active:scale-95"
+          className="w-full h-16 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg shadow-[#4ADE80]/20 transition-all active:scale-95"
         >
           {searching ? <RefreshCw className="w-5 h-5 animate-spin" /> : (
             <div className="flex items-center gap-2">
@@ -251,7 +251,7 @@ function OrderTimeline({ order, onRefresh, onReset }) {
             />
             <div className="absolute top-4 left-4 z-[1000] flex items-center gap-2">
               <div className="px-3 py-1 bg-white/90 backdrop-blur-md border border-gray-200 rounded-full shadow-sm flex items-center gap-2">
-                <div className={`size-2 rounded-full ${order.estado === 'entregado' ? 'bg-gray-400' : 'bg-[#22C55E] animate-ping'}`} />
+                <div className={`size-2 rounded-full ${order.estado === 'entregado' ? 'bg-gray-400' : 'bg-[#4ADE80] animate-ping'}`} />
                 <span className="text-[10px] font-black uppercase tracking-widest text-[#111814]">
                   {order.estado === 'entregado' ? 'Entrega Finalizada' : 'Seguimiento en Vivo'}
                 </span>
@@ -262,7 +262,7 @@ function OrderTimeline({ order, onRefresh, onReset }) {
       )}
 
       <div className="bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-2xl shadow-gray-200/50" data-testid="order-timeline">
-        <div className="bg-[#22C55E] text-[#111814] p-8">
+        <div className="bg-[#4ADE80] text-[#111814] p-8">
           <div className="flex justify-between items-start">
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -286,15 +286,15 @@ function OrderTimeline({ order, onRefresh, onReset }) {
             return (
               <div key={idx} className="flex gap-6 relative">
                 <div className="flex flex-col items-center z-10">
-                  <div className={`size-14 rounded-2xl flex items-center justify-center transition-all duration-500 ${isCompleted ? 'bg-[#22C55E] text-[#111814] shadow-lg shadow-[#22C55E]/20' : 'bg-gray-100 text-gray-300'} ${isCurrent ? 'ring-8 ring-[#22C55E]/10 scale-110' : ''}`}>
+                  <div className={`size-14 rounded-2xl flex items-center justify-center transition-all duration-500 ${isCompleted ? 'bg-[#4ADE80] text-[#111814] shadow-lg shadow-[#4ADE80]/20' : 'bg-gray-100 text-gray-300'} ${isCurrent ? 'ring-8 ring-[#22C55E]/10 scale-110' : ''}`}>
                     <StepIcon className="w-7 h-7" />
                   </div>
-                  {idx < steps.length - 1 && <div className={`w-1 h-12 my-1 transition-all duration-500 ${isCompleted ? 'bg-[#22C55E]' : 'bg-gray-100'}`} />}
+                  {idx < steps.length - 1 && <div className={`w-1 h-12 my-1 transition-all duration-500 ${isCompleted ? 'bg-[#4ADE80]' : 'bg-gray-100'}`} />}
                 </div>
                 <div className="flex-1 pt-2">
                   <p className={`text-lg font-black tracking-tight ${isCompleted ? 'text-[#111814]' : 'text-gray-300'}`}>{step.label}</p>
                   <p className={`text-sm font-medium ${isCompleted ? 'text-[#618972]' : 'text-gray-200'}`}>{step.desc}</p>
-                  {isCurrent && <span className="inline-flex mt-2 px-2 py-0.5 bg-[#22C55E]/10 text-[#22C55E] text-[8px] font-black uppercase tracking-widest rounded-md border border-[#22C55E]/20">En Progreso</span>}
+                  {isCurrent && <span className="inline-flex mt-2 px-2 py-0.5 bg-[#4ADE80]/10 text-[#22C55E] text-[8px] font-black uppercase tracking-widest rounded-md border border-[#4ADE80]/20">En Progreso</span>}
                 </div>
               </div>
             );
@@ -326,7 +326,7 @@ function OrderTimeline({ order, onRefresh, onReset }) {
       <Button
         variant="ghost"
         onClick={onReset}
-        className="w-full h-14 rounded-2xl text-[#618972] font-black uppercase text-[10px] tracking-widest hover:bg-[#22C55E] hover:text-white transition-colors"
+        className="w-full h-14 rounded-2xl text-[#618972] font-black uppercase text-[10px] tracking-widest hover:bg-[#4ADE80] hover:text-[#111814] transition-colors"
       >
         Buscar otro pedido
       </Button>

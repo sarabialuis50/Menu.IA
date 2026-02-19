@@ -117,7 +117,7 @@ import {
 import { toast } from 'sonner';
 
 // Backend API URL
-const API = (import.meta.env?.VITE_BACKEND_URL || import.meta.env?.REACT_APP_BACKEND_URL) || '';
+const API = (import.meta.env && (import.meta.env.VITE_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL)) || '/api';
 
 
 const MenuContent = () => {
@@ -198,9 +198,9 @@ const MenuContent = () => {
   const fetchData = async () => {
     try {
       const [businessRes, productsRes, loyaltyRes] = await Promise.all([
-        axios.get(`${API}/api/business/${slug}`),
-        axios.get(`${API}/api/products/${slug}`),
-        axios.get(`${API}/api/loyalty/${slug}/config`).catch(() => ({ data: { activo: false } }))
+        axios.get(`${API}/business/${slug}`),
+        axios.get(`${API}/products/${slug}`),
+        axios.get(`${API}/loyalty/${slug}/config`).catch(() => ({ data: { activo: false } }))
       ]);
 
       setBusiness(businessRes.data);
@@ -249,7 +249,7 @@ const MenuContent = () => {
       // Handle categories
       let cats = [];
       try {
-        const categoriesRes = await axios.get(`${API}/api/categories/${slug}`);
+        const categoriesRes = await axios.get(`${API}/categories/${slug}`);
         if (Array.isArray(categoriesRes.data) && categoriesRes.data.length > 0) {
           // Map string categories (legacy) to objects if necessary, though backend should return objects now
           cats = categoriesRes.data.map(c => typeof c === 'string' ? { nombre: c, icono: null } : c);
@@ -269,7 +269,7 @@ const MenuContent = () => {
 
       if (mesa) {
         try {
-          const tableRes = await axios.get(`${API}/api/tables/${slug}/${mesa}/info`);
+          const tableRes = await axios.get(`${API}/tables/${slug}/${mesa}/info`);
           setTableInfo(tableRes.data);
         } catch (e) {
           console.log('Table not found');
@@ -285,7 +285,7 @@ const MenuContent = () => {
 
   const fetchCustomerPoints = async (telefono) => {
     try {
-      const response = await axios.get(`${API}/api/loyalty/${slug}/points/${encodeURIComponent(telefono)}`);
+      const response = await axios.get(`${API}/loyalty/${slug}/points/${encodeURIComponent(telefono)}`);
       setCustomerPoints(response.data);
     } catch (error) {
       setCustomerPoints(null);
@@ -411,7 +411,7 @@ const MenuContent = () => {
     try {
       // Redeem points first if applicable
       if (redeemPoints > 0 && loyaltyConfig?.activo) {
-        await axios.post(`${API}/api/loyalty/${slug}/redeem`, {
+        await axios.post(`${API}/loyalty/${slug}/redeem`, {
           telefono: customerInfo.telefono,
           puntos_a_canjear: redeemPoints
         });
@@ -444,7 +444,7 @@ const MenuContent = () => {
         ].filter(Boolean).join('. ')
       };
 
-      const response = await axios.post(`${API}/api/orders/${slug}`, orderData);
+      const response = await axios.post(`${API}/orders/${slug}`, orderData);
       setOrderSuccess({ ...response.data, discount, redeemPoints });
       clearCart();
       setRedeemPoints(0);
@@ -521,7 +521,7 @@ const MenuContent = () => {
         {/* Promotional Tag Badge */}
         {product.etiqueta && (
           <div className="absolute top-2 left-2 z-20">
-            <div className="bg-[#22C55E] text-[#111814] text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg shadow-md border border-white/10 flex items-center gap-1 ring-1 ring-white/20">
+            <div className="bg-[#4ADE80] text-[#111814] text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg shadow-md border border-white/10 flex items-center gap-1 ring-1 ring-white/20">
               <div className="size-1 rounded-full bg-white animate-pulse" />
               {product.etiqueta}
             </div>
@@ -549,7 +549,7 @@ const MenuContent = () => {
 
       <div className="p-5 flex flex-col flex-1">
         <div className="flex items-center justify-between mb-3">
-          <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#22C55E]/10 text-[9px] font-black text-[#22C55E] uppercase tracking-wider">
+          <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#4ADE80]/10 text-[9px] font-black text-[#22C55E] uppercase tracking-wider">
             {product.categoria}
           </div>
           <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-full text-[#111814] text-[10px] font-black">
@@ -572,7 +572,7 @@ const MenuContent = () => {
               </span>
             )}
           </div>
-          <div className="size-10 bg-[#22C55E] rounded-full flex items-center justify-center shadow-lg shadow-[#22C55E]/20 text-[#111814] group-hover:scale-110 transition-transform">
+          <div className="size-10 bg-[#4ADE80] rounded-full flex items-center justify-center shadow-lg shadow-[#4ADE80]/20 text-[#111814] group-hover:scale-110 transition-transform">
             <Plus className="w-5 h-5 stroke-[3]" />
           </div>
         </div>
@@ -623,7 +623,7 @@ const MenuContent = () => {
         </div>
         <h1 className="text-2xl font-black text-[#111814] mb-2">Página no disponible</h1>
         <p className="text-[#618972] max-w-xs mb-8">El restaurante que buscas no existe o ha cambiado su nombre.</p>
-        <Button onClick={() => navigate('/')} className="bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] px-8 h-12 rounded-xl font-bold">
+        <Button onClick={() => navigate('/')} className="bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] px-8 h-12 rounded-xl font-bold">
           Ir al inicio
         </Button>
       </div>
@@ -678,17 +678,17 @@ const MenuContent = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate(`/${slug}/mi-cuenta`)}
-              className="relative size-11 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-[#22C55E]/10 hover:border-[#22C55E] transition-all hover:scale-105 active:scale-95 group shadow-sm"
+              className="relative size-11 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-[#4ADE80]/10 hover:border-[#4ADE80] transition-all hover:scale-105 active:scale-95 group shadow-sm"
             >
               <User className="w-5 h-5 text-[#111814] group-hover:text-[#22C55E]" />
             </button>
             <button
               onClick={() => { setCartOpen(true); setCheckoutStep(1); }}
-              className="relative size-11 rounded-full bg-[#111814] border border-[#22C55E] flex items-center justify-center hover:bg-[#22C55E] transition-all hover:scale-105 active:scale-95 group shadow-lg shadow-[#111814]/20"
+              className="relative size-11 rounded-full bg-[#111814] border border-[#4ADE80] flex items-center justify-center hover:bg-[#4ADE80] transition-all hover:scale-105 active:scale-95 group shadow-lg shadow-[#111814]/20"
             >
               <ShoppingCart className="w-5 h-5 text-white group-hover:text-[#111814]" />
               {itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#22C55E] text-[10px] font-black text-[#111814] ring-2 ring-white group-hover:bg-white group-hover:text-[#22C55E]">
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#4ADE80] text-[10px] font-black text-[#111814] ring-2 ring-white group-hover:bg-white group-hover:text-[#22C55E]">
                   {itemCount}
                 </span>
               )}
@@ -700,7 +700,7 @@ const MenuContent = () => {
       <main className="max-w-[1200px] mx-auto px-4 md:px-10 py-8">
         {/* Table Info Banner */}
         {tableInfo && (
-          <div className="mb-8 p-3 rounded-2xl bg-[#22C55E] text-[#111814] flex items-center justify-center gap-3 font-bold shadow-lg shadow-[#22C55E]/20">
+          <div className="mb-8 p-3 rounded-2xl bg-[#4ADE80] text-[#111814] flex items-center justify-center gap-3 font-bold shadow-lg shadow-[#4ADE80]/20">
             <div className="bg-white/20 p-1 rounded-lg">
               <CheckCircle2 className="w-5 h-5" />
             </div>
@@ -718,7 +718,7 @@ const MenuContent = () => {
             />
 
             <div className="absolute bottom-0 left-0 p-6 md:p-12 z-20 w-full pb-20 md:pb-24 flex flex-col items-start gap-4">
-              <span className="inline-flex items-center gap-2 px-4 py-2 text-[10px] font-black text-[#111814] bg-[#22C55E] rounded-full uppercase tracking-[0.2em] shadow-lg shadow-[#22C55E]/20">
+              <span className="inline-flex items-center gap-2 px-4 py-2 text-[10px] font-black text-[#111814] bg-[#4ADE80] rounded-full uppercase tracking-[0.2em] shadow-lg shadow-[#4ADE80]/20">
                 <Star className="w-3 h-3 fill-[#111814]" />
                 {business.banner_tag || 'Los mejores sabores'}
               </span>
@@ -745,7 +745,7 @@ const MenuContent = () => {
               <div className="absolute right-2 top-1/2 -translate-y-1/2">
                 <button
                   onClick={() => setFilterOpen(!filterOpen)}
-                  className={`p-2.5 rounded-full border transition-colors shadow-sm active:scale-95 ${filterOpen ? 'bg-[#22C55E] border-[#22C55E] text-[#111814]' : 'bg-gray-50 border-gray-100 text-[#618972] hover:text-[#22C55E]'}`}
+                  className={`p-2.5 rounded-full border transition-colors shadow-sm active:scale-95 ${filterOpen ? 'bg-[#4ADE80] border-[#4ADE80] text-[#111814]' : 'bg-gray-50 border-gray-100 text-[#618972] hover:text-[#22C55E]'}`}
                 >
                   <Filter className="w-4 h-4" />
                 </button>
@@ -801,7 +801,7 @@ const MenuContent = () => {
                   className={`
                     flex h-8 md:h-10 shrink-0 items-center justify-center gap-x-1.5 rounded-full px-4 md:px-5 transition-all active:scale-95 font-bold text-[9px] md:text-xs uppercase tracking-wide
                     ${activeCategory === catName
-                      ? 'bg-[#22C55E] text-[#111814] shadow-md shadow-[#22C55E]/20 scale-105 ring-2 ring-white'
+                      ? 'bg-[#4ADE80] text-[#111814] shadow-md shadow-[#4ADE80]/20 scale-105 ring-2 ring-white'
                       : 'bg-white border border-gray-100 text-gray-400 hover:border-[#22C55E] hover:text-[#111814] shadow-sm'
                     }
                   `}
@@ -830,7 +830,7 @@ const MenuContent = () => {
             {tableInfo && (
               <div className="bg-white rounded-3xl p-6 shadow-xl border border-[#f0f4f2] mb-8">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="bg-[#22C55E]/10 p-3 rounded-full">
+                  <div className="bg-[#4ADE80]/10 p-3 rounded-full">
                     <User className="w-6 h-6 text-[#22C55E]" />
                   </div>
                   <div>
@@ -939,7 +939,7 @@ const MenuContent = () => {
                     <button
                       key={i}
                       onClick={() => setCurrentPage(i + 1)}
-                      className={`size-10 rounded-xl font-black text-sm transition-all ${currentPage === i + 1 ? 'bg-[#22C55E] text-[#111814] shadow-lg shadow-[#22C55E]/20' : 'bg-white text-[#618972] border border-[#f0f4f2] hover:border-[#22C55E]'}`}
+                      className={`size-10 rounded-xl font-black text-sm transition-all ${currentPage === i + 1 ? 'bg-[#4ADE80] text-[#111814] shadow-lg shadow-[#4ADE80]/20' : 'bg-white text-[#618972] border border-[#f0f4f2] hover:border-[#4ADE80]'}`}
                     >
                       {i + 1}
                     </button>
@@ -982,7 +982,7 @@ const MenuContent = () => {
           >
             <button
               onClick={() => { setCartOpen(true); setCheckoutStep(1); }}
-              className="w-full max-w-md bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] rounded-full shadow-[0_20px_50px_rgba(19,236,109,0.3)] flex items-center pl-6 pr-8 py-4 gap-4 transform transition-all hover:scale-[1.02] active:scale-95 group border-2 border-white/20"
+              className="w-full max-w-md bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] rounded-full shadow-[0_20px_50px_rgba(19,236,109,0.3)] flex items-center pl-6 pr-8 py-4 gap-4 transform transition-all hover:scale-[1.02] active:scale-95 group border-2 border-white/20"
             >
               <div className="relative size-12 bg-white rounded-2xl flex items-center justify-center shadow-inner">
                 <ShoppingCart className="w-6 h-6" />
@@ -1008,7 +1008,7 @@ const MenuContent = () => {
             <SheetHeader className="mb-8">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="size-12 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
+                  <div className="size-12 rounded-2xl bg-[#4ADE80]/10 flex items-center justify-center text-[#22C55E]">
                     {checkoutStep === 0 && <ShoppingCart className="w-6 h-6" />}
                     {checkoutStep === 1 && <User className="w-6 h-6" />}
                   </div>
@@ -1025,7 +1025,7 @@ const MenuContent = () => {
                 {/* Mi Cesta Top Right Indicator */}
                 {checkoutStep === 1 && (
                   <div className="flex flex-col items-end">
-                    <div className="size-10 bg-[#22C55E] rounded-full flex items-center justify-center text-[#111814] shadow-lg shadow-[#22C55E]/30 mb-1">
+                    <div className="size-10 bg-[#4ADE80] rounded-full flex items-center justify-center text-[#111814] shadow-lg shadow-[#4ADE80]/30 mb-1">
                       <ShoppingCart className="w-5 h-5 stroke-[2.5]" />
                     </div>
                     <span className="text-[10px] font-black uppercase tracking-wider text-[#111814]">Mi Cesta</span>
@@ -1172,7 +1172,7 @@ const MenuContent = () => {
                           variant="outline"
                           onClick={handleGetLocation}
                           disabled={calculatingDistance}
-                          className="w-full h-12 rounded-2xl border-2 border-dashed border-[#22C55E]/30 text-[#618972] font-black text-xs gap-2 hover:bg-[#22C55E]/5 transition-all"
+                          className="w-full h-12 rounded-2xl border-2 border-dashed border-[#4ADE80]/30 text-[#618972] font-black text-xs gap-2 hover:bg-[#4ADE80]/5 transition-all"
                         >
                           {calculatingDistance ? <Loader2 className="w-4 h-4 animate-spin" /> : <NavigationIcon className="w-4 h-4" />}
                           USAR MI UBICACIÓN ACTUAL
@@ -1201,7 +1201,7 @@ const MenuContent = () => {
                       {distancia > 0 && (
                         <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-[#22C55E]/20 shadow-sm">
                           <div className="flex items-center gap-3">
-                            <div className="size-10 bg-[#22C55E]/10 rounded-xl flex items-center justify-center text-[#22C55E]">
+                            <div className="size-10 bg-[#4ADE80]/10 rounded-xl flex items-center justify-center text-[#22C55E]">
                               <Truck className="w-5 h-5" />
                             </div>
                             <div>
@@ -1228,7 +1228,7 @@ const MenuContent = () => {
                               setTipoPedido('delivery');
                               setMetodoEntregaNombre('Domicilio');
                             }}
-                            className={`flex-1 md:flex-none md:w-48 min-w-[120px] py-3 px-4 rounded-2xl font-black text-[10px] tracking-widest transition-all border-2 ${tipoPedido === 'delivery' ? 'bg-[#22C55E] border-[#22C55E] text-[#111814] shadow-lg' : 'bg-white border-[#22C55E]/30 text-[#111814] hover:border-[#22C55E]'}`}
+                            className={`flex-1 md:flex-none md:w-48 min-w-[120px] py-3 px-4 rounded-2xl font-black text-[10px] tracking-widest transition-all border-2 ${tipoPedido === 'delivery' ? 'bg-[#4ADE80] border-[#4ADE80] text-[#111814] shadow-lg' : 'bg-white border-[#4ADE80]/30 text-[#111814] hover:border-[#4ADE80]'}`}
                           >
                             DOMICILIO
                           </button>
@@ -1239,7 +1239,7 @@ const MenuContent = () => {
                               setTipoPedido('takeaway');
                               setMetodoEntregaNombre('Para recoger');
                             }}
-                            className={`flex-1 md:flex-none md:w-48 min-w-[120px] py-3 px-4 rounded-2xl font-black text-[10px] tracking-widest transition-all border-2 ${tipoPedido === 'takeaway' ? 'bg-[#22C55E] border-[#22C55E] text-[#111814] shadow-lg' : 'bg-white border-[#22C55E]/30 text-[#111814] hover:border-[#22C55E]'}`}
+                            className={`flex-1 md:flex-none md:w-48 min-w-[120px] py-3 px-4 rounded-2xl font-black text-[10px] tracking-widest transition-all border-2 ${tipoPedido === 'takeaway' ? 'bg-[#4ADE80] border-[#4ADE80] text-[#111814] shadow-lg' : 'bg-white border-[#4ADE80]/30 text-[#111814] hover:border-[#4ADE80]'}`}
                           >
                             PARA RECOGER
                           </button>
@@ -1250,7 +1250,7 @@ const MenuContent = () => {
                               setTipoPedido('mesa');
                               setMetodoEntregaNombre('Mesa');
                             }}
-                            className={`flex-1 md:flex-none md:w-48 min-w-[120px] py-3 px-4 rounded-2xl font-black text-[10px] tracking-widest transition-all border-2 ${tipoPedido === 'mesa' ? 'bg-[#22C55E] border-[#22C55E] text-[#111814] shadow-lg' : 'bg-white border-[#22C55E]/30 text-[#111814] hover:border-[#22C55E]'}`}
+                            className={`flex-1 md:flex-none md:w-48 min-w-[120px] py-3 px-4 rounded-2xl font-black text-[10px] tracking-widest transition-all border-2 ${tipoPedido === 'mesa' ? 'bg-[#4ADE80] border-[#4ADE80] text-[#111814] shadow-lg' : 'bg-white border-[#4ADE80]/30 text-[#111814] hover:border-[#4ADE80]'}`}
                           >
                             MESA
                           </button>
@@ -1286,7 +1286,7 @@ const MenuContent = () => {
                             <button
                               key={m.key}
                               onClick={() => setMetodoPago(m.label)}
-                              className={`flex-1 md:flex-none md:w-48 min-w-[120px] py-3 px-4 rounded-2xl font-black text-[10px] tracking-widest transition-all border-2 ${metodoPago === m.label ? 'bg-[#22C55E] text-[#111814] border-[#22C55E] shadow-lg' : 'bg-white text-[#111814] border-[#22C55E]/30 hover:border-[#22C55E]'}`}
+                              className={`flex-1 md:flex-none md:w-48 min-w-[120px] py-3 px-4 rounded-2xl font-black text-[10px] tracking-widest transition-all border-2 ${metodoPago === m.label ? 'bg-[#4ADE80] text-[#111814] border-[#4ADE80] shadow-lg' : 'bg-white text-[#111814] border-[#4ADE80]/30 hover:border-[#4ADE80]'}`}
                             >
                               {m.label.toUpperCase()}
                             </button>
@@ -1301,10 +1301,10 @@ const MenuContent = () => {
                     <motion.div
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="bg-[#22C55E]/5 rounded-[2rem] p-6 border border-[#22C55E]/20"
+                      className="bg-[#4ADE80]/5 rounded-[2rem] p-6 border border-[#4ADE80]/20"
                     >
                       <div className="flex items-center gap-3 mb-4">
-                        <div className="size-10 bg-[#22C55E] rounded-2xl flex items-center justify-center text-[#111814] shadow-lg shadow-[#22C55E]/20">
+                        <div className="size-10 bg-[#4ADE80] rounded-2xl flex items-center justify-center text-[#111814] shadow-lg shadow-[#4ADE80]/20">
                           <Award className="w-5 h-5" />
                         </div>
                         <div>
@@ -1375,7 +1375,7 @@ const MenuContent = () => {
                   <Button
                     onClick={handleSubmitOrder}
                     disabled={submitting || !customerInfo.nombre || !customerInfo.telefono || (tipoPedido === 'delivery' && !direccion) || items.length === 0}
-                    className="w-full h-16 rounded-2xl bg-[#22C55E] text-[#111814] font-black text-xl shadow-xl hover:bg-[#16A34A] disabled:opacity-50 disabled:bg-gray-200 transition-all mt-4 border-2 border-[#22C55E]"
+                    className="w-full h-16 rounded-2xl bg-[#4ADE80] text-[#111814] font-black text-xl shadow-xl hover:bg-[#22C55E] disabled:opacity-50 disabled:bg-gray-200 transition-all mt-4 border-2 border-[#4ADE80]"
                   >
                     {submitting ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Pedir Ahora'}
                   </Button>
@@ -1385,7 +1385,7 @@ const MenuContent = () => {
               {/* Step 2: Success */}
               {checkoutStep === 2 && orderSuccess && (
                 <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-10">
-                  <div className="size-24 bg-[#22C55E] rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-[#22C55E]/40 relative">
+                  <div className="size-24 bg-[#4ADE80] rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-[#4ADE80]/40 relative">
                     <Check className="w-12 h-12 text-[#111814] stroke-[4]" />
                     <motion.div
                       animate={{ scale: [1, 1.2, 1] }}
@@ -1411,7 +1411,7 @@ const MenuContent = () => {
                   <div className="space-y-3">
                     <Button
                       onClick={() => navigate(`/${slug}/mis-pedidos?order=${orderSuccess.id}`)}
-                      className="w-full h-14 bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] rounded-2xl font-black text-lg gap-3 shadow-lg shadow-[#22C55E]/20"
+                      className="w-full h-14 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] rounded-2xl font-black text-lg gap-3 shadow-lg shadow-[#4ADE80]/20"
                     >
                       Rastrear mi pedido
                       <ArrowRight className="w-5 h-5" />
@@ -1464,7 +1464,7 @@ const MenuContent = () => {
                 />
                 <button
                   onClick={() => setSelectedProduct(null)}
-                  className="absolute top-4 right-4 bg-[#22C55E]/80 backdrop-blur-md text-[#111814] p-2 rounded-full hover:bg-[#22C55E] transition-colors shadow-lg"
+                  className="absolute top-4 right-4 bg-[#4ADE80]/80 backdrop-blur-md text-[#111814] p-2 rounded-full hover:bg-[#4ADE80] transition-colors shadow-lg"
                 >
                   <ArrowRight className="w-5 h-5 rotate-180" />
                 </button>
@@ -1474,7 +1474,7 @@ const MenuContent = () => {
                 <div className="flex justify-between items-start mb-2">
                   <h2 className="text-2xl font-black text-[#111814] leading-tight">{selectedProduct.nombre}</h2>
                   {selectedProduct.etiqueta && (
-                    <span className="bg-[#22C55E] text-[#111814] text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-wider ml-2 whitespace-nowrap">
+                    <span className="bg-[#4ADE80] text-[#111814] text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-wider ml-2 whitespace-nowrap">
                       {selectedProduct.etiqueta}
                     </span>
                   )}
@@ -1513,14 +1513,14 @@ const MenuContent = () => {
                       <span className="text-lg font-black text-[#111814] w-4 text-center">{qty}</span>
                       <button
                         onClick={() => setQty(qty + 1)}
-                        className="size-10 rounded-xl bg-[#22C55E] text-[#111814] shadow-md flex items-center justify-center hover:bg-[#16A34A] active:scale-95 transition-all"
+                        className="size-10 rounded-xl bg-[#4ADE80] text-[#111814] shadow-md flex items-center justify-center hover:bg-[#22C55E] active:scale-95 transition-all"
                       >
                         <Plus className="w-4 h-4 stroke-[3]" />
                       </button>
                     </div>
                     <Button
                       onClick={addToCartAndConfirm}
-                      className="flex-1 h-14 bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] rounded-2xl font-black text-sm tracking-wide shadow-lg shadow-[#22C55E]/20 active:scale-95 transition-all"
+                      className="flex-1 h-14 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] rounded-2xl font-black text-sm tracking-wide shadow-lg shadow-[#4ADE80]/20 active:scale-95 transition-all"
                     >
                       Añadir {formatCurrency(selectedProduct.precio * qty)}
                     </Button>
@@ -1542,7 +1542,7 @@ const MenuContent = () => {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="mx-auto size-16 bg-[#22C55E]/20 rounded-full flex items-center justify-center mb-4 text-[#22C55E]">
+          <div className="mx-auto size-16 bg-[#4ADE80]/20 rounded-full flex items-center justify-center mb-4 text-[#22C55E]">
             <CheckCircle2 className="w-8 h-8 stroke-[3]" />
           </div>
 
@@ -1553,7 +1553,7 @@ const MenuContent = () => {
                 setCartOpen(true);
                 setCheckoutStep(1); // CORRECT: Direct to combined checkout view
               }}
-              className="w-full h-12 bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-black rounded-xl shadow-lg shadow-[#22C55E]/20"
+              className="w-full h-12 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black rounded-xl shadow-lg shadow-[#4ADE80]/20"
             >
               Ver Cesta
             </Button>

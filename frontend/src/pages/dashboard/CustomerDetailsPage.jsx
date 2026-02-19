@@ -294,7 +294,7 @@ export default function CustomerDetailsPage() {
                             </div>
                             <CardContent className="p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 md:gap-8">
                                 <div className="flex items-center gap-4 flex-shrink-0 border-r-0 md:border-r-2 border-gray-50 pr-0 md:pr-8 md:min-w-[280px] w-full md:w-auto justify-center md:justify-start">
-                                    <div className="p-3 md:p-4 bg-[#22C55E] text-white rounded-xl md:rounded-2xl shadow-lg shadow-green-100">
+                                    <div className="p-3 md:p-4 bg-[#4ADE80] text-[#111814] rounded-xl md:rounded-2xl shadow-lg shadow-green-100">
                                         <Brain className="w-5 h-5 md:w-6 md:h-6" />
                                     </div>
                                     <div className="space-y-0.5">
@@ -312,7 +312,7 @@ export default function CustomerDetailsPage() {
                         <Card className="border-none shadow-[0_20px_60px_rgba(0,0,0,0.04)] rounded-[2rem] md:rounded-[3rem] overflow-hidden bg-white border-2 border-gray-100">
                             <div className="p-6 md:p-10 border-b border-gray-100 flex flex-col sm:flex-row items-center justify-between bg-gray-50/20 gap-6">
                                 <div className="flex items-center gap-4 md:gap-5">
-                                    <div className="p-3 md:p-4 bg-[#22C55E] text-white rounded-xl md:rounded-[1.5rem] shadow-lg shadow-green-100">
+                                    <div className="p-3 md:p-4 bg-[#4ADE80] text-[#111814] rounded-xl md:rounded-[1.5rem] shadow-lg shadow-green-100">
                                         <History className="w-5 h-5 md:w-6 md:h-6" />
                                     </div>
                                     <div className="space-y-0.5 md:space-y-1">
@@ -322,7 +322,7 @@ export default function CustomerDetailsPage() {
                                 </div>
                                 <Button
                                     onClick={() => navigate(`/dashboard/${slug}/clientes/${customerId}/historial`)}
-                                    className="text-[9px] md:text-[10px] font-black text-[#22C55E] bg-white hover:bg-[#22C55E] hover:text-white rounded-xl px-6 md:px-8 h-10 md:h-11 transition-all uppercase tracking-[0.2em] border-[3px] border-[#22C55E] shadow-sm active:scale-95 w-full sm:w-auto"
+                                    className="text-[9px] md:text-[10px] font-black text-[#22C55E] bg-white hover:bg-[#4ADE80] hover:text-[#111814] rounded-xl px-6 md:px-8 h-10 md:h-11 transition-all uppercase tracking-[0.2em] border-[3px] border-[#4ADE80] shadow-sm active:scale-95 w-full sm:w-auto"
                                 >
                                     VER TODO
                                 </Button>
@@ -364,7 +364,7 @@ export default function CustomerDetailsPage() {
                                                 </td>
                                                 <td className="px-10 py-6">
                                                     <div className="flex items-center justify-center">
-                                                        <Badge className="bg-[#22C55E] hover:bg-green-600 text-white font-black text-[9px] px-3 py-1.5 rounded-full shadow-lg shadow-green-100 uppercase tracking-widest flex items-center gap-2 border-none">
+                                                        <Badge className="bg-[#4ADE80] hover:bg-green-600 text-[#111814] font-black text-[9px] px-3 py-1.5 rounded-full shadow-lg shadow-green-100 uppercase tracking-widest flex items-center gap-2 border-none">
                                                             <Check className="w-3 h-3 stroke-[4]" /> COMPLETADO
                                                         </Badge>
                                                     </div>
@@ -392,14 +392,14 @@ export default function CustomerDetailsPage() {
                                 <Trophy className="w-40 h-40" />
                             </div>
                             <div className="flex items-center gap-5 mb-1 relative z-10">
-                                <div className="p-4 bg-[#22C55E] text-white rounded-[1.25rem] shadow-xl shadow-[#22C55E]/20 ring-4 ring-white">
+                                <div className="p-4 bg-[#4ADE80] text-[#111814] rounded-[1.25rem] shadow-xl shadow-[#4ADE80]/20 ring-4 ring-white">
                                     <Award className="w-6 h-6 stroke-[2.5]" />
                                 </div>
                                 <div className="space-y-0.5">
                                     <DialogTitle className="text-2xl font-black text-gray-900 uppercase tracking-tighter leading-none">Acreditar Puntos</DialogTitle>
                                     <DialogDescription id="award-points-description" className="sr-only">Formulario para asignar puntos de fidelidad al cliente.</DialogDescription>
                                     <div className="flex items-center gap-2 mt-1.5">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse" />
+                                        <div className="w-1.5 h-1.5 rounded-full bg-[#4ADE80] animate-pulse" />
                                         <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest">
                                             Beneficios para {customer.name}
                                         </p>
@@ -413,13 +413,13 @@ export default function CustomerDetailsPage() {
                                 <TabsList className="grid grid-cols-2 w-full h-[64px] bg-white p-1.5 rounded-[1.5rem] border-2 border-green-200/50 shadow-sm overflow-hidden auto-cols-fr">
                                     <TabsTrigger
                                         value="compra"
-                                        className="h-full rounded-[1.2rem] font-black text-[10px] tracking-[0.15em] uppercase border border-green-200/30 data-[state=inactive]:border-green-200/40 data-[state=inactive]:bg-green-50/20 data-[state=inactive]:text-green-800/60 data-[state=active]:bg-[#22C55E] data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
+                                        className="h-full rounded-[1.2rem] font-black text-[10px] tracking-[0.15em] uppercase border border-green-200/30 data-[state=inactive]:border-green-200/40 data-[state=inactive]:bg-green-50/20 data-[state=inactive]:text-green-800/60 data-[state=active]:bg-[#4ADE80] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg transition-all duration-300"
                                     >
                                         POR COMPRA
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="puntos"
-                                        className="h-full rounded-[1.2rem] font-black text-[10px] tracking-[0.15em] uppercase border border-green-200/30 data-[state=inactive]:border-green-200/40 data-[state=inactive]:bg-green-50/20 data-[state=inactive]:text-green-800/60 data-[state=active]:bg-[#22C55E] data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
+                                        className="h-full rounded-[1.2rem] font-black text-[10px] tracking-[0.15em] uppercase border border-green-200/30 data-[state=inactive]:border-green-200/40 data-[state=inactive]:bg-green-50/20 data-[state=inactive]:text-green-800/60 data-[state=active]:bg-[#4ADE80] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg transition-all duration-300"
                                     >
                                         DIRECTO
                                     </TabsTrigger>
@@ -451,7 +451,7 @@ export default function CustomerDetailsPage() {
                                             </div>
                                             {config && (
                                                 <div className="flex items-center gap-2 ml-4">
-                                                    <div className="w-1 h-1 rounded-full bg-[#22C55E] animate-pulse" />
+                                                    <div className="w-1 h-1 rounded-full bg-[#4ADE80] animate-pulse" />
                                                     <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
                                                         Equivale a 1 punto por cada ${config.pesos_por_punto.toLocaleString()}
                                                     </p>
@@ -482,7 +482,7 @@ export default function CustomerDetailsPage() {
                                                 />
                                             </div>
                                             <div className="flex items-center gap-2 ml-4">
-                                                <div className="w-1 h-1 rounded-full bg-[#22C55E] animate-pulse" />
+                                                <div className="w-1 h-1 rounded-full bg-[#4ADE80] animate-pulse" />
                                                 <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
                                                     Se sumarán directamente al saldo actual
                                                 </p>
@@ -505,7 +505,7 @@ export default function CustomerDetailsPage() {
                                 onClick={handleAwardPoints}
                                 disabled={awarding || (creditMode === 'compra' ? !purchaseAmount || parseFloat(purchaseAmount) <= 0 : !manualPoints || parseInt(manualPoints) <= 0)}
                                 className={`h-14 flex-1 rounded-full font-black text-[10px] tracking-widest uppercase transition-all duration-300 flex items-center justify-center gap-3 group overflow-hidden border-2 border-[#22C55E] ${(creditMode === 'compra' ? parseFloat(purchaseAmount) > 0 : parseInt(manualPoints) > 0)
-                                    ? 'bg-[#22C55E] text-white hover:bg-[#16A34A] shadow-xl shadow-[#22C55E]/30 scale-100'
+                                    ? 'bg-[#4ADE80] text-[#111814] hover:bg-[#22C55E] shadow-xl shadow-[#4ADE80]/30 scale-100'
                                     : 'bg-white text-[#22C55E] cursor-not-allowed'
                                     }`}
                             >

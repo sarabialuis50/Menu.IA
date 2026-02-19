@@ -236,7 +236,7 @@ export default function MesasPage() {
           </div>
           <Button
             onClick={openCreateModal}
-            className="bg-[#22C55E] hover:bg-[#16A34A] text-white"
+            className="bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814]"
             data-testid="add-table-btn"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -250,7 +250,7 @@ export default function MesasPage() {
             <QrCode className="w-16 h-16 mx-auto mb-4 text-gray-300" />
             <h3 className="font-heading font-bold text-lg mb-2">No hay mesas</h3>
             <p className="text-gray-500 mb-4">Crea mesas y genera códigos QR para tus clientes</p>
-            <Button onClick={openCreateModal} className="bg-[#22C55E] hover:bg-[#16A34A] text-white">
+            <Button onClick={openCreateModal} className="bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814]">
               <Plus className="w-4 h-4 mr-2" />
               Crear primera mesa
             </Button>
@@ -415,7 +415,7 @@ export default function MesasPage() {
                 <Button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 bg-[#22C55E] hover:bg-[#16A34A] text-white"
+                  className="flex-1 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814]"
                   data-testid="save-table-btn"
                 >
                   {saving ? (
@@ -463,7 +463,7 @@ export default function MesasPage() {
               </p>
               <Button
                 onClick={downloadQR}
-                className="mt-6 bg-[#22C55E] hover:bg-[#16A34A] text-white"
+                className="mt-6 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814]"
                 data-testid="download-qr-btn"
               >
                 <Download className="w-4 h-4 mr-2" />

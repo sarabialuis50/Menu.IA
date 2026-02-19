@@ -27,17 +27,17 @@ export default function PricingPage() {
                         </Link>
 
                         <div className="flex items-center gap-1 sm:gap-3">
-                            <Link to="/precios" className="text-sm font-bold text-gray-600 hover:bg-[#22C55E] hover:text-white px-4 py-2 rounded-xl transition-colors">Precios</Link>
+                            <Link to="/precios" className="text-sm font-bold text-gray-600 hover:bg-[#4ADE80] hover:text-[#111814] px-4 py-2 rounded-xl transition-colors">Precios</Link>
                             <Button
                                 variant="ghost"
                                 onClick={() => navigate('/login')}
-                                className="border-[#22C55E] border-2 sm:border-0 hover:bg-[#22C55E] hover:text-white px-4 py-2 rounded-xl text-sm font-bold text-[#22C55E] sm:text-gray-600 transition-colors"
+                                className="border-[#4ADE80] border-2 sm:border-0 hover:bg-[#4ADE80] hover:text-[#111814] px-4 py-2 rounded-xl text-sm font-bold text-[#22C55E] sm:text-gray-600 transition-colors"
                             >
                                 Iniciar sesión
                             </Button>
                             <Button
                                 onClick={() => navigate('/register')}
-                                className="bg-[#22C55E] hover:bg-[#16A34A] text-white hidden sm:flex"
+                                className="bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] hidden sm:flex"
                             >
                                 Comenzar gratis
                             </Button>
@@ -99,7 +99,7 @@ export default function PricingPage() {
                     <Button
                         size="lg"
                         onClick={() => navigate('/register')}
-                        className="bg-[#22C55E] hover:bg-[#16A34A] text-white text-lg px-10 h-16 rounded-2xl shadow-[0_20px_40px_rgba(37,211,102,0.2)] transition-all hover:scale-105 active:scale-95"
+                        className="bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] text-lg px-10 h-16 rounded-2xl shadow-[0_20px_40px_rgba(37,211,102,0.2)] transition-all hover:scale-105 active:scale-95"
                     >
                         Comenzar gratis ahora
                         <ArrowRight className="ml-2 w-5 h-5" />
@@ -136,7 +136,7 @@ function PricingCard({ name, price, features, popular, onSelect }) {
             className={`relative p-6 rounded-2xl bg-white border-2 ${popular ? 'border-[#22C55E] shadow-lg' : 'border-gray-100'}`}
         >
             {popular && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#22C55E] text-white text-sm font-medium">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#4ADE80] text-[#111814] text-sm font-medium">
                     Popular
                 </span>
             )}
@@ -151,7 +151,7 @@ function PricingCard({ name, price, features, popular, onSelect }) {
                 ))}
             </ul>
             <Button
-                className={`w-full ${popular ? 'bg-[#22C55E] hover:bg-[#16A34A] text-white' : ''}`}
+                className={`w-full ${popular ? 'bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814]' : ''}`}
                 variant={popular ? 'default' : 'outline'}
                 onClick={onSelect}
             >

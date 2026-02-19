@@ -156,7 +156,7 @@ export default function GeminiConsultantPage() {
 
                                         <div
                                             className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${msg.role === 'user'
-                                                ? 'bg-[#22C55E]/5 border-2 border-[#22C55E] text-gray-900 rounded-br-none font-medium'
+                                                ? 'bg-[#4ADE80]/5 border-2 border-[#4ADE80] text-gray-900 rounded-br-none font-medium'
                                                 : msg.isError
                                                     ? 'bg-red-50 text-red-800 border border-red-100'
                                                     : 'bg-white text-gray-800 rounded-bl-none border border-gray-200'
@@ -172,7 +172,7 @@ export default function GeminiConsultantPage() {
                                         {msg.role === 'user' && (
                                             <Avatar className="h-8 w-8 border border-[#22C55E]/30">
                                                 <AvatarImage src={user?.avatar_url} />
-                                                <AvatarFallback className="bg-[#22C55E]/10 text-[#22C55E]">
+                                                <AvatarFallback className="bg-[#4ADE80]/10 text-[#22C55E]">
                                                     <User className="w-5 h-5" />
                                                 </AvatarFallback>
                                             </Avatar>
@@ -183,7 +183,7 @@ export default function GeminiConsultantPage() {
                                 {isTyping && (
                                     <div className="flex gap-3 justify-start">
                                         <Avatar className="h-8 w-8 border border-[#22C55E]/20">
-                                            <AvatarFallback className="bg-[#22C55E]/10 text-[#22C55E] animate-pulse">
+                                            <AvatarFallback className="bg-[#4ADE80]/10 text-[#22C55E] animate-pulse">
                                                 <Bot className="w-5 h-5" />
                                             </AvatarFallback>
                                         </Avatar>
@@ -211,7 +211,7 @@ export default function GeminiConsultantPage() {
                                     id="chat-send-button"
                                     type="submit"
                                     disabled={!input.trim() || isTyping}
-                                    className="bg-[#22C55E] hover:bg-[#22C55E]/90 text-[#111814] shadow-lg shadow-[#22C55E]/10 transition-all font-bold"
+                                    className="bg-[#4ADE80] hover:bg-[#4ADE80]/90 text-[#111814] shadow-lg shadow-[#4ADE80]/10 transition-all font-bold"
                                 >
                                     <Send className="w-4 h-4" />
                                 </Button>
@@ -222,11 +222,11 @@ export default function GeminiConsultantPage() {
                     {/* Right Side: Menu.IA Insights */}
                     <Card className="flex flex-col bg-white border-2 border-[#22C55E] shadow-2xl rounded-[2.5rem] overflow-hidden relative h-[600px] lg:h-full">
                         {/* Subtle Premium Glow Effect */}
-                        <div className="absolute top-0 right-0 w-80 h-80 bg-[#22C55E]/10 rounded-full blur-[100px] -mr-40 -mt-40 opacity-50" />
+                        <div className="absolute top-0 right-0 w-80 h-80 bg-[#4ADE80]/10 rounded-full blur-[100px] -mr-40 -mt-40 opacity-50" />
 
                         <div className="p-8 pb-4 flex items-center justify-between relative z-10 border-b border-gray-100 bg-gray-50/50">
                             <div className="flex items-center gap-4">
-                                <div className="p-3 bg-[#22C55E] rounded-2xl shadow-lg shadow-[#22C55E]/20">
+                                <div className="p-3 bg-[#4ADE80] rounded-2xl shadow-lg shadow-[#4ADE80]/20">
                                     <Sparkles className="w-6 h-6 text-white" />
                                 </div>
                                 <div>
@@ -234,7 +234,7 @@ export default function GeminiConsultantPage() {
                                         <span className="text-[#22C55E]">Menu</span><span className="text-[#22B8CF]">.IA</span> Insights
                                     </h2>
                                     <div className="flex items-center gap-2 mt-0.5">
-                                        <div className="w-2 h-2 bg-[#22C55E] rounded-full animate-pulse" />
+                                        <div className="w-2 h-2 bg-[#4ADE80] rounded-full animate-pulse" />
                                         <span className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold">Estrategia en tiempo real</span>
                                     </div>
                                 </div>
@@ -249,7 +249,7 @@ export default function GeminiConsultantPage() {
                                 </div>
                             ) : insights?.acciones_sugeridas ? (
                                 <div className="space-y-10 pb-10">
-                                    <p className="text-gray-600 text-sm leading-relaxed bg-[#22C55E]/5 p-4 rounded-2xl border border-[#22C55E]/10 italic">
+                                    <p className="text-gray-600 text-sm leading-relaxed bg-[#4ADE80]/5 p-4 rounded-2xl border border-[#4ADE80]/10 italic">
                                         "Basado en el análisis de hoy, he detectado estas oportunidades clave para maximizar tu rentabilidad:"
                                     </p>
 
@@ -281,13 +281,13 @@ ESTRATEGIA SUGERIDA: ${solutionPart?.replace(/\*\*/g, '') || ''}
                                                     onClick={handleDeepDive}
                                                     className="relative group cursor-pointer"
                                                 >
-                                                    <div className="absolute -left-4 top-0 bottom-0 w-1 bg-[#22C55E]/20 rounded-full group-hover:bg-[#22C55E] transition-all" />
+                                                    <div className="absolute -left-4 top-0 bottom-0 w-1 bg-[#4ADE80]/20 rounded-full group-hover:bg-[#4ADE80] transition-all" />
 
                                                     <div className="space-y-4 pl-4 transition-all group-hover:translate-x-1">
                                                         <div className="space-y-1">
                                                             <div className="flex items-center justify-between mb-2">
                                                                 <span className="text-[10px] font-black uppercase tracking-widest text-[#22C55E] opacity-60">Oportunidad {idx + 1}</span>
-                                                                <span className="text-[9px] font-bold text-[#22C55E] bg-[#22C55E]/10 px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                                                                <span className="text-[9px] font-bold text-[#22C55E] bg-[#4ADE80]/10 px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
                                                                     CLICK PARA PROFUNDIZAR <ArrowRight className="w-2 h-2" />
                                                                 </span>
                                                             </div>
@@ -302,7 +302,7 @@ ESTRATEGIA SUGERIDA: ${solutionPart?.replace(/\*\*/g, '') || ''}
                                                         </div>
 
                                                         {solutionPart && (
-                                                            <div className="bg-[#22C55E]/5 border border-[#22C55E]/10 p-5 rounded-2xl shadow-sm group-hover:border-[#22C55E]/30 group-hover:shadow-md transition-all">
+                                                            <div className="bg-[#4ADE80]/5 border border-[#4ADE80]/10 p-5 rounded-2xl shadow-sm group-hover:border-[#4ADE80]/30 group-hover:shadow-md transition-all">
                                                                 <h4 className="text-[10px] font-black text-[#22C55E] uppercase mb-2 flex items-center gap-2">
                                                                     <Sparkles className="w-3 h-3" /> Estrategia Sugerida
                                                                 </h4>
@@ -334,7 +334,7 @@ ESTRATEGIA SUGERIDA: ${solutionPart?.replace(/\*\*/g, '') || ''}
                             <Button
                                 onClick={fetchInsights}
                                 disabled={loadingInsights}
-                                className="w-full h-15 bg-[#22C55E] text-[#111814] hover:bg-[#22C55E]/90 rounded-2xl font-black uppercase text-xs tracking-[0.3em] shadow-lg shadow-[#22C55E]/20 transition-all active:scale-95 group border-none"
+                                className="w-full h-15 bg-[#4ADE80] text-[#111814] hover:bg-[#4ADE80]/90 rounded-2xl font-black uppercase text-xs tracking-[0.3em] shadow-lg shadow-[#4ADE80]/20 transition-all active:scale-95 group border-none"
                             >
                                 {loadingInsights ? <Loader2 className="animate-spin" /> : (
                                     <>

@@ -297,7 +297,7 @@ export default function CustomersPage() {
                         </Button>
                         <Button
                             onClick={() => setIsAddModalOpen(true)}
-                            className="col-span-2 md:col-auto h-9 md:h-11 px-6 rounded-xl bg-[#22C55E] hover:bg-[#1da850] border-none font-black text-[9px] md:text-[11px] tracking-widest gap-2 shadow-lg shadow-green-100 transition-all active:scale-95"
+                            className="col-span-2 md:col-auto h-9 md:h-11 px-6 rounded-xl bg-[#4ADE80] hover:bg-[#1da850] border-none font-black text-[9px] md:text-[11px] tracking-widest gap-2 shadow-lg shadow-green-100 transition-all active:scale-95"
                         >
                             <UserPlus className="w-3.5 h-3.5" />
                             NUEVO CLIENTE
@@ -691,7 +691,7 @@ export default function CustomersPage() {
                                 </Button>
                                 <Button
                                     type="submit"
-                                    className="h-12 flex-1 rounded-xl bg-[#22C55E] hover:bg-[#1da850] border-none font-black text-[11px] tracking-widest shadow-lg shadow-green-100"
+                                    className="h-12 flex-1 rounded-xl bg-[#4ADE80] hover:bg-[#1da850] border-none font-black text-[11px] tracking-widest shadow-lg shadow-green-100"
                                 >
                                     REGISTRAR CLIENTE
                                 </Button>

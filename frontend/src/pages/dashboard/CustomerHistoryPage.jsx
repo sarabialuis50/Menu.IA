@@ -113,7 +113,7 @@ export default function CustomerHistoryPage() {
 
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div className="flex items-center gap-5">
-                            <div className="p-4 bg-[#22C55E] text-white rounded-[1.5rem] shadow-xl shadow-green-100">
+                            <div className="p-4 bg-[#4ADE80] text-[#111814] rounded-[1.5rem] shadow-xl shadow-green-100">
                                 <History className="w-8 h-8" />
                             </div>
                             <div>
@@ -221,7 +221,7 @@ export default function CustomerHistoryPage() {
                                         </td>
                                         <td className="px-10 py-8">
                                             <div className="flex items-center justify-center">
-                                                <Badge className="bg-[#22C55E] hover:bg-green-600 text-white font-black text-[9px] px-4 py-2 rounded-full shadow-lg shadow-green-100 uppercase tracking-widest flex items-center gap-2 border-none">
+                                                <Badge className="bg-[#4ADE80] hover:bg-green-600 text-[#111814] font-black text-[9px] px-4 py-2 rounded-full shadow-lg shadow-green-100 uppercase tracking-widest flex items-center gap-2 border-none">
                                                     <Check className="w-3 h-3 stroke-[4]" /> {item.status}
                                                 </Badge>
                                             </div>

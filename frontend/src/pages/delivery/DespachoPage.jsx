@@ -121,7 +121,7 @@ export default function DespachoPage() {
         <div className="min-h-screen bg-[#F8FAFC]">
             {/* Dynamic Background Effect */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-40">
-                <div className="absolute -top-[10%] -right-[10%] size-96 rounded-full bg-[#22C55E]/5 blur-3xl animate-pulse" />
+                <div className="absolute -top-[10%] -right-[10%] size-96 rounded-full bg-[#4ADE80]/5 blur-3xl animate-pulse" />
                 <div className="absolute top-[40%] -left-[10%] size-80 rounded-full bg-blue-500/5 blur-3xl" />
             </div>
 
@@ -139,7 +139,7 @@ export default function DespachoPage() {
                             </div>
                         </div>
                         <div className="size-10 rounded-full bg-white border-2 border-gray-100 flex items-center justify-center shadow-sm">
-                            <div className={`size-2 rounded-full ${isTracking ? 'bg-[#22C55E] animate-ping' : 'bg-gray-300'}`} />
+                            <div className={`size-2 rounded-full ${isTracking ? 'bg-[#4ADE80] animate-ping' : 'bg-gray-300'}`} />
                         </div>
                     </div>
 
@@ -167,7 +167,7 @@ export default function DespachoPage() {
 
                         <div className="relative z-10">
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="size-8 rounded-full bg-[#22C55E] flex items-center justify-center text-[#111814]">
+                                <div className="size-8 rounded-full bg-[#4ADE80] flex items-center justify-center text-[#111814]">
                                     <User className="w-4 h-4" />
                                 </div>
                                 <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.34em]">Información del Cliente</span>
@@ -197,7 +197,7 @@ export default function DespachoPage() {
                                             href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.direccion)}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="size-10 rounded-2xl bg-[#22C55E] flex items-center justify-center text-[#111814] hover:scale-110 active:scale-95 transition-all shadow-lg shadow-[#22C55E]/20"
+                                            className="size-10 rounded-2xl bg-[#4ADE80] flex items-center justify-center text-[#111814] hover:scale-110 active:scale-95 transition-all shadow-lg shadow-[#4ADE80]/20"
                                         >
                                             <Navigation className="w-5 h-5" />
                                         </a>
@@ -219,7 +219,7 @@ export default function DespachoPage() {
                                     <Button
                                         onClick={() => updateStatus('enviado')}
                                         disabled={updating}
-                                        className="w-full h-20 rounded-[2rem] bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-black text-lg tracking-widest shadow-xl shadow-[#22C55E]/20 transition-all border-b-4 border-black/10 active:border-b-0 active:translate-y-1"
+                                        className="w-full h-20 rounded-[2rem] bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black text-lg tracking-widest shadow-xl shadow-[#4ADE80]/20 transition-all border-b-4 border-black/10 active:border-b-0 active:translate-y-1"
                                     >
                                         {updating ? <Loader2 className="animate-spin" /> : 'INICIAR VIAJE 🛵'}
                                     </Button>
@@ -246,7 +246,7 @@ export default function DespachoPage() {
                                         )}
                                     </Button>
                                     <p className="text-center text-[10px] font-black text-[#22C55E] uppercase tracking-widest mt-4 flex items-center justify-center gap-2">
-                                        <span className="size-2 rounded-full bg-[#22C55E] animate-ping" />
+                                        <span className="size-2 rounded-full bg-[#4ADE80] animate-ping" />
                                         TRANSMITIENDO GPS EN TIEMPO REAL
                                     </p>
                                 </motion.div>

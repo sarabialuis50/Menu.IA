@@ -148,7 +148,7 @@ export const DashboardLayout = ({ children }) => {
                   className={`
                     flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs transition-all duration-300 group
                     ${isActive
-                      ? 'bg-[#22C55E] text-white shadow-lg shadow-green-500/20 scale-[1.01]'
+                      ? 'bg-[#4ADE80] text-[#111814] shadow-lg shadow-green-500/20 scale-[1.01]'
                       : 'text-slate-400 hover:bg-slate-800 hover:text-white'
                     }
                   `}
@@ -213,7 +213,7 @@ export const DashboardLayout = ({ children }) => {
               className={`flex flex-col items-center justify-center gap-1 transition-all duration-300 w-full h-full ${isActive ? 'text-[#22C55E]' : 'text-slate-400'
                 }`}
             >
-              <div className={`p-1.5 rounded-xl transition-all ${isActive ? 'bg-[#22C55E]/10 scale-110 shadow-sm shadow-[#22C55E]/10' : ''}`}>
+              <div className={`p-1.5 rounded-xl transition-all ${isActive ? 'bg-[#4ADE80]/10 scale-110 shadow-sm shadow-[#4ADE80]/10' : ''}`}>
                 <item.icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5px]' : 'stroke-2'}`} />
               </div>
               <span className={`text-[9px] font-black uppercase tracking-tight ${isActive ? 'opacity-100' : 'opacity-60'}`}>

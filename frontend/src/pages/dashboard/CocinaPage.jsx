@@ -147,7 +147,7 @@ function OrderCard({ order, onUpdateStatus }) {
     };
   }
   else if (order.estado === 'listo') config = { label: 'Listo', color: 'border-green-400 bg-green-50', headerColor: 'bg-green-500', nextAction: 'Enviado', nextStatus: 'enviado', btnColor: 'bg-purple-500 hover:bg-purple-600' };
-  else if (order.estado === 'enviado') config = { label: 'Enviado', color: 'border-purple-400 bg-purple-50', headerColor: 'bg-purple-500', nextAction: 'Entregado', nextStatus: 'entregado', btnColor: 'bg-[#22C55E] hover:bg-[#16A34A] text-[#111814]' };
+  else if (order.estado === 'enviado') config = { label: 'Enviado', color: 'border-purple-400 bg-purple-50', headerColor: 'bg-purple-500', nextAction: 'Entregado', nextStatus: 'entregado', btnColor: 'bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814]' };
   else config = { label: 'Entregado', color: 'border-gray-400 bg-gray-50', headerColor: 'bg-gray-500', nextAction: null, nextStatus: null, btnColor: '' };
 
   return (

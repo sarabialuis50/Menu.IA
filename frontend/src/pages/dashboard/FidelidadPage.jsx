@@ -133,10 +133,10 @@ export default function FidelidadPage() {
 
   const getButtonStyle = (hasPendingChanges) => {
     if (hasPendingChanges) {
-      return "h-14 rounded-full border-2 border-transparent bg-[#22C55E] hover:bg-[#16A34A] text-white font-black uppercase text-[10px] tracking-widest px-10 transition-all flex items-center gap-2 group shadow-lg shadow-[#22C55E]/20 active:scale-95";
+      return "h-14 rounded-full border-2 border-transparent bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black uppercase text-[10px] tracking-widest px-10 transition-all flex items-center gap-2 group shadow-lg shadow-[#4ADE80]/20 active:scale-95";
 
     }
-    return "h-14 rounded-full border-2 border-[#22C55E] bg-transparent text-[#22C55E] font-black uppercase text-[10px] tracking-widest px-10 transition-all flex items-center gap-2 group active:scale-95 hover:bg-[#22C55E]/5";
+    return "h-14 rounded-full border-2 border-[#4ADE80] bg-transparent text-[#22C55E] font-black uppercase text-[10px] tracking-widest px-10 transition-all flex items-center gap-2 group active:scale-95 hover:bg-[#4ADE80]/5";
   };
 
   const applySimulator = () => {
@@ -323,7 +323,7 @@ export default function FidelidadPage() {
                 id="activo-header"
                 checked={config.activo}
                 onCheckedChange={(checked) => setConfig({ ...config, activo: checked })}
-                className="data-[state=checked]:bg-[#22C55E]"
+                className="data-[state=checked]:bg-[#4ADE80]"
               />
               <Label htmlFor="activo-header" className="font-black text-[10px] uppercase cursor-pointer">
                 {config.activo ? 'Programa Activo' : 'Programa Pausado'}
@@ -336,7 +336,7 @@ export default function FidelidadPage() {
         <Card className="border-none shadow-2xl rounded-[2rem] md:rounded-[2.5rem] overflow-hidden bg-white">
           <CardHeader className="bg-[#f8faf9] border-b border-gray-100 px-6 py-6 md:px-10 md:py-8">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#22C55E] flex items-center justify-center shadow-lg shadow-[#22C55E]/20">
+              <div className="w-10 h-10 rounded-2xl bg-[#4ADE80] flex items-center justify-center shadow-lg shadow-[#4ADE80]/20">
                 <Calculator className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -420,7 +420,7 @@ export default function FidelidadPage() {
                   </div>
                   <Button
                     onClick={applySimulator}
-                    className="bg-[#22C55E] hover:bg-[#1da850] text-white font-black text-[9px] md:text-[10px] uppercase h-9 md:h-10 rounded-xl md:rounded-2xl px-3 md:px-5 transition-transform active:scale-95 shadow-lg shadow-[#22C55E]/20 flex items-center gap-1.5 md:gap-2"
+                    className="bg-[#4ADE80] hover:bg-[#1da850] text-[#111814] font-black text-[9px] md:text-[10px] uppercase h-9 md:h-10 rounded-xl md:rounded-2xl px-3 md:px-5 transition-transform active:scale-95 shadow-lg shadow-[#4ADE80]/20 flex items-center gap-1.5 md:gap-2"
                   >
                     <Package className="w-3.5 h-3.5 md:w-4 h-4" />
                     USAR
@@ -435,7 +435,7 @@ export default function FidelidadPage() {
 
                 <div className="space-y-2 text-center lg:text-left">
                   <div className="flex items-center justify-center lg:justify-start gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#22C55E]" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#4ADE80]" />
                     <h3 className="text-xs font-black text-gray-900 uppercase tracking-widest">CONFIGURACIÓN TÉCNICA DEFINITIVA</h3>
                   </div>
                   <p className="text-[10px] font-medium text-gray-400">Usa el "Resultado Sugerido" de arriba como guía, pero escribe aquí el valor final.</p>
@@ -512,7 +512,7 @@ export default function FidelidadPage() {
                 <Button
                   onClick={handleSearch}
                   disabled={searching}
-                  className="w-full h-16 rounded-3xl bg-[#22C55E] hover:bg-[#1da850] text-white font-black uppercase text-xs tracking-widest shadow-lg shadow-[#22C55E]/20 flex items-center justify-center gap-2"
+                  className="w-full h-16 rounded-3xl bg-[#4ADE80] hover:bg-[#1da850] text-[#111814] font-black uppercase text-xs tracking-widest shadow-lg shadow-[#4ADE80]/20 flex items-center justify-center gap-2"
                 >
                   {searching ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
                   BUSCAR CLIENTE
@@ -548,7 +548,7 @@ export default function FidelidadPage() {
                             </div>
                           </div>
                           <div className="flex flex-col items-end">
-                            <Badge className="bg-[#22C55E] text-white text-[10px] font-black rounded-lg px-2 py-0.5">
+                            <Badge className="bg-[#4ADE80] text-[#111814] text-[10px] font-black rounded-lg px-2 py-0.5">
                               {customer.puntos_disponibles.toLocaleString()} PTS
                             </Badge>
                           </div>
@@ -640,7 +640,7 @@ export default function FidelidadPage() {
                           setTimeout(() => el.focus(), 500);
                         }
                       }}
-                      className="bg-[#22C55E] text-white font-black text-[10px] tracking-widest px-8 py-6 rounded-full hover:bg-[#1da850] shadow-xl shadow-green-200 transition-all hover:scale-105 active:scale-95"
+                      className="bg-[#4ADE80] text-[#111814] font-black text-[10px] tracking-widest px-8 py-6 rounded-full hover:bg-[#1da850] shadow-xl shadow-green-200 transition-all hover:scale-105 active:scale-95"
                     >
                       IR A CONFIGURACIÓN
                     </Button>
@@ -695,7 +695,7 @@ export default function FidelidadPage() {
                           </button>
 
                           <div className="text-center group relative">
-                            <div className="absolute inset-0 bg-[#22C55E]/5 blur-3xl rounded-full transition-all group-hover:bg-[#22C55E]/10" />
+                            <div className="absolute inset-0 bg-[#4ADE80]/5 blur-3xl rounded-full transition-all group-hover:bg-[#4ADE80]/10" />
                             <span className="text-7xl md:text-9xl font-black text-[#22C55E] leading-none relative z-10 drop-shadow-sm">
                               {manualPoints}
                             </span>
@@ -715,7 +715,7 @@ export default function FidelidadPage() {
                             <button
                               key={val}
                               onClick={() => setManualPoints(prev => prev + val)}
-                              className="w-[70px] h-14 rounded-2xl border-2 border-gray-200 bg-white text-xs font-black text-gray-400 hover:bg-[#22C55E] hover:text-white hover:border-[#22C55E] transition-all hover:scale-110 active:scale-95 shadow-sm hover:shadow-lg hover:shadow-[#22C55E]/20 flex items-center justify-center"
+                              className="w-[70px] h-14 rounded-2xl border-2 border-gray-200 bg-white text-xs font-black text-gray-400 hover:bg-[#4ADE80] hover:text-[#111814] hover:border-[#4ADE80] transition-all hover:scale-110 active:scale-95 shadow-sm hover:shadow-lg hover:shadow-[#4ADE80]/20 flex items-center justify-center"
                             >
                               +{val}
                             </button>
@@ -728,14 +728,14 @@ export default function FidelidadPage() {
                       onClick={handleAwardPoints}
                       disabled={awarding || !selectedCustomer || (creditMode === 'compra' ? purchaseAmount <= 0 : manualPoints <= 0)}
                       className={`w-full h-20 md:h-24 rounded-[2rem] md:rounded-[3rem] font-black uppercase text-xs md:text-sm tracking-[0.2em] md:tracking-[0.4em] transition-all duration-500 flex items-center justify-center gap-4 md:gap-6 group overflow-hidden ${selectedCustomer && (creditMode === 'compra' ? purchaseAmount > 0 : manualPoints > 0)
-                        ? 'bg-[#22C55E] text-white hover:bg-[#16A34A] shadow-[0_20px_50px_rgba(34,197,94,0.3)] hover:scale-[1.02] active:scale-95 border-none'
+                        ? 'bg-[#4ADE80] text-[#111814] hover:bg-[#22C55E] shadow-[0_20px_50px_rgba(34,197,94,0.3)] hover:scale-[1.02] active:scale-95 border-none'
                         : 'bg-transparent text-[#22C55E] border-4 border-[#22C55E]/20 cursor-not-allowed opacity-40'
                         }`}
                     >
                       {awarding ? (
                         <Loader2 className="w-8 h-8 animate-spin" />
                       ) : (
-                        <div className={`p-3 rounded-full transition-colors duration-500 ${selectedCustomer && (creditMode === 'compra' ? purchaseAmount > 0 : manualPoints > 0) ? 'bg-[#111814]/10' : 'bg-[#22C55E]/10'}`}>
+                        <div className={`p-3 rounded-full transition-colors duration-500 ${selectedCustomer && (creditMode === 'compra' ? purchaseAmount > 0 : manualPoints > 0) ? 'bg-[#111814]/10' : 'bg-[#4ADE80]/10'}`}>
                           <Check className="w-8 h-8" />
                         </div>
                       )}
@@ -853,7 +853,7 @@ export default function FidelidadPage() {
                     size="sm"
                     onClick={handleNextPage}
                     disabled={currentPage === totalPages}
-                    className="h-9 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest border-[#22C55E] text-[#22C55E] hover:bg-[#22C55E] hover:text-white transition-all shadow-sm shadow-green-100 disabled:opacity-50 disabled:border-gray-200 disabled:text-gray-400 disabled:shadow-none"
+                    className="h-9 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest border-[#4ADE80] text-[#22C55E] hover:bg-[#4ADE80] hover:text-[#111814] transition-all shadow-sm shadow-green-100 disabled:opacity-50 disabled:border-gray-200 disabled:text-gray-400 disabled:shadow-none"
                   >
                     SIGUIENTE
                   </Button>

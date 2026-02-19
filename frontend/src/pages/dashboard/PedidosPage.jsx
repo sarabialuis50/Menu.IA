@@ -370,7 +370,7 @@ export default function PedidosPage() {
                                                 setFilterStatus(status);
                                                 setCurrentPage(1);
                                             }}
-                                            className={`rounded-xl px-4 py-2.5 text-[11px] font-bold cursor-pointer mb-1 last:mb-0 ${filterStatus === status ? 'bg-[#22C55E]/10 text-[#22C55E]' : 'text-gray-600 hover:bg-gray-50'
+                                            className={`rounded-xl px-4 py-2.5 text-[11px] font-bold cursor-pointer mb-1 last:mb-0 ${filterStatus === status ? 'bg-[#4ADE80]/10 text-[#22C55E]' : 'text-gray-600 hover:bg-gray-50'
                                                 }`}
                                         >
                                             {status}
@@ -764,7 +764,7 @@ export default function PedidosPage() {
                                         key={status.id}
                                         onClick={() => setSelectedStatus(status.id)}
                                         className={`w-full p-4 rounded-xl text-left font-bold transition-all border-2 ${selectedStatus === status.id
-                                            ? 'bg-[#22C55E] border-[#22C55E] text-white shadow-lg shadow-green-100 scale-[1.01]'
+                                            ? 'bg-[#4ADE80] border-[#4ADE80] text-[#111814] shadow-lg shadow-green-100 scale-[1.01]'
                                             : 'bg-white border-gray-100 text-gray-600 hover:border-green-200'
                                             }`}
                                     >
@@ -783,7 +783,7 @@ export default function PedidosPage() {
                                     setShowTrackingModal(false);
                                 }}
                                 className={`w-full h-14 rounded-2xl font-black text-sm tracking-widest transition-all shadow-lg ${selectedStatus && selectedStatus !== selectedOrder?.estado
-                                    ? 'bg-[#22C55E] hover:bg-[#16A34A] text-white'
+                                    ? 'bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814]'
                                     : 'bg-[#94A3B8] text-white opacity-50'
                                     }`}
                             >
@@ -874,7 +874,7 @@ export default function PedidosPage() {
                                                 <p className="text-[10px] font-bold text-[#618972] uppercase tracking-[0.2em]">{rep.id.slice(0, 8)}</p>
                                             </div>
                                         </div>
-                                        <div className="size-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-[#22C55E] group-hover:text-white transition-all shadow-sm">
+                                        <div className="size-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-[#4ADE80] group-hover:text-[#111814] transition-all shadow-sm">
                                             <CheckCircle2 className="w-5 h-5" />
                                         </div>
                                     </button>

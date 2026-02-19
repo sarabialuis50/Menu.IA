@@ -40,7 +40,7 @@ export const FloatingWA = ({ businessName, whatsapp, aiEnabled, aiSaludo }) => {
                         </button>
 
                         <div className="flex items-center gap-2 mb-2">
-                            <div className="size-2 rounded-full bg-[#22C55E] animate-pulse" />
+                            <div className="size-2 rounded-full bg-[#4ADE80] animate-pulse" />
                             <span className="text-[10px] font-black text-[#22C55E] uppercase tracking-widest">Asistente IA Online</span>
                         </div>
 

@@ -130,7 +130,7 @@ export default function FidelidadHistoryPage() {
 
                             <Button
                                 onClick={handleFilter}
-                                className="rounded-xl px-8 h-11 bg-[#22C55E] hover:bg-[#1da850] text-white font-black uppercase tracking-widest shadow-lg shadow-[#22C55E]/20 w-full lg:w-auto"
+                                className="rounded-xl px-8 h-11 bg-[#4ADE80] hover:bg-[#1da850] text-[#111814] font-black uppercase tracking-widest shadow-lg shadow-[#4ADE80]/20 w-full lg:w-auto"
                             >
                                 <Search className="w-4 h-4 mr-2" />
                                 FILTRAR

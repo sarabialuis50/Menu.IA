@@ -532,3 +532,6 @@ def send_whatsapp_response(to_number: str, body: str):
         logger.info(f"Mensaje enviado a {formatted_number}: {message.sid}")
     except Exception as e:
         logger.error(f"Error enviando respuesta WA: {e}")
+
+# Export for external use
+__all__ = ['send_whatsapp_response']

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { DashboardLayout } from '@/layouts/DashboardLayout';
 import { motion } from 'framer-motion';
@@ -64,6 +64,7 @@ const OrderStatusBadge = ({ status }) => {
 
 export default function DashboardPage() {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const { user, api } = useAuth();
   const [analytics, setAnalytics] = useState(null);
   const [recentOrders, setRecentOrders] = useState([]);
@@ -146,7 +147,7 @@ export default function DashboardPage() {
             title="Ventas Hoy"
             value={formatCurrency(analytics?.ventas_hoy || 0)}
             icon={DollarSign}
-            color="bg-[#22C55E]"
+            color="bg-[#4ADE80]"
           />
           <StatCard
             title="Pedidos Hoy"
@@ -200,7 +201,7 @@ export default function DashboardPage() {
                 </div>
                 <button
                   onClick={() => toast.success(`Abriendo chat con ${cliente.nombre}`)}
-                  className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-[#22C55E]/10 hover:text-[#22C55E] transition-all shrink-0"
+                  className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-[#4ADE80]/10 hover:text-[#22C55E] transition-all shrink-0"
                 >
                   <MessageCircle className="w-4 h-4" />
                 </button>
@@ -337,7 +338,7 @@ export default function DashboardPage() {
           </Card>
 
           {/* WhatsApp Hub */}
-          <Card className="rounded-[2rem] border-none shadow-2xl bg-[#22C55E] overflow-hidden text-white group">
+          <Card className="rounded-[2rem] border-none shadow-2xl bg-[#4ADE80] overflow-hidden text-[#111814] group">
             <CardContent className="p-8 flex flex-col h-full space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -361,7 +362,7 @@ export default function DashboardPage() {
                     <h3 className="text-4xl font-black leading-none">{user?.wa_messages_count || 0}/{user?.wa_messages_limit || 0}</h3>
                     <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest mt-2 px-1">Mensajes Venta/Soporte</p>
                   </div>
-                  <Badge className="bg-white/20 text-white text-[9px] font-black tracking-widest border-none px-2 py-0.5 mb-1">PLAN {user?.plan?.toUpperCase() || 'GRATUITO'}</Badge>
+                  <Badge className="bg-white/20 text-white text-[9px] font-black tracking-widest border-white border-2 px-2 py-0.5 mb-1">PLAN {user?.plan?.toUpperCase() || 'GRATUITO'}</Badge>
                 </div>
                 <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden">
                   <div
@@ -387,17 +388,17 @@ export default function DashboardPage() {
 
               <div className="grid grid-cols-2 gap-3 pt-2">
                 <Button
-                  onClick={() => toast.success('Módulo de compra cargando...')}
+                  onClick={() => navigate(`/dashboard/${slug}/marketing?purchase=true`)}
                   className="bg-white text-[#22C55E] border-2 border-transparent hover:bg-transparent hover:text-white hover:border-white font-black text-[10px] uppercase h-12 rounded-xl tracking-widest shadow-xl shadow-green-900/10 transition-all"
                 >
                   Comprar Mensajes
                 </Button>
                 <Button
-                  onClick={() => toast.info('Generando reporte...')}
+                  onClick={() => navigate('/precios')}
                   variant="outline"
                   className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-[#22C55E] font-black text-[10px] uppercase h-12 rounded-xl tracking-widest transition-all"
                 >
-                  Reporte Diario
+                  Mejorar Plan
                 </Button>
               </div>
             </CardContent>

@@ -72,7 +72,7 @@ export default function ClientOrdersPage() {
                         <p className="text-gray-500 mb-8">¡Explora nuestro menú y realiza tu primer pedido!</p>
                         <Button
                             onClick={() => navigate(`/${slug}/menu-completo`)}
-                            className="bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-bold px-8 py-6 rounded-2xl shadow-lg shadow-[#22C55E]/20"
+                            className="bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-bold px-8 py-6 rounded-2xl shadow-lg shadow-[#4ADE80]/20"
                         >
                             Ir al Menú
                         </Button>
@@ -134,7 +134,7 @@ export default function ClientOrdersPage() {
                                         <div className="pt-2 flex items-center justify-end gap-3">
                                             {['pendiente', 'en_proceso', 'en_camino'].includes(order.estado) && (
                                                 <Button
-                                                    className="bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-bold rounded-xl h-10 shadow-lg shadow-[#22C55E]/20"
+                                                    className="bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-bold rounded-xl h-10 shadow-lg shadow-[#4ADE80]/20"
                                                     onClick={() => navigate(`/${slug}/mis-pedidos?order=${order.id}`)}
                                                 >
                                                     Rastrear Pedido

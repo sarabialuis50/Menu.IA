@@ -153,14 +153,14 @@ const defaultImages = [
 const getButtonStyle = (hasPendingChanges, size = "large") => {
     const heightClass = size === "small" ? "h-11 px-6" : "h-14 px-10";
     if (hasPendingChanges) {
-        return `${heightClass} rounded-full bg-[#22C55E] text-white font-black uppercase text-[10px] tracking-widest hover:bg-[#16A34A] shadow-xl shadow-[#22C55E]/20 transition-all active:scale-95 flex items-center gap-3 border-2 border-transparent`;
+        return `${heightClass} rounded-full bg-[#4ADE80] text-[#111814] font-black uppercase text-[10px] tracking-widest hover:bg-[#4ADE80] shadow-xl shadow-[#4ADE80]/20 transition-all active:scale-95 flex items-center gap-3 border-2 border-transparent`;
     }
-    return `${heightClass} rounded-full bg-white text-[#22C55E] border-2 border-[#22C55E] font-black uppercase text-[10px] tracking-widest hover:bg-[#22C55E]/5 transition-all active:scale-95 flex items-center gap-3 shadow-sm`;
+    return `${heightClass} rounded-full bg-white text-[#22C55E] border-2 border-[#4ADE80] font-black uppercase text-[10px] tracking-widest hover:bg-[#4ADE80]/5 transition-all active:scale-95 flex items-center gap-3 shadow-sm`;
 };
 
 const getModalButtonStyle = (hasPendingChanges) => {
     if (hasPendingChanges) {
-        return "flex-1 h-12 rounded-2xl bg-[#22C55E] text-white font-black uppercase text-[10px] tracking-widest hover:bg-[#16A34A] shadow-lg shadow-[#22C55E]/10 transition-all active:scale-95";
+        return "flex-1 h-12 rounded-2xl bg-[#4ADE80] text-[#111814] font-black uppercase text-[10px] tracking-widest hover:bg-[#4ADE80] shadow-lg shadow-[#4ADE80]/10 transition-all active:scale-95";
     }
     return "flex-1 h-12 rounded-2xl bg-gray-100 text-gray-400 font-black uppercase text-[10px] tracking-widest cursor-not-allowed transition-all";
 };
@@ -171,7 +171,7 @@ const formatPrice = (val) => {
     return numeric.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
 
-export default function ConfiguracionPage() {
+const ConfiguracionPage = () => {
     const { slug } = useParams();
     const { user, api } = useAuth();
     const navigate = useNavigate();
@@ -823,7 +823,7 @@ export default function ConfiguracionPage() {
                         <TabsTrigger
                             value="diseno"
                             className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
-                            data-[state=active]:bg-[#22C55E] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#22C55E]/20
+                            data-[state=active]:bg-[#4ADE80] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#4ADE80]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
                             <Palette className="w-3.5 h-3.5" />
@@ -832,7 +832,7 @@ export default function ConfiguracionPage() {
                         <TabsTrigger
                             value="menu"
                             className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
-                            data-[state=active]:bg-[#22C55E] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#22C55E]/20
+                            data-[state=active]:bg-[#4ADE80] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#4ADE80]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
                             <Utensils className="w-3.5 h-3.5" />
@@ -841,7 +841,7 @@ export default function ConfiguracionPage() {
                         <TabsTrigger
                             value="domicilios"
                             className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
-                            data-[state=active]:bg-[#22C55E] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#22C55E]/20
+                            data-[state=active]:bg-[#4ADE80] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#4ADE80]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
                             <Truck className="w-3.5 h-3.5" />
@@ -850,7 +850,7 @@ export default function ConfiguracionPage() {
                         <TabsTrigger
                             value="entrega"
                             className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
-                            data-[state=active]:bg-[#22C55E] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#22C55E]/20
+                            data-[state=active]:bg-[#4ADE80] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#4ADE80]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
                             <Package className="w-3.5 h-3.5" />
@@ -859,7 +859,7 @@ export default function ConfiguracionPage() {
                         <TabsTrigger
                             value="pagos"
                             className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
-                            data-[state=active]:bg-[#22C55E] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#22C55E]/20
+                            data-[state=active]:bg-[#4ADE80] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#4ADE80]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
                             <CreditCardIcon className="w-3.5 h-3.5" />
@@ -868,7 +868,7 @@ export default function ConfiguracionPage() {
                         <TabsTrigger
                             value="experiencia"
                             className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
-                            data-[state=active]:bg-[#22C55E] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#22C55E]/20
+                            data-[state=active]:bg-[#4ADE80] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#4ADE80]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
                             <Smartphone className="w-3.5 h-3.5" />
@@ -877,7 +877,7 @@ export default function ConfiguracionPage() {
                         <TabsTrigger
                             value="ai"
                             className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
-                            data-[state=active]:bg-[#22C55E] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#22C55E]/20
+                            data-[state=active]:bg-[#4ADE80] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#4ADE80]/20
                             data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
                         >
                             <Sparkles className="w-3.5 h-3.5" />
@@ -976,7 +976,7 @@ export default function ConfiguracionPage() {
                                                     <motion.div
                                                         initial={{ opacity: 0, y: 10 }}
                                                         animate={{ opacity: 1, y: 0 }}
-                                                        className="inline-flex px-3 py-1 rounded-full bg-[#22C55E] text-[#111814] text-[9px] font-black uppercase tracking-widest shadow-lg shadow-[#22C55E]/20"
+                                                        className="inline-flex px-3 py-1 rounded-full bg-[#4ADE80] text-[#111814] text-[9px] font-black uppercase tracking-widest shadow-lg shadow-[#4ADE80]/20"
                                                     >
                                                         {businessData.banner_tag}
                                                     </motion.div>
@@ -1025,7 +1025,7 @@ export default function ConfiguracionPage() {
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="w-full md:w-auto rounded-xl border-dashed hover:bg-[#22C55E]/5 hover:text-[#22C55E] hover:border-[#22C55E]/30 transition-all font-bold h-11"
+                                                className="w-full md:w-auto rounded-xl border-dashed hover:bg-[#4ADE80]/5 hover:text-[#22C55E] hover:border-[#4ADE80]/30 transition-all font-bold h-11"
                                                 onClick={() => document.getElementById('banner-upload').click()}
                                                 disabled={saving}
                                             >
@@ -1077,7 +1077,7 @@ export default function ConfiguracionPage() {
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="w-full md:w-auto rounded-xl border-dashed hover:bg-[#22C55E]/5 hover:text-[#22C55E] hover:border-[#22C55E]/30 transition-all font-bold h-11"
+                                                className="w-full md:w-auto rounded-xl border-dashed hover:bg-[#4ADE80]/5 hover:text-[#22C55E] hover:border-[#4ADE80]/30 transition-all font-bold h-11"
                                                 onClick={() => document.getElementById('logo-upload').click()}
                                                 disabled={saving}
                                             >
@@ -1111,7 +1111,7 @@ export default function ConfiguracionPage() {
                                             setCategoryIcon('Utensils');
                                             setIsCategoryModalOpen(true);
                                         }}
-                                        className="rounded-xl bg-[#22C55E] text-[#111814] font-black hover:bg-[#16A34A] shadow-md transition-all active:scale-95 text-[10px]"
+                                        className="rounded-xl bg-[#4ADE80] text-[#111814] font-black hover:bg-[#4ADE80] shadow-md transition-all active:scale-95 text-[10px]"
                                     >
                                         <Plus className="w-3.5 h-3.5 mr-1.5" />
                                         NUEVA
@@ -1131,20 +1131,20 @@ export default function ConfiguracionPage() {
                                                     initial={{ opacity: 0, scale: 0.9 }}
                                                     animate={{ opacity: 1, scale: 1 }}
                                                     key={`${catName}-${idx}`}
-                                                    className="group flex items-center gap-3 bg-white border border-gray-100 pl-4 pr-2 py-2.5 rounded-2xl hover:border-[#22C55E] hover:shadow-xl hover:shadow-[#22C55E]/5 transition-all cursor-default"
+                                                    className="group flex items-center gap-2 bg-white border border-gray-100 pl-3 pr-1 py-2 rounded-2xl hover:border-[#4ADE80] hover:shadow-xl hover:shadow-[#4ADE80]/5 transition-all cursor-default w-[calc(50%-0.375rem)]"
                                                 >
-                                                    <div className="size-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-[#22C55E]/10 group-hover:text-[#22C55E] transition-colors shrink-0 overflow-hidden">
+                                                    <div className="size-7 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-[#4ADE80]/10 group-hover:text-[#22C55E] transition-colors shrink-0 overflow-hidden">
                                                         {isUrl ? (
-                                                            <img src={catIcon} alt="" className="w-6 h-6 object-contain" />
+                                                            <img src={catIcon} alt="" className="w-4 h-4 object-contain" />
                                                         ) : isLucide ? (
-                                                            <IconComponent className="w-5 h-5" />
+                                                            <IconComponent className="w-3.5 h-3.5" />
                                                         ) : (
-                                                            <span className="text-xl leading-none">{catIcon || '🍽️'}</span>
+                                                            <span className="text-base leading-none">{catIcon || '🍽️'}</span>
                                                         )}
                                                     </div>
-                                                    <div className="flex flex-col min-w-0 pr-2">
-                                                        <span className="font-black text-xs text-[#111814] truncate">{catName}</span>
-                                                        <span className="text-[9px] text-[#618972] font-bold uppercase tracking-widest">
+                                                    <div className="flex flex-col min-w-0 pr-0.5 flex-1">
+                                                        <span className="font-black text-[9px] text-[#111814] truncate leading-tight -mb-px">{catName}</span>
+                                                        <span className="text-[7px] text-[#618972] font-bold uppercase tracking-tight truncate">
                                                             {products.filter(p => p.categoria === catName).length} Productos
                                                         </span>
                                                     </div>
@@ -1207,7 +1207,7 @@ export default function ConfiguracionPage() {
                                             setOriginalTagName('');
                                             setIsTagModalOpen(true);
                                         }}
-                                        className="rounded-xl bg-[#22C55E] text-[#111814] font-black hover:bg-[#16A34A] shadow-md transition-all active:scale-95 text-[10px]"
+                                        className="rounded-xl bg-[#4ADE80] text-[#111814] font-black hover:bg-[#4ADE80] shadow-md transition-all active:scale-95 text-[10px]"
                                     >
                                         <TagIcon className="w-3.5 h-3.5 mr-1.5" />
                                         NUEVA
@@ -1216,7 +1216,7 @@ export default function ConfiguracionPage() {
                                 <CardContent className="px-8 pb-8">
                                     <div className="flex flex-wrap gap-2">
                                         {tags.map((tag, idx) => (
-                                            <div key={`${tag}-${idx}`} className="group flex items-center gap-1 bg-[#22C55E]/5 border border-[#22C55E]/20 pl-3 pr-1 py-1.5 rounded-xl hover:border-[#22C55E] transition-all">
+                                            <div key={`${tag}-${idx}`} className="group flex items-center gap-1 bg-[#4ADE80]/5 border border-[#4ADE80]/20 pl-3 pr-1 py-1.5 rounded-xl hover:border-[#4ADE80] transition-all">
                                                 <span className="font-bold text-xs text-[#22C55E]">{tag}</span>
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
@@ -1283,7 +1283,7 @@ export default function ConfiguracionPage() {
                                         </Button>
                                         <Button
                                             onClick={openAddProduct}
-                                            className="rounded-2xl h-10 md:h-11 px-4 md:px-6 bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-black gap-2 shadow-lg shadow-[#22C55E]/10 transition-all active:scale-95 text-xs md:text-sm"
+                                            className="rounded-2xl h-10 md:h-11 px-4 md:px-6 bg-[#4ADE80] hover:bg-[#4ADE80] text-[#111814] font-black gap-2 shadow-lg shadow-[#4ADE80]/10 transition-all active:scale-95 text-xs md:text-sm"
                                         >
                                             <Plus className="w-4 h-4" />
                                             <span className="whitespace-nowrap">Nuevo Producto</span>
@@ -1367,7 +1367,7 @@ export default function ConfiguracionPage() {
                                                             </span>
                                                             <Switch
                                                                 checked={p.disponible}
-                                                                className="data-[state=checked]:bg-[#22C55E]"
+                                                                className="data-[state=checked]:bg-[#4ADE80]"
                                                                 onCheckedChange={async (val) => {
                                                                     try {
                                                                         await api().put(`/products/${slug}/${p.id}`, { disponible: val });
@@ -1382,7 +1382,7 @@ export default function ConfiguracionPage() {
                                                         <div className="flex items-center justify-end gap-1 md:gap-2">
                                                             <Switch
                                                                 checked={p.disponible}
-                                                                className="sm:hidden scale-75 data-[state=checked]:bg-[#22C55E]"
+                                                                className="sm:hidden scale-75 data-[state=checked]:bg-[#4ADE80]"
                                                                 onCheckedChange={async (val) => {
                                                                     try {
                                                                         await api().put(`/products/${slug}/${p.id}`, { disponible: val });
@@ -1395,7 +1395,7 @@ export default function ConfiguracionPage() {
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 onClick={() => openEditProduct(p)}
-                                                                className="size-8 md:size-9 rounded-xl text-gray-400 hover:text-[#22C55E] hover:bg-[#22C55E]/5 transition-all"
+                                                                className="size-8 md:size-9 rounded-xl text-gray-400 hover:text-[#22C55E] hover:bg-[#4ADE80]/5 transition-all"
                                                             >
                                                                 <Edit2 className="w-4 h-4" />
                                                             </Button>
@@ -1443,7 +1443,7 @@ export default function ConfiguracionPage() {
                                         size="sm"
                                         onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                                         disabled={currentPage === totalPages || totalPages === 0}
-                                        className="h-9 px-4 rounded-xl border-[#22C55E] text-[#22C55E] bg-white font-black text-[9px] tracking-widest hover:bg-[#22C55E]/5 shadow-sm transition-all disabled:opacity-30"
+                                        className="h-9 px-4 rounded-xl border-[#4ADE80] text-[#22C55E] bg-white font-black text-[9px] tracking-widest hover:bg-[#4ADE80]/5 shadow-sm transition-all disabled:opacity-30"
                                     >
                                         SIGUIENTE
                                     </Button>
@@ -1479,7 +1479,7 @@ export default function ConfiguracionPage() {
                                                     const raw = e.target.value.replace(/\D/g, '');
                                                     setBusinessData({ ...businessData, precio_km: parseFloat(raw) || 0 });
                                                 }}
-                                                className="h-14 pl-10 rounded-3xl bg-gray-50 border-2 border-transparent focus:border-[#22C55E] focus:bg-white transition-all font-black text-lg"
+                                                className="h-14 pl-10 rounded-3xl bg-gray-50 border-2 border-transparent focus:border-[#4ADE80] focus:bg-white transition-all font-black text-lg"
                                                 placeholder="Ej: 2.500"
                                             />
                                         </div>
@@ -1503,7 +1503,7 @@ export default function ConfiguracionPage() {
                                                     const raw = e.target.value.replace(/\D/g, '');
                                                     setBusinessData({ ...businessData, costo_minimo_domicilio: parseFloat(raw) || 0 });
                                                 }}
-                                                className="h-14 pl-10 rounded-3xl bg-gray-50 border-2 border-transparent focus:border-[#22C55E] focus:bg-white transition-all font-black text-lg"
+                                                className="h-14 pl-10 rounded-3xl bg-gray-50 border-2 border-transparent focus:border-[#4ADE80] focus:bg-white transition-all font-black text-lg"
                                                 placeholder="Ej: 5.000"
                                             />
                                         </div>
@@ -1589,7 +1589,7 @@ export default function ConfiguracionPage() {
                                             toast.error("Geolocalización no soportada");
                                         }
                                     }}
-                                    className="w-full h-auto py-3 sm:h-12 rounded-2xl border-2 border-dashed border-[#22C55E]/30 text-[#618972] font-black text-[10px] sm:text-xs tracking-tight gap-2 hover:bg-[#22C55E]/5 transition-all whitespace-normal"
+                                    className="w-full h-auto py-3 sm:h-12 rounded-2xl border-2 border-dashed border-[#4ADE80]/30 text-[#618972] font-black text-[10px] sm:text-xs tracking-tight gap-2 hover:bg-[#4ADE80]/5 transition-all whitespace-normal"
                                 >
                                     <MapPin className="w-4 h-4 flex-shrink-0" />
                                     USAR MI UBICACIÓN ACTUAL
@@ -1614,7 +1614,7 @@ export default function ConfiguracionPage() {
                         <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
                             <CardHeader className="pt-10 px-10 pb-4">
                                 <CardTitle className="text-2xl flex items-center gap-3 font-black tracking-tighter">
-                                    <div className="size-10 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
+                                    <div className="size-10 rounded-2xl bg-[#4ADE80]/10 flex items-center justify-center text-[#22C55E]">
                                         <Package className="w-6 h-6" />
                                     </div>
                                     Configuración de Servicios
@@ -1624,12 +1624,12 @@ export default function ConfiguracionPage() {
                             <CardContent className="px-10 pb-10 space-y-8">
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     {/* Domicilio Switch */}
-                                    <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.domicilio ? 'border-[#22C55E] bg-[#22C55E]/5' : 'border-gray-100 bg-gray-50'}`}
+                                    <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.domicilio ? 'border-[#4ADE80] bg-[#4ADE80]/5' : 'border-gray-100 bg-gray-50'}`}
                                         onClick={() => setBusinessData({
                                             ...businessData,
                                             metodos_entrega: { ...businessData.metodos_entrega, domicilio: !businessData.metodos_entrega?.domicilio }
                                         })}>
-                                        <div className={`size-16 rounded-3xl flex items-center justify-center transition-all ${businessData.metodos_entrega?.domicilio ? 'bg-[#22C55E] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
+                                        <div className={`size-16 rounded-3xl flex items-center justify-center transition-all ${businessData.metodos_entrega?.domicilio ? 'bg-[#4ADE80] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
                                             <Truck className="w-8 h-8" />
                                         </div>
                                         <div>
@@ -1647,12 +1647,12 @@ export default function ConfiguracionPage() {
                                     </div>
 
                                     {/* Recoger Switch */}
-                                    <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.recoger ? 'border-[#22C55E] bg-[#22C55E]/5' : 'border-gray-100 bg-gray-50'}`}
+                                    <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.recoger ? 'border-[#4ADE80] bg-[#4ADE80]/5' : 'border-gray-100 bg-gray-50'}`}
                                         onClick={() => setBusinessData({
                                             ...businessData,
                                             metodos_entrega: { ...businessData.metodos_entrega, recoger: !businessData.metodos_entrega?.recoger }
                                         })}>
-                                        <div className={`size-16 rounded-3xl flex items-center justify-center transition-all ${businessData.metodos_entrega?.recoger ? 'bg-[#22C55E] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
+                                        <div className={`size-16 rounded-3xl flex items-center justify-center transition-all ${businessData.metodos_entrega?.recoger ? 'bg-[#4ADE80] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
                                             <ShoppingBag className="w-8 h-8" />
                                         </div>
                                         <div>
@@ -1670,12 +1670,12 @@ export default function ConfiguracionPage() {
                                     </div>
 
                                     {/* Mesa Switch */}
-                                    <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.mesa ? 'border-[#22C55E] bg-[#22C55E]/5' : 'border-gray-100 bg-gray-50'}`}
+                                    <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.mesa ? 'border-[#4ADE80] bg-[#4ADE80]/5' : 'border-gray-100 bg-gray-50'}`}
                                         onClick={() => setBusinessData({
                                             ...businessData,
                                             metodos_entrega: { ...businessData.metodos_entrega, mesa: !businessData.metodos_entrega?.mesa }
                                         })}>
-                                        <div className={`size-16 rounded-3xl flex items-center justify-center transition-all ${businessData.metodos_entrega?.mesa ? 'bg-[#22C55E] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
+                                        <div className={`size-16 rounded-3xl flex items-center justify-center transition-all ${businessData.metodos_entrega?.mesa ? 'bg-[#4ADE80] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
                                             <Utensils className="w-8 h-8" />
                                         </div>
                                         <div>
@@ -1712,7 +1712,7 @@ export default function ConfiguracionPage() {
                         <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
                             <CardHeader className="pt-10 px-10 pb-4">
                                 <CardTitle className="text-2xl flex items-center gap-3 font-black tracking-tighter">
-                                    <div className="size-10 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
+                                    <div className="size-10 rounded-2xl bg-[#4ADE80]/10 flex items-center justify-center text-[#22C55E]">
                                         <CreditCardIcon className="w-6 h-6" />
                                     </div>
                                     Gestión de Pagos
@@ -1732,13 +1732,13 @@ export default function ConfiguracionPage() {
                                     ].map((method) => (
                                         <div
                                             key={method.key}
-                                            className={`p-6 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-3 ${businessData.metodos_pago?.[method.key] ? 'border-[#22C55E] bg-[#22C55E]/5' : 'border-gray-100 bg-gray-50'}`}
+                                            className={`p-6 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-3 ${businessData.metodos_pago?.[method.key] ? 'border-[#4ADE80] bg-[#4ADE80]/5' : 'border-gray-100 bg-gray-50'}`}
                                             onClick={() => setBusinessData({
                                                 ...businessData,
                                                 metodos_pago: { ...businessData.metodos_pago, [method.key]: !businessData.metodos_pago?.[method.key] }
                                             })}
                                         >
-                                            <div className={`size-14 rounded-2xl flex items-center justify-center transition-all ${businessData.metodos_pago?.[method.key] ? 'bg-[#22C55E] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
+                                            <div className={`size-14 rounded-2xl flex items-center justify-center transition-all ${businessData.metodos_pago?.[method.key] ? 'bg-[#4ADE80] text-[#111814]' : 'bg-white text-gray-300 shadow-sm'}`}>
                                                 <method.icon className="w-6 h-6" />
                                             </div>
                                             <div>
@@ -1778,7 +1778,7 @@ export default function ConfiguracionPage() {
                             <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
                                 <CardHeader className="pt-10 px-10 pb-4">
                                     <div className="flex items-center gap-4 mb-2">
-                                        <div className="size-12 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
+                                        <div className="size-12 rounded-2xl bg-[#4ADE80]/10 flex items-center justify-center text-[#22C55E]">
                                             <Globe className="w-6 h-6" />
                                         </div>
                                         <div>
@@ -1799,7 +1799,7 @@ export default function ConfiguracionPage() {
                                             <Button
                                                 variant="outline"
                                                 size="icon"
-                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#22C55E]/5 hover:text-[#22C55E] transition-all"
+                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#4ADE80]/5 hover:text-[#22C55E] transition-all"
                                                 onClick={() => {
                                                     navigator.clipboard.writeText(`${window.location.origin}/${slug}/menu-completo`);
                                                     toast.success("Enlace copiado al portapapeles");
@@ -1810,7 +1810,7 @@ export default function ConfiguracionPage() {
                                             <Button
                                                 variant="outline"
                                                 size="icon"
-                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#22C55E]/5 hover:text-[#22C55E] transition-all"
+                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#4ADE80]/5 hover:text-[#22C55E] transition-all"
                                                 onClick={() => window.open(`/${slug}/menu-completo`, '_blank')}
                                             >
                                                 <ExternalLink className="w-5 h-5" />
@@ -1841,7 +1841,7 @@ export default function ConfiguracionPage() {
                                         </div>
                                         <Button
                                             variant="outline"
-                                            className="w-full h-12 rounded-2xl border-[#22C55E] text-[#22C55E] font-black gap-2 hover:bg-[#22C55E]/5"
+                                            className="w-full h-12 rounded-2xl border-[#4ADE80] text-[#22C55E] font-black gap-2 hover:bg-[#4ADE80]/5"
                                             onClick={() => {
                                                 const svg = document.querySelector("#qr-menu-container svg");
                                                 const svgData = new XMLSerializer().serializeToString(svg);
@@ -1872,7 +1872,7 @@ export default function ConfiguracionPage() {
                             <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
                                 <CardHeader className="pt-10 px-10 pb-4">
                                     <div className="flex items-center gap-4 mb-2">
-                                        <div className="size-12 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
+                                        <div className="size-12 rounded-2xl bg-[#4ADE80]/10 flex items-center justify-center text-[#22C55E]">
                                             <Clock className="w-6 h-6" />
                                         </div>
                                         <div>
@@ -1893,7 +1893,7 @@ export default function ConfiguracionPage() {
                                             <Button
                                                 variant="outline"
                                                 size="icon"
-                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#22C55E]/5 hover:text-[#22C55E] transition-all"
+                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#4ADE80]/5 hover:text-[#22C55E] transition-all"
                                                 onClick={() => {
                                                     navigator.clipboard.writeText(`${window.location.origin}/${slug}/mis-pedidos`);
                                                     toast.success("Enlace de seguimiento copiado");
@@ -1904,7 +1904,7 @@ export default function ConfiguracionPage() {
                                             <Button
                                                 variant="outline"
                                                 size="icon"
-                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#22C55E]/5 hover:text-[#22C55E] transition-all"
+                                                className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#4ADE80]/5 hover:text-[#22C55E] transition-all"
                                                 onClick={() => window.open(`/${slug}/mis-pedidos`, '_blank')}
                                             >
                                                 <ExternalLink className="w-5 h-5" />
@@ -1935,7 +1935,7 @@ export default function ConfiguracionPage() {
                                         </div>
                                         <Button
                                             variant="outline"
-                                            className="w-full h-12 rounded-2xl border-[#22C55E] text-[#22C55E] font-black gap-2 hover:bg-[#22C55E]/5"
+                                            className="w-full h-12 rounded-2xl border-[#4ADE80] text-[#22C55E] font-black gap-2 hover:bg-[#4ADE80]/5"
                                             onClick={() => {
                                                 const svg = document.querySelector("#qr-tracking-container svg");
                                                 const svgData = new XMLSerializer().serializeToString(svg);
@@ -1967,7 +1967,7 @@ export default function ConfiguracionPage() {
                         <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-[#111814] text-white">
                             <div className="p-10 flex flex-col md:flex-row items-center gap-10">
                                 <div className="space-y-6 flex-1">
-                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E] text-[10px] font-black uppercase tracking-widest">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#4ADE80]/10 border border-[#4ADE80]/20 text-[#22C55E] text-[10px] font-black uppercase tracking-widest">
                                         <Sparkles className="w-3 h-3" /> Tip Pro
                                     </div>
                                     <h3 className="text-3xl font-black tracking-tighter leading-none">Tu menú vive en el bolsillo de tu cliente.</h3>
@@ -1977,7 +1977,7 @@ export default function ConfiguracionPage() {
                                     </p>
                                     <div className="flex gap-4">
                                         <Button
-                                            className="bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-black rounded-2xl h-12 px-8 uppercase text-[10px] tracking-widest"
+                                            className="bg-[#4ADE80] hover:bg-[#4ADE80] text-[#111814] font-black rounded-2xl h-12 px-8 uppercase text-[10px] tracking-widest"
                                             onClick={() => window.open(`/${slug}/menu-completo`, '_blank')}
                                         >
                                             Ver mi Catálogo Digital
@@ -1987,7 +1987,7 @@ export default function ConfiguracionPage() {
                                 <div className="w-full md:w-64 aspect-[9/18] bg-white rounded-[2.5rem] border-[8px] border-gray-800 shadow-2xl relative overflow-hidden group">
                                     <div className="absolute inset-0 bg-[#f6f8f7]">
                                         {/* Mockup content */}
-                                        <div className="h-16 bg-[#22C55E] px-4 pt-6 pb-2 shadow-sm rounded-b-[1.5rem] relative z-10 flex items-center justify-between">
+                                        <div className="h-16 bg-[#4ADE80] px-4 pt-6 pb-2 shadow-sm rounded-b-[1.5rem] relative z-10 flex items-center justify-between">
                                             <div className="flex items-center gap-2">
                                                 <div className="h-8 w-8 bg-white rounded-full p-0.5 shadow-sm flex items-center justify-center overflow-hidden">
                                                     <img src={businessData.logo_url || "/favicon.svg"} className="size-full object-cover" />
@@ -2029,7 +2029,7 @@ export default function ConfiguracionPage() {
                                                     <p className="text-[8px] text-gray-500 leading-tight line-clamp-1 mt-0.5">Queso cheddar, tocineta, salsas...</p>
                                                     <p className="text-[10px] font-black text-[#22C55E] mt-1">$24.900</p>
                                                 </div>
-                                                <div className="size-7 bg-[#22C55E] rounded-full flex items-center justify-center text-[#111814] shadow-lg shadow-[#22C55E]/20 active:scale-90 transition-transform">
+                                                <div className="size-7 bg-[#4ADE80] rounded-full flex items-center justify-center text-[#111814] shadow-lg shadow-[#4ADE80]/20 active:scale-90 transition-transform">
                                                     <Plus className="w-3.5 h-3.5" />
                                                 </div>
                                             </div>
@@ -2044,7 +2044,7 @@ export default function ConfiguracionPage() {
                                                     <p className="text-[8px] text-gray-500 leading-tight line-clamp-1 mt-0.5">Masa madre, queso mozzarella...</p>
                                                     <p className="text-[10px] font-black text-[#22C55E] mt-1">$32.000</p>
                                                 </div>
-                                                <div className="size-7 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center hover:bg-[#22C55E] hover:text-[#111814] transition-colors">
+                                                <div className="size-7 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center hover:bg-[#4ADE80] hover:text-[#111814] transition-colors">
                                                     <Plus className="w-3.5 h-3.5" />
                                                 </div>
                                             </div>
@@ -2066,7 +2066,7 @@ export default function ConfiguracionPage() {
 
                                             {/* Floating Cart Pill */}
                                             <div className="mx-auto w-max bg-[#111814] rounded-full px-4 py-2 mt-4 flex items-center gap-2 shadow-xl">
-                                                <div className="size-4 rounded-full bg-[#22C55E] text-[#111814] text-[8px] font-black flex items-center justify-center">1</div>
+                                                <div className="size-4 rounded-full bg-[#4ADE80] text-[#111814] text-[8px] font-black flex items-center justify-center">1</div>
                                                 <span className="text-[9px] font-bold text-white">Ver pedido</span>
                                                 <span className="text-[9px] font-bold text-white/60 pl-2 border-l border-white/10">$24.900</span>
                                             </div>
@@ -2086,7 +2086,7 @@ export default function ConfiguracionPage() {
                             <CardHeader className="pt-8 px-6 md:pt-10 md:px-10 pb-4 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0 bg-white">
                                 <div className="text-center md:text-left">
                                     <div className="flex flex-col md:flex-row items-center gap-2 mb-2 justify-center md:justify-start">
-                                        <div className="p-2 bg-[#22C55E]/10 rounded-xl">
+                                        <div className="p-2 bg-[#4ADE80]/10 rounded-xl">
                                             <Sparkles className="w-5 h-5 text-[#22C55E]" />
                                         </div>
                                         <CardTitle className="text-xl md:text-2xl font-black text-[#111814]">Configuración del Bot IA</CardTitle>
@@ -2099,7 +2099,7 @@ export default function ConfiguracionPage() {
                                     <Switch
                                         checked={businessData.ai_habilitado}
                                         onCheckedChange={(val) => setBusinessData({ ...businessData, ai_habilitado: val })}
-                                        className="data-[state=checked]:bg-[#22C55E]"
+                                        className="data-[state=checked]:bg-[#4ADE80]"
                                     />
                                 </div>
                             </CardHeader>
@@ -2141,7 +2141,7 @@ export default function ConfiguracionPage() {
                                     {/* Conocimiento */}
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="size-10 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E]">
+                                            <div className="size-10 rounded-2xl bg-[#4ADE80]/10 flex items-center justify-center text-[#22C55E]">
                                                 <Search className="w-5 h-5" />
                                             </div>
                                             <div className="text-left">
@@ -2157,7 +2157,7 @@ export default function ConfiguracionPage() {
                                                 className="min-h-[150px] rounded-3xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium leading-relaxed text-sm p-6"
                                             />
                                             <div className="absolute right-6 bottom-6">
-                                                <div className="px-3 py-1 rounded-full bg-[#22C55E]/5 border border-[#22C55E]/10 text-[#22C55E] text-[10px] font-black uppercase tracking-widest">
+                                                <div className="px-3 py-1 rounded-full bg-[#4ADE80]/5 border border-[#4ADE80]/10 text-[#22C55E] text-[10px] font-black uppercase tracking-widest">
                                                     Entrena a tu IA
                                                 </div>
                                             </div>
@@ -2169,7 +2169,7 @@ export default function ConfiguracionPage() {
                                 <div className="pt-6 border-t border-gray-100 flex flex-col items-center gap-6">
                                     <div className="flex gap-8 justify-center w-full">
                                         <div className="flex flex-col items-center gap-2">
-                                            <div className="size-10 rounded-xl bg-[#22C55E]/10 flex items-center justify-center">
+                                            <div className="size-10 rounded-xl bg-[#4ADE80]/10 flex items-center justify-center">
                                                 <Check className="w-5 h-5 text-[#22C55E]" />
                                             </div>
                                             <span className="text-[9px] font-bold text-[#618972]">Bot Activo</span>
@@ -2301,7 +2301,7 @@ export default function ConfiguracionPage() {
                                                 type="button"
                                                 variant="outline"
                                                 size="sm"
-                                                className="h-8 rounded-xl border-[#22C55E]/20 text-[#22C55E] hover:bg-[#22C55E]/5 font-bold gap-2 text-[10px]"
+                                                className="h-8 rounded-xl border-[#4ADE80]/20 text-[#22C55E] hover:bg-[#4ADE80]/5 font-bold gap-2 text-[10px]"
                                                 onClick={() => document.getElementById('product-image-upload').click()}
                                                 disabled={uploadingProductImage}
                                             >
@@ -2357,7 +2357,7 @@ export default function ConfiguracionPage() {
                                                     ...productForm,
                                                     oferta_porcentaje: checked ? '10' : ''
                                                 })}
-                                                className="data-[state=checked]:bg-[#22C55E]"
+                                                className="data-[state=checked]:bg-[#4ADE80]"
                                             />
                                             <Label className="font-bold cursor-pointer">Producto en Oferta</Label>
                                         </div>
@@ -2377,7 +2377,7 @@ export default function ConfiguracionPage() {
                                                                 type="number"
                                                                 value={productForm.oferta_porcentaje}
                                                                 onChange={e => setProductForm({ ...productForm, oferta_porcentaje: e.target.value })}
-                                                                className="h-12 rounded-2xl bg-[#22C55E]/5 border-[#22C55E]/20 pr-10 font-bold text-[#22C55E]"
+                                                                className="h-12 rounded-2xl bg-[#4ADE80]/5 border-[#4ADE80]/20 pr-10 font-bold text-[#22C55E]"
                                                                 placeholder="Ej: 15"
                                                                 min="1"
                                                                 max="100"
@@ -2396,7 +2396,7 @@ export default function ConfiguracionPage() {
                                                 id="featured-toggle"
                                                 checked={productForm.destacado}
                                                 onCheckedChange={checked => setProductForm({ ...productForm, destacado: checked })}
-                                                className="data-[state=checked]:bg-[#22C55E]"
+                                                className="data-[state=checked]:bg-[#4ADE80]"
                                             />
                                             <Label htmlFor="featured-toggle" className="font-bold cursor-pointer flex items-center gap-2">
                                                 <Star className={`w-4 h-4 ${productForm.destacado ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
@@ -2413,7 +2413,7 @@ export default function ConfiguracionPage() {
                                     <Switch
                                         checked={productForm.disponible}
                                         onCheckedChange={checked => setProductForm({ ...productForm, disponible: checked })}
-                                        className="data-[state=checked]:bg-[#22C55E]"
+                                        className="data-[state=checked]:bg-[#4ADE80]"
                                     />
                                     <div>
                                         <Label className="font-bold">Disponible para la venta</Label>
@@ -2474,7 +2474,7 @@ export default function ConfiguracionPage() {
                                                         type="button"
                                                         onClick={() => setCategoryIcon(name)}
                                                         className={`p-2 rounded-xl border flex items-center justify-center transition-all ${categoryIcon === name
-                                                            ? 'bg-[#22C55E]/10 border-[#22C55E] text-[#22C55E] ring-2 ring-[#22C55E]/20'
+                                                            ? 'bg-[#4ADE80]/10 border-[#4ADE80] text-[#22C55E] ring-2 ring-[#22C55E]/20'
                                                             : 'bg-white border-gray-100 hover:border-gray-300 text-gray-500'
                                                             }`}
                                                     >
@@ -2489,7 +2489,7 @@ export default function ConfiguracionPage() {
                                                 <Input
                                                     value={(!AvailableIcons[categoryIcon] && !categoryIcon?.includes('/')) ? categoryIcon : ''}
                                                     onChange={(e) => setCategoryIcon(e.target.value)}
-                                                    className="w-24 h-24 text-6xl text-center rounded-2xl border-gray-200 focus:border-[#22C55E] bg-white shadow-sm"
+                                                    className="w-24 h-24 text-6xl text-center rounded-2xl border-gray-200 focus:border-[#4ADE80] bg-white shadow-sm"
                                                     placeholder="😁"
                                                 />
                                                 <p className="text-xs text-gray-500 text-center font-medium mt-2">
@@ -2513,7 +2513,7 @@ export default function ConfiguracionPage() {
                                                 {categoryIcon?.includes('/') || categoryIcon?.includes('http') ? (
                                                     <div className="relative group">
                                                         <img src={categoryIcon} alt="Icon Preview" className="w-24 h-24 object-contain rounded-2xl shadow-xl transition-transform group-hover:scale-110" />
-                                                        <div className="absolute -top-2 -right-2 bg-[#22C55E] text-white p-1 rounded-full shadow-lg">
+                                                        <div className="absolute -top-2 -right-2 bg-[#4ADE80] text-white p-1 rounded-full shadow-lg">
                                                             <Check className="w-3 h-3" />
                                                         </div>
                                                     </div>

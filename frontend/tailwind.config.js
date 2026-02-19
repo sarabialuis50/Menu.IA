@@ -30,10 +30,10 @@ module.exports = {
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
-          hover: '#16A34A',
+          hover: '#22C55E',
         },
         ai: {
-          green: '#22C55E',
+          green: '#4ADE80',
           cyan: '#06B6D4',
         },
         secondary: {

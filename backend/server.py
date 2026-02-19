@@ -485,6 +485,8 @@ async def login_employee(slug: str, data: EmployeeLogin):
 # ============ BUSINESS ROUTES ============
 @api_router.get("/business/{slug}", response_model=BusinessPublic)
 async def get_business_by_slug(slug: str):
+    # Normalize slug
+    slug = slug.lower().strip().rstrip('/')
     response = supabase.table('negocios').select('*').match({"slug": slug}).execute()
     if not response.data:
         raise HTTPException(status_code=404, detail="Negocio no encontrado")
@@ -612,6 +614,8 @@ async def upload_file(file: UploadFile = File(...), business: Business = Depends
 # ============ PRODUCTS ROUTES ============
 @api_router.get("/products/{slug}", response_model=List[Product])
 async def get_products(slug: str, categoria: Optional[str] = None):
+    # Normalize slug
+    slug = slug.lower().strip().rstrip('/')
     response = supabase.table('negocios').select('id').eq('slug', slug).execute()
     if not response.data:
         raise HTTPException(status_code=404, detail="Negocio no encontrado")
@@ -777,6 +781,8 @@ async def delete_product(slug: str, product_id: str, business: Business = Depend
 # ============ CATEGORIES ROUTES ============
 @api_router.get("/categories/{slug}")
 async def get_categories(slug: str):
+    # Normalize slug
+    slug = slug.lower().strip().rstrip('/')
     response = supabase.table('negocios').select('id').eq('slug', slug).execute()
     if not response.data:
         raise HTTPException(status_code=404, detail="Negocio no encontrado")
@@ -1942,17 +1948,56 @@ async def handle_whatsapp_webhook(request: Request):
         negocio_id = business_data['id']
         biz_plan = business_data.get('plan', 'trial')
         wa_count = business_data.get('wa_messages_count', 0)
-        wa_limit = business_data.get('wa_messages_limit', 100)
+        wa_limit = business_data.get('wa_messages_limit', 0)
+        wa_credits = business_data.get('wa_credits', 0)
 
-        # PLAN CHECK: WhatsApp disabled for 'trial'
-        if biz_plan == 'trial':
+        # PLAN CHECK: WhatsApp disabled for 'trial', 'free'
+        if biz_plan in ['trial', 'free']:
              return {"status": "blocked", "reason": "trial_plan_no_whatsapp"}
         
         # 2. Verificar límites de mensajes operativos
+        use_credits = False
         if wa_count >= wa_limit:
-            logger.warning(f"Business {negocio_id} has reached its WhatsApp message limit ({wa_limit})")
-            # Podríamos enviar un mensaje de "Límite alcanzado"
-            return {"status": "limit_reached", "reason": "operational_limit_exceeded"}
+            if wa_credits > 0:
+                use_credits = True
+            else:
+                # SERVICE STOPPED WARNING
+                # Notify Owner if they confirm the service is stopped
+                # Only send once when they try to exceed
+                try:
+                    # Get owner phone
+                    owner_res = supabase.table('users').select('telefono').eq('negocio_id', negocio_id).execute()
+                    if owner_res.data:
+                         owner_phone = owner_res.data[0].get('telefono')
+                         if owner_phone:
+                             msg = f"⚠️ ALERTA MENU.IA: Tu agente IA se ha detenido.\nHas agotado tu plan mensual ({wa_limit} msjs) y tus créditos adicionales.\n\nPara reactivar el servicio:\n1. Compra un Pack de Mensajes.\n2. O mejora tu Plan (Más mensajes + Funciones Premium).\n\nReactiva aquí: https://menuia.co/dashboard/{business_data.get('slug')}/marketing"
+                             send_whatsapp_response(owner_phone, msg)
+                except Exception as ex:
+                    logger.error(f"Failed to send stop alert to owner: {ex}")
+
+                logger.warning(f"Business {negocio_id} has reached its WhatsApp message limit ({wa_limit}) and has no credits")
+                return {"status": "limit_reached", "reason": "operational_limit_exceeded"}
+        
+        # 2.1 Check for Low Balance (50 messages left)
+        # Total capacity = wa_limit + wa_credits
+        # Total used = wa_count
+        # Remaining plan = max(0, wa_limit - wa_count)
+        # Total remaining = Remaining plan + wa_credits
+        
+        remaining_plan = max(0, wa_limit - wa_count)
+        total_remaining = remaining_plan + wa_credits
+        
+        if total_remaining == 50:
+             try:
+                # Get owner phone
+                owner_res = supabase.table('users').select('telefono').eq('negocio_id', negocio_id).limit(1).execute()
+                if owner_res.data:
+                     owner_phone = owner_res.data[0].get('telefono')
+                     if owner_phone:
+                         msg = f"⚠️ AVISO MENU.IA: Te quedan solo 50 mensajes disponibles.\nTu agente IA podría detenerse pronto.\n\nOpciones:\n1. Adquiere un Pack de Mensajes.\n2. Sube de Plan para más capacidad.\n\nRecarga aquí: https://menuia.co/dashboard/{business_data.get('slug')}/marketing"
+                         send_whatsapp_response(owner_phone, msg)
+             except Exception as ex:
+                logger.error(f"Failed to send low balance alert: {ex}")
 
         # 3. Procesar con IA
         response_text = await process_whatsapp_message(message_body, sender_phone, negocio_id)
@@ -1961,10 +2006,15 @@ async def handle_whatsapp_webhook(request: Request):
         if response_text:
             send_whatsapp_response(sender_phone, response_text)
             
-            # Incrementar contador de uso
-            supabase.table('negocios').update({
-                "wa_messages_count": wa_count + 1
-            }).eq('id', negocio_id).execute()
+            # Actualizar contador o créditos
+            if use_credits:
+                supabase.table('negocios').update({
+                    "wa_credits": wa_credits - 1
+                }).eq('id', negocio_id).execute()
+            else:
+                supabase.table('negocios').update({
+                    "wa_messages_count": wa_count + 1
+                }).eq('id', negocio_id).execute()
             
         return {"status": "processed", "response": response_text}
 
@@ -2426,6 +2476,7 @@ async def create_payment_link(data: SubscriptionRequest, business: Business = De
         
         # Create Preference Payload
         payer_email = business.email if business.email else "soporte@menuia.co"
+        frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
         
         preference_data = {
             "items": [
@@ -2441,12 +2492,15 @@ async def create_payment_link(data: SubscriptionRequest, business: Business = De
             },
             "external_reference": f"{business.id}:{data.plan_id}:{data.frequency}",
             "back_urls": {
-                "success": f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/configuracion?status=success",
-                "failure": f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/configuracion?status=failure",
-                "pending": f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/configuracion?status=pending"
-            },
-            "auto_return": "all"
+                "success": f"{frontend_url}/dashboard/{business.slug}/configuracion?status=success",
+                "failure": f"{frontend_url}/dashboard/{business.slug}/configuracion?status=failure",
+                "pending": f"{frontend_url}/dashboard/{business.slug}/configuracion?status=pending"
+            }
         }
+
+        # MercadoPago Colombia requires HTTPS and non-localhost for auto_return
+        if frontend_url.startswith('https://') and 'localhost' not in frontend_url:
+            preference_data["auto_return"] = "approved"
 
         # Solo añadir notification_url si es una URL pública válida (HTTPS)
         backend_url = os.environ.get('BACKEND_URL', '')
@@ -2493,6 +2547,7 @@ async def create_wa_pack_link(data: WhatsAppPackRequest, business: Business = De
         # Create Preference Payload
         payer_email = business.email if business.email else "soporte@menuia.co"
         
+        frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
         preference_data = {
             "items": [
                 {
@@ -2507,25 +2562,44 @@ async def create_wa_pack_link(data: WhatsAppPackRequest, business: Business = De
             },
             "external_reference": f"PACK:{business.id}:{data.amount}",
             "back_urls": {
-                "success": f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/marketing?status=success",
-                "failure": f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/marketing?status=failure",
-                "pending": f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/marketing?status=pending"
-            },
-            "auto_return": "all"
+                "success": f"{frontend_url}/dashboard/{business.slug}/whatsapp?status=success",
+                "failure": f"{frontend_url}/dashboard/{business.slug}/whatsapp?status=failure",
+                "pending": f"{frontend_url}/dashboard/{business.slug}/whatsapp?status=pending"
+            }
         }
+
+        # MercadoPago Colombia requires HTTPS and non-localhost for auto_return
+        if frontend_url.startswith('https://') and 'localhost' not in frontend_url:
+            preference_data["auto_return"] = "approved"
 
         # Solo añadir notification_url si es una URL pública válida (HTTPS)
         backend_url = os.environ.get('BACKEND_URL', '')
         if backend_url.startswith('https://'):
             preference_data["notification_url"] = f"{backend_url}/api/payments/webhook"
         
+        logger.info(f"Creating MP preference for business {business.id}, amount: {data.amount}")
+        logger.info(f"Preference data: {json.dumps(preference_data, indent=2)}")
         preference_response = mp_sdk.preference().create(preference_data)
+        
+        if preference_response["status"] >= 400:
+            error_detail = preference_response.get("response", "No response data")
+            logger.error(f"MercadoPago Error ({preference_response['status']}): {error_detail}")
+            raise HTTPException(status_code=400, detail=f"Error de MercadoPago: {error_detail}")
+
         preference = preference_response["response"]
         
+        if "init_point" not in preference:
+            logger.error(f"MercadoPago response missing init_point: {preference}")
+            raise HTTPException(status_code=500, detail="La respuesta de MercadoPago no contiene el link de pago.")
+
         return {"init_point": preference["init_point"]}
 
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Error creating WA pack payment: {e}")
+        logger.error(f"Error creating WA pack payment: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -2613,7 +2687,7 @@ async def mercadopago_webhook(request: Request):
                      supabase.table('negocios').update({
                          'plan': plan_id,
                          'plan_expires_at': expiration.isoformat(),
-                         'wa_messages_limit': limits.get(plan_id, 100)
+                          'wa_messages_limit': limits.get(plan_id, 500)
                      }).eq('id', business_id).execute()
                      logger.info(f"Payment Webhook: Updated {business_id} Plan to {plan_id} expiring {expiration}")
 

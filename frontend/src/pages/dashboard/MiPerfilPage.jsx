@@ -261,7 +261,7 @@ export default function MiPerfilPage() {
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-sm border border-gray-100">
                     <div className="space-y-1">
                         <div className="flex items-center gap-2 text-[#22C55E] font-bold text-sm uppercase tracking-widest">
-                            <span className="w-8 h-[2px] bg-[#22C55E]"></span>
+                            <span className="w-8 h-[2px] bg-[#4ADE80]"></span>
                             Configuración de Marca
                         </div>
                         <h1 className="text-3xl md:text-4xl font-black text-[#111814] tracking-tighter">Mi Perfil Público</h1>
@@ -276,7 +276,7 @@ export default function MiPerfilPage() {
                             </Link>
                         </Button>
                         <Button
-                            className="rounded-2xl h-12 px-8 bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-bold gap-2 shadow-lg shadow-[#22C55E]/20 w-full md:w-auto"
+                            className="rounded-2xl h-12 px-8 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-bold gap-2 shadow-lg shadow-[#4ADE80]/20 w-full md:w-auto"
                             onClick={handleSave}
                             disabled={saving}
                         >
@@ -384,7 +384,7 @@ export default function MiPerfilPage() {
                         <Card className="border-none shadow-sm rounded-[2.5rem] bg-white overflow-hidden">
                             <CardHeader className="px-10 pt-10 pb-2">
                                 <CardTitle className="text-xl font-bold flex items-center gap-3">
-                                    <div className="p-2 bg-[#22C55E]/10 rounded-xl">
+                                    <div className="p-2 bg-[#4ADE80]/10 rounded-xl">
                                         <MapPin className="w-5 h-5 text-[#22C55E]" />
                                     </div>
                                     Ubicación y Contacto
@@ -399,7 +399,7 @@ export default function MiPerfilPage() {
                                             <button
                                                 onClick={detectLocation}
                                                 disabled={detecting}
-                                                className="absolute left-4 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-[#22C55E]/10 text-[#618972] hover:text-[#22C55E] transition-colors z-10 disabled:opacity-50"
+                                                className="absolute left-4 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-[#4ADE80]/10 text-[#618972] hover:text-[#22C55E] transition-colors z-10 disabled:opacity-50"
                                                 title="Detectar mi ubicación actual"
                                             >
                                                 {detecting ? (
@@ -528,7 +528,7 @@ export default function MiPerfilPage() {
 
                         {/* QR Code Action */}
                         <Card className="border border-gray-100 shadow-xl rounded-[2.5rem] bg-white overflow-hidden relative group hover:shadow-2xl hover:border-[#22C55E]/20 transition-all duration-500">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-[#22C55E]/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-[#22C55E]/10 transition-all duration-500"></div>
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-[#4ADE80]/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-[#4ADE80]/10 transition-all duration-500"></div>
                             <CardContent className="p-8 flex flex-col items-center text-center space-y-6 relative z-10">
                                 <div>
                                     <h3 className="text-xl font-black tracking-tight text-gray-900">Código QR del Catálogo</h3>
@@ -546,7 +546,7 @@ export default function MiPerfilPage() {
                                 </div>
                                 <Button
                                     onClick={downloadQR}
-                                    className="w-full h-12 rounded-2xl bg-[#22C55E] hover:bg-[#16A34A] text-[#111814] font-black shadow-lg shadow-[#22C55E]/20 transition-all duration-300"
+                                    className="w-full h-12 rounded-2xl bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black shadow-lg shadow-[#4ADE80]/20 transition-all duration-300"
                                 >
                                     Descargar QR
                                 </Button>
