@@ -33,7 +33,7 @@ export const FloatingWA = ({ businessName, whatsapp, aiEnabled, aiSaludo, slug, 
 
     return (
         <>
-            <div className="fixed bottom-24 right-6 z-[60] flex flex-col items-end gap-3 pointer-events-none">
+            <div className="fixed bottom-20 right-6 z-[60] flex flex-col items-end gap-3 pointer-events-none">
                 <AnimatePresence>
                     {showTooltip && (
                         <motion.div
