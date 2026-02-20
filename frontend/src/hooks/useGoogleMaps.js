@@ -10,28 +10,36 @@ export const useGoogleMaps = (apiKey) => {
     useEffect(() => {
         if (isLoaded) return;
 
-        const onLoaded = () => {
-            isLoaded = true;
+        const handleLoaded = () => {
             setLoaded(true);
-            callbacks.forEach(cb => cb());
         };
 
         if (isLoading) {
-            callbacks.push(onLoaded);
+            callbacks.push(handleLoaded);
             return;
         }
 
         if (window.google && window.google.maps) {
-            onLoaded();
+            isLoaded = true;
+            handleLoaded();
             return;
         }
 
         isLoading = true;
+        const onScriptLoad = () => {
+            isLoaded = true;
+            handleLoaded();
+            while (callbacks.length > 0) {
+                const cb = callbacks.shift();
+                if (typeof cb === 'function') cb();
+            }
+        };
+
         const script = document.createElement('script');
         script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
         script.async = true;
         script.defer = true;
-        script.onload = onLoaded;
+        script.onload = onScriptLoad;
         document.head.appendChild(script);
 
     }, [apiKey]);

@@ -14,25 +14,43 @@ export const CartProvider = ({ children }) => {
   const [items, setItems] = useState([]);
   const [customerInfo, setCustomerInfo] = useState({ nombre: '', telefono: '' });
 
-  const addItem = useCallback((product, quantity = 1, notas = '') => {
+  const addItem = useCallback((product, quantity = 1, notas = '', selectedModifiers = []) => {
+    // Helper to compare arrays ignoring order
+    const areModifiersEqual = (arr1, arr2) => {
+      if (!arr1 && !arr2) return true;
+      if (!arr1 || !arr2) return false;
+      if (arr1.length !== arr2.length) return false;
+      const sorted1 = [...arr1].sort();
+      const sorted2 = [...arr2].sort();
+      return sorted1.every((val, index) => val === sorted2[index]);
+    };
+
     setItems(prev => {
-      const existingIndex = prev.findIndex(item => 
-        item.producto_id === product.id && item.notas === notas
+      // Find item with same product ID, same notes, AND same selected modifiers
+      const existingIndex = prev.findIndex(item =>
+        item.producto_id === product.id &&
+        item.notas === notas &&
+        areModifiersEqual(item.modificadores, selectedModifiers?.map(m => typeof m === 'string' ? m : m.nombre))
       );
-      
+
       if (existingIndex >= 0) {
         const updated = [...prev];
         updated[existingIndex].cantidad += quantity;
         return updated;
       }
-      
+
+      // Calculate extra price from modifiers
+      const modifiersPrice = selectedModifiers ? selectedModifiers.reduce((acc, m) => acc + (m.precio || 0), 0) : 0;
+      const finalUnitPrice = product.precio + modifiersPrice;
+
       return [...prev, {
         producto_id: product.id,
         nombre: product.nombre,
         cantidad: quantity,
-        precio_unitario: product.precio,
+        precio_unitario: finalUnitPrice,
         notas: notas || null,
-        imagen_url: product.imagen_url,
+        imagen: product.imagen,
+        modificadores: selectedModifiers?.map(m => typeof m === 'string' ? m : m.nombre) || []
       }];
     });
   }, []);

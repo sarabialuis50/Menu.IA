@@ -77,7 +77,10 @@ import {
     MessageSquare,
     Lock,
     Eye,
-    EyeOff
+    EyeOff,
+    Layers,
+    ListChecks,
+    GripVertical
 } from 'lucide-react';
 
 // Icon mapping for categories
@@ -225,7 +228,8 @@ const ConfiguracionPage = () => {
         imagen: '',
         disponible: true,
         destacado: false,
-        oferta_porcentaje: ''
+        oferta_porcentaje: '',
+        modificadores: []
     });
     const [originalProductForm, setOriginalProductForm] = useState(null);
 
@@ -527,7 +531,8 @@ const ConfiguracionPage = () => {
             imagen: '',
             disponible: true,
             destacado: false,
-            oferta_porcentaje: ''
+            oferta_porcentaje: '',
+            modificadores: []
         };
         setEditingProduct(null);
         setProductForm(initial);
@@ -546,7 +551,8 @@ const ConfiguracionPage = () => {
             imagen: product.imagen || '',
             disponible: product.disponible,
             destacado: product.destacado || false,
-            oferta_porcentaje: product.oferta_porcentaje?.toString() || ''
+            oferta_porcentaje: product.oferta_porcentaje?.toString() || '',
+            modificadores: product.modificadores || []
         };
         setEditingProduct(product);
         setProductForm(initial);
@@ -562,12 +568,21 @@ const ConfiguracionPage = () => {
             const discount = parseInt(productForm.oferta_porcentaje) || 0;
             const finalPrice = discount > 0 ? basePrice * (1 - discount / 100) : basePrice;
 
+            // Limpiar modificadores vacíos o sin opciones
+            const cleanModificadores = (productForm.modificadores || [])
+                .filter(m => m.nombre.trim() && m.opciones.length > 0)
+                .map(m => ({
+                    ...m,
+                    opciones: m.opciones.filter(o => o.nombre.trim())
+                }));
+
             const payload = {
                 ...productForm,
                 precio: finalPrice,
                 precio_original: discount > 0 ? basePrice : null,
                 oferta_porcentaje: discount > 0 ? discount : null,
                 etiqueta: productForm.etiqueta === 'none' ? null : productForm.etiqueta,
+                modificadores: cleanModificadores
             };
 
             if (editingProduct) {
@@ -2346,6 +2361,176 @@ const ConfiguracionPage = () => {
                                         className="rounded-2xl bg-gray-50 border-gray-100 min-h-[100px]"
                                         placeholder="Detalla lo que incluye el plato..."
                                     />
+                                </div>
+
+                                {/* MODIFICADORES SECTION */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <div className="p-2 bg-[#4ADE80]/10 rounded-xl">
+                                                <Layers className="w-4 h-4 text-[#22C55E]" />
+                                            </div>
+                                            <div>
+                                                <Label className="text-sm font-black uppercase tracking-tight text-[#111814]">Modificadores y Adiciones</Label>
+                                                <p className="text-[10px] text-[#618972] font-medium">Personaliza las opciones del producto.</p>
+                                            </div>
+                                        </div>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => {
+                                                const newGroup = {
+                                                    id: Date.now().toString(),
+                                                    nombre: '',
+                                                    obligatorio: false,
+                                                    seleccion_minima: 0,
+                                                    seleccion_maxima: 1,
+                                                    opciones: [{ id: Date.now().toString() + '-opt', nombre: '', precio: 0 }]
+                                                };
+                                                setProductForm({
+                                                    ...productForm,
+                                                    modificadores: [...(productForm.modificadores || []), newGroup]
+                                                });
+                                            }}
+                                            className="h-9 rounded-xl border-[#4ADE80]/20 text-[#22C55E] hover:bg-[#4ADE80]/5 font-bold gap-2 text-[10px]"
+                                        >
+                                            <Plus className="w-3 h-3" />
+                                            AÑADIR GRUPO
+                                        </Button>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        {(productForm.modificadores || []).map((group, gIdx) => (
+                                            <div key={group.id || gIdx} className="bg-white border border-gray-100 rounded-[2rem] p-6 shadow-sm relative group/card">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const newMods = [...productForm.modificadores];
+                                                        newMods.splice(gIdx, 1);
+                                                        setProductForm({ ...productForm, modificadores: newMods });
+                                                    }}
+                                                    className="absolute -top-2 -right-2 size-8 bg-white border border-red-50 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity shadow-sm hover:bg-red-50"
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                </button>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                    <div className="space-y-2">
+                                                        <Label className="text-[10px] font-black uppercase text-gray-400">Nombre del Grupo (Ej: Tamaño)</Label>
+                                                        <Input
+                                                            value={group.nombre}
+                                                            onChange={e => {
+                                                                const newMods = [...productForm.modificadores];
+                                                                newMods[gIdx].nombre = e.target.value;
+                                                                setProductForm({ ...productForm, modificadores: newMods });
+                                                            }}
+                                                            className="h-10 rounded-xl bg-gray-50 border-gray-50 focus:bg-white"
+                                                            placeholder="Ej: Elige tu Proteína"
+                                                        />
+                                                    </div>
+                                                    <div className="flex items-center gap-6 pt-4">
+                                                        <div className="flex items-center gap-2">
+                                                            <Switch
+                                                                checked={group.obligatorio}
+                                                                onCheckedChange={val => {
+                                                                    const newMods = [...productForm.modificadores];
+                                                                    newMods[gIdx].obligatorio = val;
+                                                                    newMods[gIdx].seleccion_minima = val ? 1 : 0;
+                                                                    setProductForm({ ...productForm, modificadores: newMods });
+                                                                }}
+                                                                className="data-[state=checked]:bg-[#4ADE80] scale-75"
+                                                            />
+                                                            <Label className="text-[10px] font-black uppercase text-gray-600">Obligatorio</Label>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 flex-1">
+                                                            <Label className="text-[10px] font-black uppercase text-gray-400">Max</Label>
+                                                            <Input
+                                                                type="number"
+                                                                min="1"
+                                                                value={group.seleccion_maxima}
+                                                                onChange={e => {
+                                                                    const newMods = [...productForm.modificadores];
+                                                                    newMods[gIdx].seleccion_maxima = parseInt(e.target.value) || 1;
+                                                                    setProductForm({ ...productForm, modificadores: newMods });
+                                                                }}
+                                                                className="h-10 w-16 rounded-xl bg-gray-50 border-gray-50 text-center font-bold"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-2 border-t border-gray-50 pt-4">
+                                                    <Label className="text-[10px] font-black uppercase text-[#618972] tracking-widest pl-1">Opciones</Label>
+                                                    <div className="space-y-2">
+                                                        {group.opciones.map((opt, oIdx) => (
+                                                            <div key={opt.id || oIdx} className="flex gap-2 items-center">
+                                                                <div className="flex-1">
+                                                                    <Input
+                                                                        value={opt.nombre}
+                                                                        onChange={e => {
+                                                                            const newMods = [...productForm.modificadores];
+                                                                            newMods[gIdx].opciones[oIdx].nombre = e.target.value;
+                                                                            setProductForm({ ...productForm, modificadores: newMods });
+                                                                        }}
+                                                                        className="h-9 rounded-xl bg-white border-gray-100 text-xs"
+                                                                        placeholder="Nombre de la opción"
+                                                                    />
+                                                                </div>
+                                                                <div className="w-32 relative">
+                                                                    <Input
+                                                                        type="text"
+                                                                        value={opt.precio > 0 ? formatPrice(opt.precio.toString()) : ''}
+                                                                        onChange={e => {
+                                                                            const raw = e.target.value.replace(/\D/g, '');
+                                                                            const newMods = [...productForm.modificadores];
+                                                                            newMods[gIdx].opciones[oIdx].precio = parseFloat(raw) || 0;
+                                                                            setProductForm({ ...productForm, modificadores: newMods });
+                                                                        }}
+                                                                        className="h-9 rounded-xl bg-white border-gray-100 text-xs pl-6"
+                                                                        placeholder="+ 0"
+                                                                    />
+                                                                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-400">$</span>
+                                                                </div>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        const newMods = [...productForm.modificadores];
+                                                                        newMods[gIdx].opciones.splice(oIdx, 1);
+                                                                        setProductForm({ ...productForm, modificadores: newMods });
+                                                                    }}
+                                                                    disabled={group.opciones.length <= 1}
+                                                                    className="size-9 rounded-xl border border-gray-100 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-30"
+                                                                >
+                                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => {
+                                                            const newMods = [...productForm.modificadores];
+                                                            newMods[gIdx].opciones.push({ id: Date.now().toString(), nombre: '', precio: 0 });
+                                                            setProductForm({ ...productForm, modificadores: newMods });
+                                                        }}
+                                                        className="mt-2 h-8 text-[10px] font-black text-[#22C55E] hover:bg-[#4ADE80]/5 w-full border border-dashed border-[#4ADE80]/20 rounded-xl"
+                                                    >
+                                                        <Plus className="w-3 h-3 mr-1" /> AÑADIR OPCIÓN
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ))}
+
+                                        {(!productForm.modificadores || productForm.modificadores.length === 0) && (
+                                            <div className="py-8 flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-[2rem] gap-2 grayscale opacity-40">
+                                                <ListChecks className="w-8 h-8 text-gray-300" />
+                                                <p className="text-[10px] font-black uppercase text-gray-400">Sin modificadores asignados</p>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="space-y-3">

@@ -171,6 +171,7 @@ class ProductBase(BaseModel):
     disponible: bool = True
     destacado: bool = False
     orden: int = 0
+    modificadores: Optional[List[Dict[str, Any]]] = None
 
 
 class ProductCreate(ProductBase):
@@ -189,6 +190,7 @@ class ProductUpdate(BaseModel):
     disponible: Optional[bool] = None
     destacado: Optional[bool] = None
     orden: Optional[int] = None
+    modificadores: Optional[List[Dict[str, Any]]] = None
 
 
 class Product(ProductBase):

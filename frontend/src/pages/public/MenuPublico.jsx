@@ -144,6 +144,8 @@ const MenuContent = () => {
   // New states for Product Detail Modal
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [qty, setQty] = useState(1);
+  const [selectedModifiers, setSelectedModifiers] = useState([]);
+  const [productNotes, setProductNotes] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
 
@@ -309,11 +311,26 @@ const MenuContent = () => {
     if (!product.disponible) return;
     setSelectedProduct(product);
     setQty(1);
+    setSelectedModifiers([]);
+    setProductNotes('');
   };
 
   const addToCartAndConfirm = () => {
     if (!selectedProduct) return;
-    addItem(selectedProduct, qty);
+
+    // Check if required modifiers are selected
+    if (selectedProduct.modificadores) {
+      const missingRequired = selectedProduct.modificadores.find(group =>
+        group.obligatorio && !selectedModifiers.some(m => group.opciones.some(opt => opt.nombre === m.nombre))
+      );
+
+      if (missingRequired) {
+        toast.error(`Por favor selecciona: ${missingRequired.nombre}`);
+        return;
+      }
+    }
+
+    addItem(selectedProduct, qty, productNotes, selectedModifiers);
     setSelectedProduct(null);
     setShowSuccessModal(true);
   };
@@ -425,7 +442,8 @@ const MenuContent = () => {
           nombre: item.nombre,
           cantidad: item.cantidad,
           precio_unitario: item.precio_unitario,
-          notas: item.notas
+          notas: item.notas,
+          modificadores: item.modificadores // Send modifiers to backend
         })),
         cliente_nombre: customerInfo.nombre,
         cliente_telefono: customerInfo.telefono,
@@ -509,71 +527,76 @@ const MenuContent = () => {
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       onClick={() => handleProductClick(product)}
-      className={`group bg-white rounded-[2rem] overflow-hidden border border-[#f0f4f2] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full cursor-pointer ${!product.disponible ? 'opacity-60 grayscale' : ''}`}
+      className={`group bg-white rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden border border-[#f0f4f2] shadow-sm hover:shadow-xl transition-all duration-300 flex flex-row h-auto cursor-pointer ${!product.disponible ? 'opacity-60 grayscale' : ''}`}
     >
-      <div className="relative aspect-[4/3] overflow-hidden">
+      {/* Image Container - Square/Horizontal */}
+      <div className="relative w-32 h-32 md:w-48 md:h-48 shrink-0 overflow-hidden m-2 md:m-3 rounded-2xl md:rounded-[2rem]">
         <img
           src={product.imagen || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80"}
           alt={product.nombre}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
 
-        {/* Promotional Tag Badge */}
-        {product.etiqueta && (
-          <div className="absolute top-2 left-2 z-20">
-            <div className="bg-[#4ADE80] text-[#111814] text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg shadow-md border border-white/10 flex items-center gap-1 ring-1 ring-white/20">
+        {/* Badge Etiqueta - Fixed position */}
+        <div className="absolute top-2 left-2 z-20">
+          {product.etiqueta && (
+            <div className="bg-[#4ADE80] text-[#111814] text-[7px] md:text-[8px] font-black uppercase tracking-widest px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg shadow-md border border-white/10 flex items-center gap-1 ring-1 ring-white/20">
               <div className="size-1 rounded-full bg-white animate-pulse" />
               {product.etiqueta}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        {/* Offer Percentage Badge */}
-        {(product.oferta_porcentaje || (product.precio_original && product.precio_original > product.precio)) && (
-          <div className="absolute top-2 right-2 z-20">
-            <div className="bg-[#ff4b4b] text-white text-[8px] font-black px-2 py-1 rounded-lg shadow-md border border-white/20 flex items-center gap-1">
-              <Sparkles className="w-2.5 h-2.5 fill-white" />
-              {product.oferta_porcentaje ? `-${product.oferta_porcentaje}%` : 'OFERTA'}
-            </div>
+        {/* Rating on Image Top Right */}
+        <div className="absolute top-2 right-2 md:top-3 md:right-3 z-20">
+          <div className="flex items-center gap-0.5 bg-white/90 backdrop-blur-sm px-1.5 py-0.5 md:px-2 md:py-1 rounded-lg md:rounded-xl text-[#111814] text-[9px] md:text-xs font-black shadow-sm">
+            <Star className="w-2.5 h-2.5 md:w-3 md:h-3 text-orange-400 fill-orange-400" />
+            4.8
           </div>
-        )}
+        </div>
 
         {!product.disponible && (
           <div className="absolute inset-0 bg-[#618972]/80 backdrop-blur-sm flex items-center justify-center">
-            <span className="bg-white/20 backdrop-blur border border-white/50 text-white font-black px-6 py-2 rounded-full text-sm uppercase tracking-widest">
+            <span className="bg-white/20 backdrop-blur border border-white/50 text-white font-black px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest text-center">
               Agotado
             </span>
           </div>
         )}
       </div>
 
-      <div className="p-5 flex flex-col flex-1">
-        <div className="flex items-center justify-between mb-3">
-          <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#4ADE80]/10 text-[9px] font-black text-[#22C55E] uppercase tracking-wider">
+      <div className="p-3 md:p-6 flex flex-col flex-1 min-w-0">
+        <div className="flex items-center justify-between mb-1 md:mb-4">
+          <div className="inline-flex items-center px-2 py-0.5 md:px-3 md:py-1.5 rounded-full bg-[#4ADE80]/10 text-[8px] md:text-[10px] font-black text-[#22C55E] uppercase tracking-wider">
             {product.categoria}
           </div>
-          <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-full text-[#111814] text-[10px] font-black">
-            <Star className="w-3 h-3 text-orange-400 fill-orange-400" />
-            4.8
-          </div>
+
+          {/* Discount/Offer Badge in place of Rating */}
+          {(product.oferta_porcentaje || (product.precio_original && product.precio_original > product.precio)) && (
+            <div className="bg-[#ff4b4b] text-white text-[9px] md:text-[11px] font-black px-1.5 py-0.5 md:px-2 md:py-1 rounded-lg shadow-sm">
+              {product.oferta_porcentaje ? `-${product.oferta_porcentaje}%` : 'OFERTA'}
+            </div>
+          )}
         </div>
-        <h3 className="text-lg font-black text-[#111814] group-hover:text-[#22C55E] transition-colors mb-2 leading-tight">
+
+        <h3 className="text-sm md:text-xl font-black text-[#111814] group-hover:text-[#22C55E] transition-colors mb-1 md:mb-3 leading-tight truncate">
           {product.nombre}
         </h3>
-        <p className="text-[#618972] text-xs font-medium leading-relaxed mb-4 line-clamp-2">
-          {product.descripcion || "Disfruta de nuestra especialidad preparada con los mejores ingredientes."}
+
+        <p className="text-[#618972] text-[10px] md:text-sm font-medium leading-tight md:leading-relaxed mb-2 md:mb-6 line-clamp-2 md:line-clamp-3">
+          {product.descripcion || "Plato especial preparado con ingredientes seleccionados."}
         </p>
-        <div className="flex items-center justify-between mt-auto pt-4 border-t border-[#f0f4f2]">
-          <div className="flex flex-col">
-            <span className="text-xl font-black text-[#111814]">{formatCurrency(product.precio)}</span>
+
+        <div className="flex items-center justify-between mt-auto pt-2 md:pt-6 border-t border-[#f0f4f2]">
+          <div className="flex items-baseline gap-2 md:gap-3">
+            <span className="text-base md:text-2xl font-black text-[#111814]">{formatCurrency(product.precio)}</span>
             {product.precio_original && product.precio_original > product.precio && (
-              <span className="text-[10px] font-bold text-gray-400 line-through decoration-1">
+              <span className="text-[9px] md:text-[13px] font-bold text-gray-400 line-through decoration-1 opacity-70">
                 {formatCurrency(product.precio_original)}
               </span>
             )}
           </div>
-          <div className="size-10 bg-[#4ADE80] rounded-full flex items-center justify-center shadow-lg shadow-[#4ADE80]/20 text-[#111814] group-hover:scale-110 transition-transform">
-            <Plus className="w-5 h-5 stroke-[3]" />
+          <div className="size-9 md:size-12 bg-[#4ADE80] rounded-full flex items-center justify-center shadow-lg shadow-[#4ADE80]/20 text-[#111814] group-hover:scale-110 active:scale-95 transition-all border-2 border-white/20">
+            <Plus className="w-4 h-4 md:w-6 md:h-6 stroke-[3]" />
           </div>
         </div>
       </div>
@@ -595,8 +618,8 @@ const MenuContent = () => {
       </div>
 
       <div className="px-2">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-          {items.slice(0, rows * 4).map((product) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+          {items.slice(0, rows * 2).map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
@@ -846,6 +869,7 @@ const MenuContent = () => {
                 title="✨ Recomendados"
                 items={destacados}
                 onSeeAll={() => setActiveCategory('Destacados')}
+                rows={2}
               />
             )}
 
@@ -854,6 +878,7 @@ const MenuContent = () => {
                 title="🔥 Ofertas Especiales"
                 items={ofertas}
                 onSeeAll={() => setActiveCategory('Ofertas')}
+                rows={2}
               />
             )}
 
@@ -862,7 +887,7 @@ const MenuContent = () => {
                 title="🥘 Nuestros Productos"
                 items={principales}
                 onSeeAll={() => setActiveCategory('Menu')}
-                rows={3}
+                rows={4}
               />
             )}
           </div>
@@ -917,7 +942,7 @@ const MenuContent = () => {
               )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {currentItems.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
@@ -1076,7 +1101,6 @@ const MenuContent = () => {
                               <button
                                 className="size-8 bg-white rounded-lg shadow-sm flex items-center justify-center text-[#111814] hover:bg-gray-100 active:scale-95 disabled:opacity-50"
                                 onClick={() => updateQuantity(index, item.cantidad - 1)}
-                                disabled={item.cantidad <= 1}
                               >
                                 <Minus className="w-4 h-4 stroke-[3]" />
                               </button>
@@ -1449,7 +1473,7 @@ const MenuContent = () => {
       </Sheet>
       {/* Product Detail Modal */}
       <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
-        <DialogContent className="max-w-md w-full p-0 overflow-hidden rounded-[2.5rem] bg-white border-none shadow-2xl" aria-describedby="product-description">
+        <DialogContent className="max-w-md w-full p-0 overflow-hidden rounded-[2.5rem] bg-white border-none shadow-2xl [&>button]:hidden" aria-describedby="product-description">
           <DialogHeader className="sr-only">
             <DialogTitle>Detalles del Producto</DialogTitle>
             <DialogDescription id="product-description">Vista detallada del producto seleccionado con opciones de personalización.</DialogDescription>
@@ -1470,61 +1494,139 @@ const MenuContent = () => {
                 </button>
               </div>
 
-              <div className="p-6 overflow-y-auto">
-                <div className="flex justify-between items-start mb-2">
-                  <h2 className="text-2xl font-black text-[#111814] leading-tight">{selectedProduct.nombre}</h2>
-                  {selectedProduct.etiqueta && (
-                    <span className="bg-[#4ADE80] text-[#111814] text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-wider ml-2 whitespace-nowrap">
-                      {selectedProduct.etiqueta}
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="text-2xl font-black text-[#22C55E]">{formatCurrency(selectedProduct.precio)}</span>
-                  {selectedProduct.precio_original && (
-                    <span className="text-sm font-bold text-gray-400 line-through decoration-2">
-                      {formatCurrency(selectedProduct.precio_original)}
-                    </span>
-                  )}
-                </div>
-
-                <div className="space-y-4 mb-8">
-                  <div className="space-y-2">
-                    <h3 className="text-xs font-black text-[#111814] uppercase tracking-widest">Descripción</h3>
-                    <p className="text-[#618972] font-medium leading-relaxed text-sm">
-                      {selectedProduct.descripcion || "Plato preparado con ingredientes frescos y seleccionados."}
-                    </p>
+              <div className="p-0 overflow-y-auto flex-1 custom-scrollbar pb-32">
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-2">
+                    <h2 className="text-2xl font-black text-[#111814] leading-tight">{selectedProduct.nombre}</h2>
+                    {selectedProduct.etiqueta && (
+                      <span className="bg-[#4ADE80] text-[#111814] text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-wider ml-2 whitespace-nowrap">
+                        {selectedProduct.etiqueta}
+                      </span>
+                    )}
                   </div>
-                  {/* Placeholder for ingredients or other details if available */}
-                </div>
 
-                {/* Quantity & Add Action */}
-                <div className="space-y-4 pt-4 border-t border-gray-100">
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-4 bg-gray-50 rounded-2xl p-1.5 border border-gray-100">
-                      <button
-                        onClick={() => setQty(Math.max(1, qty - 1))}
-                        className="size-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-[#111814] hover:bg-gray-100 active:scale-95 transition-all disabled:opacity-50"
-                        disabled={qty <= 1}
-                      >
-                        <Minus className="w-4 h-4 stroke-[3]" />
-                      </button>
-                      <span className="text-lg font-black text-[#111814] w-4 text-center">{qty}</span>
-                      <button
-                        onClick={() => setQty(qty + 1)}
-                        className="size-10 rounded-xl bg-[#4ADE80] text-[#111814] shadow-md flex items-center justify-center hover:bg-[#22C55E] active:scale-95 transition-all"
-                      >
-                        <Plus className="w-4 h-4 stroke-[3]" />
-                      </button>
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="text-2xl font-black text-[#22C55E]">{formatCurrency(selectedProduct.precio)}</span>
+                    {selectedProduct.precio_original && (
+                      <span className="text-sm font-bold text-gray-400 line-through decoration-2">
+                        {formatCurrency(selectedProduct.precio_original)}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <h3 className="text-[10px] font-black text-[#111814] uppercase tracking-widest opacity-50">Descripción</h3>
+                      <p className="text-[#618972] font-medium leading-relaxed text-sm">
+                        {selectedProduct.descripcion || "Plato preparado con ingredientes frescos y seleccionados."}
+                      </p>
                     </div>
-                    <Button
-                      onClick={addToCartAndConfirm}
-                      className="flex-1 h-14 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] rounded-2xl font-black text-sm tracking-wide shadow-lg shadow-[#4ADE80]/20 active:scale-95 transition-all"
-                    >
-                      Añadir {formatCurrency(selectedProduct.precio * qty)}
-                    </Button>
+
+                    {/* Modifiers Sections */}
+                    {selectedProduct.modificadores && selectedProduct.modificadores.map((group, groupIdx) => (
+                      <div key={groupIdx} className="space-y-3">
+                        <div className="flex justify-between items-end border-b border-gray-50 pb-2">
+                          <div className="flex flex-col min-w-0">
+                            <h3 className="text-sm font-black text-[#111814]">{group.nombre}</h3>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                              {group.obligatorio ? 'Obligatorio' : 'Opcional'} · Selecciona {group.max_opciones === 1 ? '1' : `hasta ${group.max_opciones}`}
+                            </p>
+                          </div>
+                          {group.obligatorio && !selectedModifiers.some(m => group.opciones.some(opt => opt.nombre === m.nombre)) && (
+                            <span className="text-[9px] font-black text-white bg-orange-400 px-2 py-0.5 rounded-full uppercase">Pendiente</span>
+                          )}
+                        </div>
+
+                        <div className="space-y-1">
+                          {group.opciones.map((option, optIdx) => {
+                            const isSelected = selectedModifiers.some(m => m.nombre === option.nombre);
+                            const groupSelections = selectedModifiers.filter(m => group.opciones.some(opt => opt.nombre === m.nombre));
+                            const isMaxed = groupSelections.length >= group.max_opciones && !isSelected;
+
+                            return (
+                              <button
+                                key={optIdx}
+                                disabled={isMaxed}
+                                onClick={() => {
+                                  if (isSelected) {
+                                    setSelectedModifiers(prev => prev.filter(m => m.nombre !== option.nombre));
+                                  } else {
+                                    if (group.max_opciones === 1) {
+                                      // Replace existing from same group
+                                      setSelectedModifiers(prev => [
+                                        ...prev.filter(m => !group.opciones.some(opt => opt.nombre === m.nombre)),
+                                        option
+                                      ]);
+                                    } else {
+                                      setSelectedModifiers(prev => [...prev, option]);
+                                    }
+                                  }
+                                }}
+                                className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${isSelected
+                                  ? 'bg-[#4ADE80]/5 border-[#4ADE80] ring-1 ring-[#4ADE80]'
+                                  : 'bg-white border-gray-100 hover:border-gray-200'
+                                  } ${isMaxed ? 'opacity-50 grayscale cursor-not-allowed' : 'cursor-pointer active:scale-[0.98]'}`}
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className={`size-5 rounded-full border-2 flex items-center justify-center transition-colors ${isSelected ? 'bg-[#4ADE80] border-[#4ADE80]' : 'border-gray-200 bg-white'
+                                    }`}>
+                                    {isSelected && <CheckCircle2 className="size-3 text-white" />}
+                                  </div>
+                                  <span className={`text-sm font-bold ${isSelected ? 'text-[#111814]' : 'text-gray-600'}`}>
+                                    {option.nombre}
+                                  </span>
+                                </div>
+                                {option.precio > 0 && (
+                                  <span className="text-[11px] font-black text-[#22C55E]">
+                                    + {formatCurrency(option.precio)}
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Notes Section */}
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-black text-[#111814]">Notas especiales</h3>
+                      <textarea
+                        value={productNotes}
+                        onChange={(e) => setProductNotes(e.target.value)}
+                        placeholder="Ej: Sin cebolla, término medio, etc."
+                        className="w-full h-24 bg-white border-2 border-[#4ADE80]/30 rounded-2xl p-4 text-sm font-medium focus:ring-4 focus:ring-[#4ADE80]/20 focus:border-[#4ADE80] focus:outline-none transition-all placeholder:text-gray-300 resize-none shadow-sm"
+                      />
+                    </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Sticky Action Footer */}
+              <div className="absolute bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-xl border-t border-gray-100 z-30">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-4 bg-gray-50 rounded-2xl p-1.5 border border-gray-100">
+                    <button
+                      onClick={() => setQty(Math.max(1, qty - 1))}
+                      className="size-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-[#111814] hover:bg-gray-100 active:scale-95 transition-all disabled:opacity-50"
+                      disabled={qty <= 1}
+                    >
+                      <Minus className="w-4 h-4 stroke-[3]" />
+                    </button>
+                    <span className="text-lg font-black text-[#111814] min-w-[20px] text-center">{qty}</span>
+                    <button
+                      onClick={() => setQty(qty + 1)}
+                      className="size-10 rounded-xl bg-[#4ADE80] text-[#111814] shadow-md flex items-center justify-center hover:bg-[#22C55E] active:scale-95 transition-all"
+                    >
+                      <Plus className="w-4 h-4 stroke-[3]" />
+                    </button>
+                  </div>
+                  <Button
+                    onClick={addToCartAndConfirm}
+                    className="flex-1 h-14 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] rounded-2xl font-black text-sm tracking-wide shadow-lg shadow-[#4ADE80]/20 active:scale-95 transition-all"
+                  >
+                    Añadir {formatCurrency((selectedProduct.precio + selectedModifiers.reduce((acc, m) => acc + (m.precio || 0), 0)) * qty)}
+                  </Button>
                 </div>
               </div>
             </div>
