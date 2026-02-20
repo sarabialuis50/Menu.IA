@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Sparkles } from 'lucide-react';
 import { ChatModal } from './ChatModal';
 
-export const FloatingWA = ({ businessName, whatsapp, aiEnabled, aiSaludo, slug, aiUseModal = true }) => {
+export const FloatingWA = ({ businessName, whatsapp, aiEnabled, aiSaludo, slug, aiUseModal = true, isClosed = false }) => {
     const [showTooltip, setShowTooltip] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -50,17 +50,24 @@ export const FloatingWA = ({ businessName, whatsapp, aiEnabled, aiSaludo, slug, 
                             </button>
 
                             <div className="flex items-center gap-2 mb-2">
-                                <div className="size-2 rounded-full bg-[#4ADE80] animate-pulse" />
-                                <span className="text-[10px] font-black text-[#22C55E] uppercase tracking-widest">Asistente IA Online</span>
+                                <div className={`size-2 rounded-full animate-pulse ${isClosed ? 'bg-red-500' : 'bg-[#4ADE80]'}`} />
+                                <span className={`text-[10px] font-black uppercase tracking-widest ${isClosed ? 'text-red-600' : 'text-[#22C55E]'}`}>
+                                    {isClosed ? 'Negocio Cerrado' : 'Asistente IA Online'}
+                                </span>
                             </div>
 
                             <p className="text-xs font-bold text-[#111814] leading-relaxed">
-                                {aiSaludo || `¡Hola! 👋 Soy el asistente de ${businessName}. ¿En qué puedo ayudarte hoy?`}
+                                {isClosed
+                                    ? `¡Hola! 👋 El negocio se encuentra cerrado en este momento y no podemos recibir pedidos. ¿Deseas consultar nuestro horario?`
+                                    : (aiSaludo || `¡Hola! 👋 Soy el asistente de ${businessName}. ¿En qué puedo ayudarte hoy?`)
+                                }
                             </p>
 
                             <div className="mt-3 flex items-center gap-1">
-                                <Sparkles className="w-3 h-3 text-[#22C55E]" />
-                                <span className="text-[9px] font-black text-[#618972] uppercase tracking-tighter">Pedidos automáticos 24/7</span>
+                                <Sparkles className={`w-3 h-3 ${isClosed ? 'text-red-500' : 'text-[#22C55E]'}`} />
+                                <span className="text-[9px] font-black text-[#618972] uppercase tracking-tighter">
+                                    {isClosed ? 'Consultas disponibles' : 'Pedidos automáticos 24/7'}
+                                </span>
                             </div>
                         </motion.div>
                     )}

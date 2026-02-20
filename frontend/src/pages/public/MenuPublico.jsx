@@ -721,6 +721,18 @@ const MenuContent = () => {
       </header>
 
       <main className="max-w-[1200px] mx-auto px-4 md:px-10 py-8">
+        {/* Closure Alert Banner */}
+        {business && !business.abierto && (
+          <div className="bg-red-600 text-white py-4 px-4 sticky top-0 z-[60] shadow-xl animate-pulse rounded-2xl mb-8 -mx-2">
+            <div className="flex items-center justify-center gap-3">
+              <Clock className="w-5 h-5 flex-shrink-0" />
+              <p className="font-black text-[10px] md:text-sm uppercase tracking-wider text-center">
+                ¡LO SENTIMOS! EL NEGOCIO SE ENCUENTRA CERRADO Y NO ESTÁ RECIBIENDO PEDIDOS EN ESTE MOMENTO.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Table Info Banner */}
         {tableInfo && (
           <div className="mb-8 p-3 rounded-2xl bg-[#4ADE80] text-[#111814] flex items-center justify-center gap-3 font-bold shadow-lg shadow-[#4ADE80]/20">
@@ -1415,10 +1427,13 @@ const MenuContent = () => {
                   {/* Submit Button */}
                   <Button
                     onClick={handleSubmitOrder}
-                    disabled={submitting || !customerInfo.nombre || !customerInfo.telefono || (tipoPedido === 'delivery' && !direccion) || items.length === 0}
-                    className="w-full h-16 rounded-2xl bg-[#4ADE80] text-[#111814] font-black text-xl shadow-xl hover:bg-[#22C55E] disabled:opacity-50 disabled:bg-gray-200 transition-all mt-4 border-2 border-[#4ADE80]"
+                    disabled={submitting || !customerInfo.nombre || !customerInfo.telefono || (tipoPedido === 'delivery' && !direccion) || items.length === 0 || !business?.abierto}
+                    className={`w-full h-16 rounded-2xl font-black text-xl shadow-xl transition-all mt-4 border-2 ${!business?.abierto
+                      ? 'bg-gray-200 text-gray-400 border-gray-200 cursor-not-allowed'
+                      : 'bg-[#4ADE80] text-[#111814] hover:bg-[#22C55E] border-[#4ADE80]'
+                      }`}
                   >
-                    {submitting ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Pedir Ahora'}
+                    {submitting ? <Loader2 className="w-6 h-6 animate-spin" /> : (!business?.abierto ? 'NEGOCIO CERRADO' : 'Pedir Ahora')}
                   </Button>
                 </div>
               )}
@@ -1691,11 +1706,19 @@ const MenuContent = () => {
                     {/* Total & Add Button */}
                     <Button
                       onClick={addToCartAndConfirm}
-                      className="w-full h-14 md:h-16 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] rounded-2xl md:rounded-[1.5rem] font-black text-lg md:text-xl tracking-tight shadow-xl shadow-[#4ADE80]/20 active:scale-95 transition-all flex items-center justify-between px-8 group"
+                      disabled={!business?.abierto}
+                      className={`w-full h-14 md:h-16 rounded-2xl md:rounded-[1.5rem] font-black text-lg md:text-xl tracking-tight shadow-xl active:scale-95 transition-all flex items-center justify-between px-8 group ${!business?.abierto
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-[#4ADE80] text-[#111814] hover:bg-[#22C55E] shadow-[#4ADE80]/20'
+                        }`}
                     >
                       <span className="flex flex-col items-start leading-none">
-                        <span className="text-[10px] uppercase tracking-[0.1em] opacity-60 mb-1">Añadir al pedido</span>
-                        <span className="text-sm md:text-base">Confirmar producto</span>
+                        <span className="text-[10px] uppercase tracking-[0.1em] opacity-60 mb-1">
+                          {!business?.abierto ? 'NO DISPONIBLE' : 'Añadir al pedido'}
+                        </span>
+                        <span className="text-sm md:text-base">
+                          {!business?.abierto ? 'NEGOCIO CERRADO' : 'Confirmar producto'}
+                        </span>
                       </span>
                       <div className="flex items-center gap-3">
                         <div className="w-[1px] h-6 bg-[#111814]/10" />
@@ -1756,6 +1779,7 @@ const MenuContent = () => {
         aiSaludo={business?.ai_saludo}
         slug={slug}
         aiUseModal={business?.ai_use_modal}
+        isClosed={!business?.abierto}
       />
     </div>
   );

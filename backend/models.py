@@ -81,6 +81,7 @@ class BusinessBase(BaseModel):
     twilio_token: Optional[str] = None
     twilio_number: Optional[str] = None
     ai_use_modal: Optional[bool] = True
+    abierto: Optional[bool] = True
 
     @field_validator('metodos_entrega', mode='before')
     @classmethod

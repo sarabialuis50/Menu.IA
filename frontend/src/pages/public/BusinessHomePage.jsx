@@ -148,8 +148,21 @@ const BusinessHomePageContent = () => {
             aiEnabled={business.ai_habilitado}
             aiSaludo={business.ai_saludo}
             aiUseModal={business.ai_use_modal}
+            isClosed={!business.abierto}
         >
             <div className="bg-[#f6f8f7] min-h-screen pb-20">
+                {/* Closure Alert Banner */}
+                {!business.abierto && (
+                    <div className="bg-red-600 text-white py-4 px-4 sticky top-0 z-[60] shadow-xl animate-pulse">
+                        <div className="max-w-[1200px] mx-auto flex items-center justify-center gap-3">
+                            <Clock className="w-5 h-5" />
+                            <p className="font-black text-sm md:text-base uppercase tracking-wider text-center">
+                                ¡LO SENTIMOS! EL NEGOCIO SE ENCUENTRA CERRADO Y NO ESTÁ RECIBIENDO PEDIDOS EN ESTE MOMENTO.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
                 {/* Hero Section */}
                 <section className="max-w-[1200px] mx-auto w-full px-4 md:px-10 pt-6">
                     {/* Banner Image */}
@@ -223,9 +236,12 @@ const BusinessHomePageContent = () => {
                                     <Star className="w-4 h-4 fill-orange-700" />
                                     4.9 (1.2k)
                                 </div>
-                                <div className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-100">
+                                <div className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border ${business.abierto
+                                    ? 'bg-blue-50 text-blue-700 border-blue-100'
+                                    : 'bg-red-50 text-red-700 border-red-100'
+                                    }`}>
                                     <Clock className="w-4 h-4" />
-                                    Abierto ahora
+                                    {business.abierto ? 'Abierto ahora' : 'Cerrado temporalmente'}
                                 </div>
                             </div>
                         </div>

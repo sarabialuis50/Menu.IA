@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, Query, WebSocket, WebSocketDisconnect, File, UploadFile
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Query, WebSocket, WebSocketDisconnect, File, UploadFile, Form
 from pydantic import BaseModel
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
@@ -511,7 +511,7 @@ async def update_business(slug: str, data: Dict[str, Any], business: Business = 
         'precio_km', 'costo_minimo_domicilio', 'lat', 'lng',
         'metodos_pago', 'metodos_entrega',
         'ai_habilitado', 'ai_personalidad', 'ai_saludo', 'ai_conocimiento',
-        'ai_use_modal', 'twilio_sid', 'twilio_token', 'twilio_number'
+        'ai_use_modal', 'twilio_sid', 'twilio_token', 'twilio_number', 'abierto'
     ]
     update_data = {k: v for k, v in data.items() if k in allowed_fields}
     update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
@@ -2231,6 +2231,56 @@ class ChatRequest(BaseModel):
     message: str
     history: List[Dict[str, Any]] = []
 
+@api_router.post("/gemini/audio/{negocio_id}")
+async def chat_audio_with_consultant(negocio_id: str, audio: UploadFile = File(...), business: Business = Depends(get_current_business)):
+    if business.id != negocio_id:
+        raise HTTPException(status_code=403, detail="No autorizado")
+
+    # PLAN CHECK
+    if business.plan in ['trial', 'impulso', 'free']:
+         return {"reply": "🔒 Esta función es exclusiva de los planes Pro y Elite."}
+
+    try:
+        # Context gathering
+        now = datetime.now(timezone.utc)
+        yesterday = now - timedelta(hours=24)
+        pedidos_res = supabase.table('pedidos').select('total').eq('negocio_id', negocio_id).gte('created_at', yesterday.isoformat()).execute()
+        mesas_res = supabase.table('mesas').select('estado').eq('negocio_id', negocio_id).execute()
+        
+        ventas_hoy = sum(float(p.get('total', 0)) for p in pedidos_res.data) if pedidos_res.data else 0
+        pedidos_hoy = len(pedidos_res.data) if pedidos_res.data else 0
+        mesas_ocupadas = len([m for m in mesas_res.data if m.get('estado') == 'ocupada']) if mesas_res.data else 0
+        total_mesas = len(mesas_res.data) if mesas_res.data else 0
+        
+        system_instructions = get_shared_instructions(
+            business.nombre, 
+            ventas_hoy, 
+            pedidos_hoy, 
+            f"{mesas_ocupadas} de {total_mesas} ocupadas"
+        )
+
+        audio_content = await audio.read()
+        api_key = os.environ.get("GOOGLE_GEMINI_API_KEY")
+        import google.generativeai as genai
+        genai.configure(api_key=api_key)
+        
+        # Use Gemini for native audio
+        model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=system_instructions)
+        response = model.generate_content([
+            "Responde a este audio de tu cliente (el dueño del restaurante). Dale consejos estratégicos basados en los datos.",
+            {
+                "mime_type": audio.content_type,
+                "data": audio_content
+            }
+        ])
+        
+        return {"reply": response.text, "provider": "gemini-1.5-flash-audio"}
+
+    except Exception as e:
+        logger.error(f"Error in consultant audio: {e}")
+        logger.error(traceback.format_exc())
+        return {"reply": "Lo siento, tuve un problema procesando tu audio de consulta."}
+
 @api_router.post("/gemini/chat/{negocio_id}")
 async def chat_with_consultant(negocio_id: str, request: ChatRequest, business: Business = Depends(get_current_business)):
     if business.id != negocio_id:
@@ -2325,6 +2375,38 @@ async def chat_with_consultant(negocio_id: str, request: ChatRequest, business: 
 class LandingChatRequest(BaseModel):
     message: str
     history: List[Dict[str, Any]] = []
+
+@api_router.post("/public/landing-audio")
+async def public_landing_audio(audio: UploadFile = File(...)):
+    # System prompt for prospective business owners
+    system_instructions = """
+    Eres el Asistente Experto (VOCAL) de Menu.IA (MenuPro), un consultor para dueños de negocios en Colombia.
+    Tu objetivo es convencer a los dueños de negocios de las ventajas de Menu.IA.
+    Responde al audio del dueño del negocio de forma profesional y amable.
+    Diles que Menu.IA es la mejor opción para modernizar su restaurante.
+    Invítalos a registrarse gratis en menuia.co/register.
+    Responde en español con un tono motivador.
+    """
+    
+    try:
+        audio_content = await audio.read()
+        api_key = os.environ.get("GOOGLE_GEMINI_API_KEY")
+        import google.generativeai as genai
+        genai.configure(api_key=api_key)
+        
+        model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=system_instructions)
+        response = model.generate_content([
+            "Responde a este audio de un dueño de restaurante interesado en Menu.IA.",
+            {
+                "mime_type": audio.content_type,
+                "data": audio_content
+            }
+        ])
+        
+        return {"reply": response.text, "provider": "gemini-1.5-flash-landing-audio"}
+    except Exception as e:
+        logger.error(f"Error in landing audio: {e}")
+        return {"reply": "Lo siento, tuve un problema procesando tu mensaje de voz."}
 
 @api_router.post("/public/landing-chat")
 async def public_landing_chat(request: LandingChatRequest):
@@ -3118,5 +3200,91 @@ async def web_chat_agent(slug: str, data: WebChatRequest):
         logger.error(f"Error in web_chat_agent: {e}")
         logger.error(traceback.format_exc())
         return {"response": "Lo siento, tuve un problema procesando tu mensaje. ¿Podrías intentarlo de nuevo?"}
+        
+@api_router.post("/chat/audio/{slug}")
+async def web_chat_audio_agent(slug: str, audio: UploadFile = File(...), phone: str = Form(...)):
+    """
+    Endpoint for the Web Modal Chat using Audio.
+    Uses Gemini to process audio and returns a text response.
+    """
+    try:
+        # 1. Fetch Business
+        biz_res = supabase.table('negocios').select('*').eq('slug', slug).execute()
+        if not biz_res.data:
+            raise HTTPException(status_code=404, detail="Negocio no encontrado")
+        
+        business_data = biz_res.data[0]
+        business_id = business_data['id']
+        
+        # 2. Billing (Same as text chat)
+        phone_id = f"web_{phone.strip()}"
+        conv_res = supabase.table('agent_conversations') \
+            .select('*') \
+            .eq('negocio_id', business_id) \
+            .eq('phone_number', phone_id) \
+            .eq('status', 'active') \
+            .order('last_message_at', desc=True) \
+            .limit(1) \
+            .execute()
+        
+        conversation = conv_res.data[0] if conv_res.data else None
+        if not conversation or not conversation.get('is_billed', False):
+            wa_credits = business_data.get('wa_credits', 0)
+            if wa_credits > 0:
+                supabase.table('negocios').update({"wa_credits": wa_credits - 1}).eq("id", business_id).execute()
+            else:
+                wa_count = business_data.get('wa_messages_count', 0)
+                supabase.table('negocios').update({"wa_messages_count": wa_count + 1}).eq("id", business_id).execute()
+            
+            if conversation:
+                supabase.table('agent_conversations').update({"is_billed": True}).eq("id", conversation['id']).execute()
+            else:
+                supabase.table('agent_conversations').insert({
+                    "negocio_id": business_id,
+                    "phone_number": phone_id,
+                    "status": "active",
+                    "is_billed": True
+                }).execute()
+
+        # 3. Process Audio with Gemini
+        audio_content = await audio.read()
+        
+        # Configure Gemini
+        import google.generativeai as genai
+        api_key = os.environ.get("GOOGLE_GEMINI_API_KEY")
+        genai.configure(api_key=api_key)
+        
+        # Get shared instructions for the model
+        from ai_base import get_shared_instructions
+        # Note: Providing defaults (0, "", "") for the required metrics in this context
+        instructions = get_shared_instructions(business_data['nombre'], 0.0, 0, "No disponible", f"web_{phone}")
+        
+        model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=instructions)
+        
+        # Simple audio processing (for more complex flows, integrate with process_whatsapp_message history)
+        # Note: process_whatsapp_message uses OpenAI, but here we use Gemini for native audio.
+        # Ideally, we should unify history, but for audio input we'll use Gemini.
+        
+        response = model.generate_content([
+            "Responde al audio del cliente. Si pide algo del menú o quiere ordenar, dile que por ahora solo puedes conversar por voz pero que puede escribir sus pedidos exactos.",
+            {
+                "mime_type": audio.content_type,
+                "data": audio_content
+            }
+        ])
+        
+        response_text = response.text
+        
+        # Save Outbound to history
+        conv_id = await get_or_create_conversation(business_id, phone_id)
+        if conv_id:
+            await save_message(conv_id, 'inbound', "🎤 Audio In")
+            await save_message(conv_id, 'outbound', response_text)
+
+        return {"response": response_text}
+    except Exception as e:
+        logger.error(f"Error in web_chat_audio_agent: {e}")
+        logger.error(traceback.format_exc())
+        return {"response": "Lo siento, tuve un problema procesando tu audio. ¿Podrías intentar de nuevo?"}
 
 app.include_router(api_router)

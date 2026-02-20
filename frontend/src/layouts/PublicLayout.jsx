@@ -10,7 +10,8 @@ export const PublicLayout = ({
   whatsapp,
   aiEnabled,
   aiSaludo,
-  aiUseModal
+  aiUseModal,
+  isClosed = false
 }) => {
   const navigate = useNavigate();
 
@@ -81,6 +82,7 @@ export const PublicLayout = ({
         aiSaludo={aiSaludo}
         slug={slug}
         aiUseModal={aiUseModal}
+        isClosed={isClosed}
       />
 
       {/* Shared Footer or Spacing */}

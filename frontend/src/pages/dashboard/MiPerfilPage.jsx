@@ -20,9 +20,12 @@ import {
     Eye,
     ArrowUpRight,
     Loader2,
-    Upload
+    Upload,
+    Power,
+    Store
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -48,7 +51,8 @@ export default function MiPerfilPage() {
         banner_url: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=1200&q=80',
         logo_url: '',
         subdominio: slug,
-        slogan: ''
+        slogan: '',
+        abierto: true
     });
 
     const [uploadingLogo, setUploadingLogo] = useState(false);
@@ -481,10 +485,71 @@ export default function MiPerfilPage() {
                                 </div>
                             </CardContent>
                         </Card>
+
+                        {/* Map Card - Horizontal Format */}
+                        <Card className="border-none shadow-sm rounded-[2.5rem] bg-gray-100 overflow-hidden h-[300px] relative group">
+                            <iframe
+                                title="Ubicación del Negocio"
+                                src={`https://maps.google.com/maps?q=${encodeURIComponent(businessData.direccion || 'Colombia')}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0, filter: 'grayscale(100%)' }}
+                                allowFullScreen=""
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                                className="opacity-60 group-hover:opacity-100 group-hover:filter-none transition-all duration-500"
+                            ></iframe>
+                            <div className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg pointer-events-none">
+                                <p className="text-sm font-bold text-[#111814] flex items-center gap-2 truncate">
+                                    <MapPin className="w-4 h-4 text-[#22C55E] shrink-0" />
+                                    {businessData.direccion || 'Ubicación Exacta'}
+                                </p>
+                            </div>
+                        </Card>
                     </div>
 
                     {/* Sidebar / Tools */}
                     <div className="lg:col-span-4 space-y-8">
+                        {/* Business Status Card */}
+                        <Card className={`border-none shadow-lg rounded-[2.5rem] overflow-hidden transition-all duration-500 ${businessData.abierto ? 'bg-white' : 'bg-red-50'}`}>
+                            <CardHeader className="p-8 pb-4">
+                                <CardTitle className="text-lg font-black flex items-center gap-3">
+                                    <div className={`p-2 rounded-xl transition-colors ${businessData.abierto ? 'bg-[#4ADE80]/10 text-[#22C55E]' : 'bg-red-100 text-red-600'}`}>
+                                        <Power className="w-5 h-5" />
+                                    </div>
+                                    Estado del Negocio
+                                </CardTitle>
+                                <CardDescription className="font-medium">
+                                    Controla si tu negocio está recibiendo pedidos en este momento.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="px-8 pb-8">
+                                <div className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all ${businessData.abierto
+                                    ? 'bg-[#4ADE80]/5 border-[#4ADE80]/20'
+                                    : 'bg-red-100/50 border-red-200'
+                                    }`}>
+                                    <div className="flex flex-col">
+                                        <span className={`text-sm font-black uppercase tracking-wider ${businessData.abierto ? 'text-[#22C55E]' : 'text-red-600'}`}>
+                                            {businessData.abierto ? 'Abierto' : 'Cerrado'}
+                                        </span>
+                                        <span className="text-[10px] font-bold text-gray-500">
+                                            {businessData.abierto ? 'Recibiendo pedidos' : 'No se aceptan pedidos'}
+                                        </span>
+                                    </div>
+                                    <Switch
+                                        checked={businessData.abierto}
+                                        onCheckedChange={(checked) => {
+                                            setBusinessData({ ...businessData, abierto: checked });
+                                            // Optional: auto-save for this specific field
+                                            api().put(`/business/${slug}`, { ...businessData, abierto: checked });
+                                            toast.success(checked ? 'Negocio Abierto' : 'Negocio Cerrado');
+                                        }}
+                                        className={`${businessData.abierto ? 'data-[state=checked]:bg-[#22C55E]' : 'data-[state=unchecked]:bg-gray-200'}`}
+                                    />
+                                </div>
+                            </CardContent>
+                        </Card>
+
                         {/* URL / Share Card */}
                         <Card className="border-none shadow-sm rounded-[2.5rem] bg-white overflow-hidden">
                             <CardHeader className="p-8 pb-4">
@@ -552,26 +617,7 @@ export default function MiPerfilPage() {
                                 </Button>
                             </CardContent>
                         </Card>
-                        {/* Map Card */}
-                        <Card className="border-none shadow-sm rounded-[2.5rem] bg-gray-100 overflow-hidden h-[240px] relative group mt-8">
-                            <iframe
-                                title="Ubicación del Negocio"
-                                src={`https://maps.google.com/maps?q=${encodeURIComponent(businessData.direccion || 'Colombia')}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
-                                width="100%"
-                                height="100%"
-                                style={{ border: 0, filter: 'grayscale(100%)' }}
-                                allowFullScreen=""
-                                loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
-                                className="opacity-60 group-hover:opacity-100 group-hover:filter-none transition-all duration-500"
-                            ></iframe>
-                            <div className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg pointer-events-none">
-                                <p className="text-xs font-bold text-[#111814] flex items-center gap-2 truncate">
-                                    <MapPin className="w-3 h-3 text-[#22C55E] shrink-0" />
-                                    {businessData.direccion || 'Ubicación Exacta'}
-                                </p>
-                            </div>
-                        </Card>
+
                     </div>
                 </div >
             </div >
