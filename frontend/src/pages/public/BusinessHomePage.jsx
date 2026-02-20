@@ -147,6 +147,7 @@ const BusinessHomePageContent = () => {
             whatsapp={business.whatsapp}
             aiEnabled={business.ai_habilitado}
             aiSaludo={business.ai_saludo}
+            aiUseModal={business.ai_use_modal}
         >
             <div className="bg-[#f6f8f7] min-h-screen pb-20">
                 {/* Hero Section */}

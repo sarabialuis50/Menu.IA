@@ -123,6 +123,7 @@ export default function MisPedidos() {
       whatsapp={business?.whatsapp}
       aiEnabled={business?.ai_habilitado}
       aiSaludo={business?.ai_saludo}
+      aiUseModal={business?.ai_use_modal}
     >
       <div className="max-w-lg mx-auto px-6 py-10 min-h-[80vh]">
         {/* Header Section */}

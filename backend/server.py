@@ -27,7 +27,7 @@ from ai_base import get_shared_instructions, get_fallback_message
 import traceback
 
 # Import WhatsApp Agent Functions (now env vars are loaded)
-from whatsapp_agent import process_whatsapp_message, send_whatsapp_response
+from whatsapp_agent import process_whatsapp_message, send_whatsapp_response, get_or_create_conversation
 
 from models import Business, BusinessCreate, BusinessLogin, BusinessPublic, BusinessAnalytics, DailyStats
 from models import Product, ProductCreate, ProductUpdate
@@ -510,7 +510,8 @@ async def update_business(slug: str, data: Dict[str, Any], business: Business = 
         'banner_tag', 'banner_title', 'banner_description',
         'precio_km', 'costo_minimo_domicilio', 'lat', 'lng',
         'metodos_pago', 'metodos_entrega',
-        'ai_habilitado', 'ai_personalidad', 'ai_saludo', 'ai_conocimiento'
+        'ai_habilitado', 'ai_personalidad', 'ai_saludo', 'ai_conocimiento',
+        'ai_use_modal', 'twilio_sid', 'twilio_token', 'twilio_number'
     ]
     update_data = {k: v for k, v in data.items() if k in allowed_fields}
     update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
@@ -1129,12 +1130,22 @@ async def create_order(slug: str, data: OrderCreate, background_tasks: Backgroun
     try:
         logger.info(f"Creating order for slug: {slug}")
         
-        response = supabase.table('negocios').select('id', 'nombre', 'telefono', 'whatsapp').eq('slug', slug).execute()
+        response = supabase.table('negocios').select('*').eq('slug', slug).execute()
         if not response.data:
             raise HTTPException(status_code=404, detail="Negocio no encontrado")
-        business_id = response.data[0]['id']
-        business_name = response.data[0]['nombre']
-        business_phone = response.data[0].get('whatsapp') or response.data[0].get('telefono')
+        
+        business_data = response.data[0]
+        business_id = business_data['id']
+        business_name = business_data['nombre']
+        business_phone = business_data.get('whatsapp') or business_data.get('telefono')
+        
+        # Twilio Config for this business
+        twilio_config = {
+            "sid": business_data.get('twilio_sid'),
+            "token": business_data.get('twilio_token'),
+            "number": business_data.get('twilio_number')
+        } if business_data.get('twilio_sid') else None
+
         # Validate Plan Limits (Orders)
         # Count orders for this business in the current month
         # Get start/end of current month
@@ -1147,7 +1158,7 @@ async def create_order(slug: str, data: OrderCreate, background_tasks: Backgroun
             .execute()
             
         order_count = count_res.count or 0
-        biz_plan = business.get('plan', 'trial') # Default to trial
+        biz_plan = business_data.get('plan', 'trial') # Default to trial
         
         # Plan Limits
         LIMITS = {
@@ -1194,8 +1205,21 @@ async def create_order(slug: str, data: OrderCreate, background_tasks: Backgroun
             "data": order_dict
         })
 
+        # 2. Credits Deduction Logic
+        # Notificaciones WA: 2 Créditos (Cliente + Negocio)
+        # El cargo por Sesión IA (1 crédito) ya fue realizado por el Agente.
+        credits_to_deduct = 2
+        
+        wa_credits = business_data.get('wa_credits', 0)
+        wa_count = business_data.get('wa_messages_count', 0)
+        
+        if wa_credits >= credits_to_deduct:
+            supabase.table('negocios').update({"wa_credits": wa_credits - credits_to_deduct}).eq("id", business_id).execute()
+        else:
+            supabase.table('negocios').update({"wa_messages_count": wa_count + credits_to_deduct}).eq("id", business_id).execute()
+
         # Send WhatsApp notifications (Client + Business)
-        background_tasks.add_task(send_order_wa_background, business_name, order, business_phone)
+        background_tasks.add_task(send_order_wa_background, business_name, order, business_phone, twilio_config)
         
         return order
     except Exception as e:
@@ -1236,13 +1260,13 @@ def format_order_notification_business(order: Order, business_name: str) -> str:
     
     return msg
 
-def send_order_wa_background(business_name: str, order: Order, business_phone: str = None):
+def send_order_wa_background(business_name: str, order: Order, business_phone: str = None, twilio_config: Dict[str, Any] = None):
     """Send order notifications to Client and Business"""
     # 1. Send to Client
     if order.cliente_telefono:
         try:
             wa_message = format_order_summary_wa(business_name, order)
-            send_whatsapp_response(order.cliente_telefono, wa_message)
+            send_whatsapp_response(order.cliente_telefono, wa_message, twilio_config)
             logger.info(f"WhatsApp summary sent to client {order.cliente_telefono}")
         except Exception as wa_err:
             logger.error(f"Error sending WhatsApp to client: {wa_err}")
@@ -1252,7 +1276,7 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
     if business_phone:
         try:
             biz_message = format_order_notification_business(order, business_name)
-            send_whatsapp_response(business_phone, biz_message)
+            send_whatsapp_response(business_phone, biz_message, twilio_config)
             logger.info(f"WhatsApp notification sent to business {business_phone}")
         except Exception as wa_err:
             logger.error(f"Error sending WhatsApp to business: {wa_err}")
@@ -1971,7 +1995,14 @@ async def handle_whatsapp_webhook(request: Request):
                          owner_phone = owner_res.data[0].get('telefono')
                          if owner_phone:
                              msg = f"⚠️ ALERTA MENU.IA: Tu agente IA se ha detenido.\nHas agotado tu plan mensual ({wa_limit} msjs) y tus créditos adicionales.\n\nPara reactivar el servicio:\n1. Compra un Pack de Mensajes.\n2. O mejora tu Plan (Más mensajes + Funciones Premium).\n\nReactiva aquí: https://menuia.co/dashboard/{business_data.get('slug')}/marketing"
-                             send_whatsapp_response(owner_phone, msg)
+                             
+                             twilio_config = {
+                                 "sid": business_data.get('twilio_sid'),
+                                 "token": business_data.get('twilio_token'),
+                                 "number": business_data.get('twilio_number')
+                             } if business_data.get('twilio_sid') else None
+                             
+                             send_whatsapp_response(owner_phone, msg, twilio_config)
                 except Exception as ex:
                     logger.error(f"Failed to send stop alert to owner: {ex}")
 
@@ -1995,7 +2026,14 @@ async def handle_whatsapp_webhook(request: Request):
                      owner_phone = owner_res.data[0].get('telefono')
                      if owner_phone:
                          msg = f"⚠️ AVISO MENU.IA: Te quedan solo 50 mensajes disponibles.\nTu agente IA podría detenerse pronto.\n\nOpciones:\n1. Adquiere un Pack de Mensajes.\n2. Sube de Plan para más capacidad.\n\nRecarga aquí: https://menuia.co/dashboard/{business_data.get('slug')}/marketing"
-                         send_whatsapp_response(owner_phone, msg)
+                         
+                         twilio_config = {
+                             "sid": business_data.get('twilio_sid'),
+                             "token": business_data.get('twilio_token'),
+                             "number": business_data.get('twilio_number')
+                         } if business_data.get('twilio_sid') else None
+                         
+                         send_whatsapp_response(owner_phone, msg, twilio_config)
              except Exception as ex:
                 logger.error(f"Failed to send low balance alert: {ex}")
 
@@ -2004,7 +2042,13 @@ async def handle_whatsapp_webhook(request: Request):
         
         # 4. Enviar respuesta y actualizar contador
         if response_text:
-            send_whatsapp_response(sender_phone, response_text)
+            twilio_config = {
+                "sid": business_data.get('twilio_sid'),
+                "token": business_data.get('twilio_token'),
+                "number": business_data.get('twilio_number')
+            } if business_data.get('twilio_sid') else None
+
+            send_whatsapp_response(sender_phone, response_text, twilio_config)
             
             # Actualizar contador o créditos
             if use_credits:
@@ -3001,5 +3045,82 @@ async def toggle_client_favorite(slug: str, client: Cliente = Depends(get_curren
         logger.error(f"Error toggling favorite: {e}")
         raise HTTPException(status_code=500, detail="Error al actualizar favoritos")
 
+
+class WebChatRequest(BaseModel):
+    message: str
+    phone: str
+
+@api_router.post("/chat/web/{slug}")
+async def web_chat_agent(slug: str, data: WebChatRequest):
+    """
+    Endpoint for the Web Modal Chat.
+    Rules:
+    - 1 Credit for starting a session (first message).
+    - AI responses are free in the web modal.
+    - If a sale is made, it deducts 2 more (handled in create_order).
+    """
+    try:
+        # 1. Fetch Business
+        biz_res = supabase.table('negocios').select('*').eq('slug', slug).execute()
+        if not biz_res.data:
+            raise HTTPException(status_code=404, detail="Negocio no encontrado")
+        
+        business_data = biz_res.data[0]
+        business_id = business_data['id']
+        
+        # 2. Check Credits/Limits
+        wa_count = business_data.get('wa_messages_count', 0)
+        wa_limit = business_data.get('wa_messages_limit', 0)
+        wa_credits = business_data.get('wa_credits', 0)
+        
+        if wa_count >= wa_limit and wa_credits <= 0:
+            return {"response": "Lo siento, el asistente no está disponible en este momento por límite de mensajes."}
+
+        # 3. Manage Conversation and Billing
+        # Phone for web chat is prefixed with 'web_' to keep it separate from real WA
+        phone_id = f"web_{data.phone.strip()}"
+        
+        # Find or create active conversation
+        conv_res = supabase.table('agent_conversations') \
+            .select('*') \
+            .eq('negocio_id', business_id) \
+            .eq('phone_number', phone_id) \
+            .eq('status', 'active') \
+            .order('last_message_at', desc=True) \
+            .limit(1) \
+            .execute()
+        
+        conversation = conv_res.data[0] if conv_res.data else None
+        
+        # If no active conversation or it wasn't billed yet, we bill it now
+        if not conversation or not conversation.get('is_billed', False):
+            # Bill 1 credit for starting the IA session
+            if wa_credits > 0:
+                supabase.table('negocios').update({"wa_credits": wa_credits - 1}).eq("id", business_id).execute()
+            else:
+                supabase.table('negocios').update({"wa_messages_count": wa_count + 1}).eq("id", business_id).execute()
+            
+            # If we are creating it now, bill it as part of creation logic later? 
+            # Better to ensure the flag is set.
+            if conversation:
+                supabase.table('agent_conversations').update({"is_billed": True}).eq("id", conversation['id']).execute()
+            else:
+                # create_conversation will be called by process_whatsapp_message, but we want it billed.
+                # So we create it explicitly here.
+                new_conv = supabase.table('agent_conversations').insert({
+                    "negocio_id": business_id,
+                    "phone_number": phone_id,
+                    "status": "active",
+                    "is_billed": True
+                }).execute()
+        
+        # 4. Process Message
+        response_text = await process_whatsapp_message(data.message, phone_id, business_id)
+        
+        return {"response": response_text}
+    except Exception as e:
+        logger.error(f"Error in web_chat_agent: {e}")
+        logger.error(traceback.format_exc())
+        return {"response": "Lo siento, tuve un problema procesando tu mensaje. ¿Podrías intentarlo de nuevo?"}
 
 app.include_router(api_router)

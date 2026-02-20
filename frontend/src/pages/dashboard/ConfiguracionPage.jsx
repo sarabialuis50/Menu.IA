@@ -73,41 +73,18 @@ import {
     Citrus,
     Martini,
     CupSoda,
-    Popcorn
+    Popcorn,
+    MessageSquare,
+    Lock,
+    Eye,
+    EyeOff
 } from 'lucide-react';
 
 // Icon mapping for categories
 const AvailableIcons = {
-    Utensils,
-    Pizza,
-    Coffee,
-    Beer,
-    Wine,
-    Cake,
-    IceCream,
-    Sandwich,
-    Salad,
-    Soup,
-    Fish,
-    Drumstick,
-    Beef,
-    Wheat,
-    Apple,
-    Carrot,
-    Egg,
-    Milk,
-    Vegan,
-    GlassWater,
-    Star,
-    Tag,
-    Cookie,
-    Croissant,
-    Grape,
-    Banana,
-    Cherry,
-    Citrus,
-    Martini,
-    CupSoda,
+    Utensils, Pizza, Coffee, Beer, Wine, Cake, IceCream, Sandwich, Salad, Soup,
+    Fish, Drumstick, Beef, Wheat, Apple, Carrot, Egg, Milk, Vegan, GlassWater,
+    Star, Tag, Cookie, Croissant, Grape, Banana, Cherry, Citrus, Martini, CupSoda,
     Popcorn
 };
 import { QRCodeSVG } from 'qrcode.react';
@@ -116,6 +93,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -202,7 +180,11 @@ const ConfiguracionPage = () => {
         ai_habilitado: true,
         ai_personalidad: 'Amigable y cercano (Recomendado)',
         ai_saludo: '',
-        ai_conocimiento: ''
+        ai_conocimiento: '',
+
+        twilio_sid: '',
+        twilio_token: '',
+        twilio_number: ''
     });
     const [originalData, setOriginalData] = useState(null);
 
@@ -227,6 +209,8 @@ const ConfiguracionPage = () => {
     const [editingTag, setEditingTag] = useState(null);
     const [tagName, setTagName] = useState('');
     const [originalTagName, setOriginalTagName] = useState('');
+
+    const [showTwilioToken, setShowTwilioToken] = useState(false);
 
     // Modal states
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
@@ -417,7 +401,8 @@ const ConfiguracionPage = () => {
             const dataWithNormalizedMethods = {
                 ...businessRes.data,
                 metodos_entrega: normalizedEntrega(businessRes.data.metodos_entrega),
-                metodos_pago: normalizedPago(businessRes.data.metodos_pago)
+                metodos_pago: normalizedPago(businessRes.data.metodos_pago),
+                ai_use_modal: true
             };
 
             setBusinessData(dataWithNormalizedMethods);
@@ -520,6 +505,7 @@ const ConfiguracionPage = () => {
             'nombre', 'descripcion', 'direccion', 'telefono', 'horarios', 'slogan',
             'banner_url', 'logo_url',
             'ai_habilitado', 'ai_personalidad', 'ai_saludo', 'ai_conocimiento',
+            'twilio_sid', 'twilio_token', 'twilio_number',
             'banner_tag', 'banner_title', 'banner_description'
         ];
 
@@ -2106,8 +2092,101 @@ const ConfiguracionPage = () => {
 
                             <CardContent className="px-6 md:px-10 pb-8 md:pb-10 space-y-8">
                                 <div className="grid grid-cols-1 gap-8 max-w-xl mx-auto">
+                                    {/* Assistant Identity (Custom Twilio) */}
+                                    <div className="space-y-6">
+                                        <div className="text-center">
+                                            <Label className="text-xs font-black uppercase tracking-widest text-[#111814]">Identidad del Asistente</Label>
+                                            <div className="mt-4 grid grid-cols-2 gap-3">
+                                                <button
+                                                    onClick={() => setBusinessData({ ...businessData, twilio_sid: '' })}
+                                                    className={`p-4 rounded-2xl border-2 transition-all text-left flex flex-col gap-1 ${!businessData.twilio_sid ? 'border-[#22C55E] bg-green-50/50 shadow-md' : 'border-gray-100 bg-white hover:border-gray-200'}`}
+                                                >
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-[#111814]">Global</span>
+                                                    <span className="text-[8px] font-medium text-[#618972]">Usa el número oficial de Menu.IA</span>
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        if (!businessData.twilio_sid) {
+                                                            setBusinessData({ ...businessData, twilio_sid: 'PROVIDE_SID' });
+                                                        }
+                                                    }}
+                                                    className={`p-4 rounded-2xl border-2 transition-all text-left flex flex-col gap-1 ${businessData.twilio_sid ? 'border-[#22C55E] bg-green-50/50 shadow-md' : 'border-gray-100 bg-white hover:border-gray-200'}`}
+                                                >
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-[#111814]">Privado (PRO)</span>
+                                                        <Badge className="bg-[#4ADE80] text-[#111814] text-[6px] px-1 py-0 h-3">SOLO PRO</Badge>
+                                                    </div>
+                                                    <span className="text-[8px] font-medium text-[#618972]">Usa tu propio número de WhatsApp</span>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <AnimatePresence>
+                                            {businessData.twilio_sid && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, height: 0 }}
+                                                    animate={{ opacity: 1, height: 'auto' }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                    className="space-y-4 overflow-hidden"
+                                                >
+                                                    <div className="bg-amber-50 border border-amber-100 p-4 rounded-2xl">
+                                                        <div className="flex gap-3">
+                                                            <Lock className="w-5 h-5 text-amber-500 shrink-0" />
+                                                            <div className="text-left">
+                                                                <h4 className="text-[10px] font-black text-amber-900 uppercase tracking-widest leading-none mb-1">Configuración Twilio</h4>
+                                                                <p className="text-[9px] text-amber-700/80 font-medium leading-relaxed">
+                                                                    Ingresa tus credenciales de Twilio para que la IA responda desde tu propio número.
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        <div className="space-y-2 text-left">
+                                                            <Label className="text-[9px] font-black uppercase text-gray-400 pl-1">ACCOUNT SID</Label>
+                                                            <Input
+                                                                value={businessData.twilio_sid === 'PROVIDE_SID' ? '' : businessData.twilio_sid}
+                                                                onChange={(e) => setBusinessData({ ...businessData, twilio_sid: e.target.value })}
+                                                                placeholder="ACxxxxxxxx..."
+                                                                className="h-10 rounded-xl border-gray-100 bg-gray-50/50 focus:bg-white text-xs font-mono"
+                                                            />
+                                                        </div>
+                                                        <div className="space-y-2 text-left relative">
+                                                            <Label className="text-[9px] font-black uppercase text-gray-400 pl-1">AUTH TOKEN</Label>
+                                                            <div className="relative">
+                                                                <Input
+                                                                    type={showTwilioToken ? "text" : "password"}
+                                                                    value={businessData.twilio_token || ''}
+                                                                    onChange={(e) => setBusinessData({ ...businessData, twilio_token: e.target.value })}
+                                                                    placeholder="••••••••"
+                                                                    className="h-10 rounded-xl border-gray-100 bg-gray-50/50 focus:bg-white text-xs pr-10"
+                                                                />
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setShowTwilioToken(!showTwilioToken)}
+                                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                                                                >
+                                                                    {showTwilioToken ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <div className="space-y-2 text-left md:col-span-2">
+                                                            <Label className="text-[9px] font-black uppercase text-gray-400 pl-1">NUMERO WHATSAPP (CON WHATSAPP:+)</Label>
+                                                            <Input
+                                                                value={businessData.twilio_number || ''}
+                                                                onChange={(e) => setBusinessData({ ...businessData, twilio_number: e.target.value })}
+                                                                placeholder="whatsapp:+1234567890"
+                                                                className="h-10 rounded-xl border-gray-100 bg-gray-50/50 focus:bg-white text-xs font-mono"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+
                                     {/* Personalidad */}
-                                    <div className="space-y-3 text-center">
+                                    <div className="space-y-3 text-center pt-4 border-t border-gray-100">
                                         <Label className="text-xs font-black uppercase tracking-widest text-[#111814]">Personalidad del Bot</Label>
                                         <Select
                                             value={businessData.ai_personalidad}

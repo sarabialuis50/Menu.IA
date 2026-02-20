@@ -9,7 +9,8 @@ export const PublicLayout = ({
   slug,
   whatsapp,
   aiEnabled,
-  aiSaludo
+  aiSaludo,
+  aiUseModal
 }) => {
   const navigate = useNavigate();
 
@@ -78,6 +79,8 @@ export const PublicLayout = ({
         whatsapp={whatsapp}
         aiEnabled={aiEnabled}
         aiSaludo={aiSaludo}
+        slug={slug}
+        aiUseModal={aiUseModal}
       />
 
       {/* Shared Footer or Spacing */}

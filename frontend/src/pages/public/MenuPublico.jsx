@@ -1574,6 +1574,8 @@ const MenuContent = () => {
         whatsapp={business?.whatsapp}
         aiEnabled={business?.ai_habilitado}
         aiSaludo={business?.ai_saludo}
+        slug={slug}
+        aiUseModal={business?.ai_use_modal}
       />
     </div>
   );

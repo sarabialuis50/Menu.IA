@@ -76,6 +76,11 @@ class BusinessBase(BaseModel):
     ai_saludo: Optional[str] = None
     ai_conocimiento: Optional[str] = None
     google_maps_review_url: Optional[str] = None
+    # Custom Twilio Config (For Pro businesses)
+    twilio_sid: Optional[str] = None
+    twilio_token: Optional[str] = None
+    twilio_number: Optional[str] = None
+    ai_use_modal: Optional[bool] = True
 
     @field_validator('metodos_entrega', mode='before')
     @classmethod
@@ -283,7 +288,7 @@ class OrderBase(BaseModel):
 
 
 class OrderCreate(OrderBase):
-    pass
+    via_ai: Optional[bool] = False
 
 
 class OrderUpdate(BaseModel):

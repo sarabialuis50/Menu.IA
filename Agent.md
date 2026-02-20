@@ -29,6 +29,15 @@ Menu.IA integra **dos agentes de IA** que potencian la operación de los restaur
 - Responder preguntas frecuentes sobre ingredientes, horarios y tiempos de entrega.
 - Enviar notificaciones transaccionales (confirmación, estado del pedido, listo para recoger).
 - Consultar estado de pedidos existentes por teléfono del cliente.
+- **Detección Automática de Canal:** El agente decide si abrir un link de WhatsApp o mostrar un Modal de Chat Web según la configuración del negocio.
+
+### 💰 Monetización y Cobro de Créditos
+El sistema gestiona el uso de IA y notificaciones mediante créditos:
+- **Sesión IA (Web):** 1 crédito por inicio de sesión (cubre uso ilimitado de IA en el modal).
+- **Interacción IA (WhatsApp):** 1 crédito por cada respuesta de la IA (cubre costos de Twilio + OpenAI).
+- **Pedido vía IA:** 3 créditos total (Sesión/Interacción + 2 notificaciones WhatsApp).
+- **Pedido vía Carrito:** 2 créditos (Solo las 2 notificaciones WhatsApp).
+- **Alertas:** Notificaciones automáticas al dueño por saldo bajo (50 msjs) o servicio agotado.
 
 ### 🧠 Arquitectura
 
@@ -279,6 +288,11 @@ CREATE TABLE public.agent_messages (
 | Base de datos | Supabase (PostgreSQL) | Menú, pedidos, historial de conversaciones |
 | Webhook | Supabase Edge Function | Punto de entrada para los mensajes de Twilio |
 | Real-time | WebSockets (FastAPI) | Notificación instantánea a cocina |
+
+### 🔑 Configuración de Identidad (Twilio Custom)
+Los negocios pueden personalizar su remitente de WhatsApp:
+- **Modo Global:** El sistema usa las credenciales generales de Menu.IA.
+- **Modo Pro/Elite:** Permite al negocio ingresar su `twilio_sid`, `twilio_token` y `twilio_number` en su perfil para que todos los mensajes salgan desde su propio número corporativo.
 
 ### 📝 System Prompt del Agente WhatsApp
 

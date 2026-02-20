@@ -24,12 +24,14 @@ supabase_url = os.environ.get("SUPABASE_URL")
 supabase_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY") # Use Service Role Key for backend ops
 supabase: SupabaseClient = create_client(supabase_url, supabase_key)
 
-# Initialize Twilio
-twilio_client = Client(
-    os.environ.get("TWILIO_ACCOUNT_SID"), 
-    os.environ.get("TWILIO_AUTH_TOKEN")
-)
-twilio_number = os.environ.get("TWILIO_WHATSAPP_NUMBER")
+# Initialize Twilio (Global Fallback)
+GLOBAL_TWILIO_SID = os.environ.get("TWILIO_ACCOUNT_SID")
+GLOBAL_TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN")
+GLOBAL_TWILIO_NUMBER = os.environ.get("TWILIO_WHATSAPP_NUMBER")
+
+def get_twilio_client(sid: str = None, token: str = None):
+    """Returns a Twilio client using provided credentials or global defaults"""
+    return Client(sid or GLOBAL_TWILIO_SID, token or GLOBAL_TWILIO_AUTH_TOKEN)
 
 SYSTEM_PROMPT = """
 Eres Menu.IA Bot, el asistente virtual del restaurante. Tu objetivo es ayudar a los clientes a realizar pedidos de manera eficiente y amigable.
@@ -134,6 +136,35 @@ TOOLS = [
                     }
                 },
                 "required": ["nombre", "email", "telefono"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "create_order",
+            "description": "Crea un pedido formal en el sistema una vez que el cliente ha confirmado los productos, el total y el método de entrega.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "cliente_nombre": {"type": "string", "description": "Nombre del cliente"},
+                    "cliente_telefono": {"type": "string", "description": "Teléfono de contacto"},
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "nombre": {"type": "string"},
+                                "cantidad": {"type": "integer"},
+                                "precio": {"type": "number"}
+                            }
+                        }
+                    },
+                    "tipo": {"type": "string", "enum": ["domicilio", "llevar", "mesa"]},
+                    "direccion": {"type": "string", "description": "Dirección obligatoria si es domicilio"},
+                    "metodo_pago": {"type": "string", "enum": ["Efectivo", "Nequi", "Daviplata", "Transferencia", "Tarjeta", "Link"]}
+                },
+                "required": ["items", "tipo", "metodo_pago"]
             }
         }
     }
@@ -359,6 +390,8 @@ HOY ES: {now} (UTC)
                         function_args.get("telefono"),
                         function_args.get("fecha_nacimiento")
                     )
+                elif function_name == "create_order":
+                    function_response = await create_order_ai(negocio_id, function_args)
                 else:
                     function_response = json.dumps({"error": "Función no implementada"})
 
@@ -442,6 +475,78 @@ async def search_products(negocio_id: str, query: str) -> str:
         logger.error(f"Error search_products: {e}")
         return json.dumps({"error": str(e)})
 
+async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
+    try:
+        # 0. Fetch Business Data for notifications and credits
+        biz_res = supabase.table('negocios').select('*').eq('id', negocio_id).execute()
+        if not biz_res.data:
+            return json.dumps({"status": "error", "message": "Negocio no encontrado"})
+        biz_data = biz_res.data[0]
+        business_name = biz_data['nombre']
+        business_phone = biz_data.get('whatsapp') or biz_data.get('telefono')
+        
+        # Twilio Config
+        twilio_config = {
+            "sid": biz_data.get('twilio_sid'),
+            "token": biz_data.get('twilio_token'),
+            "number": biz_data.get('twilio_number')
+        } if biz_data.get('twilio_sid') else None
+
+        # 1. Calculate Total
+        items = args.get('items', [])
+        total = sum(item.get('precio', 0) * item.get('cantidad', 1) for item in items)
+        
+        # 2. Insert order
+        order_data = {
+            "negocio_id": negocio_id,
+            "items": items,
+            "total": total,
+            "cliente_nombre": args.get('cliente_nombre'),
+            "cliente_telefono": args.get('cliente_telefono'),
+            "tipo_pedido": args.get('tipo', 'llevar'),
+            "direccion": args.get('direccion'),
+            "metodo_pago": args.get('metodo_pago', 'Efectivo'),
+            "estado": "pendiente",
+            "via_ai": True,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        res = supabase.table('pedidos').insert(order_data).execute()
+        order_id = res.data[0]['id'] if res.data else "new_order"
+        
+        # 3. Deduct 2 Credits (for notifications)
+        wa_credits = biz_data.get('wa_credits', 0)
+        wa_count = biz_data.get('wa_messages_count', 0)
+        credits_to_deduct = 2
+        
+        if wa_credits >= credits_to_deduct:
+            supabase.table('negocios').update({"wa_credits": wa_credits - credits_to_deduct}).eq("id", negocio_id).execute()
+        else:
+            supabase.table('negocios').update({"wa_messages_count": wa_count + credits_to_deduct}).eq("id", negocio_id).execute()
+
+        # 4. Send Notifications (Async/Background simplified)
+        summary = f"💰 *Total: ${total:,.0f}*\n"
+        for item in items:
+            summary += f"- {item['cantidad']}x {item['nombre']} (${item['precio']:,.0f})\n"
+        
+        client_phone = args.get('cliente_telefono')
+        if client_phone:
+            client_msg = f"✅ *¡Pedido Confirmado en {business_name}!*\n\nHola {args.get('cliente_nombre', 'cliente')}, hemos recibido tu pedido #{order_id[:8].upper()}.\n\n{summary}\n📌 *Método:* {args.get('tipo', 'llevar')}\n💳 *Pago:* {args.get('metodo_pago')}\n\nPuedes rastrear tu pedido aquí: https://menuia.co/{biz_data.get('slug')}/mis-pedidos?order={order_id}"
+            send_whatsapp_response(client_phone, client_msg, twilio_config)
+            
+        if business_phone:
+            biz_msg = f"🔔 *NUEVO PEDIDO IA* en {business_name}\n\nCliente: {args.get('cliente_nombre')}\nTel: {client_phone}\n\n{summary}\n📍 *Tipo:* {args.get('tipo')}\n🏠 *Dirección:* {args.get('direccion', 'N/A')}\n\nRevisa el dashboard: https://menuia.co/dashboard/{biz_data.get('slug')}/pedidos"
+            send_whatsapp_response(business_phone, biz_msg, twilio_config)
+
+        return json.dumps({
+            "status": "success", 
+            "order_id": order_id,
+            "message": f"Pedido creado con éxito por un total de ${total:,.0f}."
+        })
+    except Exception as e:
+        logger.error(f"Error create_order_ai: {e}")
+        return json.dumps({"status": "error", "message": str(e)})
+
 async def register_customer(negocio_id: str, nombre: str, email: str, telefono: str, fecha_nacimiento: str = None) -> str:
     try:
         # Sanitize phone
@@ -510,9 +615,21 @@ async def register_customer(negocio_id: str, nombre: str, email: str, telefono: 
             f.write(f"Error register_customer: {str(e)}\n")
         return json.dumps({"status": "error", "message": f"Lo siento, hubo un error al registrarte: {str(e)}"})
 
-def send_whatsapp_response(to_number: str, body: str):
+def send_whatsapp_response(to_number: str, body: str, custom_config: Dict[str, Any] = None):
+    """
+    Sends a WhatsApp message using custom business credentials or global fallback.
+    custom_config: { 'sid': str, 'token': str, 'number': str }
+    """
     try:
-        # Sanitize and format number
+        # 1. Determine which credentials to use
+        sid = custom_config.get('sid') if custom_config else None
+        token = custom_config.get('token') if custom_config else None
+        from_number = custom_config.get('number') if custom_config else GLOBAL_TWILIO_NUMBER
+        
+        # 2. Initialize Client
+        client = get_twilio_client(sid, token)
+        
+        # 3. Sanitize and format destination number
         clean_number = to_number.replace(' ', '').replace('+', '').replace('-', '')
         
         # Default to Colombia (+57) if 10 digits
@@ -524,14 +641,17 @@ def send_whatsapp_response(to_number: str, body: str):
             # Fallback
             formatted_number = f"+{clean_number}" if not to_number.startswith('+') else to_number
 
-        message = twilio_client.messages.create(
-            from_=twilio_number,
+        # 4. Send Message
+        message = client.messages.create(
+            from_=from_number if from_number.startswith('whatsapp:') else f"whatsapp:{from_number}",
             body=body,
             to=f"whatsapp:{formatted_number}"
         )
-        logger.info(f"Mensaje enviado a {formatted_number}: {message.sid}")
+        logger.info(f"Mensaje enviado a {formatted_number} [SID: {sid or 'Global'}]: {message.sid}")
+        return message.sid
     except Exception as e:
-        logger.error(f"Error enviando respuesta WA: {e}")
+        logger.error(f"Error enviando respuesta WA a {to_number}: {e}")
+        return None
 
 # Export for external use
-__all__ = ['send_whatsapp_response']
+__all__ = ['send_whatsapp_response', 'process_whatsapp_message', 'get_or_create_conversation']
