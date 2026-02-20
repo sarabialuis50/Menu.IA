@@ -1779,7 +1779,7 @@ const ConfiguracionPage = () => {
                                         <div className="flex gap-2">
                                             <Input
                                                 readOnly
-                                                value={`${window.location.origin}/${slug}/menu-completo`}
+                                                value={`https://menuia.co/${slug}/menu-completo`}
                                                 className="h-14 rounded-2xl bg-gray-50 border-gray-100 font-mono text-xs pr-12"
                                             />
                                             <Button
@@ -1787,7 +1787,7 @@ const ConfiguracionPage = () => {
                                                 size="icon"
                                                 className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#4ADE80]/5 hover:text-[#22C55E] transition-all"
                                                 onClick={() => {
-                                                    navigator.clipboard.writeText(`${window.location.origin}/${slug}/menu-completo`);
+                                                    navigator.clipboard.writeText(`https://menuia.co/${slug}/menu-completo`);
                                                     toast.success("Enlace copiado al portapapeles");
                                                 }}
                                             >
@@ -1807,18 +1807,10 @@ const ConfiguracionPage = () => {
                                     <div className="p-8 bg-gray-50 rounded-[2rem] border border-dashed border-gray-200 flex flex-col items-center gap-6">
                                         <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100" id="qr-menu-container">
                                             <QRCodeSVG
-                                                value={`${window.location.origin}/${slug}/menu-completo`}
+                                                value={`https://menuia.co/${slug}/menu-completo`}
                                                 size={200}
                                                 level="H"
                                                 includeMargin={true}
-                                                imageSettings={{
-                                                    src: businessData.logo_url || "/favicon.svg",
-                                                    x: undefined,
-                                                    y: undefined,
-                                                    height: 40,
-                                                    width: 40,
-                                                    excavate: true,
-                                                }}
                                             />
                                         </div>
                                         <div className="text-center space-y-2">
@@ -1873,7 +1865,7 @@ const ConfiguracionPage = () => {
                                         <div className="flex gap-2">
                                             <Input
                                                 readOnly
-                                                value={`${window.location.origin}/${slug}/mis-pedidos`}
+                                                value={`https://menuia.co/${slug}/mis-pedidos`}
                                                 className="h-14 rounded-2xl bg-gray-50 border-gray-100 font-mono text-xs pr-12"
                                             />
                                             <Button
@@ -1881,7 +1873,7 @@ const ConfiguracionPage = () => {
                                                 size="icon"
                                                 className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#4ADE80]/5 hover:text-[#22C55E] transition-all"
                                                 onClick={() => {
-                                                    navigator.clipboard.writeText(`${window.location.origin}/${slug}/mis-pedidos`);
+                                                    navigator.clipboard.writeText(`https://menuia.co/${slug}/mis-pedidos`);
                                                     toast.success("Enlace de seguimiento copiado");
                                                 }}
                                             >
@@ -1901,18 +1893,10 @@ const ConfiguracionPage = () => {
                                     <div className="p-8 bg-gray-50 rounded-[2rem] border border-dashed border-gray-200 flex flex-col items-center gap-6">
                                         <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100" id="qr-tracking-container">
                                             <QRCodeSVG
-                                                value={`${window.location.origin}/${slug}/mis-pedidos`}
+                                                value={`https://menuia.co/${slug}/mis-pedidos`}
                                                 size={200}
                                                 level="H"
                                                 includeMargin={true}
-                                                imageSettings={{
-                                                    src: businessData.logo_url || "/favicon.svg",
-                                                    x: undefined,
-                                                    y: undefined,
-                                                    height: 40,
-                                                    width: 40,
-                                                    excavate: true,
-                                                }}
                                             />
                                         </div>
                                         <div className="text-center space-y-2">

@@ -3068,13 +3068,9 @@ async def web_chat_agent(slug: str, data: WebChatRequest):
         business_data = biz_res.data[0]
         business_id = business_data['id']
         
-        # 2. Check Credits/Limits
+        # 2. Check Credits/Limits (Web Modal is now a core feature and always active)
         wa_count = business_data.get('wa_messages_count', 0)
-        wa_limit = business_data.get('wa_messages_limit', 0)
         wa_credits = business_data.get('wa_credits', 0)
-        
-        if wa_count >= wa_limit and wa_credits <= 0:
-            return {"response": "Lo siento, el asistente no está disponible en este momento por límite de mensajes."}
 
         # 3. Manage Conversation and Billing
         # Phone for web chat is prefixed with 'web_' to keep it separate from real WA
