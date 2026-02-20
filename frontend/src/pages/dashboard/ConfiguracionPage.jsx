@@ -1275,7 +1275,7 @@ const ConfiguracionPage = () => {
                                             <span className="hidden sm:inline whitespace-nowrap">Ver lista completa</span>
                                         </Button>
                                         <Button
-                                            onClick={() => window.open(`/${slug}/menu-completo`, '_blank')}
+                                            onClick={() => window.open(`/${slug}/menu`, '_blank')}
                                             variant="outline"
                                             className="rounded-2xl h-10 md:h-11 px-4 md:px-6 border-gray-200 text-[#618972] font-black gap-2 hover:bg-gray-50 transition-all active:scale-95 text-xs md:text-sm"
                                         >
@@ -1794,7 +1794,7 @@ const ConfiguracionPage = () => {
                                         <div className="flex gap-2">
                                             <Input
                                                 readOnly
-                                                value={`https://menuia.co/${slug}/menu-completo`}
+                                                value={`https://menuia.co/${slug}/menu`}
                                                 className="h-14 rounded-2xl bg-gray-50 border-gray-100 font-mono text-xs pr-12"
                                             />
                                             <Button
@@ -1802,7 +1802,7 @@ const ConfiguracionPage = () => {
                                                 size="icon"
                                                 className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#4ADE80]/5 hover:text-[#22C55E] transition-all"
                                                 onClick={() => {
-                                                    navigator.clipboard.writeText(`https://menuia.co/${slug}/menu-completo`);
+                                                    navigator.clipboard.writeText(`https://menuia.co/${slug}/menu`);
                                                     toast.success("Enlace copiado al portapapeles");
                                                 }}
                                             >
@@ -1812,7 +1812,7 @@ const ConfiguracionPage = () => {
                                                 variant="outline"
                                                 size="icon"
                                                 className="size-14 rounded-2xl border-gray-100 shrink-0 hover:bg-[#4ADE80]/5 hover:text-[#22C55E] transition-all"
-                                                onClick={() => window.open(`/${slug}/menu-completo`, '_blank')}
+                                                onClick={() => window.open(`/${slug}/menu`, '_blank')}
                                             >
                                                 <ExternalLink className="w-5 h-5" />
                                             </Button>
@@ -1822,7 +1822,7 @@ const ConfiguracionPage = () => {
                                     <div className="p-8 bg-gray-50 rounded-[2rem] border border-dashed border-gray-200 flex flex-col items-center gap-6">
                                         <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100" id="qr-menu-container">
                                             <QRCodeSVG
-                                                value={`https://menuia.co/${slug}/menu-completo`}
+                                                value={`https://menuia.co/${slug}/menu`}
                                                 size={200}
                                                 level="H"
                                                 includeMargin={true}
@@ -1963,7 +1963,7 @@ const ConfiguracionPage = () => {
                                     <div className="flex gap-4">
                                         <Button
                                             className="bg-[#4ADE80] hover:bg-[#4ADE80] text-[#111814] font-black rounded-2xl h-12 px-8 uppercase text-[10px] tracking-widest"
-                                            onClick={() => window.open(`/${slug}/menu-completo`, '_blank')}
+                                            onClick={() => window.open(`/${slug}/menu`, '_blank')}
                                         >
                                             Ver mi Catálogo Digital
                                         </Button>

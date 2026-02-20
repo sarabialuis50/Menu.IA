@@ -242,7 +242,7 @@ const BusinessHomePageContent = () => {
                 <section className="px-4 md:px-10 mb-10 w-full overflow-hidden max-w-[1200px] mx-auto">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-xl font-bold text-[#111814]">Destacados del Menú</h2>
-                        <Link to={`/${slug}/menu-completo`} className="text-[#22C55E] text-sm font-semibold hover:underline">
+                        <Link to={`/${slug}/menu`} className="text-[#22C55E] text-sm font-semibold hover:underline">
                             Ver todo
                         </Link>
                     </div>
@@ -254,7 +254,7 @@ const BusinessHomePageContent = () => {
                                 featuredProducts.map((product) => (
                                     <div
                                         key={product.id}
-                                        onClick={() => navigate(`/${slug}/menu-completo`)}
+                                        onClick={() => navigate(`/${slug}/menu`)}
                                         className="min-w-[280px] md:min-w-[320px] snap-center flex flex-col gap-3 rounded-xl bg-white shadow-sm border border-[#f0f4f2] overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
                                     >
                                         <div className="w-full h-48 md:h-56 relative overflow-hidden">
@@ -384,7 +384,7 @@ const BusinessHomePageContent = () => {
                             <span className="text-sm font-bold text-[#111814]">Explora nuestra carta completa</span>
                         </div>
                         <Button
-                            onClick={() => navigate(`/${slug}/menu-completo`)}
+                            onClick={() => navigate(`/${slug}/menu`)}
                             className="flex-1 sm:flex-none sm:min-w-[200px] h-11 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] text-sm font-black rounded-xl shadow-lg shadow-[#4ADE80]/30 transform active:scale-95 transition-all flex items-center justify-center gap-2 overflow-hidden group mr-16 sm:mr-0"
                         >
                             <div className="bg-white/20 p-1.5 rounded-lg group-hover:rotate-12 transition-transform">

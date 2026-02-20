@@ -129,7 +129,7 @@ export default function AllProductsPage() {
                             VOLVER
                         </Button>
                         <Button
-                            onClick={() => window.open(`/${slug}/menu-completo`, '_blank')}
+                            onClick={() => window.open(`/${slug}/menu`, '_blank')}
                             variant="outline"
                             className="h-11 px-6 rounded-xl border-2 font-black text-[11px] tracking-widest gap-2 hover:bg-gray-50 transition-all active:scale-95 text-[#618972] border-gray-200"
                         >

@@ -115,7 +115,7 @@ function AppRoutes() {
 
       {/* Public Menu Routes */}
       <Route path="/:slug" element={<BusinessHomePage />} />
-      <Route path="/:slug/menu-completo" element={<MenuPublico />} />
+      <Route path="/:slug/menu" element={<MenuPublico />} />
       <Route path="/:slug/mesa/:mesa" element={<MenuPublico />} />
       <Route path="/:slug/mis-pedidos" element={<MisPedidos />} />
       <Route path="/:slug/mi-cuenta" element={<ClientProfilePage />} />

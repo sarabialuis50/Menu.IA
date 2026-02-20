@@ -201,7 +201,7 @@ export default function MiPerfilPage() {
         }
     };
 
-    const previewUrl = `/${slug}/menu-completo`;
+    const previewUrl = `/${slug}/menu`;
     const baseUrl = window.location.origin;
 
     const downloadQR = () => {
@@ -502,11 +502,11 @@ export default function MiPerfilPage() {
                                     <div className="flex gap-2">
                                         <Input
                                             readOnly
-                                            value={`menuia.co/${slug}/menu-completo`}
+                                            value={`menuia.co/${slug}/menu`}
                                             className="h-10 bg-white border-dashed rounded-xl text-xs font-mono text-[#111814]"
                                         />
                                         <Button variant="ghost" size="icon" className="rounded-xl hover:bg-white" onClick={() => {
-                                            navigator.clipboard.writeText(`https://menuia.co/${slug}/menu-completo`);
+                                            navigator.clipboard.writeText(`https://menuia.co/${slug}/menu`);
                                             toast.success('Link copiado');
                                         }}>
                                             <Share2 className="w-4 h-4 text-[#22C55E]" />
@@ -537,7 +537,7 @@ export default function MiPerfilPage() {
                                 <div className="w-full aspect-square max-w-[240px] bg-white rounded-[2rem] p-4 flex items-center justify-center border-2 border-dashed border-gray-200 group-hover:border-[#22C55E] transition-colors duration-500">
                                     <QRCodeSVG
                                         id="business-qr-code"
-                                        value={`${baseUrl}/${slug}/menu-completo`}
+                                        value={`${baseUrl}/${slug}/menu`}
                                         size={200}
                                         level="H"
                                         includeMargin={false}

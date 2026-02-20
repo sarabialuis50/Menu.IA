@@ -204,7 +204,7 @@ export default function ClientProfilePage() {
                     </Card>
                     <Button
                         variant="ghost"
-                        onClick={() => navigate(`/${slug}/menu-completo`)}
+                        onClick={() => navigate(`/${slug}/menu`)}
                         className="w-full text-gray-400 font-bold hover:text-[#111814]"
                     >
                         Volver al menú
@@ -221,7 +221,7 @@ export default function ClientProfilePage() {
             <header className="bg-white sticky top-0 z-50 border-b border-gray-100 shadow-sm">
                 <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" onClick={() => navigate(`/${slug}/menu-completo`)} className="rounded-full hover:bg-gray-100">
+                        <Button variant="ghost" size="icon" onClick={() => navigate(`/${slug}/menu`)} className="rounded-full hover:bg-gray-100">
                             <ArrowLeft className="w-5 h-5 text-gray-700" />
                         </Button>
                         <h1 className="text-xl font-black tracking-tight text-[#111814]">Mi Cuenta</h1>
@@ -372,7 +372,7 @@ export default function ClientProfilePage() {
                                                             {['entregado', 'cancelado'].includes(order.estado) && (
                                                                 <button
                                                                     className="text-sm font-bold text-[#22C55E] hover:text-[#16A34A] transition-colors"
-                                                                    onClick={(e) => { e.stopPropagation(); navigate(`/${order.negocio_slug || slug}/menu-completo`); }}
+                                                                    onClick={(e) => { e.stopPropagation(); navigate(`/${order.negocio_slug || slug}/menu`); }}
                                                                 >
                                                                     Volver a pedir
                                                                 </button>

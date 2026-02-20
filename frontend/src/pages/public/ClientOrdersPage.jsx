@@ -71,7 +71,7 @@ export default function ClientOrdersPage() {
                         <h2 className="text-xl font-black text-[#111814] mb-2">No tienes pedidos aún</h2>
                         <p className="text-gray-500 mb-8">¡Explora nuestro menú y realiza tu primer pedido!</p>
                         <Button
-                            onClick={() => navigate(`/${slug}/menu-completo`)}
+                            onClick={() => navigate(`/${slug}/menu`)}
                             className="bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-bold px-8 py-6 rounded-2xl shadow-lg shadow-[#4ADE80]/20"
                         >
                             Ir al Menú
@@ -144,7 +144,7 @@ export default function ClientOrdersPage() {
                                                 <Button
                                                     variant="outline"
                                                     className="border-2 border-gray-100 hover:bg-gray-50 text-gray-600 font-bold rounded-xl h-10"
-                                                    onClick={() => navigate(`/${slug}/menu-completo`)}
+                                                    onClick={() => navigate(`/${slug}/menu`)}
                                                 >
                                                     Volver a pedir
                                                 </Button>
