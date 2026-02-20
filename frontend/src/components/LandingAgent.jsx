@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Loader2, Minimize2, ExternalLink } from 'lucide-react';
+import { MessageCircle, X, Send, Loader2, Minimize2, ExternalLink, Mic, Square, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import axios from 'axios';
@@ -14,13 +14,76 @@ export default function LandingAgent() {
         { role: 'model', content: '¡Hola! 👋 Soy el asistente experto de Menu.IA. ¿En qué puedo ayudarte a potenciar tu negocio hoy?' }
     ]);
     const [isLoading, setIsLoading] = useState(false);
+    const [isRecording, setIsRecording] = useState(false);
     const scrollRef = useRef(null);
+    const mediaRecorderRef = useRef(null);
+    const audioChunksRef = useRef([]);
 
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
     }, [history, isLoading]);
+
+    const speak = (text) => {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'es-ES';
+        window.speechSynthesis.speak(utterance);
+    };
+
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaRecorder = new MediaRecorder(stream);
+            mediaRecorderRef.current = mediaRecorder;
+            audioChunksRef.current = [];
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    audioChunksRef.current.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+                await handleSendAudio(audioBlob);
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            mediaRecorder.start();
+            setIsRecording(true);
+        } catch (error) {
+            console.error('Error accessing microphone:', error);
+            alert('No se pudo acceder al micrófono');
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+        }
+    };
+
+    const handleSendAudio = async (blob) => {
+        setHistory(prev => [...prev, { role: 'user', content: '🎤 Mensaje de voz enviado' }]);
+        setIsLoading(true);
+
+        const formData = new FormData();
+        formData.append('audio', blob, 'recording.webm');
+
+        try {
+            const response = await axios.post(`${API_URL}/api/public/landing-audio`, formData);
+            setHistory(prev => [...prev, { role: 'model', content: response.data.reply }]);
+            speak(response.data.reply);
+        } catch (error) {
+            console.error('Error sending audio:', error);
+            setHistory(prev => [...prev, { role: 'model', content: 'Lo siento, tuve un problema procesando tu audio.' }]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
@@ -92,9 +155,9 @@ export default function LandingAgent() {
                                     key={i}
                                     className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                                 >
-                                    <div className={`max-w-[85%] p-4 rounded-[1.5rem] text-sm font-medium shadow-sm flex flex-col gap-3 ${msg.role === 'user'
-                                        ? 'bg-[#4ADE80] text-[#111814] rounded-tr-none'
-                                        : 'bg-white text-[#111814] rounded-tl-none border border-gray-100'
+                                    <div className={`relative w-fit max-w-[85%] p-4 rounded-[1.5rem] text-sm font-medium shadow-sm flex flex-col gap-3 ${msg.role === 'user'
+                                        ? 'bg-[#4ADE80] text-[#111814] rounded-tr-none self-end'
+                                        : 'bg-white text-[#111814] rounded-tl-none border border-gray-100 self-start'
                                         }`}>
                                         <div>{msg.content.replace('[LINK_CALENDLY]', '')}</div>
 
@@ -110,6 +173,16 @@ export default function LandingAgent() {
                                                 Agendar Asesoría Gratis
                                             </Button>
                                         )}
+
+                                        {/* Play Button for Assistant Messages */}
+                                        {msg.role === 'model' && (
+                                            <button
+                                                onClick={() => speak(msg.content)}
+                                                className="absolute -right-3 -bottom-3 size-10 bg-[#22C55E] text-white rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(34,197,94,0.4)] hover:scale-110 active:scale-95 transition-all z-20 border-4 border-white"
+                                            >
+                                                <Play className="size-5 fill-white ml-0.5" />
+                                            </button>
+                                        )}
                                     </div>
                                 </motion.div>
                             ))}
@@ -123,25 +196,38 @@ export default function LandingAgent() {
                             )}
                         </div>
 
-                        {/* Input Area */}
-                        <form onSubmit={handleSendMessage} className="p-4 bg-white border-t border-gray-100 shrink-0">
-                            <div className="relative flex items-center gap-2">
-                                <Input
-                                    value={message}
-                                    onChange={(e) => setMessage(e.target.value)}
-                                    placeholder="Pregúntame cualquier cosa..."
-                                    className="h-12 rounded-xl pr-12 border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20"
-                                />
+                        {/* Input Area Area */}
+                        <div className="p-4 bg-white border-t border-gray-100 shrink-0">
+                            <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+                                <div className="relative flex-1 flex items-center gap-2">
+                                    <Input
+                                        value={message}
+                                        onChange={(e) => setMessage(e.target.value)}
+                                        placeholder="Pregúntame cualquier cosa..."
+                                        className="h-12 rounded-xl pr-12 border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20"
+                                    />
+                                    <Button
+                                        type="submit"
+                                        size="icon"
+                                        disabled={!message.trim() || isLoading}
+                                        className="absolute right-1.5 h-9 w-9 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] rounded-lg transition-all"
+                                    >
+                                        <Send className="w-4 h-4" />
+                                    </Button>
+                                </div>
                                 <Button
-                                    type="submit"
+                                    type="button"
                                     size="icon"
-                                    disabled={!message.trim() || isLoading}
-                                    className="absolute right-1.5 h-9 w-9 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] rounded-lg transition-all"
+                                    onClick={isRecording ? stopRecording : startRecording}
+                                    className={`h-12 w-12 rounded-xl transition-all ${isRecording
+                                        ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse'
+                                        : 'bg-black hover:bg-gray-800 text-white'
+                                        }`}
                                 >
-                                    <Send className="w-4 h-4" />
+                                    {isRecording ? <Square className="w-5 h-5 fill-white" /> : <Mic className="w-5 h-5" />}
                                 </Button>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>

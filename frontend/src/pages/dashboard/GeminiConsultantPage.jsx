@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Send, Bot, User, Sparkles, AlertCircle, Loader2, ArrowRight } from 'lucide-react';
+import { Send, Bot, User, Sparkles, AlertCircle, Loader2, ArrowRight, Mic, Square, Play } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function GeminiConsultantPage() {
@@ -72,6 +72,88 @@ export default function GeminiConsultantPage() {
             fetchInsights();
         }
     }, [user?.id]);
+
+    const [isRecording, setIsRecording] = useState(false);
+    const mediaRecorderRef = useRef(null);
+    const audioChunksRef = useRef([]);
+
+    const speak = (text) => {
+        if (!text) return;
+        const utterance = new SpeechSynthesisUtterance(String(text));
+        utterance.lang = 'es-ES';
+        window.speechSynthesis.speak(utterance);
+    };
+
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaRecorder = new MediaRecorder(stream);
+            mediaRecorderRef.current = mediaRecorder;
+            audioChunksRef.current = [];
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    audioChunksRef.current.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+                await handleSendAudio(audioBlob);
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            mediaRecorder.start();
+            setIsRecording(true);
+        } catch (error) {
+            console.error('Error starting recording:', error);
+            toast.error('No se pudo acceder al micrófono.');
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+        }
+    };
+
+    const handleSendAudio = async (blob) => {
+        if (!businessId) return;
+        const formData = new FormData();
+        formData.append('audio', blob, 'recording.webm');
+
+        const userMsg = {
+            id: Date.now(),
+            role: 'user',
+            content: '🎤 Audio enviado',
+            timestamp: new Date()
+        };
+
+        setMessages(prev => [...prev, userMsg]);
+        setIsTyping(true);
+
+        try {
+            const response = await api().post(`/gemini/audio/${businessId}`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
+            const botMessage = {
+                id: Date.now() + 1,
+                role: 'assistant',
+                content: response.data.reply,
+                timestamp: new Date()
+            };
+
+            setMessages(prev => [...prev, botMessage]);
+            speak(response.data.reply);
+        } catch (error) {
+            console.error('Audio capture error:', error);
+            toast.error('Error procesando audio.');
+        } finally {
+            setIsTyping(false);
+        }
+    };
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
@@ -147,7 +229,7 @@ export default function GeminiConsultantPage() {
                                         className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                                     >
                                         {msg.role === 'assistant' && (
-                                            <Avatar className="h-8 w-8 border border-green-200">
+                                            <Avatar className="h-8 w-8 border border-green-200 shrink-0">
                                                 <AvatarFallback className="bg-green-100 text-green-600">
                                                     <Bot className="w-5 h-5" />
                                                 </AvatarFallback>
@@ -155,11 +237,11 @@ export default function GeminiConsultantPage() {
                                         )}
 
                                         <div
-                                            className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${msg.role === 'user'
-                                                ? 'bg-[#4ADE80]/5 border-2 border-[#4ADE80] text-gray-900 rounded-br-none font-medium'
+                                            className={`relative w-fit max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm flex flex-col gap-1 group ${msg.role === 'user'
+                                                ? 'bg-[#4ADE80]/5 border-2 border-[#4ADE80] text-gray-900 rounded-br-none font-medium self-end'
                                                 : msg.isError
-                                                    ? 'bg-red-50 text-red-800 border border-red-100'
-                                                    : 'bg-white text-gray-800 rounded-bl-none border border-gray-200'
+                                                    ? 'bg-red-50 text-red-800 border border-red-100 self-start'
+                                                    : 'bg-white text-gray-800 rounded-bl-none border border-gray-200 self-start'
                                                 }`}
                                         >
                                             <p className="whitespace-pre-wrap">{msg.content}</p>
@@ -167,6 +249,14 @@ export default function GeminiConsultantPage() {
                                                 }`}>
                                                 {msg.timestamp?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </span>
+                                            {msg.role === 'assistant' && !msg.isError && (
+                                                <button
+                                                    onClick={() => speak(msg.content)}
+                                                    className="absolute -right-3 -bottom-3 size-10 bg-[#22C55E] text-white rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(34,197,94,0.4)] hover:scale-110 active:scale-95 transition-all z-20 border-4 border-white"
+                                                >
+                                                    <Play className="size-5 fill-white ml-0.5" />
+                                                </button>
+                                            )}
                                         </div>
 
                                         {msg.role === 'user' && (
@@ -214,6 +304,16 @@ export default function GeminiConsultantPage() {
                                     className="bg-[#4ADE80] hover:bg-[#4ADE80]/90 text-[#111814] shadow-lg shadow-[#4ADE80]/10 transition-all font-bold"
                                 >
                                     <Send className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                    type="button"
+                                    onClick={isRecording ? stopRecording : startRecording}
+                                    variant="outline"
+                                    className={`size-10 rounded-xl flex items-center justify-center transition-all active:scale-90 border-2 ${isRecording
+                                        ? 'bg-red-50 border-red-200 text-red-500 animate-pulse'
+                                        : 'bg-white border-gray-100 text-[#22C55E] hover:bg-gray-50'}`}
+                                >
+                                    {isRecording ? <Square className="w-4 h-4 fill-red-500" /> : <Mic className="w-4 h-4" />}
                                 </Button>
                             </form>
                         </div>

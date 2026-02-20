@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, User, Bot, Sparkles, SendHorizontal } from 'lucide-react';
+import { X, Send, User, Bot, Sparkles, SendHorizontal, Mic, Square, Play, Volume2 } from 'lucide-react';
 import axios from 'axios';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
@@ -22,11 +22,80 @@ export const ChatModal = ({ isOpen, onClose, businessName, slug, aiSaludo }) => 
         }
     }, [isOpen, businessName, aiSaludo]);
 
+    const [isRecording, setIsRecording] = useState(false);
+    const mediaRecorderRef = useRef(null);
+    const audioChunksRef = useRef([]);
+
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
     }, [messages]);
+
+    const speak = (text) => {
+        if (!text) return;
+        const utterance = new SpeechSynthesisUtterance(String(text));
+        utterance.lang = 'es-ES';
+        window.speechSynthesis.speak(utterance);
+    };
+
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaRecorder = new MediaRecorder(stream);
+            mediaRecorderRef.current = mediaRecorder;
+            audioChunksRef.current = [];
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    audioChunksRef.current.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+                await handleSendAudio(audioBlob);
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            mediaRecorder.start();
+            setIsRecording(true);
+        } catch (error) {
+            console.error('Error starting recording:', error);
+            alert('No se pudo acceder al micrófono. Por favor verifica los permisos.');
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+        }
+    };
+
+    const handleSendAudio = async (blob) => {
+        const formData = new FormData();
+        formData.append('audio', blob, 'recording.webm');
+        formData.append('phone', phone);
+
+        setMessages(prev => [...prev, { role: 'user', content: '🎤 Audio enviado', type: 'audio' }]);
+        setLoading(true);
+
+        try {
+            const response = await axios.post(`${API}/chat/audio/${slug}`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
+            setMessages(prev => [...prev, { role: 'assistant', content: response.data.response }]);
+            // Auto play the AI response if desired
+            speak(response.data.response);
+        } catch (error) {
+            console.error('Error sending audio:', error);
+            setMessages(prev => [...prev, { role: 'assistant', content: 'Lo siento, no pude procesar el audio. ¿Podrías intentar de nuevo o escribir tu mensaje?' }]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
@@ -136,15 +205,23 @@ export const ChatModal = ({ isOpen, onClose, businessName, slug, aiSaludo }) => 
                                         initial={{ opacity: 0, x: msg.role === 'user' ? 20 : -20, y: 10 }}
                                         animate={{ opacity: 1, x: 0, y: 0 }}
                                         key={i}
-                                        className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                                        className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                                     >
                                         <div
-                                            className={`max-w-[85%] p-4 rounded-3xl text-sm font-medium leading-relaxed shadow-sm ${msg.role === 'user'
-                                                ? 'bg-[#22C55E] text-white rounded-tr-none'
-                                                : 'bg-white border border-gray-100 text-[#111814] rounded-tl-none font-bold'
+                                            className={`relative w-fit max-w-[85%] p-4 rounded-3xl text-sm font-medium leading-relaxed shadow-sm flex flex-col gap-2 group ${msg.role === 'user'
+                                                ? 'bg-[#22C55E] text-white rounded-tr-none self-end'
+                                                : 'bg-white border border-gray-100 text-[#111814] rounded-tl-none font-bold self-start'
                                                 }`}
                                         >
                                             {msg.content}
+                                            {msg.role === 'assistant' && (
+                                                <button
+                                                    onClick={() => speak(msg.content)}
+                                                    className="absolute -right-3 -bottom-3 size-10 bg-[#22C55E] text-white rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(34,197,94,0.4)] hover:scale-110 active:scale-95 transition-all z-20 border-4 border-white"
+                                                >
+                                                    <Play className="size-5 fill-white ml-0.5" />
+                                                </button>
+                                            )}
                                         </div>
                                     </motion.div>
                                 ))}
@@ -182,6 +259,15 @@ export const ChatModal = ({ isOpen, onClose, businessName, slug, aiSaludo }) => 
                                     className="size-10 bg-[#22C55E] text-white rounded-xl flex items-center justify-center hover:bg-[#1db954] disabled:opacity-40 disabled:hover:bg-[#22C55E] transition-all active:scale-90 shadow-lg shadow-[#22C55E]/20"
                                 >
                                     <SendHorizontal className="w-5 h-5" />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={isRecording ? stopRecording : startRecording}
+                                    className={`ml-2 size-12 rounded-2xl flex items-center justify-center transition-all active:scale-90 shadow-lg ${isRecording
+                                        ? 'bg-red-500 text-white animate-pulse'
+                                        : 'bg-[#111814] text-[#22C55E] hover:bg-black'}`}
+                                >
+                                    {isRecording ? <Square className="w-5 h-5 fill-white" /> : <Mic className="w-6 h-6" />}
                                 </button>
                             </form>
                             <p className="text-[9px] text-center text-[#618972] mt-4 font-black uppercase tracking-[0.2em] opacity-40">
