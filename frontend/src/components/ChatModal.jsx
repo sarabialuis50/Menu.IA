@@ -263,11 +263,12 @@ export const ChatModal = ({ isOpen, onClose, businessName, slug, aiSaludo }) => 
                                 <button
                                     type="button"
                                     onClick={isRecording ? stopRecording : startRecording}
-                                    className={`ml-2 size-12 rounded-2xl flex items-center justify-center transition-all active:scale-90 shadow-lg ${isRecording
-                                        ? 'bg-red-500 text-white animate-pulse'
-                                        : 'bg-[#111814] text-[#22C55E] hover:bg-black'}`}
+                                    className={`ml-2 size-10 rounded-xl flex items-center justify-center transition-all active:scale-90 shadow-lg border-2 ${isRecording
+                                        ? 'bg-red-500 border-red-200 text-white animate-pulse'
+                                        : 'bg-white border-[#22C55E]/30 text-[#22C55E] hover:bg-[#22C55E] hover:text-white hover:border-[#22C55E]'
+                                        }`}
                                 >
-                                    {isRecording ? <Square className="w-5 h-5 fill-white" /> : <Mic className="w-6 h-6" />}
+                                    {isRecording ? <Square className="w-4 h-4 fill-white" /> : <Mic className="w-5 h-5" />}
                                 </button>
                             </form>
                             <p className="text-[9px] text-center text-[#618972] mt-4 font-black uppercase tracking-[0.2em] opacity-40">

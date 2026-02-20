@@ -311,7 +311,7 @@ export default function GeminiConsultantPage() {
                                     variant="outline"
                                     className={`size-10 rounded-xl flex items-center justify-center transition-all active:scale-90 border-2 ${isRecording
                                         ? 'bg-red-50 border-red-200 text-red-500 animate-pulse'
-                                        : 'bg-white border-gray-100 text-[#22C55E] hover:bg-gray-50'}`}
+                                        : 'bg-white border-[#22C55E]/30 text-[#22C55E] hover:bg-[#22C55E] hover:text-white hover:border-[#22C55E]'}`}
                                 >
                                     {isRecording ? <Square className="w-4 h-4 fill-red-500" /> : <Mic className="w-4 h-4" />}
                                 </Button>

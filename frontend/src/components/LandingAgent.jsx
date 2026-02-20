@@ -219,12 +219,12 @@ export default function LandingAgent() {
                                     type="button"
                                     size="icon"
                                     onClick={isRecording ? stopRecording : startRecording}
-                                    className={`h-12 w-12 rounded-xl transition-all ${isRecording
-                                        ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse'
-                                        : 'bg-black hover:bg-gray-800 text-white'
+                                    className={`h-9 w-9 rounded-lg transition-all border-2 flex items-center justify-center ${isRecording
+                                        ? 'bg-red-500 border-red-200 text-white animate-pulse'
+                                        : 'bg-white border-[#22C55E]/30 text-[#22C55E] hover:bg-[#22C55E] hover:text-white hover:border-[#22C55E]'
                                         }`}
                                 >
-                                    {isRecording ? <Square className="w-5 h-5 fill-white" /> : <Mic className="w-5 h-5" />}
+                                    {isRecording ? <Square className="w-3.5 h-3.5 fill-white" /> : <Mic className="w-4 h-4" />}
                                 </Button>
                             </form>
                         </div>
