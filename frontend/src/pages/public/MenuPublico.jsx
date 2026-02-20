@@ -1095,7 +1095,24 @@ const MenuContent = () => {
                             <div className="flex justify-between items-start mb-1">
                               <h4 className="font-bold text-[#111814] text-base leading-tight pr-6">{item.nombre}</h4>
                             </div>
-                            <p className="text-lg font-black text-[#22C55E] mb-3">{formatCurrency(item.precio_unitario)}</p>
+                            <p className="text-lg font-black text-[#22C55E] mb-2">{formatCurrency(item.precio_unitario)}</p>
+
+                            {/* Modifiers & Notes in Cart */}
+                            {item.modificadores && item.modificadores.length > 0 && (
+                              <div className="flex flex-wrap gap-1.5 mb-2">
+                                {item.modificadores.map((mod, midx) => (
+                                  <span key={midx} className="text-[9px] font-black bg-[#4ADE80]/10 text-[#22C55E] px-2 py-0.5 rounded-lg uppercase tracking-tight">
+                                    + {mod}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+
+                            {item.notas && (
+                              <p className="text-[10px] text-amber-600 font-bold mb-3 bg-amber-50 px-2 py-1 rounded-lg border-l-4 border-amber-400">
+                                "{item.notas}"
+                              </p>
+                            )}
 
                             <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-1.5 w-fit">
                               <button
@@ -1473,160 +1490,221 @@ const MenuContent = () => {
       </Sheet>
       {/* Product Detail Modal */}
       <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
-        <DialogContent className="max-w-md w-full p-0 overflow-hidden rounded-[2.5rem] bg-white border-none shadow-2xl [&>button]:hidden" aria-describedby="product-description">
+        <DialogContent className="max-w-[95vw] md:max-w-5xl w-full p-0 overflow-hidden rounded-[2.5rem] md:rounded-[3rem] bg-white border-none shadow-2xl [&>button]:hidden outline-none" aria-describedby="product-description">
           <DialogHeader className="sr-only">
             <DialogTitle>Detalles del Producto</DialogTitle>
             <DialogDescription id="product-description">Vista detallada del producto seleccionado con opciones de personalización.</DialogDescription>
           </DialogHeader>
+
           {selectedProduct && (
-            <div className="flex flex-col max-h-[90vh]">
-              <div className="relative h-64 shrink-0 bg-gray-100">
+            <div className="flex flex-col md:flex-row h-full max-h-[90vh] md:max-h-[85vh]">
+              {/* Left Side: Product Image (Sticky or fixed on Desktop) */}
+              <div className="relative w-full md:w-[45%] h-64 md:h-auto overflow-hidden bg-gray-50 flex-shrink-0">
                 <img
-                  src={selectedProduct.imagen || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80"}
+                  src={selectedProduct.imagen || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80"}
                   alt={selectedProduct.nombre}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
                 />
                 <button
                   onClick={() => setSelectedProduct(null)}
-                  className="absolute top-4 right-4 bg-[#4ADE80]/80 backdrop-blur-md text-[#111814] p-2 rounded-full hover:bg-[#4ADE80] transition-colors shadow-lg"
+                  className="absolute top-6 left-6 size-10 bg-white/90 backdrop-blur-xl text-[#111814] rounded-full flex items-center justify-center hover:bg-white transition-all shadow-xl md:hidden z-20"
                 >
-                  <ArrowRight className="w-5 h-5 rotate-180" />
+                  <ArrowLeft className="w-5 h-5" />
                 </button>
+
+                {selectedProduct.etiqueta && (
+                  <div className="absolute top-6 right-6 z-20">
+                    <span className="bg-[#4ADE80] text-[#111814] text-[10px] font-black px-3 py-1.5 rounded-xl uppercase tracking-widest shadow-lg shadow-[#4ADE80]/30">
+                      {selectedProduct.etiqueta}
+                    </span>
+                  </div>
+                )}
               </div>
 
-              <div className="p-0 overflow-y-auto flex-1 custom-scrollbar pb-32">
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-2">
-                    <h2 className="text-2xl font-black text-[#111814] leading-tight">{selectedProduct.nombre}</h2>
-                    {selectedProduct.etiqueta && (
-                      <span className="bg-[#4ADE80] text-[#111814] text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-wider ml-2 whitespace-nowrap">
-                        {selectedProduct.etiqueta}
-                      </span>
-                    )}
-                  </div>
+              {/* Right Side: Product Details & Modifiers */}
+              <div className="flex-1 flex flex-col min-w-0 bg-white relative overflow-hidden">
+                {/* Header for Desktop Close */}
+                <div className="hidden md:flex items-center justify-end p-6 pb-0 absolute top-0 right-0 z-40">
+                  <button
+                    onClick={() => setSelectedProduct(null)}
+                    className="size-10 bg-gray-100 hover:bg-gray-200 text-gray-400 hover:text-gray-600 rounded-full flex items-center justify-center transition-all"
+                  >
+                    <Minus className="w-5 h-5 rotate-45" />
+                  </button>
+                </div>
 
-                  <div className="flex items-center gap-3 mb-6">
-                    <span className="text-2xl font-black text-[#22C55E]">{formatCurrency(selectedProduct.precio)}</span>
-                    {selectedProduct.precio_original && (
-                      <span className="text-sm font-bold text-gray-400 line-through decoration-2">
-                        {formatCurrency(selectedProduct.precio_original)}
-                      </span>
-                    )}
-                  </div>
+                {/* Content Scrollable */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-10 pb-48 md:pb-56">
+                  <div className="max-w-2xl mx-auto space-y-8">
+                    {/* Basic Info */}
+                    <div className="space-y-4">
+                      <div>
+                        <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#4ADE80]/10 text-[10px] font-black text-[#22C55E] uppercase tracking-wider mb-2">
+                          {selectedProduct.categoria}
+                        </div>
+                        <h2 className="text-3xl md:text-4xl font-black text-[#111814] tracking-tighter leading-tight">
+                          {selectedProduct.nombre}
+                        </h2>
+                      </div>
 
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <h3 className="text-[10px] font-black text-[#111814] uppercase tracking-widest opacity-50">Descripción</h3>
-                      <p className="text-[#618972] font-medium leading-relaxed text-sm">
-                        {selectedProduct.descripcion || "Plato preparado con ingredientes frescos y seleccionados."}
-                      </p>
+                      <div className="flex items-center gap-4">
+                        <span className="text-3xl font-black text-[#22C55E]">
+                          {formatCurrency(selectedProduct.precio)}
+                        </span>
+                        {selectedProduct.precio_original && (
+                          <span className="text-lg font-bold text-gray-300 line-through decoration-2">
+                            {formatCurrency(selectedProduct.precio_original)}
+                          </span>
+                        )}
+                        {selectedProduct.oferta_porcentaje && (
+                          <div className="bg-red-500 text-white text-xs font-black px-2 py-1 rounded-lg">
+                            -{selectedProduct.oferta_porcentaje}%
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <h3 className="text-[10px] font-black text-[#111814] uppercase tracking-widest opacity-40 mb-2">Descripción</h3>
+                        <p className="text-[#618972] font-medium leading-relaxed text-sm">
+                          {selectedProduct.descripcion || "Este plato es una de nuestras especialidades, preparado con el toque secreto de la casa e ingredientes de la más alta calidad."}
+                        </p>
+                      </div>
                     </div>
 
-                    {/* Modifiers Sections */}
-                    {selectedProduct.modificadores && selectedProduct.modificadores.map((group, groupIdx) => (
-                      <div key={groupIdx} className="space-y-3">
-                        <div className="flex justify-between items-end border-b border-gray-50 pb-2">
-                          <div className="flex flex-col min-w-0">
-                            <h3 className="text-sm font-black text-[#111814]">{group.nombre}</h3>
-                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-                              {group.obligatorio ? 'Obligatorio' : 'Opcional'} · Selecciona {group.max_opciones === 1 ? '1' : `hasta ${group.max_opciones}`}
-                            </p>
+                    {/* Modifiers List */}
+                    <div className="space-y-8">
+                      {selectedProduct.modificadores && selectedProduct.modificadores.map((group, groupIdx) => (
+                        <div key={groupIdx} className="space-y-4">
+                          <div className="flex justify-between items-center bg-white sticky top-0 z-10 py-2 border-b border-gray-100">
+                            <div className="space-y-1">
+                              <h3 className="text-lg font-black text-[#111814] tracking-tight">{group.nombre}</h3>
+                              <div className="flex items-center gap-2">
+                                <span className={`text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider ${group.obligatorio ? 'bg-orange-50 text-orange-500 border border-orange-100' : 'bg-gray-50 text-gray-400 border border-gray-100'
+                                  }`}>
+                                  {group.obligatorio ? 'Obligatorio' : 'Opcional'}
+                                </span>
+                                <span className="text-[10px] font-bold text-gray-400">
+                                  Escoge {group.seleccion_maxima === 1 ? '1 opción' : `hasta ${group.seleccion_maxima} opciones`}
+                                </span>
+                              </div>
+                            </div>
+                            {group.obligatorio && !selectedModifiers.some(m => group.opciones.some(opt => opt.nombre === m.nombre)) && (
+                              <div className="px-3 py-1 bg-red-50 text-red-500 text-[10px] font-black rounded-full animate-pulse border border-red-100">
+                                REQUERIDO
+                              </div>
+                            )}
                           </div>
-                          {group.obligatorio && !selectedModifiers.some(m => group.opciones.some(opt => opt.nombre === m.nombre)) && (
-                            <span className="text-[9px] font-black text-white bg-orange-400 px-2 py-0.5 rounded-full uppercase">Pendiente</span>
-                          )}
-                        </div>
 
-                        <div className="space-y-1">
-                          {group.opciones.map((option, optIdx) => {
-                            const isSelected = selectedModifiers.some(m => m.nombre === option.nombre);
-                            const groupSelections = selectedModifiers.filter(m => group.opciones.some(opt => opt.nombre === m.nombre));
-                            const isMaxed = groupSelections.length >= group.max_opciones && !isSelected;
+                          <div className="grid grid-cols-1 gap-3">
+                            {group.opciones.map((option, optIdx) => {
+                              const isSelected = selectedModifiers.some(m => m.nombre === option.nombre);
+                              const groupSelections = selectedModifiers.filter(m => group.opciones.some(opt => opt.nombre === m.nombre));
+                              const selectorMax = group.seleccion_maxima || 1;
+                              const isMaxed = groupSelections.length >= selectorMax && !isSelected;
 
-                            return (
-                              <button
-                                key={optIdx}
-                                disabled={isMaxed}
-                                onClick={() => {
-                                  if (isSelected) {
-                                    setSelectedModifiers(prev => prev.filter(m => m.nombre !== option.nombre));
-                                  } else {
-                                    if (group.max_opciones === 1) {
-                                      // Replace existing from same group
-                                      setSelectedModifiers(prev => [
-                                        ...prev.filter(m => !group.opciones.some(opt => opt.nombre === m.nombre)),
-                                        option
-                                      ]);
+                              return (
+                                <button
+                                  key={optIdx}
+                                  disabled={isMaxed && selectorMax > 1}
+                                  onClick={() => {
+                                    if (isSelected) {
+                                      setSelectedModifiers(prev => prev.filter(m => m.nombre !== option.nombre));
                                     } else {
-                                      setSelectedModifiers(prev => [...prev, option]);
+                                      if (selectorMax === 1) {
+                                        setSelectedModifiers(prev => [
+                                          ...prev.filter(m => !group.opciones.some(opt => opt.nombre === m.nombre)),
+                                          option
+                                        ]);
+                                      } else {
+                                        setSelectedModifiers(prev => [...prev, option]);
+                                      }
                                     }
-                                  }
-                                }}
-                                className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${isSelected
-                                  ? 'bg-[#4ADE80]/5 border-[#4ADE80] ring-1 ring-[#4ADE80]'
-                                  : 'bg-white border-gray-100 hover:border-gray-200'
-                                  } ${isMaxed ? 'opacity-50 grayscale cursor-not-allowed' : 'cursor-pointer active:scale-[0.98]'}`}
-                              >
-                                <div className="flex items-center gap-3">
-                                  <div className={`size-5 rounded-full border-2 flex items-center justify-center transition-colors ${isSelected ? 'bg-[#4ADE80] border-[#4ADE80]' : 'border-gray-200 bg-white'
-                                    }`}>
-                                    {isSelected && <CheckCircle2 className="size-3 text-white" />}
+                                  }}
+                                  className={`group/opt w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all ${isSelected
+                                    ? 'bg-[#4ADE80]/5 border-[#4ADE80] shadow-sm'
+                                    : 'bg-white border-gray-100 hover:border-gray-200'
+                                    } ${isMaxed && selectorMax > 1 ? 'opacity-40 grayscale-0 cursor-not-allowed' : 'cursor-pointer active:scale-[0.99]'}`}
+                                >
+                                  <div className="flex items-center gap-4">
+                                    <div className={`size-6 rounded-lg border-2 flex items-center justify-center transition-all ${isSelected ? 'bg-[#4ADE80] border-[#4ADE80] rotate-0' : 'border-gray-200 bg-gray-50 group-hover/opt:border-gray-400'
+                                      }`}>
+                                      {isSelected && <CheckCircle2 className="size-4 text-white stroke-[3]" />}
+                                    </div>
+                                    <div className="text-left">
+                                      <span className={`text-sm font-black ${isSelected ? 'text-[#111814]' : 'text-gray-600'}`}>
+                                        {option.nombre}
+                                      </span>
+                                    </div>
                                   </div>
-                                  <span className={`text-sm font-bold ${isSelected ? 'text-[#111814]' : 'text-gray-600'}`}>
-                                    {option.nombre}
-                                  </span>
-                                </div>
-                                {option.precio > 0 && (
-                                  <span className="text-[11px] font-black text-[#22C55E]">
-                                    + {formatCurrency(option.precio)}
-                                  </span>
-                                )}
-                              </button>
-                            );
-                          })}
+                                  {option.precio > 0 && (
+                                    <div className="flex flex-col items-end">
+                                      <span className={`text-xs font-black ${isSelected ? 'text-[#22C55E]' : 'text-gray-400'}`}>
+                                        + {formatCurrency(option.precio)}
+                                      </span>
+                                    </div>
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
 
-                    {/* Notes Section */}
-                    <div className="space-y-3">
-                      <h3 className="text-sm font-black text-[#111814]">Notas especiales</h3>
-                      <textarea
-                        value={productNotes}
-                        onChange={(e) => setProductNotes(e.target.value)}
-                        placeholder="Ej: Sin cebolla, término medio, etc."
-                        className="w-full h-24 bg-white border-2 border-[#4ADE80]/30 rounded-2xl p-4 text-sm font-medium focus:ring-4 focus:ring-[#4ADE80]/20 focus:border-[#4ADE80] focus:outline-none transition-all placeholder:text-gray-300 resize-none shadow-sm"
-                      />
+                      {/* Notes Section */}
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-lg font-black text-[#111814] tracking-tight">Observaciones</h3>
+                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">(Opcional)</span>
+                        </div>
+                        <textarea
+                          value={productNotes}
+                          onChange={(e) => setProductNotes(e.target.value)}
+                          placeholder="¿Alguna instrucción especial para la cocina?"
+                          className="w-full h-32 bg-gray-50 border-2 border-transparent rounded-3xl p-6 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-[#4ADE80]/10 focus:border-[#4ADE80]/20 focus:outline-none transition-all placeholder:text-gray-300 resize-none"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Sticky Action Footer */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-xl border-t border-gray-100 z-30">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-4 bg-gray-50 rounded-2xl p-1.5 border border-gray-100">
-                    <button
-                      onClick={() => setQty(Math.max(1, qty - 1))}
-                      className="size-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-[#111814] hover:bg-gray-100 active:scale-95 transition-all disabled:opacity-50"
-                      disabled={qty <= 1}
+                {/* Sticky Footer */}
+                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 bg-white/90 backdrop-blur-xl border-t border-gray-100 z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+                  <div className="max-w-2xl mx-auto flex flex-col sm:flex-row items-center gap-4 md:gap-6">
+                    {/* Quantity Control */}
+                    <div className="flex items-center gap-4 bg-gray-100 rounded-2xl p-2 border border-gray-200 w-full sm:w-auto justify-between">
+                      <button
+                        onClick={() => setQty(Math.max(1, qty - 1))}
+                        className="size-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-[#111814] hover:bg-gray-50 active:scale-90 transition-all disabled:opacity-30"
+                        disabled={qty <= 1}
+                      >
+                        <Minus className="w-5 h-5 stroke-[3]" />
+                      </button>
+                      <span className="text-xl font-black text-[#111814] min-w-[30px] text-center">{qty}</span>
+                      <button
+                        onClick={() => setQty(qty + 1)}
+                        className="size-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-[#111814] hover:bg-gray-50 active:scale-90 transition-all"
+                      >
+                        <Plus className="w-5 h-5 stroke-[3]" />
+                      </button>
+                    </div>
+
+                    {/* Total & Add Button */}
+                    <Button
+                      onClick={addToCartAndConfirm}
+                      className="w-full h-14 md:h-16 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] rounded-2xl md:rounded-[1.5rem] font-black text-lg md:text-xl tracking-tight shadow-xl shadow-[#4ADE80]/20 active:scale-95 transition-all flex items-center justify-between px-8 group"
                     >
-                      <Minus className="w-4 h-4 stroke-[3]" />
-                    </button>
-                    <span className="text-lg font-black text-[#111814] min-w-[20px] text-center">{qty}</span>
-                    <button
-                      onClick={() => setQty(qty + 1)}
-                      className="size-10 rounded-xl bg-[#4ADE80] text-[#111814] shadow-md flex items-center justify-center hover:bg-[#22C55E] active:scale-95 transition-all"
-                    >
-                      <Plus className="w-4 h-4 stroke-[3]" />
-                    </button>
+                      <span className="flex flex-col items-start leading-none">
+                        <span className="text-[10px] uppercase tracking-[0.1em] opacity-60 mb-1">Añadir al pedido</span>
+                        <span className="text-sm md:text-base">Confirmar producto</span>
+                      </span>
+                      <div className="flex items-center gap-3">
+                        <div className="w-[1px] h-6 bg-[#111814]/10" />
+                        <span className="text-xl">
+                          {formatCurrency((selectedProduct.precio + selectedModifiers.reduce((acc, m) => acc + (m.precio || 0), 0)) * qty)}
+                        </span>
+                      </div>
+                    </Button>
                   </div>
-                  <Button
-                    onClick={addToCartAndConfirm}
-                    className="flex-1 h-14 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] rounded-2xl font-black text-sm tracking-wide shadow-lg shadow-[#4ADE80]/20 active:scale-95 transition-all"
-                  >
-                    Añadir {formatCurrency((selectedProduct.precio + selectedModifiers.reduce((acc, m) => acc + (m.precio || 0), 0)) * qty)}
-                  </Button>
                 </div>
               </div>
             </div>
