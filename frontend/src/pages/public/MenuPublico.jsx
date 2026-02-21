@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useCart, CartProvider } from '@/context/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -7,6 +7,7 @@ import {
   ShoppingCart,
   Plus,
   Minus,
+  ChevronLeft,
   ChevronRight,
   Loader2,
   Check,
@@ -140,6 +141,17 @@ const MenuContent = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
   const [shuffledAllProducts, setShuffledAllProducts] = useState([]);
+  const categoriesRef = useRef(null);
+
+  const scrollCategories = (direction) => {
+    if (categoriesRef.current) {
+      const scrollAmount = 300;
+      categoriesRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   // New states for Product Detail Modal
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -836,8 +848,20 @@ const MenuContent = () => {
         {/* Category Controls - Positioned below search */}
         {/* Category Controls - Sticky on Mobile */}
         {/* Category Controls */}
-        <div className="mb-8 md:mb-12 transition-all px-2 md:px-0">
-          <div className="flex flex-wrap justify-center md:justify-start gap-2 md:overflow-x-auto md:flex-nowrap md:pb-4 md:no-scrollbar">
+        <div className="relative group mb-8 md:mb-12 transition-all px-2 md:px-0">
+          {/* Botones de navegación (Flechas) - Visibles en desktop o cuando hay scroll */}
+          <button
+            onClick={() => scrollCategories('left')}
+            className="absolute -left-2 md:-left-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white shadow-lg border border-gray-100 text-[#618972] hover:text-[#22C55E] flex items-center justify-center transition-all active:scale-90 opacity-0 group-hover:opacity-100 hidden md:flex"
+            aria-label="Anterior categoría"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+
+          <div
+            ref={categoriesRef}
+            className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory px-4 md:px-0"
+          >
             {categories.map((catObj, idx) => {
               const catName = typeof catObj === 'string' ? catObj : catObj.nombre;
               const catIcon = typeof catObj === 'object' ? catObj.icono : null;
@@ -851,27 +875,35 @@ const MenuContent = () => {
                   key={idx}
                   onClick={() => setActiveCategory(catName)}
                   className={`
-                    flex h-8 md:h-10 shrink-0 items-center justify-center gap-x-1.5 rounded-full px-4 md:px-5 transition-all active:scale-95 font-bold text-[9px] md:text-xs uppercase tracking-wide
+                    flex h-9 md:h-11 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 md:px-6 transition-all active:scale-95 font-bold text-[10px] md:text-xs uppercase tracking-wide snap-start
                     ${activeCategory === catName
-                      ? 'bg-[#4ADE80] text-[#111814] shadow-md shadow-[#4ADE80]/20 scale-105 ring-2 ring-white'
-                      : 'bg-white border border-gray-100 text-gray-400 hover:border-[#22C55E] hover:text-[#111814] shadow-sm'
+                      ? 'bg-[#4ADE80] text-[#111814] shadow-lg shadow-[#4ADE80]/30 scale-105 ring-2 ring-white z-10'
+                      : 'bg-white border border-gray-100 text-gray-500 hover:border-[#22C55E] hover:text-[#111814] shadow-sm'
                     }
                   `}
                 >
                   {isUrl ? (
-                    <img src={catIcon} alt="" className="w-3 md:w-4 h-3 md:h-4 object-contain" />
+                    <img src={catIcon} alt="" className="w-4 md:w-5 h-4 md:h-5 object-contain" />
                   ) : isLucide ? (
-                    <IconComponent className="w-3 md:w-4 h-3 md:h-4" />
+                    <IconComponent className="w-4 md:w-5 h-4 md:h-5" />
                   ) : catIcon ? (
-                    <span className="text-sm md:text-lg leading-none">{catIcon}</span>
+                    <span className="text-sm md:text-xl leading-none">{catIcon}</span>
                   ) : (
-                    <IconComponent className="w-3 md:w-4 h-3 md:h-4" />
+                    <IconComponent className="w-4 md:w-5 h-4 md:h-5" />
                   )}
                   <span>{catName}</span>
                 </button>
               );
             })}
           </div>
+
+          <button
+            onClick={() => scrollCategories('right')}
+            className="absolute -right-2 md:-right-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white shadow-lg border border-gray-100 text-[#618972] hover:text-[#22C55E] flex items-center justify-center transition-all active:scale-90 opacity-0 group-hover:opacity-100 hidden md:flex"
+            aria-label="Siguiente categoría"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
         </div>
 
 
