@@ -2374,11 +2374,10 @@ async def chat_audio_with_consultant(negocio_id: str, audio: UploadFile = File(.
 
         audio_content = await audio.read()
         
-        # Initialize OpenAI
+        # Initialize OpenAI for Transcription (Whisper is excellent)
         from openai import OpenAI
         openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
         
-        # 1. Transcribe with Whisper
         import tempfile
         with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp:
             tmp.write(audio_content)
@@ -2398,17 +2397,34 @@ async def chat_audio_with_consultant(negocio_id: str, audio: UploadFile = File(.
         if not user_text:
              return {"reply": "No pude escuchar bien tu audio. ¿Podrías repetirlo?"}
 
-        # 2. Generate response with GPT
-        response = openai_client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": system_instructions},
-                {"role": "user", "content": user_text}
-            ]
-        )
-        
-        reply_text = response.choices[0].message.content
-        return {"reply": reply_text, "provider": "openai-whisper-gpt"}
+        # --- GENERATE RESPONSE ---
+        try:
+            # TRY GEMINI FIRST
+            genai.configure(api_key=os.environ.get("GOOGLE_GEMINI_API_KEY"))
+            models_to_try = ['models/gemini-2.5-flash', 'models/gemini-1.5-flash']
+            
+            for model_name in models_to_try:
+                try:
+                    model = genai.GenerativeModel(model_name, system_instruction=system_instructions)
+                    response = model.generate_content(user_text)
+                    return {"reply": response.text, "provider": f"gemini-{model_name}"}
+                except Exception as e:
+                    logger.warning(f"Consultant audio: {model_name} falló: {e}")
+                    continue
+
+            # FALLBACK TO OPENAI
+            response = openai_client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": system_instructions},
+                    {"role": "user", "content": user_text}
+                ]
+            )
+            return {"reply": response.choices[0].message.content, "provider": "openai-whisper-gpt"}
+            
+        except Exception as ai_err:
+            logger.error(f"Error AI: {ai_err}")
+            return {"reply": "Lo siento, tuve un problema procesándolo."}
 
     except Exception as e:
         logger.error(f"Error in consultant audio: {e}")
@@ -2462,11 +2478,17 @@ async def chat_with_consultant(negocio_id: str, request: ChatRequest, business: 
             logger.info("Intentando chat con Gemini...")
             
             # List of models to try in order of preference
-            models_to_try = ['gemini-2.0-flash', 'gemini-1.5-flash']
+            models_to_try = [
+                'models/gemini-2.5-flash', 
+                'models/gemini-2.0-flash', 
+                'models/gemini-1.5-flash',
+                'gemini-1.5-flash'
+            ]
             response = None
             
             for model_name in models_to_try:
                 try:
+                    genai.configure(api_key=os.environ.get("GOOGLE_GEMINI_API_KEY"))
                     model = genai.GenerativeModel(model_name, system_instruction=system_instructions)
                     chat = model.start_chat(history=chat_history)
                     response = chat.send_message(request.message)
@@ -2537,11 +2559,10 @@ async def public_landing_audio(audio: UploadFile = File(...)):
     try:
         audio_content = await audio.read()
         
-        # Initialize OpenAI Client
+        # Initialize OpenAI Client for Transcription
         from openai import OpenAI
         openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
         
-        # 1. Transcribe with Whisper
         import tempfile
         with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp:
             tmp.write(audio_content)
@@ -2561,22 +2582,38 @@ async def public_landing_audio(audio: UploadFile = File(...)):
         if not user_text:
              return {"reply": "No pude escuchar bien tu audio. ¿Podrías repetirlo?"}
 
-        # 2. Generate response with GPT
-        response = openai_client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": system_instructions},
-                {"role": "user", "content": user_text}
-            ]
-        )
-        
-        reply_text = response.choices[0].message.content
-        return {"reply": reply_text, "provider": "openai-whisper-gpt"}
+        # --- GENERATE RESPONSE ---
+        try:
+            # TRY GEMINI FIRST
+            genai.configure(api_key=os.environ.get("GOOGLE_GEMINI_API_KEY"))
+            models_to_try = ['models/gemini-2.5-flash', 'models/gemini-1.5-flash']
+            
+            for model_name in models_to_try:
+                try:
+                    model = genai.GenerativeModel(model_name, system_instruction=system_instructions)
+                    response = model.generate_content(user_text)
+                    return {"reply": response.text, "provider": f"gemini-{model_name}"}
+                except Exception as e:
+                    logger.warning(f"Landing audio: {model_name} falló: {e}")
+                    continue
+
+            # FALLBACK TO OPENAI
+            response = openai_client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": system_instructions},
+                    {"role": "user", "content": user_text}
+                ]
+            )
+            return {"reply": response.choices[0].message.content, "provider": "openai-whisper-gpt"}
+        except Exception as ai_err:
+            logger.error(f"Error AI Landing Audio: {ai_err}")
+            return {"reply": "Lo siento, tuve un problema técnico procesando tu audio."}
 
     except Exception as e:
         logger.error(f"Error in landing audio: {e}")
         logger.error(traceback.format_exc())
-        return {"reply": "Lo siento, tuve un problema procesando tu mensaje de voz."}
+        return {"reply": "Lo siento, tuve un problema procesándolo."}
 
 @api_router.post("/public/landing-chat")
 async def public_landing_chat(request: LandingChatRequest):
@@ -2643,21 +2680,47 @@ async def public_landing_chat(request: LandingChatRequest):
     7. Tus respuestas deben ser en español.
     """
 
-    chat_history = [{"role": "system", "content": system_instructions}]
+    chat_history = []
     for msg in request.history:
-         chat_history.append({
-             "role": "user" if msg.get("role") == "user" else "assistant",
-             "content": msg.get("content", "")
-         })
-    chat_history.append({"role": "user", "content": request.message})
+         role = "user" if msg.get("role") == "user" else "model"
+         content = msg.get("content", "")
+         if content:
+             chat_history.append({"role": role, "parts": [content]})
 
     try:
-        # Switch to OpenAI as primary since Gemini is blocked
+        # Try Gemini with full model names including the officially working ones
+        models_to_try = [
+            'models/gemini-2.5-flash', 
+            'models/gemini-2.0-flash', 
+            'models/gemini-1.5-flash',
+            'gemini-1.5-flash'
+        ]
+        
+        for model_name in models_to_try:
+            try:
+                # Configure Gemini inside the try to ensure it uses the latest key if changed
+                genai.configure(api_key=os.environ.get("GOOGLE_GEMINI_API_KEY"))
+                model = genai.GenerativeModel(model_name, system_instruction=system_instructions)
+                chat = model.start_chat(history=chat_history)
+                response = chat.send_message(request.message)
+                return {"reply": response.text, "provider": f"gemini-{model_name}"}
+            except Exception as e:
+                logger.warning(f"Landing chat: {model_name} falló: {e}")
+                continue
+                
+        # If Gemini fails, fallback to OpenAI
         client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+        openai_history = [{"role": "system", "content": system_instructions}]
+        for msg in request.history:
+            openai_history.append({
+                "role": "user" if msg.get("role") == "user" else "assistant",
+                "content": msg.get("content", "")
+            })
+        openai_history.append({"role": "user", "content": request.message})
         
         res = client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=chat_history
+            messages=openai_history
         )
         return {"reply": res.choices[0].message.content, "provider": "openai"}
 
