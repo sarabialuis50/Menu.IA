@@ -170,6 +170,15 @@ TOOLS = [
     }
 ]
 
+async def get_menu_items(negocio_id: str) -> List[Dict]:
+    """Helper to fetch all menu items for context or tools"""
+    try:
+        res = supabase.table('menu_items').select('*').eq('negocio_id', negocio_id).eq('available', True).execute()
+        return res.data or []
+    except Exception as e:
+        logger.error(f"Error fetching menu_items: {e}")
+        return []
+
 async def get_customer_name(phone: str) -> Optional[str]:
     try:
         # Remove 'whatsapp:' prefix if present
@@ -440,13 +449,13 @@ HOY ES: {now} (UTC)
 
 async def get_menu_categories(negocio_id: str) -> str:
     try:
-        response = supabase.table('productos') \
-            .select('categoria') \
+        response = supabase.table('menu_items') \
+            .select('category') \
             .eq('negocio_id', negocio_id) \
-            .eq('disponible', True) \
+            .eq('available', True) \
             .execute()
         
-        categories = list(set([item['categoria'] for item in response.data]))
+        categories = list(set([item['category'] for item in response.data]))
         return json.dumps(categories)
     except Exception as e:
         logger.error(f"Error get_menu_categories: {e}")
@@ -454,11 +463,11 @@ async def get_menu_categories(negocio_id: str) -> str:
 
 async def get_products_by_category(negocio_id: str, category: str) -> str:
     try:
-        response = supabase.table('productos') \
+        response = supabase.table('menu_items') \
             .select('*') \
             .eq('negocio_id', negocio_id) \
-            .eq('categoria', category) \
-            .eq('disponible', True) \
+            .eq('category', category) \
+            .eq('available', True) \
             .execute()
         return json.dumps(response.data)
     except Exception as e:
@@ -467,11 +476,11 @@ async def get_products_by_category(negocio_id: str, category: str) -> str:
 
 async def search_products(negocio_id: str, query: str) -> str:
     try:
-        response = supabase.table('productos') \
+        response = supabase.table('menu_items') \
             .select('*') \
             .eq('negocio_id', negocio_id) \
-            .ilike('nombre', f'%{query}%') \
-            .eq('disponible', True) \
+            .ilike('name', f'%{query}%') \
+            .eq('available', True) \
             .execute()
         return json.dumps(response.data)
     except Exception as e:

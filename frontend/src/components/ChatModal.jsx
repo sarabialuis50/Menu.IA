@@ -13,11 +13,14 @@ export const ChatModal = ({ isOpen, onClose, businessName, slug, aiSaludo }) => 
     const [askingPhone, setAskingPhone] = useState(!localStorage.getItem('chat_phone'));
     const scrollRef = useRef(null);
 
+    const [speakingMsgId, setSpeakingMsgId] = useState(null);
+
     useEffect(() => {
         if (isOpen && messages.length === 0) {
             setMessages([{
                 role: 'assistant',
-                content: aiSaludo || `¡Hola! 👋 Soy el asistente de ${businessName}. ¿En qué puedo ayudarte hoy?`
+                content: aiSaludo || `¡Hola! 👋 Soy el asistente de ${businessName}. ¿En qué puedo ayudarte hoy?`,
+                id: 'welcome'
             }]);
         }
     }, [isOpen, businessName, aiSaludo]);
@@ -32,11 +35,66 @@ export const ChatModal = ({ isOpen, onClose, businessName, slug, aiSaludo }) => 
         }
     }, [messages]);
 
-    const speak = (text) => {
+    const utteranceRef = useRef(null);
+
+    const speak = (text, msgId = null) => {
         if (!text) return;
-        const utterance = new SpeechSynthesisUtterance(String(text));
-        utterance.lang = 'es-ES';
-        window.speechSynthesis.speak(utterance);
+
+        // If clicking the same message that is already speaking, stop it
+        if (speakingMsgId === msgId && msgId !== null) {
+            window.speechSynthesis.cancel();
+            setSpeakingMsgId(null);
+            return;
+        }
+
+        window.speechSynthesis.cancel();
+        setSpeakingMsgId(msgId);
+
+        // Sanitize text: remove emojis and cleanup whitespace for better voice synth
+        const sanitizedText = text.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2700}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{2600}-\u{26FF}]|[\u{1F1E0}-\u{1F1FF}]/gu, '');
+
+        // Split by clauses and sentences to keep chunks short and natural
+        const chunks = sanitizedText.split(/([.!?]+|\n)/).reduce((acc, part, i) => {
+            if (i % 2 === 0) acc.push(part);
+            else acc[acc.length - 1] += part;
+            return acc;
+        }, []).filter(c => c.trim().length > 0);
+
+        let currentChunk = 0;
+
+        const speakNextChunk = () => {
+            if (currentChunk >= chunks.length || !isOpen) {
+                setSpeakingMsgId(null);
+                return;
+            }
+
+            const textToSpeak = chunks[currentChunk].trim();
+            if (!textToSpeak) {
+                currentChunk++;
+                speakNextChunk();
+                return;
+            }
+
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            utterance.lang = 'es-ES';
+            utterance.rate = 1.0;
+            utteranceRef.current = utterance; // Prevent GC
+
+            utterance.onend = () => {
+                currentChunk++;
+                // Small delay between chunks for more natural flow and browser stability
+                setTimeout(speakNextChunk, 50);
+            };
+
+            utterance.onerror = (e) => {
+                console.error("SpeechSynthesis error:", e);
+                setSpeakingMsgId(null);
+            };
+
+            window.speechSynthesis.speak(utterance);
+        };
+
+        speakNextChunk();
     };
 
     const startRecording = async () => {
@@ -86,9 +144,10 @@ export const ChatModal = ({ isOpen, onClose, businessName, slug, aiSaludo }) => 
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
-            setMessages(prev => [...prev, { role: 'assistant', content: response.data.response }]);
-            // Auto play the AI response if desired
-            speak(response.data.response);
+            const newMsg = { role: 'assistant', content: response.data.response, id: Date.now() };
+            setMessages(prev => [...prev, newMsg]);
+            // Auto play the AI response
+            speak(newMsg.content, newMsg.id);
         } catch (error) {
             console.error('Error sending audio:', error);
             setMessages(prev => [...prev, { role: 'assistant', content: 'Lo siento, no pude procesar el audio. ¿Podrías intentar de nuevo o escribir tu mensaje?' }]);
@@ -112,7 +171,7 @@ export const ChatModal = ({ isOpen, onClose, businessName, slug, aiSaludo }) => 
                 phone: phone
             });
 
-            setMessages(prev => [...prev, { role: 'assistant', content: response.data.response }]);
+            setMessages(prev => [...prev, { role: 'assistant', content: response.data.response, id: Date.now() }]);
         } catch (error) {
             console.error('Error sending message:', error);
             setMessages(prev => [...prev, { role: 'assistant', content: 'Lo siento, tuve un problema de conexión. ¿Podrías intentar de nuevo?' }]);
@@ -128,6 +187,14 @@ export const ChatModal = ({ isOpen, onClose, businessName, slug, aiSaludo }) => 
             setAskingPhone(false);
         }
     };
+
+    // Stop speaking on close
+    useEffect(() => {
+        if (!isOpen) {
+            window.speechSynthesis.cancel();
+            setSpeakingMsgId(null);
+        }
+    }, [isOpen]);
 
     if (!isOpen) return null;
 
@@ -213,13 +280,16 @@ export const ChatModal = ({ isOpen, onClose, businessName, slug, aiSaludo }) => 
                                                 : 'bg-white border border-gray-100 text-[#111814] rounded-tl-none font-bold self-start'
                                                 }`}
                                         >
-                                            {msg.content}
+                                            <div className="pr-4">{msg.content}</div>
                                             {msg.role === 'assistant' && (
                                                 <button
-                                                    onClick={() => speak(msg.content)}
-                                                    className="absolute -right-3 -bottom-3 size-10 bg-[#22C55E] text-white rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(34,197,94,0.4)] hover:scale-110 active:scale-95 transition-all z-20 border-4 border-white"
+                                                    onClick={() => speak(msg.content, msg.id || i)}
+                                                    className={`absolute -right-3 -bottom-3 size-10 rounded-full flex items-center justify-center shadow-lg transition-all z-20 border-4 border-white ${speakingMsgId === (msg.id || i)
+                                                        ? 'bg-red-500 text-white animate-pulse scale-110'
+                                                        : 'bg-[#22C55E] text-white hover:scale-110'
+                                                        }`}
                                                 >
-                                                    <Play className="size-5 fill-white ml-0.5" />
+                                                    {speakingMsgId === (msg.id || i) ? <Square className="size-4 fill-white" /> : <Play className="size-4 fill-white ml-0.5" />}
                                                 </button>
                                             )}
                                         </div>

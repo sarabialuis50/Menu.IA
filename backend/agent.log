@@ -3428,3 +3428,522 @@ google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found fo
 2026-02-20 20:02:01,662 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
 2026-02-20 20:02:11,616 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.bandeja-paisa "HTTP/2 200 OK"
 2026-02-20 20:02:11,807 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.a255305e-fcd9-4c4f-9ed3-abecf53b0546 "HTTP/2 200 OK"
+2026-02-20 20:29:26,292 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.bandeja-paisa "HTTP/2 200 OK"
+2026-02-20 20:29:26,619 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=%2A&negocio_id=eq.a255305e-fcd9-4c4f-9ed3-abecf53b0546&phone_number=eq.web_3017810256&status=eq.active&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-20 20:29:26,811 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?id=eq.a255305e-fcd9-4c4f-9ed3-abecf53b0546 "HTTP/2 200 OK"
+2026-02-20 20:29:27,036 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations "HTTP/2 201 Created"
+2026-02-20 20:29:30,308 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes?select=nombre&telefono=eq.web_3017810256 "HTTP/2 200 OK"
+2026-02-20 20:29:30,469 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.a255305e-fcd9-4c4f-9ed3-abecf53b0546 "HTTP/2 200 OK"
+2026-02-20 20:29:30,635 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=id&negocio_id=eq.a255305e-fcd9-4c4f-9ed3-abecf53b0546&phone_number=eq.web_3017810256&status=eq.active&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-20 20:29:30,815 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages "HTTP/2 201 Created"
+2026-02-20 20:29:31,020 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?id=eq.18668e7f-33ae-450b-a60c-651a4b3eefdb "HTTP/2 200 OK"
+2026-02-20 20:29:31,180 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages?select=direction%2Ccontent&conversation_id=eq.18668e7f-33ae-450b-a60c-651a4b3eefdb&order=created_at.desc&limit=10 "HTTP/2 200 OK"
+2026-02-20 20:29:38,856 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-20 20:29:38,955 - whatsapp_agent - INFO - OpenAI response tool_calls: [ChatCompletionMessageFunctionToolCall(id='call_gLnwfyYRwveqWxQBygF3hPW7', function=Function(arguments='{"category":"Bebidas"}', name='get_products_by_category'), type='function')]
+2026-02-20 20:29:38,956 - whatsapp_agent - INFO - OpenAI sugirió ejecutar: get_products_by_category con {'category': 'Bebidas'}
+2026-02-20 20:29:39,224 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/productos?select=%2A&negocio_id=eq.a255305e-fcd9-4c4f-9ed3-abecf53b0546&categoria=eq.Bebidas&disponible=eq.True "HTTP/2 200 OK"
+2026-02-20 20:29:41,724 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-20 20:29:41,880 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages "HTTP/2 201 Created"
+2026-02-20 20:29:42,034 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?id=eq.18668e7f-33ae-450b-a60c-651a4b3eefdb "HTTP/2 200 OK"
+2026-02-20 20:30:26,696 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-20 20:32:49,248 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.bandeja-paisa "HTTP/2 200 OK"
+2026-02-20 20:32:49,473 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=%2A&negocio_id=eq.a255305e-fcd9-4c4f-9ed3-abecf53b0546&phone_number=eq.web_3017810256&status=eq.active&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-20 20:32:50,459 - server - ERROR - Error in web_chat_audio_agent: 403 Requests from referer <empty> are blocked. [reason: "API_KEY_HTTP_REFERRER_BLOCKED"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+metadata {
+  key: "httpReferrer"
+  value: "<empty>"
+}
+metadata {
+  key: "consumer"
+  value: "projects/1037589923731"
+}
+, locale: "en-US"
+message: "Requests from referer <empty> are blocked."
+]
+2026-02-20 20:32:50,491 - server - ERROR - Traceback (most recent call last):
+  File "C:\Users\luis.sarabia\MenuPro\backend\server.py", line 3381, in web_chat_audio_agent
+    response = model.generate_content([
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\generativeai\generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\client.py", line 835, in generate_content
+    response = rpc(
+               ^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.PermissionDenied: 403 Requests from referer <empty> are blocked. [reason: "API_KEY_HTTP_REFERRER_BLOCKED"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+metadata {
+  key: "httpReferrer"
+  value: "<empty>"
+}
+metadata {
+  key: "consumer"
+  value: "projects/1037589923731"
+}
+, locale: "en-US"
+message: "Requests from referer <empty> are blocked."
+]
+
+2026-02-20 20:33:02,133 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.bandeja-paisa "HTTP/2 200 OK"
+2026-02-20 20:33:02,309 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=%2A&negocio_id=eq.a255305e-fcd9-4c4f-9ed3-abecf53b0546&phone_number=eq.web_3017810256&status=eq.active&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-20 20:33:03,152 - server - ERROR - Error in web_chat_audio_agent: 403 Requests from referer <empty> are blocked. [reason: "API_KEY_HTTP_REFERRER_BLOCKED"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+metadata {
+  key: "httpReferrer"
+  value: "<empty>"
+}
+metadata {
+  key: "consumer"
+  value: "projects/1037589923731"
+}
+, locale: "en-US"
+message: "Requests from referer <empty> are blocked."
+]
+2026-02-20 20:33:03,157 - server - ERROR - Traceback (most recent call last):
+  File "C:\Users\luis.sarabia\MenuPro\backend\server.py", line 3381, in web_chat_audio_agent
+    response = model.generate_content([
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\generativeai\generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\client.py", line 835, in generate_content
+    response = rpc(
+               ^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.PermissionDenied: 403 Requests from referer <empty> are blocked. [reason: "API_KEY_HTTP_REFERRER_BLOCKED"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+metadata {
+  key: "httpReferrer"
+  value: "<empty>"
+}
+metadata {
+  key: "consumer"
+  value: "projects/1037589923731"
+}
+, locale: "en-US"
+message: "Requests from referer <empty> are blocked."
+]
+
+2026-02-20 20:33:44,083 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 20:33:44,254 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 20:33:44,428 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 20:33:44,593 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 20:33:44,865 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 20:33:45,071 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 20:33:45,252 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 20:33:45,421 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 20:33:45,598 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 20:33:45,804 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-20 20:33:45,980 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 20:33:46,142 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 20:33:46,317 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 20:33:46,501 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 20:33:46,664 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 20:33:46,841 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-20 20:34:14,809 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 20:34:14,990 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&phone_number=eq.web_3017810256&status=eq.active&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-20 20:34:17,963 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes?select=nombre&telefono=eq.web_3017810256 "HTTP/2 200 OK"
+2026-02-20 20:34:18,127 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 20:34:18,302 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=id&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&phone_number=eq.web_3017810256&status=eq.active&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-20 20:34:18,480 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages "HTTP/2 201 Created"
+2026-02-20 20:34:18,644 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?id=eq.11d8155c-80ba-44f2-b757-7ce074a9e151 "HTTP/2 200 OK"
+2026-02-20 20:34:18,801 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages?select=direction%2Ccontent&conversation_id=eq.11d8155c-80ba-44f2-b757-7ce074a9e151&order=created_at.desc&limit=10 "HTTP/2 200 OK"
+2026-02-20 20:34:23,494 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-20 20:34:23,547 - whatsapp_agent - INFO - OpenAI response tool_calls: None
+2026-02-20 20:34:23,714 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages "HTTP/2 201 Created"
+2026-02-20 20:34:23,879 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?id=eq.11d8155c-80ba-44f2-b757-7ce074a9e151 "HTTP/2 200 OK"
+2026-02-20 20:34:56,110 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 20:34:56,258 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&phone_number=eq.web_3017810256&status=eq.active&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-20 20:34:56,977 - server - ERROR - Error in web_chat_audio_agent: 403 Requests from referer <empty> are blocked. [reason: "API_KEY_HTTP_REFERRER_BLOCKED"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+metadata {
+  key: "httpReferrer"
+  value: "<empty>"
+}
+metadata {
+  key: "consumer"
+  value: "projects/1037589923731"
+}
+, locale: "en-US"
+message: "Requests from referer <empty> are blocked."
+]
+2026-02-20 20:34:56,995 - server - ERROR - Traceback (most recent call last):
+  File "C:\Users\luis.sarabia\MenuPro\backend\server.py", line 3381, in web_chat_audio_agent
+    response = model.generate_content([
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\generativeai\generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\client.py", line 835, in generate_content
+    response = rpc(
+               ^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.PermissionDenied: 403 Requests from referer <empty> are blocked. [reason: "API_KEY_HTTP_REFERRER_BLOCKED"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+metadata {
+  key: "httpReferrer"
+  value: "<empty>"
+}
+metadata {
+  key: "consumer"
+  value: "projects/1037589923731"
+}
+, locale: "en-US"
+message: "Requests from referer <empty> are blocked."
+]
+
+2026-02-20 21:04:29,775 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:04:30,152 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&phone_number=eq.web_3017810256&status=eq.active&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-20 21:04:31,265 - server - ERROR - Error in web_chat_audio_agent: 403 Requests from referer <empty> are blocked. [reason: "API_KEY_HTTP_REFERRER_BLOCKED"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+metadata {
+  key: "httpReferrer"
+  value: "<empty>"
+}
+metadata {
+  key: "consumer"
+  value: "projects/1037589923731"
+}
+, locale: "en-US"
+message: "Requests from referer <empty> are blocked."
+]
+2026-02-20 21:04:31,390 - server - ERROR - Traceback (most recent call last):
+  File "C:\Users\luis.sarabia\MenuPro\backend\server.py", line 3381, in web_chat_audio_agent
+    else:
+          
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\generativeai\generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\client.py", line 835, in generate_content
+    response = rpc(
+               ^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.PermissionDenied: 403 Requests from referer <empty> are blocked. [reason: "API_KEY_HTTP_REFERRER_BLOCKED"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+metadata {
+  key: "httpReferrer"
+  value: "<empty>"
+}
+metadata {
+  key: "consumer"
+  value: "projects/1037589923731"
+}
+, locale: "en-US"
+message: "Requests from referer <empty> are blocked."
+]
+
+2026-02-20 21:06:45,595 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-20 21:06:46,554 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:06:46,703 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:06:46,853 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:06:47,139 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:06:47,295 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:06:47,441 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:06:47,596 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:06:47,736 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:06:47,894 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:06:48,058 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:06:48,210 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:06:48,361 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-20 21:06:48,516 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:06:48,656 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:06:48,857 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:06:49,002 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-20 21:08:03,565 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:08:04,668 - server - ERROR - Error in web_chat_audio_agent: 403 Requests from referer <empty> are blocked. [reason: "API_KEY_HTTP_REFERRER_BLOCKED"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+metadata {
+  key: "httpReferrer"
+  value: "<empty>"
+}
+metadata {
+  key: "consumer"
+  value: "projects/1037589923731"
+}
+, locale: "en-US"
+message: "Requests from referer <empty> are blocked."
+]
+2026-02-20 21:08:04,706 - server - ERROR - Traceback (most recent call last):
+  File "C:\Users\luis.sarabia\MenuPro\backend\server.py", line 3343, in web_chat_audio_agent
+    transcription_response = model.generate_content([
+                             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\generativeai\generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\client.py", line 835, in generate_content
+    response = rpc(
+               ^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.PermissionDenied: 403 Requests from referer <empty> are blocked. [reason: "API_KEY_HTTP_REFERRER_BLOCKED"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+metadata {
+  key: "httpReferrer"
+  value: "<empty>"
+}
+metadata {
+  key: "consumer"
+  value: "projects/1037589923731"
+}
+, locale: "en-US"
+message: "Requests from referer <empty> are blocked."
+]
+
+2026-02-20 21:08:24,070 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:08:24,877 - server - ERROR - Error in web_chat_audio_agent: 403 Requests from referer <empty> are blocked. [reason: "API_KEY_HTTP_REFERRER_BLOCKED"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+metadata {
+  key: "httpReferrer"
+  value: "<empty>"
+}
+metadata {
+  key: "consumer"
+  value: "projects/1037589923731"
+}
+, locale: "en-US"
+message: "Requests from referer <empty> are blocked."
+]
+2026-02-20 21:08:24,884 - server - ERROR - Traceback (most recent call last):
+  File "C:\Users\luis.sarabia\MenuPro\backend\server.py", line 3343, in web_chat_audio_agent
+    transcription_response = model.generate_content([
+                             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\generativeai\generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\client.py", line 835, in generate_content
+    response = rpc(
+               ^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luis.sarabia\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.PermissionDenied: 403 Requests from referer <empty> are blocked. [reason: "API_KEY_HTTP_REFERRER_BLOCKED"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+metadata {
+  key: "httpReferrer"
+  value: "<empty>"
+}
+metadata {
+  key: "consumer"
+  value: "projects/1037589923731"
+}
+, locale: "en-US"
+message: "Requests from referer <empty> are blocked."
+]
+
+2026-02-20 21:11:43,915 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-20 21:17:08,306 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-20 21:17:11,634 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:17:17,150 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2026-02-20 21:17:17,168 - server - INFO - Whisper transcription for don-jediondo: ¡Qué gaseosa tienes!
+2026-02-20 21:17:17,453 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&phone_number=eq.web_3017810256&status=eq.active "HTTP/2 200 OK"
+2026-02-20 21:17:19,730 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes?select=nombre&telefono=eq.web_3017810256 "HTTP/2 200 OK"
+2026-02-20 21:17:19,890 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:17:20,047 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=id&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&phone_number=eq.web_3017810256&status=eq.active&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-20 21:17:20,243 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages "HTTP/2 201 Created"
+2026-02-20 21:17:20,397 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?id=eq.11d8155c-80ba-44f2-b757-7ce074a9e151 "HTTP/2 200 OK"
+2026-02-20 21:17:20,549 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages?select=direction%2Ccontent&conversation_id=eq.11d8155c-80ba-44f2-b757-7ce074a9e151&order=created_at.desc&limit=10 "HTTP/2 200 OK"
+2026-02-20 21:17:21,511 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-20 21:17:21,535 - whatsapp_agent - INFO - OpenAI response tool_calls: [ChatCompletionMessageFunctionToolCall(id='call_1UgWDlHJfjF2U0IvXTRk6aY5', function=Function(arguments='{"category":"Bebidas"}', name='get_products_by_category'), type='function')]
+2026-02-20 21:17:21,536 - whatsapp_agent - INFO - OpenAI sugirió ejecutar: get_products_by_category con {'category': 'Bebidas'}
+2026-02-20 21:17:21,687 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&category=eq.Bebidas&available=eq.True "HTTP/2 200 OK"
+2026-02-20 21:17:24,394 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-20 21:17:24,546 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages "HTTP/2 201 Created"
+2026-02-20 21:17:24,692 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?id=eq.11d8155c-80ba-44f2-b757-7ce074a9e151 "HTTP/2 200 OK"
+2026-02-20 21:20:36,696 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:20:36,904 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:20:37,150 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:20:37,294 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:20:37,537 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:20:37,709 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:20:37,855 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-20 21:20:38,010 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:20:38,163 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/etiquetas?select=nombre&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:20:38,312 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:20:38,460 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:20:38,627 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:20:38,769 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-20 21:20:38,921 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:20:39,075 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:20:39,232 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/etiquetas?select=nombre&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:20:39,593 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:20:39,765 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:20:40,000 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:20:40,155 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:20:40,303 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:20:40,454 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:20:40,597 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/etiquetas?select=nombre&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:20:40,748 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:20:40,888 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-20 21:20:41,045 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:20:41,185 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:20:41,329 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:20:41,495 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:20:41,645 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/etiquetas?select=nombre&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:20:41,788 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-20 21:20:41,938 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-20 21:20:47,897 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:20:48,069 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:26:52,670 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-20 21:33:20,299 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:33:20,626 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-20 21:35:13,079 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-20 21:37:50,352 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2026-02-20 21:37:52,288 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-20 21:38:16,476 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2026-02-20 21:38:19,583 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-20 21:53:01,311 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']

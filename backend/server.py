@@ -2373,21 +2373,42 @@ async def chat_audio_with_consultant(negocio_id: str, audio: UploadFile = File(.
         )
 
         audio_content = await audio.read()
-        api_key = os.environ.get("GOOGLE_GEMINI_API_KEY")
-        import google.generativeai as genai
-        genai.configure(api_key=api_key)
         
-        # Use Gemini for native audio
-        model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=system_instructions)
-        response = model.generate_content([
-            "Responde a este audio de tu cliente (el dueño del restaurante). Dale consejos estratégicos basados en los datos.",
-            {
-                "mime_type": audio.content_type,
-                "data": audio_content
-            }
-        ])
+        # Initialize OpenAI
+        from openai import OpenAI
+        openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
         
-        return {"reply": response.text, "provider": "gemini-1.5-flash-audio"}
+        # 1. Transcribe with Whisper
+        import tempfile
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp:
+            tmp.write(audio_content)
+            tmp_path = tmp.name
+            
+        try:
+            with open(tmp_path, "rb") as audio_file:
+                transcript = openai_client.audio.transcriptions.create(
+                    model="whisper-1", 
+                    file=audio_file
+                )
+            user_text = transcript.text.strip()
+        finally:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+        
+        if not user_text:
+             return {"reply": "No pude escuchar bien tu audio. ¿Podrías repetirlo?"}
+
+        # 2. Generate response with GPT
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_instructions},
+                {"role": "user", "content": user_text}
+            ]
+        )
+        
+        reply_text = response.choices[0].message.content
+        return {"reply": reply_text, "provider": "openai-whisper-gpt"}
 
     except Exception as e:
         logger.error(f"Error in consultant audio: {e}")
@@ -2494,31 +2515,67 @@ async def public_landing_audio(audio: UploadFile = File(...)):
     # System prompt for prospective business owners
     system_instructions = """
     Eres el Asistente Experto (VOCAL) de Menu.IA (MenuPro), un consultor para dueños de negocios en Colombia.
-    Tu objetivo es convencer a los dueños de negocios de las ventajas de Menu.IA.
-    Responde al audio del dueño del negocio de forma profesional y amable.
-    Diles que Menu.IA es la mejor opción para modernizar su restaurante.
-    Invítalos a registrarse gratis en menuia.co/register.
-    Responde en español con un tono motivador.
+    Tu objetivo es convencer a los dueños de negocios de las ventajas de Menu.IA y dar información exacta sobre los precios.
+
+    PLANES Y PRECIOS OFICIALES (Mensual):
+    - Básico: $39.900 COP/mes (100 pedidos y 500 mensajes).
+    - Pro: $79.900 COP/mes (400 pedidos y 1.500 mensajes - El más popular).
+    - Premium: $179.900 COP/mes (Pedidos ilimitados y 5.000 mensajes).
+
+    PACKS DE CAMPAÑAS WHATSAPP:
+    - Pack Inicial: 1.000 mensajes / $150.000 COP.
+    - Pack Crecimiento: 5.000 mensajes / $650.000 COP.
+    - Pack Masivo: 10.000 mensajes / $1.100.000 COP.
+
+    REGLAS:
+    - SI PREGUNTAN POR PRECIOS O PACKS, DI LOS PRECIOS EXACTOS ANTERIORES.
+    - Menciona características clave como Pedidos, Mensajes y Agente IA.
+    - No seas vago. Invítalos a registrarse en menuia.co/register.
+    - Responde en español con un tono profesional y motivador.
     """
     
     try:
         audio_content = await audio.read()
-        api_key = os.environ.get("GOOGLE_GEMINI_API_KEY")
-        import google.generativeai as genai
-        genai.configure(api_key=api_key)
         
-        model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=system_instructions)
-        response = model.generate_content([
-            "Responde a este audio de un dueño de restaurante interesado en Menu.IA.",
-            {
-                "mime_type": audio.content_type,
-                "data": audio_content
-            }
-        ])
+        # Initialize OpenAI Client
+        from openai import OpenAI
+        openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
         
-        return {"reply": response.text, "provider": "gemini-1.5-flash-landing-audio"}
+        # 1. Transcribe with Whisper
+        import tempfile
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp:
+            tmp.write(audio_content)
+            tmp_path = tmp.name
+            
+        try:
+            with open(tmp_path, "rb") as audio_file:
+                transcript = openai_client.audio.transcriptions.create(
+                    model="whisper-1", 
+                    file=audio_file
+                )
+            user_text = transcript.text.strip()
+        finally:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+        
+        if not user_text:
+             return {"reply": "No pude escuchar bien tu audio. ¿Podrías repetirlo?"}
+
+        # 2. Generate response with GPT
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_instructions},
+                {"role": "user", "content": user_text}
+            ]
+        )
+        
+        reply_text = response.choices[0].message.content
+        return {"reply": reply_text, "provider": "openai-whisper-gpt"}
+
     except Exception as e:
         logger.error(f"Error in landing audio: {e}")
+        logger.error(traceback.format_exc())
         return {"reply": "Lo siento, tuve un problema procesando tu mensaje de voz."}
 
 @api_router.post("/public/landing-chat")
@@ -2538,10 +2595,38 @@ async def public_landing_chat(request: LandingChatRequest):
         * Analítica Avanzada: Reportes de ventas, platos top y rendimiento.
         * Fidelización: Sistema de puntos ajustable por el negocio.
 
-    PLANES Y PRECIOS (Pesos Colombianos - COP):
-    - Starter (Gratis): Hasta 50 pedidos/mes, 1 usuario, Menú QR básico. Ideal para pequeños emprendimientos.
-    - Pro ($99.000 COP/mes): Pedidos ilimitados, 5 usuarios, Pantalla de cocina, WhatsApp básico, Analytics completo. Es nuestro plan más popular.
-    - Business ($249.000 COP/mes): Todo lo anterior, usuarios ilimitados, WhatsApp avanzado, acceso a API y soporte prioritario.
+    PLANES Y PRECIOS (Pesos Colombianos - COP / Mensual):
+    1. PLAN BÁSICO ($39.900 COP/mes):
+        - 100 Pedidos al mes.
+        - 500 Mensajes de Venta/Soporte.
+        - Menú Digital Interactivo y Código QR Personalizado.
+        - Pedidos en Mesa y Domicilio con Seguimiento.
+        - Agente IA WhatsApp (Versión Básica).
+
+    2. PLAN PRO ($79.900 COP/mes) - EL MÁS POPULAR:
+        - 400 Pedidos al mes.
+        - 1.500 Mensajes de Venta/Soporte.
+        - Todo lo del plan Básico.
+        - Agente IA WhatsApp (Versión Avanzada).
+        - Sistema de Fidelización por Puntos (Duntos).
+
+    3. PLAN PREMIUM ($179.900 COP/mes) - ELITE:
+        - Pedidos ILIMITADOS.
+        - 5.000 Mensajes de Venta/Soporte.
+        - Todo lo del plan Pro.
+        - Agente IA WhatsApp (Versión Personalizada).
+        - Sistema de Fidelización COMPLETO.
+
+    PACKS DE CAMPAÑAS WHATSAPP (Pago Único para marketing masivo):
+    - Pack Inicial: 1.000 mensajes por $150.000 COP.
+    - Pack Crecimiento: 5.000 mensajes por $650.000 COP (Mejor valor).
+    - Pack Masivo: 10.000 mensajes por $1.100.000 COP (Empresarial).
+
+    REGLAS CRÍTICAS DE RESPUESTA:
+    - SI PREGUNTAN POR PRECIOS: Enlista los 3 planes con sus precios y características principales.
+    - SI PREGUNTAN POR WHATSAPP/CAMPAÑAS: Explica los packs de mensajes adicionales.
+    - IMPORTANTE: No inventes precios. Usa solo los COP listados aquí.
+    - PROHIBIDO ser vago ("opciones flexibles"). Responde con DATOS EXACTOS.
 
     ASESORÍA PERSONALIZADA (AGENDAMIENTO):
     - Si un cliente está interesado en una demo, asesoría personalizada o quiere que alguien le enseñe a usar la plataforma, DEBES ofrecerle agendar una cita.
@@ -2558,45 +2643,27 @@ async def public_landing_chat(request: LandingChatRequest):
     7. Tus respuestas deben ser en español.
     """
 
-    chat_history = []
+    chat_history = [{"role": "system", "content": system_instructions}]
     for msg in request.history:
-         role = "user" if msg.get("role") == "user" else "model"
-         content = msg.get("content", "")
-         if content:
-             chat_history.append({"role": role, "parts": [content]})
+         chat_history.append({
+             "role": "user" if msg.get("role") == "user" else "assistant",
+             "content": msg.get("content", "")
+         })
+    chat_history.append({"role": "user", "content": request.message})
 
     try:
-        # Try Gemini 2.0 Flash first, then 1.5
-        models_to_try = ['gemini-2.0-flash', 'gemini-1.5-flash']
-        
-        for model_name in models_to_try:
-            try:
-                model = genai.GenerativeModel(model_name, system_instruction=system_instructions)
-                chat = model.start_chat(history=chat_history)
-                response = chat.send_message(request.message)
-                return {"reply": response.text, "provider": f"gemini-{model_name}"}
-            except Exception as e:
-                logger.warning(f"Landing chat: {model_name} falló: {e}")
-                continue
-                
-        # If Gemini fails, fallback to OpenAI
+        # Switch to OpenAI as primary since Gemini is blocked
         client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-        openai_history = [{"role": "system", "content": system_instructions}]
-        for msg in request.history:
-            openai_history.append({
-                "role": "user" if msg.get("role") == "user" else "assistant",
-                "content": msg.get("content", "")
-            })
-        openai_history.append({"role": "user", "content": request.message})
         
         res = client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=openai_history
+            messages=chat_history
         )
         return {"reply": res.choices[0].message.content, "provider": "openai"}
 
     except Exception as e:
         logger.error(f"Error en Landing Chat: {str(e)}")
+        logger.error(traceback.format_exc())
         return {"reply": "¡Hola! 👋 Soy el asistente de Menu.IA. Estoy experimentando mucha demanda, pero puedes registrarte gratis en nuestra página para conocer todos los beneficios."}
 
 
@@ -3318,7 +3385,7 @@ async def web_chat_agent(slug: str, data: WebChatRequest):
 async def web_chat_audio_agent(slug: str, audio: UploadFile = File(...), phone: str = Form(...)):
     """
     Endpoint for the Web Modal Chat using Audio.
-    Uses Gemini to process audio and returns a text response.
+    Transcribes audio with Gemini and processes with process_whatsapp_message.
     """
     try:
         # 1. Fetch Business
@@ -3329,15 +3396,48 @@ async def web_chat_audio_agent(slug: str, audio: UploadFile = File(...), phone: 
         business_data = biz_res.data[0]
         business_id = business_data['id']
         
-        # 2. Billing (Same as text chat)
+        # 2. Transcribe Audio with OpenAI Whisper
+        audio_content = await audio.read()
+        
+        # Initialize OpenAI Client
+        from openai import OpenAI
+        openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+        
+        # Save temp file for whisper
+        import tempfile
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp:
+            tmp.write(audio_content)
+            tmp_path = tmp.name
+        
+        try:
+            with open(tmp_path, "rb") as audio_file:
+                transcript = openai_client.audio.transcriptions.create(
+                    model="whisper-1", 
+                    file=audio_file
+                )
+            user_text = transcript.text.strip()
+            logger.info(f"Whisper transcription for {slug}: {user_text}")
+        except Exception as whisper_err:
+            logger.error(f"Whisper Error: {whisper_err}")
+            return {"response": "No pude procesar el audio correctamente. ¿Podrías intentar de nuevo o escribir tu mensaje?"}
+        finally:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+        
+        if not user_text:
+             return {"response": "No pude escuchar nada en tu audio. ¿Podrías intentarlo de nuevo?"}
+
+        # 3. Process with WhatsApp Agent logic (Full tools & History)
         phone_id = f"web_{phone.strip()}"
+        
+        # Billing check (handled inside web_chat_agent, but we replicate here or call it)
+        # For simplicity, we call process_whatsapp_message directly which saves to history.
+        # But we must ensure it's billed if it's the first message.
         conv_res = supabase.table('agent_conversations') \
             .select('*') \
             .eq('negocio_id', business_id) \
             .eq('phone_number', phone_id) \
             .eq('status', 'active') \
-            .order('last_message_at', desc=True) \
-            .limit(1) \
             .execute()
         
         conversation = conv_res.data[0] if conv_res.data else None
@@ -3359,45 +3459,15 @@ async def web_chat_audio_agent(slug: str, audio: UploadFile = File(...), phone: 
                     "is_billed": True
                 }).execute()
 
-        # 3. Process Audio with Gemini
-        audio_content = await audio.read()
+        # Call the core processor (OpenAI with tools)
+        from whatsapp_agent import process_whatsapp_message
+        response_text = await process_whatsapp_message(user_text, phone_id, business_id)
         
-        # Configure Gemini
-        import google.generativeai as genai
-        api_key = os.environ.get("GOOGLE_GEMINI_API_KEY")
-        genai.configure(api_key=api_key)
-        
-        # Get shared instructions for the model
-        from ai_base import get_shared_instructions
-        # Note: Providing defaults (0, "", "") for the required metrics in this context
-        instructions = get_shared_instructions(business_data['nombre'], 0.0, 0, "No disponible", f"web_{phone}")
-        
-        model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=instructions)
-        
-        # Simple audio processing (for more complex flows, integrate with process_whatsapp_message history)
-        # Note: process_whatsapp_message uses OpenAI, but here we use Gemini for native audio.
-        # Ideally, we should unify history, but for audio input we'll use Gemini.
-        
-        response = model.generate_content([
-            "Responde al audio del cliente. Si pide algo del menú o quiere ordenar, dile que por ahora solo puedes conversar por voz pero que puede escribir sus pedidos exactos.",
-            {
-                "mime_type": audio.content_type,
-                "data": audio_content
-            }
-        ])
-        
-        response_text = response.text
-        
-        # Save Outbound to history
-        conv_id = await get_or_create_conversation(business_id, phone_id)
-        if conv_id:
-            await save_message(conv_id, 'inbound', "🎤 Audio In")
-            await save_message(conv_id, 'outbound', response_text)
-
         return {"response": response_text}
+
     except Exception as e:
         logger.error(f"Error in web_chat_audio_agent: {e}")
         logger.error(traceback.format_exc())
-        return {"response": "Lo siento, tuve un problema procesando tu audio. ¿Podrías intentar de nuevo?"}
+        return {"response": "Lo siento, tuve un problema procesando tu audio. ¿Podrías intentarlo de nuevo o escribir tu mensaje?"}
 
 app.include_router(api_router)

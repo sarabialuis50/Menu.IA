@@ -77,11 +77,64 @@ export default function GeminiConsultantPage() {
     const mediaRecorderRef = useRef(null);
     const audioChunksRef = useRef([]);
 
-    const speak = (text) => {
+    const [speakingMsgId, setSpeakingMsgId] = useState(null);
+    const utteranceRef = useRef(null);
+
+    const speak = (text, msgId = null) => {
         if (!text) return;
-        const utterance = new SpeechSynthesisUtterance(String(text));
-        utterance.lang = 'es-ES';
-        window.speechSynthesis.speak(utterance);
+
+        if (speakingMsgId === msgId && msgId !== null) {
+            window.speechSynthesis.cancel();
+            setSpeakingMsgId(null);
+            return;
+        }
+
+        window.speechSynthesis.cancel();
+        setSpeakingMsgId(msgId);
+
+        // Sanitize text
+        const sanitizedText = text.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2700}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{2600}-\u{26FF}]|[\u{1F1E0}-\u{1F1FF}]/gu, '');
+
+        const chunks = sanitizedText.split(/([.!?]+|\n)/).reduce((acc, part, i) => {
+            if (i % 2 === 0) acc.push(part);
+            else acc[acc.length - 1] += part;
+            return acc;
+        }, []).filter(c => c.trim().length > 0);
+
+        let currentChunk = 0;
+
+        const speakNextChunk = () => {
+            if (currentChunk >= chunks.length) {
+                setSpeakingMsgId(null);
+                return;
+            }
+
+            const textToSpeak = chunks[currentChunk].trim();
+            if (!textToSpeak) {
+                currentChunk++;
+                speakNextChunk();
+                return;
+            }
+
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            utterance.lang = 'es-ES';
+            utterance.rate = 1.0;
+            utteranceRef.current = utterance; // Prevent GC
+
+            utterance.onend = () => {
+                currentChunk++;
+                setTimeout(speakNextChunk, 50);
+            };
+
+            utterance.onerror = (e) => {
+                console.error("Speech error:", e);
+                setSpeakingMsgId(null);
+            };
+
+            window.speechSynthesis.speak(utterance);
+        };
+
+        speakNextChunk();
     };
 
     const startRecording = async () => {
@@ -251,10 +304,13 @@ export default function GeminiConsultantPage() {
                                             </span>
                                             {msg.role === 'assistant' && !msg.isError && (
                                                 <button
-                                                    onClick={() => speak(msg.content)}
-                                                    className="absolute -right-3 -bottom-3 size-10 bg-[#22C55E] text-white rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(34,197,94,0.4)] hover:scale-110 active:scale-95 transition-all z-20 border-4 border-white"
+                                                    onClick={() => speak(msg.content, msg.id)}
+                                                    className={`absolute -right-3 -bottom-3 size-10 rounded-full flex items-center justify-center shadow-lg transition-all z-20 border-4 border-white ${speakingMsgId === msg.id
+                                                        ? 'bg-red-500 text-white animate-pulse scale-110'
+                                                        : 'bg-[#22C55E] text-white hover:scale-110'
+                                                        }`}
                                                 >
-                                                    <Play className="size-5 fill-white ml-0.5" />
+                                                    {speakingMsgId === msg.id ? <Square className="size-4 fill-white" /> : <Play className="size-4 fill-white ml-0.5" />}
                                                 </button>
                                             )}
                                         </div>
