@@ -357,7 +357,7 @@ def format_order_summary_wa(business_name: str, order: Order) -> str:
 # ============ HEALTH CHECK ============
 @api_router.get("/")
 async def root():
-    return {"message": "MenuPro API v1.0", "status": "running"}
+    return {"message": "Menu.IA API v1.0", "status": "running"}
 
 
 @api_router.get("/health")
@@ -2536,7 +2536,7 @@ class LandingChatRequest(BaseModel):
 async def public_landing_audio(audio: UploadFile = File(...)):
     # System prompt for prospective business owners
     system_instructions = """
-    Eres el Asistente Experto (VOCAL) de Menu.IA (MenuPro), un consultor para dueños de negocios en Colombia.
+    Eres el Asistente Experto (VOCAL) de Menu.IA, un consultor para dueños de negocios en Colombia.
     Tu objetivo es convencer a los dueños de negocios de las ventajas de Menu.IA y dar información exacta sobre los precios.
 
     PLANES Y PRECIOS OFICIALES (Mensual):
@@ -2619,7 +2619,7 @@ async def public_landing_audio(audio: UploadFile = File(...)):
 async def public_landing_chat(request: LandingChatRequest):
     # System prompt for prospective business owners
     system_instructions = """
-    Eres el Asistente Experto de Menu.IA (MenuPro), un consultor para dueños de negocios del sector gastronómico (restaurantes, cafés, bares, etc.) en Colombia.
+    Eres el Asistente Experto de Menu.IA, un consultor para dueños de negocios del sector gastronómico (restaurantes, cafés, bares, etc.) en Colombia.
     Tu objetivo es convencer a los dueños de negocios de las ventajas de usar nuestra plataforma y resolver sus dudas técnicas o comerciales de forma profesional, amable y persuasiva.
 
     INFORMACIÓN CLAVE DE MENU.IA:
