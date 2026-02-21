@@ -848,19 +848,19 @@ const MenuContent = () => {
         {/* Category Controls - Positioned below search */}
         {/* Category Controls - Sticky on Mobile */}
         {/* Category Controls */}
-        <div className="relative group mb-8 md:mb-12 transition-all px-2 md:px-0">
-          {/* Botones de navegación (Flechas) - Visibles en desktop o cuando hay scroll */}
+        <div className="relative mb-8 md:mb-12 transition-all">
+          {/* Botones de navegación (Flechas) */}
           <button
             onClick={() => scrollCategories('left')}
-            className="absolute -left-2 md:-left-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white shadow-lg border border-gray-100 text-[#618972] hover:text-[#22C55E] flex items-center justify-center transition-all active:scale-90 opacity-0 group-hover:opacity-100 hidden md:flex"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/90 backdrop-blur-md shadow-xl border border-gray-100 text-[#22C55E] flex items-center justify-center transition-all active:scale-90 hover:bg-[#4ADE80] hover:text-white hidden md:flex"
             aria-label="Anterior categoría"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-6 h-6" />
           </button>
 
           <div
             ref={categoriesRef}
-            className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory px-4 md:px-0"
+            className="flex items-center gap-3 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory px-4 md:px-12"
           >
             {categories.map((catObj, idx) => {
               const catName = typeof catObj === 'string' ? catObj : catObj.nombre;
@@ -875,9 +875,9 @@ const MenuContent = () => {
                   key={idx}
                   onClick={() => setActiveCategory(catName)}
                   className={`
-                    flex h-9 md:h-11 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 md:px-6 transition-all active:scale-95 font-bold text-[10px] md:text-xs uppercase tracking-wide snap-start
+                    flex h-10 md:h-12 shrink-0 items-center justify-center gap-x-2.5 rounded-full px-6 md:px-8 transition-all active:scale-95 font-bold text-[10px] md:text-sm uppercase tracking-wider snap-start
                     ${activeCategory === catName
-                      ? 'bg-[#4ADE80] text-[#111814] shadow-lg shadow-[#4ADE80]/30 scale-105 ring-2 ring-white z-10'
+                      ? 'bg-[#4ADE80] text-[#111814] shadow-xl shadow-[#4ADE80]/30 scale-105 ring-2 ring-white z-10'
                       : 'bg-white border border-gray-100 text-gray-500 hover:border-[#22C55E] hover:text-[#111814] shadow-sm'
                     }
                   `}
@@ -887,7 +887,7 @@ const MenuContent = () => {
                   ) : isLucide ? (
                     <IconComponent className="w-4 md:w-5 h-4 md:h-5" />
                   ) : catIcon ? (
-                    <span className="text-sm md:text-xl leading-none">{catIcon}</span>
+                    <span className="text-lg md:text-2xl leading-none">{catIcon}</span>
                   ) : (
                     <IconComponent className="w-4 md:w-5 h-4 md:h-5" />
                   )}
@@ -899,10 +899,10 @@ const MenuContent = () => {
 
           <button
             onClick={() => scrollCategories('right')}
-            className="absolute -right-2 md:-right-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white shadow-lg border border-gray-100 text-[#618972] hover:text-[#22C55E] flex items-center justify-center transition-all active:scale-90 opacity-0 group-hover:opacity-100 hidden md:flex"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/90 backdrop-blur-md shadow-xl border border-gray-100 text-[#22C55E] flex items-center justify-center transition-all active:scale-90 hover:bg-[#4ADE80] hover:text-white hidden md:flex"
             aria-label="Siguiente categoría"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-6 h-6" />
           </button>
         </div>
 
