@@ -474,3 +474,62 @@ class RedeemPointsResponse(BaseModel):
     mensaje: str
     descuento_aplicado: float
     puntos_restantes: int
+# Premium Menu Models
+class MenuItemBase(BaseModel):
+    negocio_id: str
+    name: str
+    description: Optional[str] = None
+    base_price: float
+    currency: str = "COP"
+    category: Optional[str] = None
+    image_url: Optional[str] = None
+    is_recommended: bool = False
+    precio_original: Optional[float] = None
+    oferta_porcentaje: Optional[int] = None
+    is_spicy: bool = False
+    is_vegan: bool = False
+    is_vegetarian: bool = False
+    is_gluten_free: bool = False
+    allergens: List[str] = []
+    prep_time_minutes: Optional[int] = None
+    available: bool = True
+    available_from: Optional[str] = None  # Using str for time compatibility
+    available_to: Optional[str] = None
+    notes: Optional[str] = None
+
+class MenuItemCreate(MenuItemBase):
+    pass
+
+class MenuItem(MenuItemBase):
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
+    id: str = Field(default_factory=generate_id)
+    created_at: datetime = Field(default_factory=get_utc_now)
+    updated_at: datetime = Field(default_factory=get_utc_now)
+
+class MenuItemOptionBase(BaseModel):
+    menu_item_id: str
+    type: str           # "size", "extra", "cooking", "side"
+    name: str
+    price_delta: float = 0.0
+    is_default: bool = False
+    max_per_order: Optional[int] = None
+
+class MenuItemOptionCreate(MenuItemOptionBase) :
+    pass
+
+class MenuItemOption(MenuItemOptionBase):
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
+    id: str = Field(default_factory=generate_id)
+    created_at: datetime = Field(default_factory=get_utc_now)
+
+class MenuItemTagBase(BaseModel):
+    menu_item_id: str
+    tag: str
+
+class MenuItemTagCreate(MenuItemTagBase):
+    pass
+
+class MenuItemTag(MenuItemTagBase):
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
+    id: str = Field(default_factory=generate_id)
+    created_at: datetime = Field(default_factory=get_utc_now)

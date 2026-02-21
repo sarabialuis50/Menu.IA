@@ -168,7 +168,7 @@ const WaiterAppContent = ({ employee, slug, onLogout }) => {
     try {
       const [businessRes, productsRes, tablesRes] = await Promise.all([
         axios.get(`/api/business/${slug}`),
-        axios.get(`/api/products/${slug}`),
+        axios.get(`/api/menu-items/${slug}`),
         axios.get(`/api/tables/${slug}`)
       ]);
 

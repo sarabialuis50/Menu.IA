@@ -51,11 +51,32 @@ const BusinessHomePageContent = () => {
 
             // Fetch products separately so failure doesn't block the whole page
             try {
-                const productsRes = await axios.get(`${API}/products/${slug}`);
+                const productsRes = await axios.get(`${API}/menu-items/${slug}`);
                 const productsData = Array.isArray(productsRes.data) ? productsRes.data : [];
-                setProducts(productsData); // Set all products
-                // Take first 4 available products as featured
-                setFeaturedProducts(productsData.filter(p => p.disponible).slice(0, 4));
+
+                // Map fields for consistency
+                const mappedProducts = productsData.map(p => ({
+                    ...p,
+                    nombre: p.name || p.nombre,
+                    descripcion: p.description || p.descripcion,
+                    precio: p.base_price || p.precio,
+                    imagen: p.image_url || p.imagen,
+                    categoria: p.category || p.categoria,
+                    disponible: p.available ?? p.disponible,
+                    destacado: p.is_recommended ?? p.destacado
+                }));
+
+                setProducts(mappedProducts);
+
+                // Priority for featured products:
+                // 1. Items marked as is_recommended
+                // 2. First items if none are marked
+                let featured = mappedProducts.filter(p => p.disponible && p.destacado);
+                if (featured.length === 0) {
+                    featured = mappedProducts.filter(p => p.disponible).slice(0, 4);
+                }
+                setFeaturedProducts(featured);
+
             } catch (prodErr) {
                 console.warn('Error fetching products:', prodErr);
                 setProducts([]);
@@ -63,7 +84,6 @@ const BusinessHomePageContent = () => {
             }
         } catch (error) {
             console.error('Error fetching business data:', error);
-            // toast.error('Error al cargar la información del negocio'); // Consider adding a toast here
         } finally {
             setLoading(false);
         }
@@ -279,13 +299,34 @@ const BusinessHomePageContent = () => {
                                                 alt={product.nombre}
                                                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                             />
-                                        </div>
-                                        <div className="p-4 pt-2">
-                                            <div className="flex justify-between items-start mb-1">
-                                                <h3 className="font-bold text-[#111814] text-lg leading-tight">{product.nombre}</h3>
-                                                <span className="text-[#22C55E] font-bold text-lg">{formatCurrency(product.precio)}</span>
+                                            {/* Badges */}
+                                            <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
+                                                {product.destacado && (
+                                                    <span className="bg-[#4ADE80] text-[#111814] text-[8px] font-black uppercase px-2 py-1 rounded-lg shadow-sm border border-white/20 ring-1 ring-white/10 flex items-center gap-1">
+                                                        <Star className="w-2 h-2 fill-white text-white" />
+                                                        Destacado
+                                                    </span>
+                                                )}
+                                                {product.oferta_porcentaje && (
+                                                    <span className="bg-[#ff4b4b] text-white text-[8px] font-black uppercase px-2 py-1 rounded-lg shadow-sm border border-white/20">
+                                                        -{product.oferta_porcentaje}%
+                                                    </span>
+                                                )}
                                             </div>
-                                            <p className="text-sm text-[#618972] line-clamp-2">
+                                        </div>
+                                        <div className="p-4 pt-3 flex flex-col gap-1">
+                                            <div className="flex justify-between items-start gap-2">
+                                                <h3 className="font-bold text-[#111814] text-base leading-tight flex-1 line-clamp-1">{product.nombre}</h3>
+                                                <div className="flex flex-col items-end">
+                                                    <span className="text-[#22C55E] font-black text-base">{formatCurrency(product.precio)}</span>
+                                                    {product.precio_original && product.precio_original > product.precio && (
+                                                        <span className="text-[10px] text-gray-400 line-through font-bold opacity-70">
+                                                            {formatCurrency(product.precio_original)}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <p className="text-[11px] text-[#618972] line-clamp-2 leading-snug">
                                                 {product.descripcion || "Platillo delicioso preparado con ingredientes frescos de la mejor calidad."}
                                             </p>
                                         </div>

@@ -52,11 +52,11 @@ export default function AllProductsPage() {
         try {
             setLoading(true);
             const [productsRes, categoriesRes] = await Promise.all([
-                api().get(`/products/${slug}`),
+                api().get(`/menu-items/${slug}`),
                 api().get(`/categories/${slug}`).catch(() => ({ data: [] }))
             ]);
             setProducts(productsRes.data);
-            setCategories(categoriesRes.data);
+            setCategories(categoriesRes.data.map(c => typeof c === 'string' ? c : c.nombre));
         } catch (error) {
             console.error("Error fetching products:", error);
             toast.error("Error al cargar el catálogo");
@@ -68,8 +68,8 @@ export default function AllProductsPage() {
     const toggleAvailability = async (productId, currentStatus) => {
         try {
             const newStatus = !currentStatus;
-            await api().put(`/products/${slug}/${productId}`, { disponible: newStatus });
-            setProducts(prev => prev.map(p => p.id === productId ? { ...p, disponible: newStatus } : p));
+            await api().put(`/menu-items/${slug}/${productId}`, { available: newStatus });
+            setProducts(prev => prev.map(p => p.id === productId ? { ...p, available: newStatus } : p));
             toast.success(newStatus ? 'Producto disponible' : 'Producto agotado');
         } catch (error) {
             toast.error("Error al actualizar estado");
@@ -79,7 +79,7 @@ export default function AllProductsPage() {
     const handleDelete = async (productId) => {
         if (!window.confirm('¿Estás seguro de eliminar este producto?')) return;
         try {
-            await api().delete(`/products/${slug}/${productId}`);
+            await api().delete(`/menu-items/${slug}/${productId}`);
             setProducts(prev => prev.filter(p => p.id !== productId));
             toast.success('Producto eliminado');
         } catch (error) {
@@ -88,11 +88,16 @@ export default function AllProductsPage() {
     };
 
     const filteredProducts = products.filter(product => {
-        const matchesSearch = product.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (product.descripcion && product.descripcion.toLowerCase().includes(searchTerm.toLowerCase()));
-        const matchesCategory = filterCategory === 'TODAS' || product.categoria === filterCategory;
+        const name = product.name || product.nombre || '';
+        const desc = product.description || product.descripcion || '';
+        const cat = product.category || product.categoria || '';
+        const available = product.available ?? product.disponible ?? true;
+
+        const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            desc.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = filterCategory === 'TODAS' || cat === filterCategory;
         const matchesStatus = filterStatus === 'TODOS' ||
-            (filterStatus === 'DISPONIBLE' ? product.disponible : !product.disponible);
+            (filterStatus === 'DISPONIBLE' ? available : !available);
         return matchesSearch && matchesCategory && matchesStatus;
     });
 
@@ -226,31 +231,38 @@ export default function AllProductsPage() {
                                         <td className="px-8 py-5">
                                             <div className="flex items-center gap-4">
                                                 <div className="size-14 rounded-2xl overflow-hidden border-2 border-white shadow-sm bg-gray-50">
-                                                    <img src={p.imagen || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80'} className="w-full h-full object-cover group-hover:scale-110 transition-all duration-500" alt={p.nombre} />
+                                                    <img src={p.image_url || p.imagen || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80'} className="w-full h-full object-cover group-hover:scale-110 transition-all duration-500" alt={p.name || p.nombre} />
                                                 </div>
                                                 <div>
-                                                    <p className="font-black text-sm text-gray-900 leading-none mb-1 group-hover:text-[#22C55E] transition-colors">{p.nombre}</p>
-                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter truncate max-w-[200px]">{p.descripcion || 'Sin descripción'}</p>
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <p className="font-black text-sm text-gray-900 leading-none group-hover:text-[#22C55E] transition-colors">{p.name || p.nombre}</p>
+                                                        {(p.is_recommended || p.destacado) && <Badge className="bg-yellow-400 text-white border-none py-0 px-1.5 h-4 text-[7px] font-black uppercase">Destacado</Badge>}
+                                                        {p.oferta_porcentaje && <Badge className="bg-red-400 text-white border-none py-0 px-1.5 h-4 text-[7px] font-black uppercase">-{p.oferta_porcentaje}%</Badge>}
+                                                    </div>
+                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter truncate max-w-[200px]">{p.description || p.descripcion || 'Sin descripción'}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-5">
                                             <Badge variant="outline" className="rounded-xl px-3 py-1 text-[9px] font-black border-2 border-gray-100 text-[#618972] uppercase tracking-tighter bg-gray-50/50">
-                                                {p.categoria}
+                                                {p.category || p.categoria}
                                             </Badge>
                                         </td>
                                         <td className="px-6 py-5">
-                                            <p className="text-sm font-black text-gray-900 tracking-tight">{formatCurrency(p.precio)}</p>
+                                            <div className="flex flex-col">
+                                                <p className="text-sm font-black text-gray-900 tracking-tight">{formatCurrency(p.base_price || p.precio)}</p>
+                                                {(p.precio_original || p.oferta_porcentaje) && <p className="text-[10px] text-gray-400 line-through font-bold">{formatCurrency(p.precio_original || p.precio / (1 - (p.oferta_porcentaje / 100)))}</p>}
+                                            </div>
                                         </td>
                                         <td className="px-6 py-5">
                                             <div className="flex items-center gap-3">
-                                                <span className={`text-[9px] font-black uppercase tracking-widest ${p.disponible ? 'text-[#22C55E]' : 'text-red-400'}`}>
-                                                    {p.disponible ? 'Disponible' : 'Agotado'}
+                                                <span className={`text-[9px] font-black uppercase tracking-widest ${(p.available ?? p.disponible) ? 'text-[#22C55E]' : 'text-red-400'}`}>
+                                                    {(p.available ?? p.disponible) ? 'Disponible' : 'Agotado'}
                                                 </span>
                                                 <Switch
-                                                    checked={p.disponible}
-                                                    onCheckedChange={() => toggleAvailability(p.id, p.disponible)}
-                                                    className="data-[state=checked]:bg-[#4ADE80]"
+                                                    checked={p.available ?? p.disponible}
+                                                    onCheckedChange={() => toggleAvailability(p.id, p.available ?? p.disponible)}
+                                                    className="data-[state=checked]:bg-[#22C55E]"
                                                 />
                                             </div>
                                         </td>

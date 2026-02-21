@@ -201,7 +201,7 @@ const MenuContent = () => {
     try {
       const [businessRes, productsRes, loyaltyRes] = await Promise.all([
         axios.get(`${API}/business/${slug}`),
-        axios.get(`${API}/products/${slug}`),
+        axios.get(`${API}/menu-items/${slug}`),
         axios.get(`${API}/loyalty/${slug}/config`).catch(() => ({ data: { activo: false } }))
       ]);
 
@@ -241,9 +241,20 @@ const MenuContent = () => {
         }
       }
 
-      // We keep filtering by disponible as it's a public menu
+      // Map and filter available products
       const productsData = Array.isArray(productsRes.data) ? productsRes.data : [];
-      const availableProducts = productsData.filter(p => p.disponible);
+      const mappedProducts = productsData.map(p => ({
+        ...p,
+        nombre: p.name || p.nombre,
+        descripcion: p.description || p.descripcion,
+        precio: p.base_price || p.precio,
+        imagen: p.image_url || p.imagen,
+        categoria: p.category || p.categoria,
+        disponible: p.available ?? p.disponible,
+        destacado: p.is_recommended ?? p.destacado
+      }));
+
+      const availableProducts = mappedProducts.filter(p => p.disponible);
       setProducts(availableProducts);
       setShuffledAllProducts([...availableProducts].sort(() => Math.random() - 0.5));
       setLoyaltyConfig(loyaltyRes.data);
@@ -539,10 +550,10 @@ const MenuContent = () => {
 
         {/* Badge Etiqueta - Fixed position */}
         <div className="absolute top-2 left-2 z-20">
-          {product.etiqueta && (
+          {(product.etiqueta || product.destacado) && (
             <div className="bg-[#4ADE80] text-[#111814] text-[7px] md:text-[8px] font-black uppercase tracking-widest px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg shadow-md border border-white/10 flex items-center gap-1 ring-1 ring-white/20">
               <div className="size-1 rounded-full bg-white animate-pulse" />
-              {product.etiqueta}
+              {product.etiqueta || 'DESTACADO'}
             </div>
           )}
         </div>
@@ -566,8 +577,14 @@ const MenuContent = () => {
 
       <div className="p-3 md:p-6 flex flex-col flex-1 min-w-0">
         <div className="flex items-center justify-between mb-1 md:mb-4">
-          <div className="inline-flex items-center px-2 py-0.5 md:px-3 md:py-1.5 rounded-full bg-[#4ADE80]/10 text-[8px] md:text-[10px] font-black text-[#22C55E] uppercase tracking-wider">
-            {product.categoria}
+          <div className="flex flex-wrap items-center gap-1.5">
+            <div className="inline-flex items-center px-2 py-0.5 md:px-3 md:py-1.5 rounded-full bg-[#4ADE80]/10 text-[8px] md:text-[10px] font-black text-[#22C55E] uppercase tracking-wider">
+              {product.categoria}
+            </div>
+            {product.is_vegan && <div title="Vegano" className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-green-50 text-green-600 text-[8px] md:text-[10px] font-bold border border-green-100">🌱 <span className="hidden md:inline">Vegano</span></div>}
+            {product.is_vegetarian && <div title="Vegetariano" className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-yellow-50 text-yellow-600 text-[8px] md:text-[10px] font-bold border border-yellow-100">🥗 <span className="hidden md:inline">Vege</span></div>}
+            {product.is_gluten_free && <div title="Sin Gluten" className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-orange-50 text-orange-600 text-[8px] md:text-[10px] font-bold border border-orange-100">🌾 <span className="hidden md:inline">Sin Gluten</span></div>}
+            {product.is_spicy && <div title="Picante" className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-red-50 text-red-600 text-[8px] md:text-[10px] font-bold border border-red-100">🌶️ <span className="hidden md:inline">Picante</span></div>}
           </div>
 
           {/* Discount/Offer Badge in place of Rating */}
@@ -1554,8 +1571,15 @@ const MenuContent = () => {
                     {/* Basic Info */}
                     <div className="space-y-4">
                       <div>
-                        <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#4ADE80]/10 text-[10px] font-black text-[#22C55E] uppercase tracking-wider mb-2">
-                          {selectedProduct.categoria}
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#4ADE80]/10 text-[10px] font-black text-[#22C55E] uppercase tracking-wider">
+                            {selectedProduct.categoria}
+                          </div>
+                          {selectedProduct.is_vegan && <div title="Vegano" className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-green-50 text-green-600 text-[11px] font-black border border-green-100 uppercase tracking-widest">🌱 Vegano</div>}
+                          {selectedProduct.is_vegetarian && <div title="Vegetariano" className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-yellow-50 text-yellow-600 text-[11px] font-black border border-yellow-100 uppercase tracking-widest">🥗 Vegetariano</div>}
+                          {selectedProduct.is_gluten_free && <div title="Sin Gluten" className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-orange-50 text-orange-600 text-[11px] font-black border border-orange-100 uppercase tracking-widest">🌾 Sin Gluten</div>}
+                          {selectedProduct.is_spicy && <div title="Picante" className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-red-50 text-red-600 text-[11px] font-black border border-red-100 uppercase tracking-widest">🌶️ Picante</div>}
+                          {selectedProduct.prep_time_minutes > 0 && <div title="Tiempo de Preparación" className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-blue-50 text-blue-600 text-[11px] font-black border border-blue-100 uppercase tracking-widest">⏱️ {selectedProduct.prep_time_minutes} min</div>}
                         </div>
                         <h2 className="text-3xl md:text-4xl font-black text-[#111814] tracking-tighter leading-tight">
                           {selectedProduct.nombre}

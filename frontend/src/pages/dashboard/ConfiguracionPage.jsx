@@ -141,9 +141,9 @@ const getButtonStyle = (hasPendingChanges, size = "large") => {
 
 const getModalButtonStyle = (hasPendingChanges) => {
     if (hasPendingChanges) {
-        return "flex-1 h-12 rounded-2xl bg-[#4ADE80] text-[#111814] font-black uppercase text-[10px] tracking-widest hover:bg-[#4ADE80] shadow-lg shadow-[#4ADE80]/10 transition-all active:scale-95";
+        return "flex-1 h-12 rounded-2xl bg-[#4ADE80] text-[#111814] border border-[#4ADE80]/50 font-black uppercase text-[10px] tracking-widest hover:bg-[#4ADE80] shadow-lg shadow-[#4ADE80]/10 transition-all active:scale-95";
     }
-    return "flex-1 h-12 rounded-2xl bg-gray-100 text-gray-400 font-black uppercase text-[10px] tracking-widest cursor-not-allowed transition-all";
+    return "flex-1 h-12 rounded-2xl bg-gray-50 text-gray-400 border border-gray-100 font-black uppercase text-[10px] tracking-widest cursor-not-allowed transition-all";
 };
 
 const formatPrice = (val) => {
@@ -229,7 +229,13 @@ const ConfiguracionPage = () => {
         disponible: true,
         destacado: false,
         oferta_porcentaje: '',
-        modificadores: []
+        modificadores: [],
+        is_vegan: false,
+        is_vegetarian: false,
+        is_gluten_free: false,
+        is_spicy: false,
+        prep_time_minutes: '',
+        allergens: []
     });
     const [originalProductForm, setOriginalProductForm] = useState(null);
 
@@ -338,14 +344,27 @@ const ConfiguracionPage = () => {
     const fetchCatalog = async () => {
         try {
             const [productsRes, categoriesRes, tagsRes] = await Promise.all([
-                api().get(`/products/${slug}`),
+                api().get(`/menu-items/${slug}`),
                 api().get(`/categories/${slug}`).catch(() => ({ data: defaultCategories })),
                 api().get(`/tags/${slug}`).catch(() => ({ data: [] }))
             ]);
-            setProducts(productsRes.data);
+
+            // Map new structure to existing UI structure if names differ
+            const mappedProducts = productsRes.data.map(p => ({
+                ...p,
+                nombre: p.name || p.nombre,
+                descripcion: p.description || p.descripcion,
+                precio: p.base_price || p.precio,
+                imagen: p.image_url || p.imagen,
+                categoria: p.category || p.categoria,
+                disponible: p.available ?? p.disponible,
+                destacado: p.is_recommended ?? p.destacado
+            }));
+
+            setProducts(mappedProducts);
             setCategories(categoriesRes.data.length > 0 ? categoriesRes.data : defaultCategories);
             setTags(tagsRes.data);
-            return { products: productsRes.data, categories: categoriesRes.data, tags: tagsRes.data };
+            return { products: mappedProducts, categories: categoriesRes.data, tags: tagsRes.data };
         } catch (error) {
             console.error('Error loading catalog:', error);
             toast.error('Error al actualizar catálogo');
@@ -532,7 +551,13 @@ const ConfiguracionPage = () => {
             disponible: true,
             destacado: false,
             oferta_porcentaje: '',
-            modificadores: []
+            modificadores: [],
+            is_vegan: false,
+            is_vegetarian: false,
+            is_gluten_free: false,
+            is_spicy: false,
+            prep_time_minutes: '',
+            allergens: []
         };
         setEditingProduct(null);
         setProductForm(initial);
@@ -552,7 +577,13 @@ const ConfiguracionPage = () => {
             disponible: product.disponible,
             destacado: product.destacado || false,
             oferta_porcentaje: product.oferta_porcentaje?.toString() || '',
-            modificadores: product.modificadores || []
+            modificadores: product.modificadores || [],
+            is_vegan: product.is_vegan || false,
+            is_vegetarian: product.is_vegetarian || false,
+            is_gluten_free: product.is_gluten_free || false,
+            is_spicy: product.is_spicy || false,
+            prep_time_minutes: product.prep_time_minutes?.toString() || '',
+            allergens: product.allergens || []
         };
         setEditingProduct(product);
         setProductForm(initial);
@@ -577,19 +608,42 @@ const ConfiguracionPage = () => {
                 }));
 
             const payload = {
-                ...productForm,
-                precio: finalPrice,
+                name: productForm.nombre,
+                description: productForm.descripcion,
+                base_price: finalPrice,
                 precio_original: discount > 0 ? basePrice : null,
                 oferta_porcentaje: discount > 0 ? discount : null,
-                etiqueta: productForm.etiqueta === 'none' ? null : productForm.etiqueta,
-                modificadores: cleanModificadores
+                category: productForm.categoria,
+                image_url: productForm.imagen,
+                available: productForm.disponible,
+                is_recommended: productForm.destacado,
+            };
+
+            // If the backend expects the exact MenuItem model
+            const menuItemPayload = {
+                name: payload.name,
+                description: payload.description,
+                base_price: payload.base_price,
+                precio_original: payload.precio_original,
+                oferta_porcentaje: payload.oferta_porcentaje,
+                category: payload.category,
+                image_url: payload.image_url,
+                available: payload.available,
+                is_recommended: payload.is_recommended,
+                currency: 'COP',
+                is_vegan: productForm.is_vegan,
+                is_vegetarian: productForm.is_vegetarian,
+                is_gluten_free: productForm.is_gluten_free,
+                is_spicy: productForm.is_spicy,
+                prep_time_minutes: productForm.prep_time_minutes ? parseInt(productForm.prep_time_minutes) : null,
+                allergens: productForm.allergens
             };
 
             if (editingProduct) {
-                await api().put(`/products/${slug}/${editingProduct.id}`, payload);
+                await api().put(`/menu-items/${slug}/${editingProduct.id}`, menuItemPayload);
                 toast.success('Producto actualizado');
             } else {
-                await api().post(`/products/${slug}`, payload);
+                await api().post(`/menu-items/${slug}`, menuItemPayload);
                 toast.success('Producto creado');
             }
             setIsProductModalOpen(false);
@@ -2276,7 +2330,7 @@ const ConfiguracionPage = () => {
 
                 {/* PRODUCT MODAL */}
                 <Dialog open={isProductModalOpen} onOpenChange={setIsProductModalOpen}>
-                    <DialogContent className="rounded-[2.5rem] max-w-2xl p-0 overflow-hidden border-none" aria-describedby="product-modal-description">
+                    <DialogContent className="rounded-[2.5rem] max-w-2xl p-0 overflow-hidden border-2 border-[#4ADE80]/20 shadow-2xl shadow-[#4ADE80]/10" aria-describedby="product-modal-description">
                         <DialogHeader className="p-10 pb-6 bg-gray-50 shrink-0">
                             <DialogTitle className="text-3xl font-black tracking-tighter">
                                 {editingProduct ? 'Editar Producto' : 'Nuevo Producto'}
@@ -2314,15 +2368,88 @@ const ConfiguracionPage = () => {
                                         />
                                     </div>
                                 </div>
+                                <div className="space-y-4 p-6 rounded-[2rem] border border-[#4ADE80]/20 bg-white/50">
+                                    <div className="space-y-2">
+                                        <Label className="font-bold text-[#111814]">Descripción / Ingredientes</Label>
+                                        <Textarea
+                                            value={productForm.descripcion}
+                                            onChange={e => setProductForm({ ...productForm, descripcion: e.target.value })}
+                                            className="rounded-2xl bg-white border-[#4ADE80]/10 focus:border-[#4ADE80]/30 min-h-[100px] text-sm"
+                                            placeholder="Detalla lo que incluye el plato, alérgenos o ingredientes especiales..."
+                                        />
+                                    </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <Label className="font-bold text-[#111814]">Imagen del Producto</Label>
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="file"
+                                                    id="product-image-upload"
+                                                    className="hidden"
+                                                    accept="image/*"
+                                                    onChange={handleImageUpload}
+                                                    disabled={uploadingProductImage}
+                                                />
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="h-8 rounded-xl border-[#4ADE80]/30 text-[#22C55E] hover:bg-[#4ADE80]/5 font-bold gap-2 text-[10px]"
+                                                    onClick={() => document.getElementById('product-image-upload').click()}
+                                                    disabled={uploadingProductImage}
+                                                >
+                                                    {uploadingProductImage ? (
+                                                        <Loader2 className="w-3 h-3 animate-spin" />
+                                                    ) : (
+                                                        <Upload className="w-3 h-3" />
+                                                    )}
+                                                    {uploadingProductImage ? 'SUBIENDO...' : 'SUBIR IMAGEN'}
+                                                </Button>
+
+                                                {productForm.imagen && (
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => setProductForm({ ...productForm, imagen: '' })}
+                                                        className="h-8 rounded-xl border-red-100 text-red-500 hover:bg-red-50 font-bold gap-2 text-[10px]"
+                                                    >
+                                                        <Trash2 className="w-3 h-3" />
+                                                        ELIMINAR
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-4 items-center">
+                                            <div className="flex-1 relative">
+                                                <Input
+                                                    value={productForm.imagen}
+                                                    onChange={e => setProductForm({ ...productForm, imagen: e.target.value })}
+                                                    className="h-12 rounded-2xl bg-white border-[#4ADE80]/10 focus:border-[#4ADE80]/30 text-xs font-mono pr-10"
+                                                    placeholder="URL de la imagen o sube una..."
+                                                />
+                                                <ImageIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                                            </div>
+                                            <div className="size-12 rounded-xl border border-[#4ADE80]/20 overflow-hidden bg-white shrink-0 shadow-sm flex items-center justify-center">
+                                                {productForm.imagen ? (
+                                                    <img src={productForm.imagen} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <ImageIcon className="w-5 h-5 text-gray-200" />
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-[2.5rem] border border-[#4ADE80]/10 bg-gray-50/30">
                                     <div className="space-y-2">
                                         <Label className="font-bold">Categoría</Label>
                                         <Select
                                             value={productForm.categoria}
                                             onValueChange={val => setProductForm({ ...productForm, categoria: val })}
                                         >
-                                            <SelectTrigger className="h-12 rounded-2xl bg-gray-50 border-gray-100">
+                                            <SelectTrigger className="h-12 rounded-2xl bg-white border-[#4ADE80]/10">
                                                 <SelectValue placeholder="Seleccionar sección..." />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -2340,7 +2467,7 @@ const ConfiguracionPage = () => {
                                             value={productForm.etiqueta}
                                             onValueChange={val => setProductForm({ ...productForm, etiqueta: val })}
                                         >
-                                            <SelectTrigger className="h-12 rounded-2xl bg-gray-100/50 border-gray-100 border-dashed">
+                                            <SelectTrigger className="h-12 rounded-2xl bg-white border-[#4ADE80]/10 border-dashed">
                                                 <SelectValue placeholder="Sin etiqueta" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -2353,15 +2480,55 @@ const ConfiguracionPage = () => {
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <Label className="font-bold">Descripción / Ingredientes</Label>
-                                    <Textarea
-                                        value={productForm.descripcion}
-                                        onChange={e => setProductForm({ ...productForm, descripcion: e.target.value })}
-                                        className="rounded-2xl bg-gray-50 border-gray-100 min-h-[100px]"
-                                        placeholder="Detalla lo que incluye el plato..."
-                                    />
+
+                                {/* Divider or Section Break */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end p-6 rounded-[2.5rem] border border-[#4ADE80]/10 bg-white/50">
+                                    <div className="space-y-2">
+                                        <Label className="font-bold">Tiempo de Prep. (Minutos)</Label>
+                                        <Input
+                                            type="number"
+                                            value={productForm.prep_time_minutes}
+                                            onChange={e => setProductForm({ ...productForm, prep_time_minutes: e.target.value })}
+                                            className="h-12 w-full rounded-2xl bg-white border-[#4ADE80]/10 focus:border-[#4ADE80]/30"
+                                            placeholder="Ej: 15"
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2 h-12 items-center">
+                                        <div className="flex items-center gap-2">
+                                            <Switch
+                                                checked={productForm.is_vegan}
+                                                onCheckedChange={val => setProductForm({ ...productForm, is_vegan: val })}
+                                                className="data-[state=checked]:bg-[#22C55E] scale-75"
+                                            />
+                                            <Label className="text-[10px] font-bold text-gray-600">Vegano 🌱</Label>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Switch
+                                                checked={productForm.is_vegetarian}
+                                                onCheckedChange={val => setProductForm({ ...productForm, is_vegetarian: val })}
+                                                className="data-[state=checked]:bg-yellow-500 scale-75"
+                                            />
+                                            <Label className="text-[10px] font-bold text-gray-600">Vegetariano 🥗</Label>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Switch
+                                                checked={productForm.is_gluten_free}
+                                                onCheckedChange={val => setProductForm({ ...productForm, is_gluten_free: val })}
+                                                className="data-[state=checked]:bg-blue-400 scale-75"
+                                            />
+                                            <Label className="text-[10px] font-bold text-gray-600">Sin Gluten 🌾</Label>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Switch
+                                                checked={productForm.is_spicy}
+                                                onCheckedChange={val => setProductForm({ ...productForm, is_spicy: val })}
+                                                className="data-[state=checked]:bg-red-500 scale-75"
+                                            />
+                                            <Label className="text-[10px] font-bold text-gray-600">Picante 🌶️</Label>
+                                        </div>
+                                    </div>
                                 </div>
+
 
                                 {/* MODIFICADORES SECTION */}
                                 <div className="space-y-4">
@@ -2402,7 +2569,7 @@ const ConfiguracionPage = () => {
 
                                     <div className="space-y-6">
                                         {(productForm.modificadores || []).map((group, gIdx) => (
-                                            <div key={group.id || gIdx} className="bg-white border border-gray-100 rounded-[2rem] p-6 shadow-sm relative group/card">
+                                            <div key={group.id || gIdx} className="bg-white border-2 border-[#4ADE80]/10 rounded-[2rem] p-6 shadow-sm relative group/card">
                                                 <button
                                                     type="button"
                                                     onClick={() => {
@@ -2525,78 +2692,17 @@ const ConfiguracionPage = () => {
                                         ))}
 
                                         {(!productForm.modificadores || productForm.modificadores.length === 0) && (
-                                            <div className="py-8 flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-[2rem] gap-2 grayscale opacity-40">
-                                                <ListChecks className="w-8 h-8 text-gray-300" />
-                                                <p className="text-[10px] font-black uppercase text-gray-400">Sin modificadores asignados</p>
+                                            <div className="py-8 flex flex-col items-center justify-center border-2 border-dashed border-[#4ADE80]/20 rounded-[2rem] gap-2 grayscale opacity-40">
+                                                <ListChecks className="w-8 h-8 text-[#22C55E]" />
+                                                <p className="text-[10px] font-black uppercase text-[#618972]">Sin modificadores asignados</p>
                                             </div>
                                         )}
                                     </div>
                                 </div>
 
-                                <div className="space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <Label className="font-bold">Imagen del Producto</Label>
-                                        <div className="flex items-center gap-2">
-                                            <input
-                                                type="file"
-                                                id="product-image-upload"
-                                                className="hidden"
-                                                accept="image/*"
-                                                onChange={handleImageUpload}
-                                                disabled={uploadingProductImage}
-                                            />
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                size="sm"
-                                                className="h-8 rounded-xl border-[#4ADE80]/20 text-[#22C55E] hover:bg-[#4ADE80]/5 font-bold gap-2 text-[10px]"
-                                                onClick={() => document.getElementById('product-image-upload').click()}
-                                                disabled={uploadingProductImage}
-                                            >
-                                                {uploadingProductImage ? (
-                                                    <Loader2 className="w-3 h-3 animate-spin" />
-                                                ) : (
-                                                    <Upload className="w-3 h-3" />
-                                                )}
-                                                {uploadingProductImage ? 'SUBIENDO...' : 'SUBIR'}
-                                            </Button>
 
-                                            {productForm.imagen && (
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => setProductForm({ ...productForm, imagen: '' })}
-                                                    className="h-8 rounded-xl border-red-100 text-red-500 hover:bg-red-50 font-bold gap-2 text-[10px]"
-                                                >
-                                                    <Trash2 className="w-3 h-3" />
-                                                    ELIMINAR
-                                                </Button>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-4 items-center">
-                                        <div className="flex-1 relative">
-                                            <Input
-                                                value={productForm.imagen}
-                                                onChange={e => setProductForm({ ...productForm, imagen: e.target.value })}
-                                                className="h-12 rounded-2xl bg-gray-50 border-gray-100 text-xs font-mono pr-10"
-                                                placeholder="https://images.unsplash... o sube una imagen"
-                                            />
-                                            <ImageIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                                        </div>
-                                        <div className="size-12 rounded-xl border border-gray-100 overflow-hidden bg-gray-50 shrink-0 shadow-sm flex items-center justify-center">
-                                            {productForm.imagen ? (
-                                                <img src={productForm.imagen} className="w-full h-full object-cover" />
-                                            ) : (
-                                                <ImageIcon className="w-5 h-5 text-gray-200" />
-                                            )}
-                                        </div>
-                                    </div>
-                                    <p className="text-[10px] text-[#618972] italic px-1">Sugerencia: Usa imágenes de 800x600px para mejor rendimiento.</p>
-                                </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-2">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-[2.5rem] border border-[#4ADE80]/20 bg-[#4ADE80]/5">
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-3">
                                             <Switch
@@ -2607,7 +2713,7 @@ const ConfiguracionPage = () => {
                                                 })}
                                                 className="data-[state=checked]:bg-[#4ADE80]"
                                             />
-                                            <Label className="font-bold cursor-pointer">Producto en Oferta</Label>
+                                            <Label className="font-bold cursor-pointer text-[#111814]">Producto en Oferta</Label>
                                         </div>
 
                                         <AnimatePresence>
@@ -2625,7 +2731,7 @@ const ConfiguracionPage = () => {
                                                                 type="number"
                                                                 value={productForm.oferta_porcentaje}
                                                                 onChange={e => setProductForm({ ...productForm, oferta_porcentaje: e.target.value })}
-                                                                className="h-12 rounded-2xl bg-[#4ADE80]/5 border-[#4ADE80]/20 pr-10 font-bold text-[#22C55E]"
+                                                                className="h-12 rounded-2xl bg-white border-[#4ADE80]/30 pr-10 font-bold text-[#22C55E]"
                                                                 placeholder="Ej: 15"
                                                                 min="1"
                                                                 max="100"
@@ -2646,31 +2752,31 @@ const ConfiguracionPage = () => {
                                                 onCheckedChange={checked => setProductForm({ ...productForm, destacado: checked })}
                                                 className="data-[state=checked]:bg-[#4ADE80]"
                                             />
-                                            <Label htmlFor="featured-toggle" className="font-bold cursor-pointer flex items-center gap-2">
+                                            <Label htmlFor="featured-toggle" className="font-bold cursor-pointer flex items-center gap-2 text-[#111814]">
                                                 <Star className={`w-4 h-4 ${productForm.destacado ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
                                                 Producto Destacado
                                             </Label>
                                         </div>
-                                        <p className="text-[10px] text-[#618972] leading-tight pl-11">
+                                        <p className="text-[10px] text-[#618972] leading-tight pl-11 font-medium">
                                             Aparecerá en la sección principal de Recomendados de tu página.
                                         </p>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-4 py-2 border-t border-gray-50 pt-6">
+                                <div className="flex items-center gap-4 py-4 px-6 rounded-2xl border border-[#4ADE80]/10 bg-white shadow-sm">
                                     <Switch
                                         checked={productForm.disponible}
                                         onCheckedChange={checked => setProductForm({ ...productForm, disponible: checked })}
                                         className="data-[state=checked]:bg-[#4ADE80]"
                                     />
                                     <div>
-                                        <Label className="font-bold">Disponible para la venta</Label>
-                                        <p className="text-xs text-[#618972]">Si lo desactivas, aparecerá como "Agotado" en el menú.</p>
+                                        <Label className="font-bold text-[#111814]">Disponible para la venta</Label>
+                                        <p className="text-[10px] text-[#618972] font-medium">Si lo desactivas, aparecerá como "Agotado" en el menú.</p>
                                     </div>
                                 </div>
 
                                 <div className="flex gap-4 pt-4 sticky bottom-0 bg-white/80 backdrop-blur-sm py-4 border-t mt-auto">
-                                    <Button type="button" variant="ghost" className="flex-1 h-12 rounded-2xl font-bold" onClick={() => setIsProductModalOpen(false)}>Cancelar</Button>
+                                    <Button type="button" variant="ghost" className="flex-1 h-12 rounded-2xl font-bold border border-gray-100 hover:bg-gray-50 transition-colors" onClick={() => setIsProductModalOpen(false)}>Cancelar</Button>
                                     <Button type="submit" disabled={saving} className={getModalButtonStyle(hasProductChanges())}>
                                         {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : editingProduct ? 'GUARDAR PRODUCTO' : 'CREAR PRODUCTO'}
                                     </Button>
@@ -2811,7 +2917,7 @@ const ConfiguracionPage = () => {
                             </form>
                         </div>
                     </DialogContent>
-                </Dialog>
+                </Dialog >
 
                 {/* TAG MODAL */}
                 <Dialog open={isTagModalOpen} onOpenChange={setIsTagModalOpen}>
@@ -2845,8 +2951,8 @@ const ConfiguracionPage = () => {
                         </form>
                     </DialogContent>
                 </Dialog>
-            </div>
-        </DashboardLayout>
+            </div >
+        </DashboardLayout >
     );
 };
 

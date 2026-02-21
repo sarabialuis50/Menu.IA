@@ -90,8 +90,6 @@ export default function MesasPage() {
     setFormData({
       numero: nextNumber.toString(),
       capacidad: '4',
-      numero: nextNumber.toString(),
-      capacidad: '4',
       ubicacion: '',
       empleado_id: 'none'
     });
