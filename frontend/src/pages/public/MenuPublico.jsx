@@ -561,7 +561,7 @@ const MenuContent = () => {
         />
 
         {/* Badge Etiqueta - Fixed position */}
-        <div className="absolute top-2 left-2 z-20">
+        <div className="absolute top-2 left-2 md:top-3 md:left-3 z-20">
           {(product.etiqueta || product.destacado) && (
             <div className="bg-[#4ADE80] text-[#111814] text-[7px] md:text-[8px] font-black uppercase tracking-widest px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg shadow-md border border-white/10 flex items-center gap-1 ring-1 ring-white/20">
               <div className="size-1 rounded-full bg-white animate-pulse" />
@@ -572,7 +572,7 @@ const MenuContent = () => {
 
         {/* Rating on Image Top Right */}
         <div className="absolute top-2 right-2 md:top-3 md:right-3 z-20">
-          <div className="flex items-center gap-0.5 bg-white/90 backdrop-blur-sm px-1.5 py-0.5 md:px-2 md:py-1 rounded-lg md:rounded-xl text-[#111814] text-[9px] md:text-xs font-black shadow-sm">
+          <div className="flex items-center gap-0.5 bg-white/95 backdrop-blur-sm px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg text-[#111814] text-[7px] md:text-[8px] font-black shadow-md border border-[#4ADE80]">
             <Star className="w-2.5 h-2.5 md:w-3 md:h-3 text-orange-400 fill-orange-400" />
             4.8
           </div>
@@ -848,19 +848,20 @@ const MenuContent = () => {
         {/* Category Controls - Positioned below search */}
         {/* Category Controls - Sticky on Mobile */}
         {/* Category Controls */}
-        <div className="relative mb-8 md:mb-12 transition-all">
-          {/* Botones de navegación (Flechas) */}
+        <div className="flex items-center gap-2 md:gap-4 mb-8 md:mb-12 overflow-hidden px-2 md:px-0">
+          {/* Botón de navegación Izquierdo (Flecha) */}
           <button
             onClick={() => scrollCategories('left')}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/90 backdrop-blur-md shadow-xl border border-gray-100 text-[#22C55E] flex items-center justify-center transition-all active:scale-90 hover:bg-[#4ADE80] hover:text-white hidden md:flex"
+            className="hidden md:flex shrink-0 w-12 h-12 items-center justify-center rounded-full bg-white shadow-sm border border-gray-100 text-[#22C55E] hover:bg-[#F0FDF4] hover:border-[#22C55E] transition-all active:scale-90"
             aria-label="Anterior categoría"
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-7 h-7" />
           </button>
 
+          {/* Área de Scrollable de Categorías */}
           <div
             ref={categoriesRef}
-            className="flex items-center gap-3 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory px-4 md:px-12"
+            className="flex-1 flex items-center gap-3 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-4 px-2"
           >
             {categories.map((catObj, idx) => {
               const catName = typeof catObj === 'string' ? catObj : catObj.nombre;
@@ -877,7 +878,7 @@ const MenuContent = () => {
                   className={`
                     flex h-10 md:h-12 shrink-0 items-center justify-center gap-x-2.5 rounded-full px-6 md:px-8 transition-all active:scale-95 font-bold text-[10px] md:text-sm uppercase tracking-wider snap-start
                     ${activeCategory === catName
-                      ? 'bg-[#4ADE80] text-[#111814] shadow-xl shadow-[#4ADE80]/30 scale-105 ring-2 ring-white z-10'
+                      ? 'bg-[#4ADE80] text-[#111814] shadow-xl shadow-[#4ADE80]/30 scale-105 ring-2 ring-white'
                       : 'bg-white border border-gray-100 text-gray-500 hover:border-[#22C55E] hover:text-[#111814] shadow-sm'
                     }
                   `}
@@ -897,12 +898,13 @@ const MenuContent = () => {
             })}
           </div>
 
+          {/* Botón de navegación Derecho (Flecha) */}
           <button
             onClick={() => scrollCategories('right')}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/90 backdrop-blur-md shadow-xl border border-gray-100 text-[#22C55E] flex items-center justify-center transition-all active:scale-90 hover:bg-[#4ADE80] hover:text-white hidden md:flex"
+            className="hidden md:flex shrink-0 w-12 h-12 items-center justify-center rounded-full bg-white shadow-sm border border-gray-100 text-[#22C55E] hover:bg-[#F0FDF4] hover:border-[#22C55E] transition-all active:scale-90"
             aria-label="Siguiente categoría"
           >
-            <ChevronRight className="w-6 h-6" />
+            <ChevronRight className="w-7 h-7" />
           </button>
         </div>
 

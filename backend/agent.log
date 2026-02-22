@@ -3947,3 +3947,13 @@ message: "Requests from referer <empty> are blocked."
 2026-02-20 21:38:16,476 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
 2026-02-20 21:38:19,583 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
 2026-02-20 21:53:01,311 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-21 11:42:56,141 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-21 11:43:06,145 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-21 12:04:54,030 - server - WARNING - Landing chat: models/gemini-2.0-flash falló: 404 This model models/gemini-2.0-flash is no longer available to new users. Please update your code to use a newer model for the latest features and improvements.
+2026-02-21 12:04:55,026 - server - WARNING - Landing chat: models/gemini-1.5-flash falló: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2026-02-21 12:05:05,534 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-21 12:05:18,542 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-21 12:21:51,526 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-21 12:21:51,900 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-21 12:22:00,938 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2026-02-21 12:31:46,146 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"

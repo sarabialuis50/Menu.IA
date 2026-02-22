@@ -184,7 +184,12 @@ export default function PreciosPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
                         {plans.map((plan) => (
-                            <div key={plan.id} className={`relative p-8 bg-white rounded-3xl border-2 ${plan.popular ? 'border-[#22C55E] shadow-xl shadow-green-100' : 'border-gray-100'} flex flex-col`}>
+                            <motion.div
+                                key={plan.id}
+                                whileHover={{ scale: 1.05 }}
+                                transition={{ type: "spring", stiffness: 300 }}
+                                className={`relative p-8 bg-white rounded-3xl border-2 transition-all duration-300 hover:border-[#22C55E] hover:shadow-2xl hover:shadow-green-100 ${plan.popular ? 'border-[#22C55E] shadow-xl shadow-green-100' : 'border-gray-100'} flex flex-col cursor-default`}
+                            >
                                 {plan.badge && (
                                     <div className={`absolute -top-4 left-1/2 transform -translate-x-1/2 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg ${plan.id === 'impulso' ? 'bg-white border-2 border-[#22C55E] text-[#22C55E]' :
                                         plan.id === 'elite' ? 'bg-[#22B8CF] text-white' :
@@ -209,11 +214,13 @@ export default function PreciosPage() {
                                 <Button
                                     onClick={() => handleSelectPlan(plan.id)}
                                     disabled={loadingPlan !== null}
-                                    className={`h-12 rounded-xl font-bold ${plan.popular ? 'bg-[#4ADE80]' : 'bg-white border-2 border-[#4ADE80] text-[#22C55E] hover:bg-green-50'}`}
+                                    className={`h-12 rounded-xl font-bold transition-all ${plan.popular
+                                        ? 'bg-[#4ADE80] text-[#111814] hover:bg-green-600'
+                                        : 'bg-white border-2 border-[#4ADE80] text-[#22C55E] hover:bg-[#4ADE80] hover:text-[#111814]'}`}
                                 >
                                     {loadingPlan === plan.id ? <Loader2 className="animate-spin" /> : `Activar ${plan.name}`}
                                 </Button>
-                            </div>
+                            </motion.div>
                         ))}
                     </div>
 
@@ -230,7 +237,7 @@ export default function PreciosPage() {
                                     key={pack.id}
                                     whileHover={{ scale: 1.05 }}
                                     transition={{ type: "spring", stiffness: 300 }}
-                                    className={`relative p-8 rounded-[2.5rem] border-2 transition-all flex flex-col ${pack.popular ? 'border-[#22C55E] bg-white shadow-2xl scale-105 z-10' : 'border-gray-100 bg-white'}`}
+                                    className={`relative p-8 rounded-[2.5rem] border-2 transition-all duration-300 flex flex-col hover:border-[#22C55E] hover:shadow-2xl hover:shadow-green-50 ${pack.popular ? 'border-[#22C55E] bg-white shadow-2xl scale-105 z-10' : 'border-gray-100 bg-white'}`}
                                 >
                                     {pack.popular && (
                                         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-[#4ADE80] text-[#111814] px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg whitespace-nowrap">
@@ -239,7 +246,7 @@ export default function PreciosPage() {
                                     )}
                                     {pack.id === 10000 && (
                                         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-[#22B8CF] text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg whitespace-nowrap">
-                                            Empresarial
+                                            Mayor alcance
                                         </div>
                                     )}
                                     <h3 className="text-sm font-black text-black uppercase tracking-widest mb-4">{pack.name}</h3>

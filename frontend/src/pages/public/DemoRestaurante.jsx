@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -19,7 +19,9 @@ import {
     Phone,
     CreditCard,
     ChefHat,
-    ArrowRight
+    ArrowRight,
+    ChevronLeft,
+    ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -116,6 +118,17 @@ export default function DemoRestaurante() {
     const [searchQuery, setSearchQuery] = useState('');
     const [cart, setCart] = useState([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const categoriesRef = useRef(null);
+
+    const scrollCategories = (direction) => {
+        if (categoriesRef.current) {
+            const scrollAmount = 300;
+            categoriesRef.current.scrollBy({
+                left: direction === 'left' ? -scrollAmount : scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+    };
 
     // Checkout States
     const [step, setStep] = useState('cart'); // 'cart', 'checkout', 'success'
@@ -199,10 +212,10 @@ export default function DemoRestaurante() {
             key={product.id}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="group bg-white rounded-[2rem] overflow-hidden border border-[#f0f4f2] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full cursor-pointer"
+            className="group bg-white rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden border border-[#f0f4f2] shadow-sm hover:shadow-xl transition-all duration-300 flex flex-row h-auto cursor-pointer"
             onClick={() => handleAddToCart(product)}
         >
-            <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+            <div className="relative w-32 h-32 md:w-48 md:h-48 shrink-0 overflow-hidden m-2 md:m-3 rounded-2xl md:rounded-[2rem]">
                 <img
                     src={product.imagen}
                     alt={product.nombre}
@@ -212,50 +225,55 @@ export default function DemoRestaurante() {
                         e.target.src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80";
                     }}
                 />
-                {product.etiqueta && (
-                    <div className="absolute top-4 left-4 z-20">
-                        <div className="bg-[#4ADE80] text-[#111814] text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl shadow-xl border border-white/10 flex items-center gap-1.5 ring-1 ring-white/20">
+
+                {/* Badge Etiqueta - Fixed position */}
+                <div className="absolute top-2 left-2 md:top-3 md:left-3 z-20">
+                    {product.etiqueta && (
+                        <div className="bg-[#4ADE80] text-[#111814] text-[7px] md:text-[8px] font-black uppercase tracking-widest px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg shadow-md border border-white/10 flex items-center gap-1 ring-1 ring-white/20">
                             <div className="size-1 rounded-full bg-white animate-pulse" />
                             {product.etiqueta}
                         </div>
-                    </div>
-                )}
-                {product.oferta_porcentaje && (
-                    <div className="absolute top-4 right-4 z-20">
-                        <div className="bg-[#ff4b4b] text-white text-[10px] font-black px-2.5 py-1.5 rounded-xl shadow-lg border border-white/20 flex items-center gap-1.5">
-                            <Sparkles className="w-3 h-3 fill-white" />
-                            -{product.oferta_porcentaje}%
-                        </div>
-                    </div>
-                )}
-            </div>
-            <div className="p-5 flex flex-col flex-1">
-                <div className="flex items-center justify-between mb-3">
-                    <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#4ADE80]/10 text-[9px] font-black text-[#22C55E] uppercase tracking-wider">
-                        {product.categoria}
-                    </div>
-                    <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-full text-[#111814] text-[10px] font-black">
-                        <Star className="w-3 h-3 text-orange-400 fill-orange-400" />
+                    )}
+                </div>
+
+                {/* Rating on Image Top Right */}
+                <div className="absolute top-2 right-2 md:top-3 md:right-3 z-20">
+                    <div className="flex items-center gap-0.5 bg-white/95 backdrop-blur-sm px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg text-[#111814] text-[7px] md:text-[8px] font-black shadow-md border border-[#4ADE80]">
+                        <Star className="w-2.5 h-2.5 md:w-3 md:h-3 text-orange-400 fill-orange-400" />
                         4.8
                     </div>
                 </div>
-                <h3 className="text-lg font-black text-[#111814] group-hover:text-[#22C55E] transition-colors mb-2 leading-tight">
+            </div>
+            <div className="p-3 md:p-6 flex flex-col flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-1 md:mb-4">
+                    <div className="inline-flex items-center px-2 py-0.5 md:px-3 md:py-1.5 rounded-full bg-[#4ADE80]/10 text-[8px] md:text-[10px] font-black text-[#22C55E] uppercase tracking-wider">
+                        {product.categoria}
+                    </div>
+
+                    {/* Discount/Offer Badge - At the top right of the card content */}
+                    {product.oferta_porcentaje && (
+                        <div className="bg-[#ff4b4b] text-white text-[9px] md:text-[11px] font-black px-1.5 py-0.5 md:px-2 md:py-1 rounded-lg shadow-sm">
+                            -{product.oferta_porcentaje}%
+                        </div>
+                    )}
+                </div>
+                <h3 className="text-sm md:text-xl font-black text-[#111814] group-hover:text-[#22C55E] transition-colors mb-1 md:mb-3 leading-tight truncate">
                     {product.nombre}
                 </h3>
-                <p className="text-[#618972] text-xs font-medium leading-relaxed mb-4 line-clamp-2">
+                <p className="text-[#618972] text-[10px] md:text-sm font-medium leading-tight md:leading-relaxed mb-2 md:mb-6 line-clamp-2 md:line-clamp-3">
                     {product.descripcion}
                 </p>
-                <div className="flex items-center justify-between mt-auto pt-4 border-t border-[#f0f4f2]">
-                    <div className="flex flex-col">
-                        <span className="text-xl font-black text-[#111814]">{formatCurrency(product.precio)}</span>
+                <div className="flex items-center justify-between mt-auto pt-2 md:pt-6 border-t border-[#f0f4f2]">
+                    <div className="flex items-baseline gap-2 md:gap-3">
+                        <span className="text-base md:text-2xl font-black text-[#111814]">{formatCurrency(product.precio)}</span>
                         {product.precio_original && (
-                            <span className="text-[10px] font-bold text-gray-400 line-through decoration-1">
+                            <span className="text-[9px] md:text-[13px] font-bold text-gray-400 line-through decoration-1 opacity-70">
                                 {formatCurrency(product.precio_original)}
                             </span>
                         )}
                     </div>
-                    <div className="size-10 bg-[#4ADE80] rounded-full flex items-center justify-center shadow-lg shadow-[#4ADE80]/20 text-[#111814] group-hover:scale-110 transition-transform">
-                        <Plus className="w-5 h-5 stroke-[3]" />
+                    <div className="size-9 md:size-12 bg-[#4ADE80] rounded-full flex items-center justify-center shadow-lg shadow-[#4ADE80]/20 text-[#111814] group-hover:scale-110 transition-all border-2 border-white/20">
+                        <Plus className="w-4 h-4 md:w-6 md:h-6 stroke-[3]" />
                     </div>
                 </div>
             </div>
@@ -265,7 +283,7 @@ export default function DemoRestaurante() {
     const ProductSection = ({ title, items, icon, rows = 1, onVerTodo }) => (
         <div className="mb-16">
             <div className="flex justify-between items-center mb-6 px-2">
-                <h2 className="text-2xl font-black text-[#111814] tracking-tighter flex items-center gap-2">
+                <h2 className="text-xl md:text-3xl font-black text-[#111814] tracking-tighter flex items-center gap-2">
                     {icon}
                     {title}
                 </h2>
@@ -279,8 +297,8 @@ export default function DemoRestaurante() {
                 )}
             </div>
             <div className="px-2">
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-                    {items.slice(0, rows * 4).map((product) => (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+                    {items.slice(0, rows * 2).map((product) => (
                         <ProductCard key={product.id} product={product} />
                     ))}
                 </div>
@@ -355,28 +373,52 @@ export default function DemoRestaurante() {
                 </div>
 
                 {/* Categories Section */}
-                <div className="mb-12 px-2">
-                    <div className="flex flex-wrap gap-2 md:gap-3 py-4">
+                <div className="flex items-center gap-2 md:gap-4 mb-12 overflow-hidden px-2 md:px-0">
+                    {/* Botón de navegación Izquierdo (Flecha) */}
+                    <button
+                        onClick={() => scrollCategories('left')}
+                        className="hidden md:flex shrink-0 w-12 h-12 items-center justify-center rounded-full bg-white shadow-sm border border-gray-100 text-[#22C55E] hover:bg-[#F0FDF4] hover:border-[#22C55E] transition-all active:scale-90"
+                        aria-label="Anterior categoría"
+                    >
+                        <ChevronLeft className="w-7 h-7" />
+                    </button>
+
+                    {/* Área de Scrollable de Categorías */}
+                    <div
+                        ref={categoriesRef}
+                        className="flex-1 flex items-center gap-3 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-4 px-2"
+                    >
                         {DEMO_CATEGORIES.map((cat, idx) => (
                             <button
                                 key={idx}
                                 onClick={() => { setActiveCategory(cat.nombre); setSpecialFilter(null); }}
-                                className={`flex h-9 md:h-10 items-center justify-center gap-x-2 rounded-full px-4 md:px-5 transition-all active:scale-95 font-bold text-[12px] md:text-sm
-                  ${activeCategory === cat.nombre && specialFilter === null ? 'bg-[#4ADE80] text-[#111814] shadow-lg shadow-[#4ADE80]/20 scale-105' : 'bg-white border border-[#f0f4f2] text-[#618972] hover:border-[#4ADE80] hover:text-[#111814]'}`}
+                                className={`flex h-10 md:h-12 shrink-0 items-center justify-center gap-x-2.5 rounded-full px-6 md:px-8 transition-all active:scale-95 font-bold text-[10px] md:text-sm uppercase tracking-wider snap-start
+                                ${activeCategory === cat.nombre && specialFilter === null
+                                        ? 'bg-[#4ADE80] text-[#111814] shadow-xl shadow-[#4ADE80]/30 scale-105 ring-2 ring-white'
+                                        : 'bg-white border border-gray-100 text-gray-500 hover:border-[#22C55E] hover:text-[#111814] shadow-sm'}`}
                             >
-                                <span className="text-base leading-none">{cat.icono}</span>
+                                <span className="text-lg md:text-2xl leading-none">{cat.icono}</span>
                                 <span>{cat.nombre}</span>
                             </button>
                         ))}
                     </div>
+
+                    {/* Botón de navegación Derecho (Flecha) */}
+                    <button
+                        onClick={() => scrollCategories('right')}
+                        className="hidden md:flex shrink-0 w-12 h-12 items-center justify-center rounded-full bg-white shadow-sm border border-gray-100 text-[#22C55E] hover:bg-[#F0FDF4] hover:border-[#22C55E] transition-all active:scale-90"
+                        aria-label="Siguiente categoría"
+                    >
+                        <ChevronRight className="w-7 h-7" />
+                    </button>
                 </div>
 
                 {/* Sections */}
                 {activeCategory === 'Todas' && specialFilter === null && searchQuery === '' ? (
                     <>
-                        <ProductSection title="Recomendados" items={destacados} icon={<Sparkles className="w-6 h-6 text-orange-400 fill-orange-400" />} onVerTodo={() => setSpecialFilter('destacados')} />
-                        <ProductSection title="Ofertas Especiales" items={ofertas} icon={<Sparkles className="w-6 h-6 text-red-500" />} onVerTodo={() => setSpecialFilter('ofertas')} />
-                        <ProductSection title="Nuestros Productos" items={DEMO_PRODUCTS} icon={<CheckCircle2 className="w-6 h-6 text-[#22C55E]" />} rows={3} />
+                        <ProductSection title="Recomendados" items={destacados} icon={<Sparkles className="w-6 h-6 text-orange-400 fill-orange-400" />} onVerTodo={() => setSpecialFilter('destacados')} rows={2} />
+                        <ProductSection title="Ofertas Especiales" items={ofertas} icon={<Sparkles className="w-6 h-6 text-red-500" />} onVerTodo={() => setSpecialFilter('ofertas')} rows={2} />
+                        <ProductSection title="Nuestros Productos" items={DEMO_PRODUCTS} icon={<CheckCircle2 className="w-6 h-6 text-[#22C55E]" />} rows={4} />
                     </>
                 ) : (
                     <ProductSection title={specialFilter === 'destacados' ? 'Recomendados' : (specialFilter === 'ofertas' ? 'Ofertas Especiales' : activeCategory)} items={filteredProducts} icon={<UtensilsCrossed className="w-6 h-6 text-[#22C55E]" />} rows={Math.ceil(filteredProducts.length / 4)} />
