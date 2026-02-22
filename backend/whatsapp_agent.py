@@ -318,10 +318,13 @@ REGISTRO DE CLIENTES Y FIDELIZACIÓN (PRIORIDAD ALTA):
 - IMPORTANTE: Pregunta si desea usar su número actual ({sender_phone}) o uno diferente.
 - UNA VEZ TENGAS LOS DATOS (Nombre, Email, Teléfono), EJECUTA LA FUNCIÓN 'register_customer'. NO confirmes el registro sin llamar a la función.
 
-REGLAS DE RESPUESTA DE PRODUCTOS:
-- Al mostrar productos del menú, menciona SOLO: NOMBRE, DESCRIPCIÓN y PRECIO.
+REGLAS DE RESPUESTA DE PRODUCTOS Y MENÚ:
+- Si el cliente quiere ver todo el menú, envíale el siguiente enlace interactivo: 
+  https://menuia-production.up.railway.app/{slug}
+- Al mostrar productos del menú de forma textual, estructúralos como una tabla o lista clara, rápida de leer (evita lenguaje tipo periódico o densos párrafos).
+- Enumera los items o dales un código numérico para que el cliente pueda pedir más rápido enviando solo el número (Ej: "1. Hamburguesa Sencilla").
+- Menciona siempre en la misma línea: NÚMERO DE ITEM, NOMBRE, PRECIO y DESCUENTO (si lo tiene). Agrega la descripción brevemente debajo.
 - NUNCA incluyas enlaces o URLs de imágenes de los productos en tus respuestas.
-- Si el plato tiene una oferta, menciona el precio con descuento.
 
 REGLAS DE INTERACCIÓN:
 - Saluda amablemente y sé siempre cortés.
@@ -508,6 +511,11 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
         items = args.get('items', [])
         total = sum(item.get('precio', 0) * item.get('cantidad', 1) for item in items)
         
+        tipo_ai = args.get('tipo', 'delivery')
+        if tipo_ai == 'domicilio': tipo_ai = 'delivery'
+        elif tipo_ai == 'llevar': tipo_ai = 'whatsapp'
+        elif tipo_ai == 'mesa': tipo_ai = 'mesa'
+        
         # 2. Insert order
         order_data = {
             "negocio_id": negocio_id,
@@ -515,14 +523,14 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
             "total": total,
             "cliente_nombre": args.get('cliente_nombre'),
             "cliente_telefono": args.get('cliente_telefono'),
-            "tipo_pedido": args.get('tipo', 'llevar'),
+            "tipo_pedido": tipo_ai,
             "direccion": args.get('direccion'),
             "metodo_pago": args.get('metodo_pago', 'Efectivo'),
             "estado": "pendiente",
-            "via_ai": True,
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         
+        print(f"DEBUG order_data: {order_data}")
         res = supabase.table('pedidos').insert(order_data).execute()
         order_id = res.data[0]['id'] if res.data else "new_order"
         

@@ -44,6 +44,8 @@ export const FloatingWA = ({ businessName, whatsapp, aiEnabled, aiSaludo, slug, 
                         >
                             <button
                                 onClick={() => setShowTooltip(false)}
+                                tabIndex={-1}
+                                onPointerDown={(e) => e.preventDefault()}
                                 className="absolute -top-2 -left-2 size-6 bg-white border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 shadow-sm"
                             >
                                 <X className="w-3 h-3" />

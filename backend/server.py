@@ -1301,6 +1301,10 @@ async def create_order(slug: str, data: OrderCreate, background_tasks: Backgroun
         
         # Filter for DB columns (Remove mesero_id and ensure compatibility)
         order_dict.pop('mesero_id', None)
+        order_dict.pop('mesero_nombre', None)
+        order_dict.pop('negocio_nombre', None)
+        order_dict.pop('negocio_logo', None)
+        
         if 'tipo' in order_dict and 'tipo_pedido' not in order_dict:
             order_dict['tipo_pedido'] = order_dict['tipo']
             
