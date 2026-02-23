@@ -20,6 +20,13 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toast } from 'sonner';
 
 const StatCard = ({ title, value, icon: Icon, color, subtitle }) => (
@@ -69,6 +76,26 @@ export default function DashboardPage() {
   const [analytics, setAnalytics] = useState(null);
   const [recentOrders, setRecentOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const [isCreatingLink, setIsCreatingLink] = useState(false);
+
+  const handlePurchaseSupportPack = async (amount) => {
+    try {
+      setIsCreatingLink(true);
+      const response = await api().post('/payments/create-support-pack-link', { amount });
+      if (response.data.init_point) {
+        window.location.href = response.data.init_point;
+      } else {
+        toast.error("No se pudo generar el link de pago");
+      }
+    } catch (error) {
+      console.error("Error creating support pack payment:", error);
+      toast.error("Error al procesar la compra");
+    } finally {
+      setIsCreatingLink(false);
+    }
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -359,7 +386,7 @@ export default function DashboardPage() {
               <div className="space-y-4 py-2">
                 <div className="flex items-end justify-between">
                   <div>
-                    <h3 className="text-4xl font-black leading-none">{user?.wa_messages_count || 0}/{user?.wa_messages_limit || 0}</h3>
+                    <h3 className="text-4xl font-black leading-none">{user?.wa_messages_limit > 0 ? (user?.wa_messages_count || 0) : 0}/{user?.wa_messages_limit || 0}</h3>
                     <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest mt-2 px-1">Mensajes Venta/Soporte</p>
                   </div>
                   <Badge className="bg-white/20 text-white text-[9px] font-black tracking-widest border-white border-2 px-2 py-0.5 mb-1">PLAN {user?.plan?.toUpperCase() || 'GRATUITO'}</Badge>
@@ -367,11 +394,11 @@ export default function DashboardPage() {
                 <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-1000"
-                    style={{ width: `${Math.min(100, ((user?.wa_messages_count || 0) / (user?.wa_messages_limit || 1)) * 100)}%` }}
+                    style={{ width: `${Math.min(100, user?.wa_messages_limit > 0 ? ((user?.wa_messages_count || 0) / user.wa_messages_limit) * 100 : 0)}%` }}
                   />
                 </div>
                 <p className="text-[9px] font-bold text-white/80 italic text-center">
-                  ✨ Has usado el {(((user?.wa_messages_count || 0) / (user?.wa_messages_limit || 1)) * 100).toFixed(1)}% de tu cupo incluido.
+                  ✨ Has usado el {user?.wa_messages_limit > 0 ? (((user?.wa_messages_count || 0) / user.wa_messages_limit) * 100).toFixed(1) : '0.0'}% de tu cupo incluido.
                 </p>
               </div>
 
@@ -388,7 +415,7 @@ export default function DashboardPage() {
 
               <div className="grid grid-cols-2 gap-3 pt-2">
                 <Button
-                  onClick={() => navigate(`/dashboard/${slug}/marketing?purchase=true`)}
+                  onClick={() => setIsSupportModalOpen(true)}
                   className="bg-white text-[#22C55E] border-2 border-transparent hover:bg-transparent hover:text-white hover:border-white font-black text-[10px] uppercase h-12 rounded-xl tracking-widest shadow-xl shadow-green-900/10 transition-all"
                 >
                   Comprar Mensajes
@@ -423,6 +450,59 @@ export default function DashboardPage() {
           </motion.div>
         )}
       </div>
+
+      <Dialog open={isSupportModalOpen} onOpenChange={setIsSupportModalOpen}>
+        <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden">
+          <div className="bg-[#4ADE80] p-8 text-[#111814] relative">
+            <div className="absolute top-0 right-0 p-8 opacity-10">
+              <MessageSquare className="w-24 h-24" />
+            </div>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-black uppercase tracking-tight">Packs de Venta/Soporte</DialogTitle>
+              <DialogDescription className="text-white/80 font-bold text-xs uppercase tracking-widest mt-2">
+                Incrementa tu límite de interacciones para no detener nunca el servicio
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+
+          <div className="p-8 space-y-4 bg-[#FAFAF9]">
+            {[
+              { amount: 1000, price: "$59.900", desc: "Suficiente para operaciones pequeñas" },
+              { amount: 3000, price: "$163.900", desc: "Para negocios con alto flujo diario", popular: true },
+              { amount: 6000, price: "$299.900", desc: "Soporte ininterrumpido a gran escala" }
+            ].map((pack) => (
+              <button
+                key={pack.amount}
+                onClick={() => handlePurchaseSupportPack(pack.amount)}
+                disabled={isCreatingLink}
+                className={`w-full p-4 rounded-2xl border-2 transition-all flex items-center justify-between text-left group
+                              ${pack.popular ? 'bg-white border-[#22C55E] shadow-lg shadow-green-100' : 'bg-white border-gray-100 hover:border-gray-200'}
+                              ${isCreatingLink ? 'opacity-50 cursor-not-allowed' : 'active:scale-[0.98]'}`}
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-black text-gray-900 text-lg">{pack.amount.toLocaleString('es-CO')}</span>
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter">MENSAJES</span>
+                    {pack.popular && <Badge className="bg-[#4ADE80] text-[#111814] text-[7px] font-black px-2 border-none">RECOMENDADO</Badge>}
+                  </div>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight leading-none">{pack.desc}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-black text-[#22C55E] text-xl leading-none">{pack.price}</p>
+                  <p className="text-[8px] font-bold text-gray-300 uppercase tracking-widest mt-1">COP</p>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          <div className="px-8 pb-8 bg-[#FAFAF9]">
+            <p className="text-[9px] text-gray-400 font-bold text-center uppercase tracking-widest leading-relaxed">
+              🔒 Pago seguro vía MercadoPago. <br />
+              Los mensajes se añaden inmediatamente a tu cuenta.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }

@@ -189,7 +189,7 @@ export default function WhatsappHubPage() {
                                     <div className="flex flex-col gap-1">
                                         <div className="flex items-center justify-between">
                                             <h3 className="text-4xl font-black leading-none">
-                                                {user?.wa_credits?.toLocaleString() || 0}
+                                                {user?.wa_credits > 0 ? user.wa_credits.toLocaleString() : '0/0'}
                                             </h3>
                                             <Badge className="bg-white/20 text-white text-[7px] font-black tracking-widest border-white border-2 px-2 py-0.5 text-center ml-2 uppercase">Saldo Disponible</Badge>
                                         </div>
@@ -612,8 +612,8 @@ export default function WhatsappHubPage() {
                     <div className="p-8 space-y-4 bg-[#FAFAF9]">
                         {[
                             { amount: 1000, price: "$150.000", desc: "Ideal para avisos puntuales" },
-                            { amount: 5000, price: "$650.000", desc: "Perfecto para campañas mensuales", popular: true },
-                            { amount: 10000, price: "$1.100.000", desc: "Para grandes lanzamientos" }
+                            { amount: 5000, price: "$725.000", desc: "Perfecto para campañas mensuales", popular: true },
+                            { amount: 10000, price: "$1.400.000", desc: "Para grandes lanzamientos" }
                         ].map((pack) => (
                             <button
                                 key={pack.amount}

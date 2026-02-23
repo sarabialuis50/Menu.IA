@@ -2545,13 +2545,20 @@ async def public_landing_audio(audio: UploadFile = File(...)):
 
     PLANES Y PRECIOS OFICIALES (Mensual):
     - Básico: $39.900 COP/mes (100 pedidos y 500 mensajes).
-    - Pro: $79.900 COP/mes (400 pedidos y 1.500 mensajes - El más popular).
-    - Premium: $179.900 COP/mes (Pedidos ilimitados y 5.000 mensajes).
+    - Pro: $111.900 COP/mes (400 pedidos y 1.500 mensajes - El más popular).
+    - Premium: $209.900 COP/mes (Pedidos ilimitados y 3.000 mensajes).
 
-    PACKS DE CAMPAÑAS WHATSAPP:
-    - Pack Inicial: 1.000 mensajes / $150.000 COP.
-    - Pack Crecimiento: 5.000 mensajes / $650.000 COP.
-    - Pack Masivo: 10.000 mensajes / $1.100.000 COP.
+    PACKS DE WHATSAPP (Recargas Prepago):
+    
+    1. PACKS DE VENTA/SOPORTE (Para el agente que conversa y toma pedidos):
+    - 1.000 mensajes / $59.900 COP.
+    - 3.000 mensajes / $163.900 COP.
+    - 6.000 mensajes / $299.900 COP.
+
+    2. PACKS DE CAMPAÑAS MASIVAS (Para marketing masivo y anuncios):
+    - 1.000 mensajes / $150.000 COP.
+    - 5.000 mensajes / $725.000 COP.
+    - 10.000 mensajes / $1.400.000 COP.
 
     REGLAS:
     - SI PREGUNTAN POR PRECIOS O PACKS, DI LOS PRECIOS EXACTOS ANTERIORES.
@@ -2644,24 +2651,31 @@ async def public_landing_chat(request: LandingChatRequest):
         - Pedidos en Mesa y Domicilio con Seguimiento.
         - Agente IA WhatsApp (Versión Básica).
 
-    2. PLAN PRO ($79.900 COP/mes) - EL MÁS POPULAR:
+    2. PLAN PRO ($111.900 COP/mes) - EL MÁS POPULAR:
         - 400 Pedidos al mes.
         - 1.500 Mensajes de Venta/Soporte.
         - Todo lo del plan Básico.
         - Agente IA WhatsApp (Versión Avanzada).
         - Sistema de Fidelización por Puntos (Duntos).
 
-    3. PLAN PREMIUM ($179.900 COP/mes) - ELITE:
+    3. PLAN PREMIUM ($209.900 COP/mes) - ELITE:
         - Pedidos ILIMITADOS.
-        - 5.000 Mensajes de Venta/Soporte.
+        - 3.000 Mensajes de Venta/Soporte.
         - Todo lo del plan Pro.
         - Agente IA WhatsApp (Versión Personalizada).
         - Sistema de Fidelización COMPLETO.
 
-    PACKS DE CAMPAÑAS WHATSAPP (Pago Único para marketing masivo):
-    - Pack Inicial: 1.000 mensajes por $150.000 COP.
-    - Pack Crecimiento: 5.000 mensajes por $650.000 COP (Mejor valor).
-    - Pack Masivo: 10.000 mensajes por $1.100.000 COP (Empresarial).
+    RECARGAS WHATSAPP (Packs Prepago):
+
+    1. PACKS DE VENTA/SOPORTE (Agente IA Interactivo y Pedidos):
+    - 1.000 mensajes por $59.900 COP.
+    - 3.000 mensajes por $163.900 COP.
+    - 6.000 mensajes por $299.900 COP.
+
+    2. PACKS DE CAMPAÑAS MASIVAS (Marketing y Promociones):
+    - 1.000 mensajes por $150.000 COP.
+    - 5.000 mensajes por $725.000 COP.
+    - 10.000 mensajes por $1.400.000 COP.
 
     REGLAS CRÍTICAS DE RESPUESTA:
     - SI PREGUNTAN POR PRECIOS: Enlista los 3 planes con sus precios y características principales.
@@ -2760,14 +2774,14 @@ async def create_subscription_link(data: SubscriptionRequest, business: Business
             },
             'pro': {
                 'reason': 'Plan Pro (Suscripción) - Menu.IA',
-                'price_monthly': 79900,
-                'price_annual': 799000,
+                'price_monthly': 111900,
+                'price_annual': 1119000,
                 'back_url': f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/configuracion?status=success"
             },
             'elite': {
                 'reason': 'Plan Premium (Suscripción) - Menu.IA',
-                'price_monthly': 179900,
-                'price_annual': 1799000,
+                'price_monthly': 209900,
+                'price_annual': 2099000,
                 'back_url': f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/configuracion?status=success"
             }
         }
@@ -2831,13 +2845,13 @@ async def create_payment_link(data: SubscriptionRequest, business: Business = De
             },
             'pro': {
                 'reason': 'Plan Pro (Mes Prepago) - Menu.IA',
-                'price_monthly': 79900,
-                'price_annual': 799000
+                'price_monthly': 111900,
+                'price_annual': 1119000
             },
             'elite': {
                 'reason': 'Plan Premium (Mes Prepago) - Menu.IA',
-                'price_monthly': 179900,
-                'price_annual': 1799000
+                'price_monthly': 209900,
+                'price_annual': 2099000
             }
         }
         
@@ -2909,8 +2923,8 @@ async def create_wa_pack_link(data: WhatsAppPackRequest, business: Business = De
         # Updated pricing for packs (Price in COP)
         PACK_PRICING = {
             1000: 150000,
-            5000: 650000,
-            10000: 1100000
+            5000: 725000,
+            10000: 1400000
         }
         
         price = PACK_PRICING.get(data.amount)
@@ -2974,6 +2988,75 @@ async def create_wa_pack_link(data: WhatsAppPackRequest, business: Business = De
         import traceback
         logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/payments/create-support-pack-link")
+async def create_support_pack_link(data: WhatsAppPackRequest, business: Business = Depends(get_current_business)):
+    """Generate a MercadoPago Preference Link for WhatsApp Support Packs"""
+    if not os.environ.get("MERCADOPAGO_ACCESS_TOKEN"):
+         raise HTTPException(status_code=503, detail="El sistema de pagos de MercadoPago no está configurado.")
+    try:
+        SUPPORT_PRICING = {
+            1000: 59900,
+            3000: 163900,
+            6000: 299900
+        }
+        
+        price = SUPPORT_PRICING.get(data.amount)
+        if not price:
+             raise HTTPException(status_code=400, detail="Cantidad de mensajes de soporte no válida")
+             
+        payer_email = business.email if business.email else "soporte@menuia.co"
+        frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+        
+        preference_data = {
+            "items": [
+                {
+                    "title": f"Pack Soporte de {data.amount:,} Mensajes WhatsApp - Menu.IA",
+                    "quantity": 1,
+                    "unit_price": price,
+                    "currency_id": "COP"
+                }
+            ],
+            "payer": {
+                "email": payer_email
+            },
+            "external_reference": f"SUPPORT_PACK:{business.id}:{data.amount}",
+            "back_urls": {
+                "success": f"{frontend_url}/dashboard/{business.slug}/whatsapp?status=success",
+                "failure": f"{frontend_url}/dashboard/{business.slug}/whatsapp?status=failure",
+                "pending": f"{frontend_url}/dashboard/{business.slug}/whatsapp?status=pending"
+            }
+        }
+
+        if frontend_url.startswith('https://') and 'localhost' not in frontend_url:
+            preference_data["auto_return"] = "approved"
+
+        backend_url = os.environ.get('BACKEND_URL', '')
+        if backend_url.startswith('https://'):
+            preference_data["notification_url"] = f"{backend_url}/api/payments/webhook"
+        
+        preference_response = mp_sdk.preference().create(preference_data)
+        
+        if preference_response["status"] >= 400:
+            error_detail = preference_response.get("response", "No response data")
+            logger.error(f"MercadoPago Error ({preference_response['status']}): {error_detail}")
+            raise HTTPException(status_code=400, detail=f"Error de MercadoPago: {error_detail}")
+
+        preference = preference_response["response"]
+        
+        if "init_point" not in preference:
+            raise HTTPException(status_code=500, detail="La respuesta de MercadoPago no contiene el link de pago.")
+
+        return {"init_point": preference["init_point"]}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating Support pack payment: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 
 @api_router.post("/payments/webhook")
@@ -3039,7 +3122,22 @@ async def mercadopago_webhook(request: Request):
                      }).eq('id', business_id).execute()
                      
                      logger.info(f"Pack Webhook: Added {amount} credits to Business {business_id}")
-                 
+                
+                 elif parts[0] == "SUPPORT_PACK":
+                     # Handle WhatsApp Support Pack Purchase
+                     business_id = parts[1]
+                     amount = int(parts[2])
+                     
+                     # Increment wa_messages_limit
+                     res = supabase.table('negocios').select('wa_messages_limit').eq('id', business_id).single().execute()
+                     current = res.data.get('wa_messages_limit', 0) if res.data else 0
+                     
+                     supabase.table('negocios').update({
+                         'wa_messages_limit': current + amount
+                     }).eq('id', business_id).execute()
+                     
+                     logger.info(f"Support Pack Webhook: Added {amount} to wa_messages_limit for Business {business_id}")
+                
                  elif len(parts) >= 2:
                      # Handle Plan Payment (Old Logic)
                      business_id = parts[0]

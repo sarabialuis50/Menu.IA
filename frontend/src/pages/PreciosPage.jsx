@@ -48,8 +48,8 @@ export default function PreciosPage() {
             name: "Pro",
             badge: "Más Popular",
             description: "Potencia tu negocio con fidelización",
-            price: 79900,
-            priceAnnual: 79900 * 10,
+            price: 111900,
+            priceAnnual: 111900 * 10,
             popular: true,
             features: [
                 { name: "400 Pedidos / mes", included: true },
@@ -69,12 +69,12 @@ export default function PreciosPage() {
             name: "Premium",
             badge: "Elite",
             description: "Para negocios que van por todo",
-            price: 179900,
-            priceAnnual: 179900 * 10,
+            price: 209900,
+            priceAnnual: 209900 * 10,
             popular: false,
             features: [
                 { name: "Pedidos ILIMITADOS", included: true },
-                { name: "5,000 Mensajes Venta/Soporte", included: true },
+                { name: "3,000 Mensajes Venta/Soporte", included: true },
                 { name: "Menú Digital Interactivo", included: true },
                 { name: "Código QR Personalizado", included: true },
                 { name: "Pedidos en Mesa y Domicilio", included: true },
@@ -89,8 +89,14 @@ export default function PreciosPage() {
 
     const marketingPacks = [
         { id: 1000, name: "Pack Inicial", messages: "1.000", price: 150000, desc: "Para pymes que inician en marketing." },
-        { id: 5000, name: "Pack Crecimiento", messages: "5.000", price: 650000, desc: "Ideal para campañas de impacto medio.", popular: true },
-        { id: 10000, name: "Pack Masivo", messages: "10.000", price: 1100000, desc: "Lo mejor para grandes comunidades." }
+        { id: 5000, name: "Pack Crecimiento", messages: "5.000", price: 725000, desc: "Ideal para campañas de impacto medio.", popular: true },
+        { id: 10000, name: "Pack Masivo", messages: "10.000", price: 1400000, desc: "Lo mejor para grandes comunidades." }
+    ];
+
+    const supportPacks = [
+        { id: 'sup_1000', messagesRaw: 1000, name: "Estándar", messages: "1.000", price: 59900, desc: "Extra ideal para cubrir tu demanda mensual." },
+        { id: 'sup_3000', messagesRaw: 3000, name: "Ultra", messages: "3.000", price: 163900, desc: "Mayor soporte a clientes frecuentes.", popular: true },
+        { id: 'sup_6000', messagesRaw: 6000, name: "Extremo", messages: "6.000", price: 299900, desc: "Operación de muy alto volumen." }
     ];
 
     const handleSelectPlan = async (planId) => {
@@ -133,6 +139,28 @@ export default function PreciosPage() {
         try {
             setLoadingPlan(`pack-${amount}`);
             const response = await api().post('/payments/create-wa-pack-link', { amount });
+            if (response.data.init_point) {
+                window.location.href = response.data.init_point;
+            } else {
+                toast.error("Error al generar el link de pago");
+            }
+        } catch (error) {
+            toast.error("Error al conectar con el sistema de pagos");
+        } finally {
+            setLoadingPlan(null);
+        }
+    };
+
+    const handleSelectSupportPack = async (amount) => {
+        if (!user) {
+            toast.info("Regístrate o inicia sesión para comprar packs de soporte.");
+            navigate('/login');
+            return;
+        }
+
+        try {
+            setLoadingPlan(`sup-${amount}`);
+            const response = await api().post('/payments/create-support-pack-link', { amount });
             if (response.data.init_point) {
                 window.location.href = response.data.init_point;
             } else {
@@ -237,7 +265,7 @@ export default function PreciosPage() {
                                     key={pack.id}
                                     whileHover={{ scale: 1.05 }}
                                     transition={{ type: "spring", stiffness: 300 }}
-                                    className={`relative p-8 rounded-[2.5rem] border-2 transition-all duration-300 flex flex-col hover:border-[#22C55E] hover:shadow-2xl hover:shadow-green-50 ${pack.popular ? 'border-[#22C55E] bg-white shadow-2xl scale-105 z-10' : 'border-gray-100 bg-white'}`}
+                                    className={`group relative p-8 rounded-[2.5rem] border-2 transition-all duration-300 flex flex-col hover:border-[#22C55E] hover:shadow-2xl hover:shadow-green-50 ${pack.popular ? 'border-[#22C55E] bg-white shadow-2xl scale-105 z-10' : 'border-gray-100 bg-white'}`}
                                 >
                                     {pack.popular && (
                                         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-[#4ADE80] text-[#111814] px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg whitespace-nowrap">
@@ -252,7 +280,7 @@ export default function PreciosPage() {
                                     <h3 className="text-sm font-black text-black uppercase tracking-widest mb-4">{pack.name}</h3>
                                     <div className="text-4xl font-black mb-2">{pack.messages} <span className="text-sm">MSJS</span></div>
                                     <p className="text-sm text-gray-500 mb-8">{pack.desc}</p>
-                                    <div className="bg-gray-50 p-4 rounded-2xl mb-8">
+                                    <div className="bg-gray-50 p-4 rounded-2xl mb-8 border-2 border-transparent group-hover:border-[#22C55E] group-hover:bg-white transition-all duration-300 cursor-default">
                                         <div className="flex items-center justify-center gap-1">
                                             <span className="text-2xl font-black text-[#22C55E]">${pack.price.toLocaleString()}</span>
                                             <span className="text-[10px] font-black text-black">COP</span>
@@ -268,6 +296,51 @@ export default function PreciosPage() {
                                             }`}
                                     >
                                         {loadingPlan === `pack-${pack.id}` ? <Loader2 className="animate-spin" /> : "Comprar Pack"}
+                                    </Button>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="max-w-7xl mx-auto border-t pt-24 mt-24 text-center">
+                        <Badge className="bg-[#4ADE80]/10 text-[#22C55E] border-none px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-4 transition-all hover:bg-[#4ADE80] hover:text-[#111814] cursor-default">
+                            ADD-ONS MENSUALES
+                        </Badge>
+                        <h2 className="text-3xl sm:text-5xl font-black text-[#0F172A] mb-4 uppercase tracking-tight">Packs de <span className="text-[#22C55E]">Venta/Soporte</span></h2>
+                        <p className="text-gray-500 mb-16 max-w-2xl mx-auto font-medium">Incrementa tu límite de interacciones para no detener nunca las comunicaciones diarias con tus clientes reales.</p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                            {supportPacks.map((pack) => (
+                                <motion.div
+                                    key={pack.id}
+                                    whileHover={{ scale: 1.05 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
+                                    className={`group relative p-8 rounded-[2.5rem] border-2 transition-all duration-300 flex flex-col hover:border-[#22C55E] hover:shadow-2xl hover:shadow-green-50 ${pack.popular ? 'border-[#22C55E] bg-white shadow-2xl scale-105 z-10' : 'border-gray-100 bg-white'}`}
+                                >
+                                    {pack.popular && (
+                                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-[#4ADE80] text-[#111814] px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg whitespace-nowrap">
+                                            Recomendado
+                                        </div>
+                                    )}
+                                    <h3 className="text-sm font-black text-black uppercase tracking-widest mb-4">{pack.name}</h3>
+                                    <div className="text-4xl font-black mb-2">{pack.messages} <span className="text-sm">MSJS</span></div>
+                                    <p className="text-sm text-gray-500 mb-8">{pack.desc}</p>
+                                    <div className="bg-gray-50 p-4 rounded-2xl mb-8 border-2 border-transparent group-hover:border-[#22C55E] group-hover:bg-white transition-all duration-300 cursor-default">
+                                        <div className="flex items-center justify-center gap-1">
+                                            <span className="text-2xl font-black text-[#22C55E]">${pack.price.toLocaleString()}</span>
+                                            <span className="text-[10px] font-black text-black">COP</span>
+                                        </div>
+                                        <div className="text-[10px] font-black text-gray-400">PAGO ÚNICO</div>
+                                    </div>
+                                    <Button
+                                        onClick={() => handleSelectSupportPack(pack.messagesRaw)}
+                                        disabled={loadingPlan !== null}
+                                        className={`h-12 rounded-xl font-black transition-all ${pack.popular
+                                            ? 'bg-[#4ADE80] text-[#111814] hover:bg-green-600'
+                                            : 'bg-white border-2 border-[#4ADE80] text-[#22C55E] hover:bg-[#4ADE80] hover:text-[#111814]'
+                                            }`}
+                                    >
+                                        {loadingPlan === `sup-${pack.messagesRaw}` ? <Loader2 className="animate-spin" /> : "Comprar Pack"}
                                     </Button>
                                 </motion.div>
                             ))}
