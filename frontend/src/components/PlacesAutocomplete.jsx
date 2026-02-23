@@ -11,7 +11,7 @@ export const PlacesAutocomplete = ({ value, onChange, onPlaceSelected, placehold
     const autocompleteRef = useRef(null);
 
     useEffect(() => {
-        if (isLoaded && inputRef.current && !autocompleteRef.current) {
+        if (isLoaded && inputRef.current && !autocompleteRef.current && window.google && window.google.maps) {
             const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
                 fields: ["address_components", "geometry", "name", "formatted_address"],
                 componentRestrictions: { country: "CO" } // Restrict to Colombia by default

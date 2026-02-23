@@ -160,13 +160,54 @@ async def websocket_endpoint(websocket: WebSocket, negocio_id: str):
 
 
 
+
+# --- AI Nutrition Estimation ---
+async def estimate_nutrition(product_name: str, description: str = ""):
+    try:
+        # Use existing genai configuration or re-configure if env key is present
+        api_key = os.environ.get("GOOGLE_GEMINI_API_KEY")
+        if not api_key:
+            return None
+            
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        prompt = f"""
+        Como un experto nutricionista, estima la información nutricional aproximada para el siguiente plato de un restaurante. 
+        Devuelve SOLO un objeto JSON con los campos exactos: "kcal" (número entero), "proteina" (string con 'g'), "carbohidratos" (string con 'g'), "grasa" (string con 'g').
+        
+        Plato: {product_name}
+        Descripción: {description}
+        
+        Ejemplo de salida: {{"kcal": 450, "proteina": "25g", "carbohidratos": "40g", "grasa": "15g"}}
+        """
+        
+        response = model.generate_content(prompt)
+        text = response.text.strip()
+        
+        # Clean potential markdown formatting
+        if '```json' in text:
+            text = text.split('```json')[1].split('```')[0].strip()
+        elif '{' in text:
+             text = text[text.find('{'):text.rfind('}')+1]
+             
+        data = json.loads(text)
+        return data
+    except Exception as e:
+        logger.warning(f"Error estimating nutrition for {product_name}: {e}")
+        return None
+
+
 # Helper Functions
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
 
 def verify_password(password: str, hashed: str) -> bool:
-    return bcrypt.checkpw(password.encode(), hashed.encode())
+    try:
+        return bcrypt.checkpw(password.encode(), hashed.encode())
+    except ValueError:
+        return False
 
 
 def create_token(data: dict, expires_delta: timedelta = None) -> str:
@@ -648,6 +689,15 @@ async def create_product(slug: str, data: ProductCreate, business: Business = De
         **data.model_dump(),
         negocio_id=business.id
     )
+
+    # Estimate nutrition if not provided
+    if not any([product.nutri_kcal, product.nutri_proteina, product.nutri_carbohidratos, product.nutri_grasa]):
+        nutrition = await estimate_nutrition(product.nombre, product.descripcion or "")
+        if nutrition:
+            product.nutri_kcal = nutrition.get('kcal')
+            product.nutri_proteina = nutrition.get('proteina')
+            product.nutri_carbohidratos = nutrition.get('carbohidratos')
+            product.nutri_grasa = nutrition.get('grasa')
     
     try:
         data_dict = serialize_doc(product.model_dump())
@@ -658,7 +708,11 @@ async def create_product(slug: str, data: ProductCreate, business: Business = De
         logger.warning(f"Error creating product, attempting to handle missing columns: {error_str}")
         
         # Handle missing columns gracefully
-        new_columns = ['destacado', 'oferta_porcentaje', 'precio_original', 'etiqueta']
+        new_columns = [
+            'destacado', 'oferta_porcentaje', 'precio_original', 'etiqueta', 
+            'prep_time_minutes', 'nutri_kcal', 'nutri_proteina', 
+            'nutri_carbohidratos', 'nutri_grasa', 'modificadores'
+        ]
         
         # If it's a column missing error, try to remove all potentially missing columns that are in the error message
         if "column" in error_str.lower():
@@ -708,6 +762,27 @@ async def update_product(slug: str, product_id: str, data: ProductUpdate, busine
     update_data = {k: v for k, v in data.model_dump().items() if v is not None}
     if not update_data:
         raise HTTPException(status_code=400, detail="No hay datos para actualizar")
+
+    # If name or description changed, and no nutrition info provided in update, re-estimate?
+    # We only re-estimate if the name or description is updated AND no nutritional data is explicitly sent in this update.
+    has_name_change = 'nombre' in update_data or 'descripcion' in update_data
+    has_nutri_input = any(k in update_data for k in ['nutri_kcal', 'nutri_proteina', 'nutri_carbohidratos', 'nutri_grasa'])
+    
+    if has_name_change and not has_nutri_input:
+        # Get current data to have full context for estimation
+        curr_res = supabase.table('productos').select('nombre, descripcion').eq('id', product_id).execute()
+        if curr_res.data:
+            current = curr_res.data[0]
+            new_name = update_data.get('nombre', current.get('nombre'))
+            new_desc = update_data.get('descripcion', current.get('descripcion'))
+            
+            nutrition = await estimate_nutrition(new_name, new_desc or "")
+            if nutrition:
+                update_data['nutri_kcal'] = nutrition.get('kcal')
+                update_data['nutri_proteina'] = nutrition.get('proteina')
+                update_data['nutri_carbohidratos'] = nutrition.get('carbohidratos')
+                update_data['nutri_grasa'] = nutrition.get('grasa')
+                logger.info(f"Re-estimated nutrition for updated product {product_id}")
     
     try:
         response = supabase.table('productos').update(update_data).match({
@@ -720,48 +795,8 @@ async def update_product(slug: str, product_id: str, data: ProductUpdate, busine
         
         return Product(**response.data[0])
     except Exception as e:
-        error_str = str(e)
-        logger.warning(f"Error updating product, checking for missing columns: {error_str}")
-        new_columns = ['destacado', 'oferta_porcentaje', 'precio_original', 'etiqueta']
-
-        if "column" in error_str.lower():
-            for col in new_columns:
-                if col in error_str.lower():
-                    logger.warning(f"Removing missing column '{col}' from update payload.")
-                    update_data.pop(col, None)
-            
-            try:
-                response = supabase.table('productos').update(update_data).match({
-                    "id": product_id, 
-                    "negocio_id": business.id
-                }).execute()
-                if not response.data:
-                    raise HTTPException(status_code=404, detail="Producto no encontrado")
-                return Product(**response.data[0])
-            except Exception as e2:
-                # Retry one more time if yet another column is missing
-                error_str2 = str(e2)
-                if "column" in error_str2.lower():
-                    for col in new_columns:
-                        if col in error_str2.lower():
-                            logger.warning(f"Removing another missing column '{col}' from update payload.")
-                            update_data.pop(col, None)
-                    try:
-                        response = supabase.table('productos').update(update_data).match({
-                            "id": product_id, 
-                            "negocio_id": business.id
-                        }).execute()
-                        if not response.data:
-                            raise HTTPException(status_code=404, detail="Producto no encontrado")
-                        return Product(**response.data[0])
-                    except Exception as e3:
-                        raise HTTPException(status_code=500, detail=f"Error al actualizar producto (múltiples columnas faltantes): {str(e3)}")
-                raise HTTPException(status_code=500, detail=f"Error al actualizar producto (reintento): {str(e2)}")
-
-        logger.error(f"Error updating product: {error_str}")
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Error al actualizar producto: {error_str}")
+        logger.error(f"Error updating product: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error al actualizar producto: {str(e)}")
 
 
 @api_router.delete("/products/{slug}/{product_id}")
@@ -797,14 +832,19 @@ async def create_menu_item(slug: str, data: MenuItemCreate, business: Business =
     if business.slug != slug:
         raise HTTPException(status_code=403, detail="No autorizado")
     
-    item = MenuItem(**data.model_dump(), negocio_id=business.id)
+    dump_data = data.model_dump()
+    dump_data['negocio_id'] = business.id
+    item = MenuItem(**dump_data)
     data_dict = serialize_doc(item.model_dump())
     
-    response = supabase.table('menu_items').insert(data_dict).execute()
-    if not response.data:
-        raise HTTPException(status_code=500, detail="Error al crear el plato")
-    
-    return MenuItem(**response.data[0])
+    try:
+        response = supabase.table('menu_items').insert(data_dict).execute()
+        if not response.data:
+            raise HTTPException(status_code=500, detail="Error al crear el plato")
+        return MenuItem(**response.data[0])
+    except Exception as e:
+        logger.error(f"Error creating menu item: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error al crear plato: {str(e)}")
 
 
 @api_router.put("/menu-items/{slug}/{item_id}", response_model=MenuItem)
@@ -815,15 +855,19 @@ async def update_menu_item(slug: str, item_id: str, data: Dict[str, Any], busine
     update_data = {k: v for k, v in data.items() if k != 'id'}
     update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
     
-    response = supabase.table('menu_items').update(update_data).match({
-        "id": item_id,
-        "negocio_id": business.id
-    }).execute()
-    
-    if not response.data:
-        raise HTTPException(status_code=404, detail="Plato no encontrado")
-    
-    return MenuItem(**response.data[0])
+    try:
+        response = supabase.table('menu_items').update(update_data).match({
+            "id": item_id,
+            "negocio_id": business.id
+        }).execute()
+        
+        if not response.data:
+            raise HTTPException(status_code=404, detail="Plato no encontrado")
+        
+        return MenuItem(**response.data[0])
+    except Exception as e:
+        logger.error(f"Error updating menu item: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error al actualizar plato: {str(e)}")
 
 
 @api_router.delete("/menu-items/{slug}/{item_id}")

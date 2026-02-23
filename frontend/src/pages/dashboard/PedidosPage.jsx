@@ -663,6 +663,20 @@ export default function PedidosPage() {
                                                 <span>Subtotal:</span>
                                                 <span>{formatCurrency(item.precio * item.cantidad)}</span>
                                             </div>
+                                            {item.modificadores && item.modificadores.length > 0 && (
+                                                <div className="mt-2 flex flex-wrap gap-1">
+                                                    {item.modificadores.map((mod, i) => (
+                                                        <span key={i} className="px-2 py-0.5 rounded-md bg-orange-50 text-orange-600 text-[9px] font-black border border-orange-100 uppercase">
+                                                            + {mod}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            {item.notas && (
+                                                <p className="mt-1 text-[10px] font-bold text-indigo-500 bg-indigo-50/50 px-2 py-1 rounded-lg">
+                                                    📝 {item.notas}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
                                 ))}

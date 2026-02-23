@@ -173,6 +173,21 @@ class ProductBase(BaseModel):
     destacado: bool = False
     orden: int = 0
     modificadores: Optional[List[Dict[str, Any]]] = None
+    tamanos: Optional[List[Dict[str, Any]]] = None
+    opciones: Optional[List[Dict[str, Any]]] = None
+    
+    # Nutrición (IA)
+    nutri_kcal: Optional[int] = None
+    nutri_proteina: Optional[str] = None
+    nutri_carbohidratos: Optional[str] = None
+    nutri_grasa: Optional[str] = None
+    
+    # Extras
+    prep_time_minutes: Optional[int] = None
+    is_vegan: bool = False
+    is_vegetarian: bool = False
+    is_gluten_free: bool = False
+    is_spicy: bool = False
 
 
 class ProductCreate(ProductBase):
@@ -192,6 +207,14 @@ class ProductUpdate(BaseModel):
     destacado: Optional[bool] = None
     orden: Optional[int] = None
     modificadores: Optional[List[Dict[str, Any]]] = None
+    tamanos: Optional[List[Dict[str, Any]]] = None
+    opciones: Optional[List[Dict[str, Any]]] = None
+    
+    # Nutrición (IA)
+    nutri_kcal: Optional[int] = None
+    nutri_proteina: Optional[str] = None
+    nutri_carbohidratos: Optional[str] = None
+    nutri_grasa: Optional[str] = None
 
 
 class Product(ProductBase):
@@ -496,6 +519,17 @@ class MenuItemBase(BaseModel):
     available_from: Optional[str] = None  # Using str for time compatibility
     available_to: Optional[str] = None
     notes: Optional[str] = None
+    
+    # Nutrición (IA)
+    nutri_kcal: Optional[int] = None
+    nutri_proteina: Optional[str] = None
+    nutri_carbohidratos: Optional[str] = None
+    nutri_grasa: Optional[str] = None
+    
+    # Modificadores (JSON/JSONB compatibility)
+    modificadores: Optional[List[Dict[str, Any]]] = None
+    tamanos: Optional[List[Dict[str, Any]]] = None
+    opciones: Optional[List[Dict[str, Any]]] = None
 
 class MenuItemCreate(MenuItemBase):
     pass

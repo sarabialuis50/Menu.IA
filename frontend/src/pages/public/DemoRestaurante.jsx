@@ -54,10 +54,10 @@ const DEMO_CATEGORIES = [
 
 const DEMO_PRODUCTS = [
     // Hamburguesas
-    { id: 1, categoria: 'Hamburguesas', nombre: 'Clásica Grill', precio: 18000, descripcion: 'Carne artesanal, queso cheddar, lechuga y tomate.', imagen: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80', destacado: true, etiqueta: 'NUEVO' },
-    { id: 2, categoria: 'Hamburguesas', nombre: 'Monster Bacon', precio: 25000, descripcion: 'Doble carne, triple tocino crujiente y mucha salsa.', imagen: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=500&q=80', destacado: true, etiqueta: 'OFERTA', precio_original: 28000, oferta_porcentaje: 10 },
-    { id: 3, categoria: 'Hamburguesas', nombre: 'Crispy Chicken', precio: 22000, descripcion: 'Pechuga de pollo apanada, cole slaw y pepinillos.', imagen: 'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=500&q=80', etiqueta: 'HOT' },
-    { id: 4, categoria: 'Hamburguesas', nombre: 'Veggie Power', precio: 20000, descripcion: 'Hamburguesa de lentejas, champiñones y rúcula.', imagen: 'https://images.unsplash.com/photo-1525059696034-4967a8504e71?w=500&q=80' },
+    { id: 1, categoria: 'Hamburguesas', nombre: 'Clásica Grill', precio: 18000, descripcion: 'Carne artesanal, queso cheddar, lechuga y tomate.', imagen: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80', destacado: true, etiqueta: 'NUEVO', nutri_kcal: 750, nutri_proteina: '28g', nutri_carbohidratos: '42g', nutri_grasa: '35g' },
+    { id: 2, categoria: 'Hamburguesas', nombre: 'Monster Bacon', precio: 25000, descripcion: 'Doble carne, triple tocino crujiente y mucha salsa.', imagen: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=500&q=80', destacado: true, etiqueta: 'OFERTA', precio_original: 28000, oferta_porcentaje: 10, nutri_kcal: 1150, nutri_proteina: '45g', nutri_carbohidratos: '38g', nutri_grasa: '65g' },
+    { id: 3, categoria: 'Hamburguesas', nombre: 'Crispy Chicken', precio: 22000, descripcion: 'Pechuga de pollo apanada, cole slaw y pepinillos.', imagen: 'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=500&q=80', etiqueta: 'HOT', nutri_kcal: 680, nutri_proteina: '32g', nutri_carbohidratos: '45g', nutri_grasa: '28g' },
+    { id: 4, categoria: 'Hamburguesas', nombre: 'Veggie Power', precio: 20000, descripcion: 'Hamburguesa de lentejas, champiñones y rúcula.', imagen: 'https://images.unsplash.com/photo-1525059696034-4967a8504e71?w=500&q=80', nutri_kcal: 420, nutri_proteina: '18g', nutri_carbohidratos: '55g', nutri_grasa: '12g' },
     { id: 37, categoria: 'Hamburguesas', nombre: 'Doble Queso XL', precio: 24000, descripcion: 'Doble carne y cuatro capas de queso monterey jack.', imagen: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=500&q=80', destacado: false },
 
     // Pizzas
@@ -249,6 +249,11 @@ export default function DemoRestaurante() {
                     <div className="inline-flex items-center px-2 py-0.5 md:px-3 md:py-1.5 rounded-full bg-[#4ADE80]/10 text-[8px] md:text-[10px] font-black text-[#22C55E] uppercase tracking-wider">
                         {product.categoria}
                     </div>
+                    {product.nutri_kcal && (
+                        <div title="Calorías estimadas" className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-[#4ADE80]/10 text-[#22C55E] text-[8px] md:text-[10px] font-black border border-[#4ADE80]/20">
+                            🔥 {product.nutri_kcal} kcal
+                        </div>
+                    )}
 
                     {/* Discount/Offer Badge - At the top right of the card content */}
                     {product.oferta_porcentaje && (

@@ -13,7 +13,7 @@ export const MapPicker = ({ lat, lng, onChange, address }) => {
     const [mapInstance, setMapInstance] = useState(null);
 
     useEffect(() => {
-        if (isLoaded && mapRef.current && !mapInstance) {
+        if (isLoaded && mapRef.current && !mapInstance && window.google && window.google.maps) {
             const defaultCenter = { lat: lat || 4.6097, lng: lng || -74.0817 };
 
             const map = new window.google.maps.Map(mapRef.current, {

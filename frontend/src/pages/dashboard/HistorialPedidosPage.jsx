@@ -544,6 +544,15 @@ export default function HistorialPedidosPage() {
                                                 <span>Precio Unit.:</span>
                                                 <span>{formatCurrency(item.precio)}</span>
                                             </div>
+                                            {item.modificadores && item.modificadores.length > 0 && (
+                                                <div className="mt-2 flex flex-wrap gap-1">
+                                                    {item.modificadores.map((mod, i) => (
+                                                        <span key={i} className="px-2 py-0.5 rounded-md bg-orange-50 text-orange-600 text-[9px] font-black border border-orange-100 uppercase">
+                                                            + {mod}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ))}

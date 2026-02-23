@@ -80,7 +80,9 @@ import {
     EyeOff,
     Layers,
     ListChecks,
-    GripVertical
+    GripVertical,
+    Maximize,
+    PlusCircle
 } from 'lucide-react';
 
 // Icon mapping for categories
@@ -230,6 +232,8 @@ const ConfiguracionPage = () => {
         destacado: false,
         oferta_porcentaje: '',
         modificadores: [],
+        tamanos: [],
+        opciones: [],
         is_vegan: false,
         is_vegetarian: false,
         is_gluten_free: false,
@@ -552,12 +556,18 @@ const ConfiguracionPage = () => {
             destacado: false,
             oferta_porcentaje: '',
             modificadores: [],
+            tamanos: [],
+            opciones: [],
             is_vegan: false,
             is_vegetarian: false,
             is_gluten_free: false,
             is_spicy: false,
             prep_time_minutes: '',
-            allergens: []
+            allergens: [],
+            nutri_kcal: '',
+            nutri_proteina: '',
+            nutri_carbohidratos: '',
+            nutri_grasa: ''
         };
         setEditingProduct(null);
         setProductForm(initial);
@@ -578,12 +588,18 @@ const ConfiguracionPage = () => {
             destacado: product.destacado || false,
             oferta_porcentaje: product.oferta_porcentaje?.toString() || '',
             modificadores: product.modificadores || [],
+            tamanos: product.tamanos || [],
+            opciones: product.opciones || [],
             is_vegan: product.is_vegan || false,
             is_vegetarian: product.is_vegetarian || false,
             is_gluten_free: product.is_gluten_free || false,
             is_spicy: product.is_spicy || false,
             prep_time_minutes: product.prep_time_minutes?.toString() || '',
-            allergens: product.allergens || []
+            allergens: product.allergens || [],
+            nutri_kcal: product.nutri_kcal || '',
+            nutri_proteina: product.nutri_proteina || '',
+            nutri_carbohidratos: product.nutri_carbohidratos || '',
+            nutri_grasa: product.nutri_grasa || ''
         };
         setEditingProduct(product);
         setProductForm(initial);
@@ -600,12 +616,16 @@ const ConfiguracionPage = () => {
             const finalPrice = discount > 0 ? basePrice * (1 - discount / 100) : basePrice;
 
             // Limpiar modificadores vacíos o sin opciones
-            const cleanModificadores = (productForm.modificadores || [])
+            const cleanGroups = (list) => (list || [])
                 .filter(m => m.nombre.trim() && m.opciones.length > 0)
                 .map(m => ({
                     ...m,
                     opciones: m.opciones.filter(o => o.nombre.trim())
                 }));
+
+            const cleanModificadores = cleanGroups(productForm.modificadores);
+            const cleanTamanos = cleanGroups(productForm.tamanos);
+            const cleanOpciones = cleanGroups(productForm.opciones);
 
             const payload = {
                 name: productForm.nombre,
@@ -621,6 +641,7 @@ const ConfiguracionPage = () => {
 
             // If the backend expects the exact MenuItem model
             const menuItemPayload = {
+                negocio_id: businessData.id,
                 name: payload.name,
                 description: payload.description,
                 base_price: payload.base_price,
@@ -636,7 +657,14 @@ const ConfiguracionPage = () => {
                 is_gluten_free: productForm.is_gluten_free,
                 is_spicy: productForm.is_spicy,
                 prep_time_minutes: productForm.prep_time_minutes ? parseInt(productForm.prep_time_minutes) : null,
-                allergens: productForm.allergens
+                allergens: productForm.allergens,
+                modificadores: cleanModificadores,
+                tamanos: cleanTamanos,
+                opciones: cleanOpciones,
+                nutri_kcal: productForm.nutri_kcal ? parseInt(productForm.nutri_kcal) : null,
+                nutri_proteina: productForm.nutri_proteina || null,
+                nutri_carbohidratos: productForm.nutri_carbohidratos || null,
+                nutri_grasa: productForm.nutri_grasa || null
             };
 
             if (editingProduct) {
@@ -650,7 +678,13 @@ const ConfiguracionPage = () => {
             fetchCatalog();
         } catch (error) {
             console.error('Error saving product:', error);
-            const errorMsg = error.response?.data?.detail || 'Error al guardar producto';
+            const detail = error.response?.data?.detail;
+            let errorMsg = 'Error al guardar producto';
+            if (Array.isArray(detail)) {
+                errorMsg = detail.map(d => `${d.loc?.[d.loc.length - 1]}: ${d.msg}`).join(', ');
+            } else if (typeof detail === 'string') {
+                errorMsg = detail;
+            }
             toast.error(errorMsg);
         } finally {
             setSaving(false);
@@ -660,7 +694,7 @@ const ConfiguracionPage = () => {
     const handleDeleteProduct = async (id) => {
         if (!confirm('¿Eliminar este producto?')) return;
         try {
-            await api().delete(`/products/${slug}/${id}`);
+            await api().delete(`/menu-items/${slug}/${id}`);
             toast.success('Producto eliminado');
             fetchCatalog();
         } catch (error) {
@@ -1392,10 +1426,20 @@ const ConfiguracionPage = () => {
                                                                 <div className="font-black text-[#111814] text-sm group-hover:text-[#22C55E] transition-colors truncate">
                                                                     {p.nombre}
                                                                 </div>
-                                                                <div className="flex flex-wrap gap-1">
+                                                                <div className="flex flex-wrap gap-1 mt-1">
                                                                     {p.etiqueta && (
                                                                         <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-[#111824] text-[8px] font-black text-white uppercase tracking-widest">
                                                                             {p.etiqueta}
+                                                                        </span>
+                                                                    )}
+                                                                    {p.prep_time_minutes > 0 && (
+                                                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-blue-50 text-[8px] font-black text-blue-600 border border-blue-100 uppercase tracking-widest">
+                                                                            ⏱️ {p.prep_time_minutes} min
+                                                                        </span>
+                                                                    )}
+                                                                    {p.oferta_porcentaje && (
+                                                                        <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-red-50 text-[8px] font-black text-red-500 border border-red-100 uppercase tracking-widest">
+                                                                            🔥 {p.oferta_porcentaje}% OFF
                                                                         </span>
                                                                     )}
                                                                     <span className={`sm:hidden text-[9px] font-black uppercase tracking-tight ${p.disponible ? 'text-[#22C55E]' : 'text-red-400'}`}>
@@ -2483,15 +2527,22 @@ const ConfiguracionPage = () => {
 
                                 {/* Divider or Section Break */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end p-6 rounded-[2.5rem] border border-[#4ADE80]/10 bg-white/50">
-                                    <div className="space-y-2">
-                                        <Label className="font-bold">Tiempo de Prep. (Minutos)</Label>
-                                        <Input
-                                            type="number"
-                                            value={productForm.prep_time_minutes}
-                                            onChange={e => setProductForm({ ...productForm, prep_time_minutes: e.target.value })}
-                                            className="h-12 w-full rounded-2xl bg-white border-[#4ADE80]/10 focus:border-[#4ADE80]/30"
-                                            placeholder="Ej: 15"
-                                        />
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-3">
+                                            <Switch
+                                                id="featured-toggle"
+                                                checked={productForm.destacado}
+                                                onCheckedChange={checked => setProductForm({ ...productForm, destacado: checked })}
+                                                className="data-[state=checked]:bg-[#4ADE80]"
+                                            />
+                                            <Label htmlFor="featured-toggle" className="font-bold cursor-pointer flex items-center gap-2 text-[#111814]">
+                                                <Star className={`w-4 h-4 ${productForm.destacado ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
+                                                Producto Destacado
+                                            </Label>
+                                        </div>
+                                        <p className="text-[10px] text-[#618972] leading-tight pl-11 font-medium">
+                                            Aparecerá en la sección principal de Recomendados de tu página.
+                                        </p>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2 h-12 items-center">
                                         <div className="flex items-center gap-2">
@@ -2529,175 +2580,256 @@ const ConfiguracionPage = () => {
                                     </div>
                                 </div>
 
+                                {/* Valores Nutricionales */}
+                                <div className="space-y-4 pt-4 border-t border-gray-100">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <div className="size-8 rounded-full bg-blue-50 flex items-center justify-center">
+                                            <Apple className="w-4 h-4 text-blue-500" />
+                                        </div>
+                                        <div>
+                                            <Label className="font-bold text-[#111814]">Valores Nutricionales</Label>
+                                            <p className="text-[10px] text-gray-400">Información calculada o aproximada (Opcional)</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Calorías (kcal)</Label>
+                                            <Input
+                                                type="number"
+                                                min="0"
+                                                placeholder="Ej: 250"
+                                                value={productForm.nutri_kcal || ''}
+                                                onChange={e => setProductForm({ ...productForm, nutri_kcal: e.target.value ? parseInt(e.target.value) : '' })}
+                                                className="bg-gray-50 border-transparent focus:bg-white focus:border-[#4ADE80]/30 transition-colors rounded-xl"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Proteínas (g)</Label>
+                                            <Input
+                                                placeholder="Ej: 15g"
+                                                value={productForm.nutri_proteina || ''}
+                                                onChange={e => setProductForm({ ...productForm, nutri_proteina: e.target.value })}
+                                                className="bg-gray-50 border-transparent focus:bg-white focus:border-[#4ADE80]/30 transition-colors rounded-xl"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Carbos (g)</Label>
+                                            <Input
+                                                placeholder="Ej: 30g"
+                                                value={productForm.nutri_carbohidratos || ''}
+                                                onChange={e => setProductForm({ ...productForm, nutri_carbohidratos: e.target.value })}
+                                                className="bg-gray-50 border-transparent focus:bg-white focus:border-[#4ADE80]/30 transition-colors rounded-xl"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Grasas (g)</Label>
+                                            <Input
+                                                placeholder="Ej: 8g"
+                                                value={productForm.nutri_grasa || ''}
+                                                onChange={e => setProductForm({ ...productForm, nutri_grasa: e.target.value })}
+                                                className="bg-gray-50 border-transparent focus:bg-white focus:border-[#4ADE80]/30 transition-colors rounded-xl"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
 
-                                {/* MODIFICADORES SECTION */}
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <div className="p-2 bg-[#4ADE80]/10 rounded-xl">
-                                                <Layers className="w-4 h-4 text-[#22C55E]" />
+
+                                {/* SECCIONES DE PERSONALIZACIÓN */}
+                                <div className="space-y-10 border-t border-gray-100 pt-10">
+                                    {/* Helper to render sections to avoid duplication */}
+                                    {[
+                                        {
+                                            id: 'tamanos',
+                                            label: 'Tamaños',
+                                            desc: 'Define las tallas o porciones disponibles.',
+                                            icon: Maximize,
+                                            hasPrice: true
+                                        },
+                                        {
+                                            id: 'modificadores',
+                                            label: 'Adicionales',
+                                            desc: 'Ingredientes o extras con costo adicional.',
+                                            icon: PlusCircle,
+                                            hasPrice: true
+                                        },
+                                        {
+                                            id: 'opciones',
+                                            label: 'Opciones',
+                                            desc: 'Preferencias que no afectan el precio.',
+                                            icon: ListChecks,
+                                            hasPrice: false
+                                        }
+                                    ].map((section) => (
+                                        <div key={section.id} className="space-y-4">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="p-2 bg-[#4ADE80]/10 rounded-xl">
+                                                        <section.icon className="w-4 h-4 text-[#22C55E]" />
+                                                    </div>
+                                                    <div>
+                                                        <Label className="text-sm font-black uppercase tracking-tight text-[#111814]">{section.label}</Label>
+                                                        <p className="text-[10px] text-[#618972] font-medium">{section.desc}</p>
+                                                    </div>
+                                                </div>
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        const newGroup = {
+                                                            id: Date.now().toString(),
+                                                            nombre: '',
+                                                            obligatorio: section.id === 'tamanos',
+                                                            seleccion_minima: section.id === 'tamanos' ? 1 : 0,
+                                                            seleccion_maxima: 1,
+                                                            opciones: [{ id: Date.now().toString() + '-opt', nombre: '', precio: 0 }]
+                                                        };
+                                                        setProductForm({
+                                                            ...productForm,
+                                                            [section.id]: [...(productForm[section.id] || []), newGroup]
+                                                        });
+                                                    }}
+                                                    className="h-9 rounded-xl border-[#4ADE80]/20 text-[#22C55E] hover:bg-[#4ADE80]/5 font-bold gap-2 text-[10px]"
+                                                >
+                                                    <Plus className="w-3 h-3" />
+                                                    AÑADIR GRUPO
+                                                </Button>
                                             </div>
-                                            <div>
-                                                <Label className="text-sm font-black uppercase tracking-tight text-[#111814]">Modificadores y Adiciones</Label>
-                                                <p className="text-[10px] text-[#618972] font-medium">Personaliza las opciones del producto.</p>
+
+                                            <div className="space-y-6">
+                                                {(productForm[section.id] || []).map((group, gIdx) => (
+                                                    <div key={group.id || gIdx} className="bg-white border-2 border-[#4ADE80]/10 rounded-[2rem] p-6 shadow-sm relative group/card hover:border-[#4ADE80]/30 transition-all">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                const newList = [...productForm[section.id]];
+                                                                newList.splice(gIdx, 1);
+                                                                setProductForm({ ...productForm, [section.id]: newList });
+                                                            }}
+                                                            className="absolute -top-2 -right-2 size-8 bg-white border border-red-50 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity shadow-sm hover:bg-red-50"
+                                                        >
+                                                            <X className="w-4 h-4" />
+                                                        </button>
+
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                            <div className="space-y-2">
+                                                                <Label className="text-[10px] font-black uppercase text-gray-400">Nombre del Grupo (Ej: {section.id === 'tamanos' ? 'Escoge Tamaño' : 'Adiciones'})</Label>
+                                                                <Input
+                                                                    value={group.nombre}
+                                                                    onChange={e => {
+                                                                        const newList = [...productForm[section.id]];
+                                                                        newList[gIdx].nombre = e.target.value;
+                                                                        setProductForm({ ...productForm, [section.id]: newList });
+                                                                    }}
+                                                                    className="h-10 rounded-xl bg-gray-50 border-gray-50 focus:bg-white"
+                                                                    placeholder={`Ej: ${section.id === 'tamanos' ? 'Tamaño P' : 'Ingredientes'}`}
+                                                                />
+                                                            </div>
+                                                            <div className="flex items-center gap-6 pt-4">
+                                                                <div className="flex items-center gap-2">
+                                                                    <Switch
+                                                                        checked={group.obligatorio}
+                                                                        onCheckedChange={val => {
+                                                                            const newList = [...productForm[section.id]];
+                                                                            newList[gIdx].obligatorio = val;
+                                                                            newList[gIdx].seleccion_minima = val ? 1 : 0;
+                                                                            setProductForm({ ...productForm, [section.id]: newList });
+                                                                        }}
+                                                                        className="data-[state=checked]:bg-[#4ADE80] scale-75"
+                                                                    />
+                                                                    <Label className="text-[10px] font-black uppercase text-gray-600">Obligatorio</Label>
+                                                                </div>
+                                                                <div className="flex items-center gap-2 flex-1">
+                                                                    <Label className="text-[10px] font-black uppercase text-gray-400">Max</Label>
+                                                                    <Input
+                                                                        type="number"
+                                                                        min="1"
+                                                                        value={group.seleccion_maxima}
+                                                                        onChange={e => {
+                                                                            const newList = [...productForm[section.id]];
+                                                                            newList[gIdx].seleccion_maxima = parseInt(e.target.value) || 1;
+                                                                            setProductForm({ ...productForm, [section.id]: newList });
+                                                                        }}
+                                                                        className="h-10 w-16 rounded-xl bg-gray-50 border-gray-50 text-center font-bold"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="space-y-2 border-t border-gray-50 pt-4">
+                                                            <Label className="text-[10px] font-black uppercase text-[#618972] tracking-widest pl-1">Opciones</Label>
+                                                            <div className="space-y-2">
+                                                                {group.opciones.map((opt, oIdx) => (
+                                                                    <div key={opt.id || oIdx} className="flex gap-2 items-center">
+                                                                        <div className="flex-1">
+                                                                            <Input
+                                                                                value={opt.nombre}
+                                                                                onChange={e => {
+                                                                                    const newList = [...productForm[section.id]];
+                                                                                    newList[gIdx].opciones[oIdx].nombre = e.target.value;
+                                                                                    setProductForm({ ...productForm, [section.id]: newList });
+                                                                                }}
+                                                                                className="h-9 rounded-xl bg-white border-gray-100 text-xs"
+                                                                                placeholder="Nombre de la opción"
+                                                                            />
+                                                                        </div>
+                                                                        {section.hasPrice && (
+                                                                            <div className="w-32 relative">
+                                                                                <Input
+                                                                                    type="text"
+                                                                                    value={opt.precio > 0 ? formatPrice(opt.precio.toString()) : ''}
+                                                                                    onChange={e => {
+                                                                                        const raw = e.target.value.replace(/\D/g, '');
+                                                                                        const newList = [...productForm[section.id]];
+                                                                                        newList[gIdx].opciones[oIdx].precio = parseFloat(raw) || 0;
+                                                                                        setProductForm({ ...productForm, [section.id]: newList });
+                                                                                    }}
+                                                                                    className="h-9 rounded-xl bg-white border-gray-100 text-xs pl-6"
+                                                                                    placeholder="+ 0"
+                                                                                />
+                                                                                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-400">$</span>
+                                                                            </div>
+                                                                        )}
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => {
+                                                                                const newList = [...productForm[section.id]];
+                                                                                newList[gIdx].opciones.splice(oIdx, 1);
+                                                                                setProductForm({ ...productForm, [section.id]: newList });
+                                                                            }}
+                                                                            disabled={group.opciones.length <= 1}
+                                                                            className="size-9 rounded-xl border border-gray-100 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-30"
+                                                                        >
+                                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                                        </button>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={() => {
+                                                                    const newList = [...productForm[section.id]];
+                                                                    newList[gIdx].opciones.push({ id: Date.now().toString(), nombre: '', precio: 0 });
+                                                                    setProductForm({ ...productForm, [section.id]: newList });
+                                                                }}
+                                                                className="mt-2 h-8 text-[10px] font-black text-[#22C55E] hover:bg-[#4ADE80]/5 w-full border border-dashed border-[#4ADE80]/20 rounded-xl"
+                                                            >
+                                                                <Plus className="w-3 h-3 mr-1" /> AÑADIR OPCIÓN
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+
+                                                {(!productForm[section.id] || productForm[section.id].length === 0) && (
+                                                    <div className="py-6 flex flex-col items-center justify-center border-2 border-dashed border-[#4ADE80]/10 rounded-[2rem] gap-2 opacity-30 grayscale grayscale-0">
+                                                        <p className="text-[10px] font-black uppercase text-[#618972]">No hay {section.label.toLowerCase()} configurados</p>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => {
-                                                const newGroup = {
-                                                    id: Date.now().toString(),
-                                                    nombre: '',
-                                                    obligatorio: false,
-                                                    seleccion_minima: 0,
-                                                    seleccion_maxima: 1,
-                                                    opciones: [{ id: Date.now().toString() + '-opt', nombre: '', precio: 0 }]
-                                                };
-                                                setProductForm({
-                                                    ...productForm,
-                                                    modificadores: [...(productForm.modificadores || []), newGroup]
-                                                });
-                                            }}
-                                            className="h-9 rounded-xl border-[#4ADE80]/20 text-[#22C55E] hover:bg-[#4ADE80]/5 font-bold gap-2 text-[10px]"
-                                        >
-                                            <Plus className="w-3 h-3" />
-                                            AÑADIR GRUPO
-                                        </Button>
-                                    </div>
-
-                                    <div className="space-y-6">
-                                        {(productForm.modificadores || []).map((group, gIdx) => (
-                                            <div key={group.id || gIdx} className="bg-white border-2 border-[#4ADE80]/10 rounded-[2rem] p-6 shadow-sm relative group/card">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        const newMods = [...productForm.modificadores];
-                                                        newMods.splice(gIdx, 1);
-                                                        setProductForm({ ...productForm, modificadores: newMods });
-                                                    }}
-                                                    className="absolute -top-2 -right-2 size-8 bg-white border border-red-50 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity shadow-sm hover:bg-red-50"
-                                                >
-                                                    <X className="w-4 h-4" />
-                                                </button>
-
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                                    <div className="space-y-2">
-                                                        <Label className="text-[10px] font-black uppercase text-gray-400">Nombre del Grupo (Ej: Tamaño)</Label>
-                                                        <Input
-                                                            value={group.nombre}
-                                                            onChange={e => {
-                                                                const newMods = [...productForm.modificadores];
-                                                                newMods[gIdx].nombre = e.target.value;
-                                                                setProductForm({ ...productForm, modificadores: newMods });
-                                                            }}
-                                                            className="h-10 rounded-xl bg-gray-50 border-gray-50 focus:bg-white"
-                                                            placeholder="Ej: Elige tu Proteína"
-                                                        />
-                                                    </div>
-                                                    <div className="flex items-center gap-6 pt-4">
-                                                        <div className="flex items-center gap-2">
-                                                            <Switch
-                                                                checked={group.obligatorio}
-                                                                onCheckedChange={val => {
-                                                                    const newMods = [...productForm.modificadores];
-                                                                    newMods[gIdx].obligatorio = val;
-                                                                    newMods[gIdx].seleccion_minima = val ? 1 : 0;
-                                                                    setProductForm({ ...productForm, modificadores: newMods });
-                                                                }}
-                                                                className="data-[state=checked]:bg-[#4ADE80] scale-75"
-                                                            />
-                                                            <Label className="text-[10px] font-black uppercase text-gray-600">Obligatorio</Label>
-                                                        </div>
-                                                        <div className="flex items-center gap-2 flex-1">
-                                                            <Label className="text-[10px] font-black uppercase text-gray-400">Max</Label>
-                                                            <Input
-                                                                type="number"
-                                                                min="1"
-                                                                value={group.seleccion_maxima}
-                                                                onChange={e => {
-                                                                    const newMods = [...productForm.modificadores];
-                                                                    newMods[gIdx].seleccion_maxima = parseInt(e.target.value) || 1;
-                                                                    setProductForm({ ...productForm, modificadores: newMods });
-                                                                }}
-                                                                className="h-10 w-16 rounded-xl bg-gray-50 border-gray-50 text-center font-bold"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="space-y-2 border-t border-gray-50 pt-4">
-                                                    <Label className="text-[10px] font-black uppercase text-[#618972] tracking-widest pl-1">Opciones</Label>
-                                                    <div className="space-y-2">
-                                                        {group.opciones.map((opt, oIdx) => (
-                                                            <div key={opt.id || oIdx} className="flex gap-2 items-center">
-                                                                <div className="flex-1">
-                                                                    <Input
-                                                                        value={opt.nombre}
-                                                                        onChange={e => {
-                                                                            const newMods = [...productForm.modificadores];
-                                                                            newMods[gIdx].opciones[oIdx].nombre = e.target.value;
-                                                                            setProductForm({ ...productForm, modificadores: newMods });
-                                                                        }}
-                                                                        className="h-9 rounded-xl bg-white border-gray-100 text-xs"
-                                                                        placeholder="Nombre de la opción"
-                                                                    />
-                                                                </div>
-                                                                <div className="w-32 relative">
-                                                                    <Input
-                                                                        type="text"
-                                                                        value={opt.precio > 0 ? formatPrice(opt.precio.toString()) : ''}
-                                                                        onChange={e => {
-                                                                            const raw = e.target.value.replace(/\D/g, '');
-                                                                            const newMods = [...productForm.modificadores];
-                                                                            newMods[gIdx].opciones[oIdx].precio = parseFloat(raw) || 0;
-                                                                            setProductForm({ ...productForm, modificadores: newMods });
-                                                                        }}
-                                                                        className="h-9 rounded-xl bg-white border-gray-100 text-xs pl-6"
-                                                                        placeholder="+ 0"
-                                                                    />
-                                                                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-400">$</span>
-                                                                </div>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => {
-                                                                        const newMods = [...productForm.modificadores];
-                                                                        newMods[gIdx].opciones.splice(oIdx, 1);
-                                                                        setProductForm({ ...productForm, modificadores: newMods });
-                                                                    }}
-                                                                    disabled={group.opciones.length <= 1}
-                                                                    className="size-9 rounded-xl border border-gray-100 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-30"
-                                                                >
-                                                                    <Trash2 className="w-3.5 h-3.5" />
-                                                                </button>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                    <Button
-                                                        type="button"
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => {
-                                                            const newMods = [...productForm.modificadores];
-                                                            newMods[gIdx].opciones.push({ id: Date.now().toString(), nombre: '', precio: 0 });
-                                                            setProductForm({ ...productForm, modificadores: newMods });
-                                                        }}
-                                                        className="mt-2 h-8 text-[10px] font-black text-[#22C55E] hover:bg-[#4ADE80]/5 w-full border border-dashed border-[#4ADE80]/20 rounded-xl"
-                                                    >
-                                                        <Plus className="w-3 h-3 mr-1" /> AÑADIR OPCIÓN
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        ))}
-
-                                        {(!productForm.modificadores || productForm.modificadores.length === 0) && (
-                                            <div className="py-8 flex flex-col items-center justify-center border-2 border-dashed border-[#4ADE80]/20 rounded-[2rem] gap-2 grayscale opacity-40">
-                                                <ListChecks className="w-8 h-8 text-[#22C55E]" />
-                                                <p className="text-[10px] font-black uppercase text-[#618972]">Sin modificadores asignados</p>
-                                            </div>
-                                        )}
-                                    </div>
+                                    ))}
                                 </div>
 
 
@@ -2709,7 +2841,7 @@ const ConfiguracionPage = () => {
                                                 checked={!!productForm.oferta_porcentaje}
                                                 onCheckedChange={checked => setProductForm({
                                                     ...productForm,
-                                                    oferta_porcentaje: checked ? '10' : ''
+                                                    oferta_porcentaje: checked ? '0' : ''
                                                 })}
                                                 className="data-[state=checked]:bg-[#4ADE80]"
                                             />
@@ -2733,7 +2865,7 @@ const ConfiguracionPage = () => {
                                                                 onChange={e => setProductForm({ ...productForm, oferta_porcentaje: e.target.value })}
                                                                 className="h-12 rounded-2xl bg-white border-[#4ADE80]/30 pr-10 font-bold text-[#22C55E]"
                                                                 placeholder="Ej: 15"
-                                                                min="1"
+                                                                min="0"
                                                                 max="100"
                                                             />
                                                             <div className="absolute right-4 top-1/2 -translate-y-1/2 font-black text-[#22C55E]">%</div>
@@ -2744,22 +2876,19 @@ const ConfiguracionPage = () => {
                                         </AnimatePresence>
                                     </div>
 
-                                    <div className="space-y-4 pt-1">
-                                        <div className="flex items-center gap-3">
-                                            <Switch
-                                                id="featured-toggle"
-                                                checked={productForm.destacado}
-                                                onCheckedChange={checked => setProductForm({ ...productForm, destacado: checked })}
-                                                className="data-[state=checked]:bg-[#4ADE80]"
-                                            />
-                                            <Label htmlFor="featured-toggle" className="font-bold cursor-pointer flex items-center gap-2 text-[#111814]">
-                                                <Star className={`w-4 h-4 ${productForm.destacado ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
-                                                Producto Destacado
-                                            </Label>
-                                        </div>
-                                        <p className="text-[10px] text-[#618972] leading-tight pl-11 font-medium">
-                                            Aparecerá en la sección principal de Recomendados de tu página.
-                                        </p>
+                                    <div className="space-y-2">
+                                        <Label className="font-bold flex items-center gap-2">
+                                            <Clock className="w-4 h-4 text-[#22C55E]" />
+                                            Tiempo de Prep. (Minutos)
+                                        </Label>
+                                        <Input
+                                            type="number"
+                                            value={productForm.prep_time_minutes}
+                                            onChange={e => setProductForm({ ...productForm, prep_time_minutes: e.target.value })}
+                                            className="h-12 w-full rounded-2xl bg-white border-[#4ADE80]/20 focus:border-[#4ADE80]/50 font-bold"
+                                            placeholder="Ej: 15"
+                                        />
+                                        <p className="text-[9px] text-[#618972] font-medium italic pl-1">Estimado para la espera del cliente.</p>
                                     </div>
                                 </div>
 

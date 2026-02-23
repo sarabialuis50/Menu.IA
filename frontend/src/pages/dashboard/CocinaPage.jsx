@@ -161,11 +161,25 @@ function OrderCard({ order, onUpdateStatus }) {
       </div>
       <div className="p-4">
         <h3 className="font-heading font-bold text-xl text-gray-900 mb-2">{order.mesa_numero ? `Mesa ${order.mesa_numero}` : 'Para llevar'}</h3>
-        <div className="space-y-2 mb-4">
+        <div className="space-y-4 mb-4">
           {order.items.map((item, idx) => (
-            <div key={idx} className="flex gap-2">
-              <span className="bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-sm font-bold">{item.cantidad}x</span>
-              <span className="font-medium text-gray-900">{item.nombre}</span>
+            <div key={idx} className="flex flex-col gap-1 border-b border-gray-100 last:border-0 pb-2 mb-2 italic">
+              <div className="flex gap-2">
+                <span className="bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-sm font-bold">{item.cantidad}x</span>
+                <span className="font-medium text-gray-900">{item.nombre}</span>
+              </div>
+              {item.modificadores && item.modificadores.length > 0 && (
+                <div className="ml-8 flex flex-wrap gap-1">
+                  {item.modificadores.map((mod, i) => (
+                    <span key={i} className="text-[10px] font-black text-orange-600 uppercase tracking-tighter">+ {mod}</span>
+                  ))}
+                </div>
+              )}
+              {item.notas && (
+                <div className="ml-8 text-[10px] font-bold text-indigo-500">
+                  📌 {item.notas}
+                </div>
+              )}
             </div>
           ))}
         </div>
