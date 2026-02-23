@@ -278,7 +278,7 @@ const MenuContent = () => {
 
       const availableProducts = mappedProducts.filter(p => p.disponible);
       setProducts(availableProducts);
-      setShuffledAllProducts([...availableProducts].sort(() => Math.random() - 0.5));
+      setShuffledAllProducts([...availableProducts]); // No random sort, maintain backend order (latest first)
       setLoyaltyConfig(loyaltyRes.data);
 
       // Handle categories
@@ -543,7 +543,7 @@ const MenuContent = () => {
   useEffect(() => {
     setCurrentPage(1);
     if (activeCategory === 'Menu') {
-      setShuffledAllProducts([...products].sort(() => Math.random() - 0.5));
+      setShuffledAllProducts([...products]); // No random sort, maintain latest first order
     }
   }, [activeCategory, searchQuery, products]);
 

@@ -5528,3 +5528,11 @@ postgrest.exceptions.APIError: {'message': "Could not find the 'mesero_nombre' c
 2026-02-23 17:30:45,835 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
 2026-02-23 17:30:46,003 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
 2026-02-23 17:30:46,154 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-23 17:40:58,733 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-23 17:40:58,948 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-23 17:40:59,096 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/etiquetas?select=nombre&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-23 17:40:59,246 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-23 17:40:59,435 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-23 17:40:59,649 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-23 17:40:59,811 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-23 17:41:11,027 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']

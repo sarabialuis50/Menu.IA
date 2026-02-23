@@ -216,6 +216,7 @@ const ConfiguracionPage = () => {
     const [originalTagName, setOriginalTagName] = useState('');
 
     const [showTwilioToken, setShowTwilioToken] = useState(false);
+    const [analyzingNutrition, setAnalyzingNutrition] = useState(false);
 
     // Modal states
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
@@ -605,6 +606,33 @@ const ConfiguracionPage = () => {
         setProductForm(initial);
         setOriginalProductForm(initial);
         setIsProductModalOpen(true);
+    };
+
+    const handleAnalyzeNutrition = async () => {
+        if (!productForm.nombre) {
+            toast.error('Ingresa al menos el nombre del plato');
+            return;
+        }
+        setAnalyzingNutrition(true);
+        try {
+            const res = await api().post('/gemini/nutrition', {
+                name: productForm.nombre,
+                description: productForm.descripcion
+            });
+            setProductForm(prev => ({
+                ...prev,
+                nutri_kcal: res.data.kcal,
+                nutri_proteina: res.data.proteina,
+                nutri_carbohidratos: res.data.carbohidratos,
+                nutri_grasa: res.data.grasa
+            }));
+            toast.success('Información nutricional generada');
+        } catch (err) {
+            console.error(err);
+            toast.error('Error al generar información nutricional');
+        } finally {
+            setAnalyzingNutrition(false);
+        }
     };
 
     const handleProductSubmit = async (e) => {
@@ -2586,9 +2614,23 @@ const ConfiguracionPage = () => {
                                         <div className="size-8 rounded-full bg-blue-50 flex items-center justify-center">
                                             <Apple className="w-4 h-4 text-blue-500" />
                                         </div>
-                                        <div>
-                                            <Label className="font-bold text-[#111814]">Valores Nutricionales</Label>
-                                            <p className="text-[10px] text-gray-400">Información calculada o aproximada (Opcional)</p>
+                                        <div className="flex-1">
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <Label className="font-bold text-[#111814]">Valores Nutricionales</Label>
+                                                    <p className="text-[10px] text-gray-400">Información calculada o aproximada (Opcional)</p>
+                                                </div>
+                                                <Button
+                                                    type="button"
+                                                    onClick={handleAnalyzeNutrition}
+                                                    disabled={analyzingNutrition}
+                                                    variant="outline"
+                                                    className="h-8 rounded-xl border-[#22C55E]/20 bg-[#22C55E]/5 text-[#22C55E] hover:bg-[#22C55E] hover:text-white transition-all text-[10px] font-black gap-2 px-3"
+                                                >
+                                                    {analyzingNutrition ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                                                    {analyzingNutrition ? 'ANALIZANDO...' : '🔮 GENERAR CON IA'}
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -2835,45 +2877,24 @@ const ConfiguracionPage = () => {
 
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-[2.5rem] border border-[#4ADE80]/20 bg-[#4ADE80]/5">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-3">
-                                            <Switch
-                                                checked={!!productForm.oferta_porcentaje}
-                                                onCheckedChange={checked => setProductForm({
-                                                    ...productForm,
-                                                    oferta_porcentaje: checked ? '0' : ''
-                                                })}
-                                                className="data-[state=checked]:bg-[#4ADE80]"
+                                    <div className="space-y-2">
+                                        <Label className="font-bold flex items-center gap-2">
+                                            <TagIcon className="w-4 h-4 text-[#22C55E]" />
+                                            Descuento (%)
+                                        </Label>
+                                        <div className="relative">
+                                            <Input
+                                                type="number"
+                                                value={productForm.oferta_porcentaje}
+                                                onChange={e => setProductForm({ ...productForm, oferta_porcentaje: e.target.value })}
+                                                className="h-12 rounded-2xl bg-white border-[#4ADE80]/20 focus:border-[#4ADE80]/50 pr-10 font-bold text-[#22C55E]"
+                                                placeholder="Ej: 15"
+                                                min="0"
+                                                max="100"
                                             />
-                                            <Label className="font-bold cursor-pointer text-[#111814]">Producto en Oferta</Label>
+                                            <div className="absolute right-4 top-1/2 -translate-y-1/2 font-black text-[#22C55E]">%</div>
                                         </div>
-
-                                        <AnimatePresence>
-                                            {!!productForm.oferta_porcentaje && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, height: 0 }}
-                                                    animate={{ opacity: 1, height: 'auto' }}
-                                                    exit={{ opacity: 0, height: 0 }}
-                                                    className="overflow-hidden"
-                                                >
-                                                    <div className="space-y-2 pt-2">
-                                                        <Label className="text-[10px] font-black uppercase tracking-widest text-[#618972]">Descuento (%)</Label>
-                                                        <div className="relative">
-                                                            <Input
-                                                                type="number"
-                                                                value={productForm.oferta_porcentaje}
-                                                                onChange={e => setProductForm({ ...productForm, oferta_porcentaje: e.target.value })}
-                                                                className="h-12 rounded-2xl bg-white border-[#4ADE80]/30 pr-10 font-bold text-[#22C55E]"
-                                                                placeholder="Ej: 15"
-                                                                min="0"
-                                                                max="100"
-                                                            />
-                                                            <div className="absolute right-4 top-1/2 -translate-y-1/2 font-black text-[#22C55E]">%</div>
-                                                        </div>
-                                                    </div>
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
+                                        <p className="text-[9px] text-[#618972] font-medium italic pl-1">Se aplicará al precio base automáticamente.</p>
                                     </div>
 
                                     <div className="space-y-2">

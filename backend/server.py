@@ -823,7 +823,7 @@ async def get_menu_items(slug: str):
         raise HTTPException(status_code=404, detail="Negocio no encontrado")
     business_id = response.data[0]['id']
     
-    response = supabase.table('menu_items').select('*').eq('negocio_id', business_id).execute()
+    response = supabase.table('menu_items').select('*').eq('negocio_id', business_id).order('created_at', descending=True).execute()
     return [MenuItem(**item) for item in response.data]
 
 
@@ -2574,6 +2574,41 @@ async def chat_with_consultant(negocio_id: str, request: ChatRequest, business: 
         logger.error(traceback.format_exc())
         return {"reply": get_fallback_message()}
 
+@api_router.post("/gemini/nutrition")
+async def analyze_nutrition(request: NutritionRequest):
+    prompt = f"""
+    Como experto nutricionista, analiza el siguiente plato y estima sus valores nutricionales aproximados para una porción estándar.
+    Plato: {request.name}
+    Descripción: {request.description}
+    
+    Responde ÚNICAMENTE en formato JSON con la siguiente estructura (los valores deben ser números o strings cortos):
+    {{
+        "kcal": int,
+        "proteina": "string (ej: 25g)",
+        "carbohidratos": "string (ej: 40g)",
+        "grasa": "string (ej: 15g)"
+    }}
+    """
+    
+    try:
+        genai.configure(api_key=os.environ.get("GOOGLE_GEMINI_API_KEY"))
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(prompt)
+        
+        # Clean response if it contains markdown
+        text = response.text.strip()
+        if "```json" in text:
+            text = text.split("```json")[1].split("```")[0].strip()
+        elif "```" in text:
+            text = text.split("```")[1].split("```")[0].strip()
+            
+        data = json.loads(text)
+        return data
+    except Exception as e:
+        logger.error(f"Error en análisis nutricional IA: {e}")
+        # En caso de error, devolver valores neutros para no romper el front
+        return {"kcal": 0, "proteina": "0g", "carbohidratos": "0g", "grasa": "0g"}
+
 # --- LANDING PAGE CHAT AGENT ---
 
 class LandingChatRequest(BaseModel):
@@ -3517,9 +3552,13 @@ async def toggle_client_favorite(slug: str, client: Cliente = Depends(get_curren
         raise HTTPException(status_code=500, detail="Error al actualizar favoritos")
 
 
-class WebChatRequest(BaseModel):
-    message: str
+class OTPVerify(BaseModel):
     phone: str
+    code: str
+
+class NutritionRequest(BaseModel):
+    name: str
+    description: Optional[str] = ""
 
 @api_router.post("/chat/web/{slug}")
 async def web_chat_agent(slug: str, data: WebChatRequest):
