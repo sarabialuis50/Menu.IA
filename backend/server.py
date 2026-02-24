@@ -823,7 +823,7 @@ async def get_menu_items(slug: str):
         raise HTTPException(status_code=404, detail="Negocio no encontrado")
     business_id = response.data[0]['id']
     
-    response = supabase.table('menu_items').select('*').eq('negocio_id', business_id).order('created_at', descending=True).execute()
+    response = supabase.table('menu_items').select('*').eq('negocio_id', business_id).order('created_at', desc=True).execute()
     return [MenuItem(**item) for item in response.data]
 
 
