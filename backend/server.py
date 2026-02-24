@@ -170,7 +170,7 @@ async def estimate_nutrition(product_name: str, description: str = ""):
             return None
             
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-flash-latest')
         
         prompt = f"""
         Como un experto nutricionista, estima la información nutricional aproximada para el siguiente plato de un restaurante. 
@@ -2596,7 +2596,7 @@ async def analyze_nutrition(request: NutritionRequest):
     
     try:
         genai.configure(api_key=os.environ.get("GOOGLE_GEMINI_API_KEY"))
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-flash-latest')
         response = model.generate_content(prompt)
         
         # Clean response if it contains markdown

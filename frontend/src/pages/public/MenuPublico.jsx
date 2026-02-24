@@ -630,25 +630,25 @@ const MenuContent = () => {
 
         {/* Nutritional Info (IA) - Compact row below description */}
         {(product.nutri_kcal || product.nutri_proteina) && (
-          <div className="flex flex-wrap items-center gap-1 mb-4">
+          <div className="flex flex-nowrap items-center gap-1 md:gap-1.5 mb-4 pb-1 w-full overflow-hidden">
             {product.nutri_kcal && (
-              <div title="Calorías" className="flex items-center gap-1 px-1 py-0.5 rounded-md bg-[#4ADE80]/10 text-[#22C55E] text-[6px] md:text-[8px] font-black border border-[#4ADE80]/20">
+              <div title="Calorías" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#4ADE80]/10 text-[#22C55E] text-[7px] md:text-[8px] font-black border border-[#4ADE80]/20 whitespace-nowrap">
                 🔥 {product.nutri_kcal} <span className="md:inline hidden">kcal</span>
               </div>
             )}
             {product.nutri_proteina && (
-              <div title="Proteína" className="flex items-center gap-1 px-1 py-0.5 rounded-md bg-gray-50 text-[#618972] text-[6px] md:text-[8px] font-black border border-gray-100">
-                🥩 <span className="opacity-60 text-[5px] md:text-[7px]">P:</span> {product.nutri_proteina}
+              <div title="Proteína" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#4ADE80]/10 text-[#22C55E] text-[7px] md:text-[8px] font-black border border-[#4ADE80]/20 whitespace-nowrap">
+                🥩 {product.nutri_proteina} <span className="md:inline hidden">prot</span>
               </div>
             )}
             {product.nutri_carbohidratos && (
-              <div title="Carbohidratos" className="flex items-center gap-1 px-1 py-0.5 rounded-md bg-gray-50 text-[#618972] text-[6px] md:text-[8px] font-black border border-gray-100">
-                🍝 <span className="opacity-60 text-[5px] md:text-[7px]">C:</span> {product.nutri_carbohidratos}
+              <div title="Carbohidratos" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#4ADE80]/10 text-[#22C55E] text-[7px] md:text-[8px] font-black border border-[#4ADE80]/20 whitespace-nowrap">
+                🍝 {product.nutri_carbohidratos} <span className="md:inline hidden">carb</span>
               </div>
             )}
             {product.nutri_grasa && (
-              <div title="Grasa" className="flex items-center gap-1 px-1 py-0.5 rounded-md bg-gray-50 text-[#618972] text-[6px] md:text-[8px] font-black border border-gray-100">
-                🥑 <span className="opacity-60 text-[5px] md:text-[7px]">G:</span> {product.nutri_grasa}
+              <div title="Grasa" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#4ADE80]/10 text-[#22C55E] text-[7px] md:text-[8px] font-black border border-[#4ADE80]/20 whitespace-nowrap">
+                🥑 {product.nutri_grasa} <span className="md:inline hidden">grasa</span>
               </div>
             )}
           </div>
@@ -1129,9 +1129,9 @@ const MenuContent = () => {
 
       {/* Cart Sheet */}
       <Sheet open={cartOpen} onOpenChange={setCartOpen}>
-        <SheetContent side="bottom" className="h-[90vh] sm:h-[85vh] rounded-t-[3rem] border-none shadow-[0_-20px_50px_rgba(0,0,0,0.1)] p-0" aria-describedby="sheet-description">
+        <SheetContent side="bottom" className="h-[95vh] sm:h-[95vh] rounded-t-[3rem] border-none shadow-[0_-20px_50px_rgba(0,0,0,0.1)] p-0" aria-describedby="sheet-description">
           <div className="h-2 bg-gray-100 w-16 rounded-full mx-auto mt-4 mb-2 md:hidden" />
-          <div className="px-6 md:px-10 py-6 md:py-8 h-full flex flex-col max-w-5xl mx-auto w-full">
+          <div className="px-6 md:px-10 py-6 md:py-8 h-full flex flex-col max-w-[95vw] lg:max-w-6xl mx-auto w-full">
             <SheetHeader className="mb-8">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -1595,7 +1595,7 @@ const MenuContent = () => {
       </Sheet>
       {/* Product Detail Modal */}
       <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
-        <DialogContent className="max-w-[95vw] md:max-w-5xl w-full p-0 overflow-hidden rounded-[2.5rem] md:rounded-[3rem] bg-white border-none shadow-2xl [&>button]:hidden outline-none" aria-describedby="product-description">
+        <DialogContent className="max-w-[95vw] lg:max-w-6xl xl:max-w-[1300px] w-full p-0 overflow-hidden rounded-[2.5rem] md:rounded-[3rem] bg-white border-none shadow-2xl [&>button]:hidden outline-none" aria-describedby="product-description">
           <DialogHeader className="sr-only">
             <DialogTitle>Detalles del Producto</DialogTitle>
             <DialogDescription id="product-description">Vista detallada del producto seleccionado con opciones de personalización.</DialogDescription>
@@ -1733,82 +1733,87 @@ const MenuContent = () => {
 
                     {/* Modifiers List */}
                     <div className="space-y-8">
-                      {selectedProduct.modificadores && selectedProduct.modificadores.map((group, groupIdx) => (
-                        <div key={groupIdx} className="space-y-4">
-                          <div className="flex justify-between items-center bg-white sticky top-0 z-10 py-2 border-b border-gray-100">
-                            <div className="space-y-1">
-                              <h3 className="text-lg font-black text-[#111814] tracking-tight">{group.nombre}</h3>
-                              <div className="flex items-center gap-2">
-                                <span className={`text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider ${group.obligatorio ? 'bg-orange-50 text-orange-500 border border-orange-100' : 'bg-gray-50 text-gray-400 border border-gray-100'
-                                  }`}>
-                                  {group.obligatorio ? 'Obligatorio' : 'Opcional'}
-                                </span>
-                                <span className="text-[10px] font-bold text-gray-400">
-                                  Escoge {group.seleccion_maxima === 1 ? '1 opción' : `hasta ${group.seleccion_maxima} opciones`}
-                                </span>
+                      {['tamanos', 'modificadores', 'opciones'].map((categoryKey) => {
+                        const groups = selectedProduct[categoryKey];
+                        if (!groups || !Array.isArray(groups)) return null;
+
+                        return groups.map((group, groupIdx) => (
+                          <div key={`${categoryKey}-${groupIdx}`} className="space-y-4">
+                            <div className="flex justify-between items-center bg-white sticky top-0 z-10 py-2 border-b border-gray-100">
+                              <div className="space-y-1">
+                                <h3 className="text-lg font-black text-[#111814] tracking-tight">{group.nombre}</h3>
+                                <div className="flex items-center gap-2">
+                                  <span className={`text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider ${group.obligatorio ? 'bg-orange-50 text-orange-500 border border-orange-100' : 'bg-gray-50 text-gray-400 border border-gray-100'
+                                    }`}>
+                                    {group.obligatorio ? 'Obligatorio' : 'Opcional'}
+                                  </span>
+                                  <span className="text-[10px] font-bold text-gray-400">
+                                    Escoge {group.seleccion_maxima === 1 ? '1 opción' : `hasta ${group.seleccion_maxima} opciones`}
+                                  </span>
+                                </div>
                               </div>
+                              {group.obligatorio && !selectedModifiers.some(m => group.opciones.some(opt => opt.nombre === m.nombre)) && (
+                                <div className="px-3 py-1 bg-red-50 text-red-500 text-[10px] font-black rounded-full animate-pulse border border-red-100">
+                                  REQUERIDO
+                                </div>
+                              )}
                             </div>
-                            {group.obligatorio && !selectedModifiers.some(m => group.opciones.some(opt => opt.nombre === m.nombre)) && (
-                              <div className="px-3 py-1 bg-red-50 text-red-500 text-[10px] font-black rounded-full animate-pulse border border-red-100">
-                                REQUERIDO
-                              </div>
-                            )}
-                          </div>
 
-                          <div className="grid grid-cols-1 gap-3">
-                            {group.opciones.map((option, optIdx) => {
-                              const isSelected = selectedModifiers.some(m => m.nombre === option.nombre);
-                              const groupSelections = selectedModifiers.filter(m => group.opciones.some(opt => opt.nombre === m.nombre));
-                              const selectorMax = group.seleccion_maxima || 1;
-                              const isMaxed = groupSelections.length >= selectorMax && !isSelected;
+                            <div className="grid grid-cols-1 gap-3">
+                              {group.opciones.map((option, optIdx) => {
+                                const isSelected = selectedModifiers.some(m => m.nombre === option.nombre);
+                                const groupSelections = selectedModifiers.filter(m => group.opciones.some(opt => opt.nombre === m.nombre));
+                                const selectorMax = group.seleccion_maxima || 1;
+                                const isMaxed = groupSelections.length >= selectorMax && !isSelected;
 
-                              return (
-                                <button
-                                  key={optIdx}
-                                  disabled={isMaxed && selectorMax > 1}
-                                  onClick={() => {
-                                    if (isSelected) {
-                                      setSelectedModifiers(prev => prev.filter(m => m.nombre !== option.nombre));
-                                    } else {
-                                      if (selectorMax === 1) {
-                                        setSelectedModifiers(prev => [
-                                          ...prev.filter(m => !group.opciones.some(opt => opt.nombre === m.nombre)),
-                                          option
-                                        ]);
+                                return (
+                                  <button
+                                    key={`${categoryKey}-${groupIdx}-${optIdx}`}
+                                    disabled={isMaxed && selectorMax > 1}
+                                    onClick={() => {
+                                      if (isSelected) {
+                                        setSelectedModifiers(prev => prev.filter(m => m.nombre !== option.nombre));
                                       } else {
-                                        setSelectedModifiers(prev => [...prev, option]);
+                                        if (selectorMax === 1) {
+                                          setSelectedModifiers(prev => [
+                                            ...prev.filter(m => !group.opciones.some(opt => opt.nombre === m.nombre)),
+                                            option
+                                          ]);
+                                        } else {
+                                          setSelectedModifiers(prev => [...prev, option]);
+                                        }
                                       }
-                                    }
-                                  }}
-                                  className={`group/opt w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all ${isSelected
-                                    ? 'bg-[#4ADE80]/5 border-[#4ADE80] shadow-sm'
-                                    : 'bg-white border-gray-100 hover:border-gray-200'
-                                    } ${isMaxed && selectorMax > 1 ? 'opacity-40 grayscale-0 cursor-not-allowed' : 'cursor-pointer active:scale-[0.99]'}`}
-                                >
-                                  <div className="flex items-center gap-4">
-                                    <div className={`size-6 rounded-lg border-2 flex items-center justify-center transition-all ${isSelected ? 'bg-[#4ADE80] border-[#4ADE80] rotate-0' : 'border-gray-200 bg-gray-50 group-hover/opt:border-gray-400'
-                                      }`}>
-                                      {isSelected && <CheckCircle2 className="size-4 text-white stroke-[3]" />}
+                                    }}
+                                    className={`group/opt w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all ${isSelected
+                                      ? 'bg-[#4ADE80]/5 border-[#4ADE80] shadow-sm'
+                                      : 'bg-white border-gray-100 hover:border-gray-200'
+                                      } ${isMaxed && selectorMax > 1 ? 'opacity-40 grayscale-0 cursor-not-allowed' : 'cursor-pointer active:scale-[0.99]'}`}
+                                  >
+                                    <div className="flex items-center gap-4">
+                                      <div className={`size-6 rounded-lg border-2 flex items-center justify-center transition-all ${isSelected ? 'bg-[#4ADE80] border-[#4ADE80] rotate-0' : 'border-gray-200 bg-gray-50 group-hover/opt:border-gray-400'
+                                        }`}>
+                                        {isSelected && <CheckCircle2 className="size-4 text-white stroke-[3]" />}
+                                      </div>
+                                      <div className="text-left">
+                                        <span className={`text-sm font-black ${isSelected ? 'text-[#111814]' : 'text-gray-600'}`}>
+                                          {option.nombre}
+                                        </span>
+                                      </div>
                                     </div>
-                                    <div className="text-left">
-                                      <span className={`text-sm font-black ${isSelected ? 'text-[#111814]' : 'text-gray-600'}`}>
-                                        {option.nombre}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  {option.precio > 0 && (
-                                    <div className="flex flex-col items-end">
-                                      <span className={`text-xs font-black ${isSelected ? 'text-[#22C55E]' : 'text-gray-400'}`}>
-                                        + {formatCurrency(option.precio)}
-                                      </span>
-                                    </div>
-                                  )}
-                                </button>
-                              );
-                            })}
+                                    {option.precio > 0 && (
+                                      <div className="flex flex-col items-end">
+                                        <span className={`text-xs font-black ${isSelected ? 'text-[#22C55E]' : 'text-gray-400'}`}>
+                                          + {formatCurrency(option.precio)}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ));
+                      })}
 
                       {/* Notes Section */}
                       <div className="space-y-4">

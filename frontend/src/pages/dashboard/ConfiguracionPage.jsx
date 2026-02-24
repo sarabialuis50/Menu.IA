@@ -571,8 +571,9 @@ const ConfiguracionPage = () => {
             nutri_grasa: ''
         };
         setEditingProduct(null);
-        setProductForm(initial);
-        setOriginalProductForm(initial);
+        const clonedInitial = JSON.parse(JSON.stringify(initial));
+        setProductForm(clonedInitial);
+        setOriginalProductForm(clonedInitial);
         setIsProductModalOpen(true);
     };
 
@@ -603,8 +604,8 @@ const ConfiguracionPage = () => {
             nutri_grasa: product.nutri_grasa || ''
         };
         setEditingProduct(product);
-        setProductForm(initial);
-        setOriginalProductForm(initial);
+        setProductForm(JSON.parse(JSON.stringify(initial)));
+        setOriginalProductForm(JSON.parse(JSON.stringify(initial)));
         setIsProductModalOpen(true);
     };
 
@@ -2402,7 +2403,7 @@ const ConfiguracionPage = () => {
 
                 {/* PRODUCT MODAL */}
                 <Dialog open={isProductModalOpen} onOpenChange={setIsProductModalOpen}>
-                    <DialogContent className="rounded-[2.5rem] max-w-2xl p-0 overflow-hidden border-2 border-[#4ADE80]/20 shadow-2xl shadow-[#4ADE80]/10" aria-describedby="product-modal-description">
+                    <DialogContent className="rounded-[2.5rem] max-w-[95vw] lg:max-w-5xl p-0 overflow-hidden border-2 border-[#4ADE80]/20 shadow-2xl shadow-[#4ADE80]/10" aria-describedby="product-modal-description">
                         <DialogHeader className="p-10 pb-6 bg-gray-50 shrink-0">
                             <DialogTitle className="text-3xl font-black tracking-tighter">
                                 {editingProduct ? 'Editar Producto' : 'Nuevo Producto'}
@@ -2412,7 +2413,7 @@ const ConfiguracionPage = () => {
                             </DialogDescription>
                         </DialogHeader>
 
-                        <div className="max-h-[60vh] overflow-y-auto custom-scrollbar">
+                        <div className="max-h-[80vh] overflow-y-auto custom-scrollbar">
                             <form onSubmit={handleProductSubmit} className="p-10 pt-6 space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">

@@ -19,27 +19,36 @@ export const useGoogleMaps = (apiKey) => {
             return;
         }
 
-        if (window.google && window.google.maps) {
+        if (window.google && window.google.maps && window.google.maps.Map) {
             isLoaded = true;
             handleLoaded();
             return;
         }
 
         isLoading = true;
-        const onScriptLoad = () => {
+        const callbackName = `initGoogleMaps_${Math.random().toString(36).substr(2, 9)}`;
+
+        window[callbackName] = () => {
             isLoaded = true;
             handleLoaded();
             while (callbacks.length > 0) {
                 const cb = callbacks.shift();
                 if (typeof cb === 'function') cb();
             }
+            delete window[callbackName];
         };
 
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&loading=async`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=${callbackName}`;
         script.async = true;
         script.defer = true;
-        script.onload = onScriptLoad;
+
+        // Error handling
+        script.onerror = () => {
+            console.error("Failed to load Google Maps API");
+            isLoading = false;
+        };
+
         document.head.appendChild(script);
 
     }, [apiKey]);

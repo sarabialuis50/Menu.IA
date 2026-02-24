@@ -299,20 +299,23 @@ const BusinessHomePageContent = () => {
                                                 alt={product.nombre}
                                                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                             />
-                                            {/* Badges */}
+                                            {/* Badges Left */}
                                             <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
                                                 {product.destacado && (
-                                                    <span className="bg-[#4ADE80] text-[#111814] text-[8px] font-black uppercase px-2 py-1 rounded-lg shadow-sm border border-white/20 ring-1 ring-white/10 flex items-center gap-1">
-                                                        <Star className="w-2 h-2 fill-white text-white" />
+                                                    <span className="bg-[#4ADE80] text-[#111814] text-[8px] md:text-[10px] font-black uppercase px-2.5 py-1.5 rounded-xl shadow-lg border border-white/20 ring-1 ring-white/10 flex items-center gap-1">
+                                                        <Star className="w-3 h-3 fill-white text-white" />
                                                         Destacado
                                                     </span>
                                                 )}
-                                                {product.oferta_porcentaje && (
-                                                    <span className="bg-[#ff4b4b] text-white text-[8px] font-black uppercase px-2 py-1 rounded-lg shadow-sm border border-white/20">
+                                            </div>
+                                            {/* Badges Right */}
+                                            {product.oferta_porcentaje && (
+                                                <div className="absolute top-3 right-3 z-10">
+                                                    <span className="bg-[#ff4b4b] text-white text-[10px] md:text-xs font-black px-2.5 py-1.5 rounded-xl shadow-lg border border-white/20 ring-1 ring-white/10">
                                                         -{product.oferta_porcentaje}%
                                                     </span>
-                                                )}
-                                            </div>
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="p-4 pt-3 flex flex-col gap-1">
                                             <div className="flex justify-between items-start gap-2">
