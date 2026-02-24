@@ -2574,6 +2574,10 @@ async def chat_with_consultant(negocio_id: str, request: ChatRequest, business: 
         logger.error(traceback.format_exc())
         return {"reply": get_fallback_message()}
 
+class NutritionRequest(BaseModel):
+    name: str
+    description: Optional[str] = ""
+
 @api_router.post("/gemini/nutrition")
 async def analyze_nutrition(request: NutritionRequest):
     prompt = f"""
@@ -3552,13 +3556,10 @@ async def toggle_client_favorite(slug: str, client: Cliente = Depends(get_curren
         raise HTTPException(status_code=500, detail="Error al actualizar favoritos")
 
 
-class OTPVerify(BaseModel):
-    phone: str
-    code: str
 
-class NutritionRequest(BaseModel):
-    name: str
-    description: Optional[str] = ""
+class WebChatRequest(BaseModel):
+    phone: str
+    message: str
 
 @api_router.post("/chat/web/{slug}")
 async def web_chat_agent(slug: str, data: WebChatRequest):
