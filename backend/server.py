@@ -16,7 +16,7 @@ import asyncio
 import uuid
 from pathlib import Path
 
-# Load environment variables FIRST
+# Force deploy trigger
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
