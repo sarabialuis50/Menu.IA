@@ -25,9 +25,9 @@ supabase_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY") # Use Service Role Ke
 supabase: SupabaseClient = create_client(supabase_url, supabase_key)
 
 # Initialize Twilio (Global Fallback - SaaS_MenuIA subaccount)
-GLOBAL_TWILIO_SID = os.environ.get("TWILIO_ACCOUNT_SID_MENU_IA")
-GLOBAL_TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN_MENU_IA")
-GLOBAL_TWILIO_NUMBER = os.environ.get("TWILIO_WHATSAPP_FROM_MENU_IA")
+GLOBAL_TWILIO_SID = os.environ.get("TWILIO_ACCOUNT_SID_MENU_IA") or os.environ.get("TWILIO_ACCOUNT_SID")
+GLOBAL_TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN_MENU_IA") or os.environ.get("TWILIO_AUTH_TOKEN")
+GLOBAL_TWILIO_NUMBER = os.environ.get("TWILIO_WHATSAPP_FROM_MENU_IA") or os.environ.get("TWILIO_WHATSAPP_NUMBER")
 
 def get_twilio_client(sid: str = None, token: str = None):
     """Returns a Twilio client using provided credentials or global defaults"""
