@@ -8,9 +8,8 @@ from twilio.rest import Client
 from supabase import create_client, Client as SupabaseClient
 from ai_base import get_shared_instructions, get_fallback_message
 
-# Configuración de logging
+# Configuración de logging (stdout para Railway)
 logging.basicConfig(
-    filename='agent.log',
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )

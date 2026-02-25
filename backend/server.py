@@ -26,6 +26,8 @@ from openai import OpenAI
 from ai_base import get_shared_instructions, get_fallback_message
 import traceback
 
+logger = logging.getLogger(__name__)
+
 # Import WhatsApp Agent Functions (now env vars are loaded)
 from whatsapp_agent import process_whatsapp_message, send_whatsapp_response, send_whatsapp_message, get_or_create_conversation
 

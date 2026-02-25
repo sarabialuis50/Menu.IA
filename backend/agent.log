@@ -5610,3 +5610,692 @@ postgrest.exceptions.APIError: {'message': "Could not find the 'mesero_nombre' c
 2026-02-24 16:13:56,162 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
 2026-02-24 16:14:58,456 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
 2026-02-24 16:15:12,674 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-24 16:15:46,754 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-24 16:15:58,748 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:15:59,007 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:16:12,481 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:16:12,678 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:19:32,813 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:19:32,979 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:19:33,211 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:19:33,387 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:19:33,593 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:19:33,756 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:19:34,050 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:19:34,257 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:19:34,455 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/etiquetas?select=nombre&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:19:34,618 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:19:34,817 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:19:34,983 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:19:35,167 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:19:35,339 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:19:35,583 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:19:35,723 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/etiquetas?select=nombre&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:23:17,594 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:17,773 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:18,026 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:23:18,266 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:18,463 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:23:18,657 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:23:18,833 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:19,020 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:19,212 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:23:19,428 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:19,622 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:23:20,031 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:20,193 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:23:20,379 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:23:20,628 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:20,812 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:23:28,939 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:29,107 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:29,310 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:23:29,549 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:23:29,924 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:30,089 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:30,259 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:23:30,463 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:30,625 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:23:30,768 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:23:30,917 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:31,058 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:23:31,208 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:31,351 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:23:31,492 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:31,622 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:23:40,041 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:40,221 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:40,358 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:40,526 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:23:40,716 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:40,849 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:23:40,991 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:23:41,125 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:41,271 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:23:41,433 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:41,570 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:23:41,927 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:23:42,067 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:42,199 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:23:42,351 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:42,480 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:23:43,553 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:43,700 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:43,864 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:23:44,048 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:44,183 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:23:44,322 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:44,460 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/etiquetas?select=nombre&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:23:44,598 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:44,733 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:23:44,889 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:45,024 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:45,155 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:23:45,294 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:45,425 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/etiquetas?select=nombre&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:23:46,206 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:46,354 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes?select=%2A&telefono=eq.3128833350 "HTTP/2 200 OK"
+2026-02-24 16:23:46,484 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:46,618 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes_favoritos?select=%2A&cliente_id=eq.f70aff89-2cdb-498a-9ad8-166eb427b74a&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:23:46,753 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:23:46,891 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:47,055 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:23:47,236 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:47,388 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes?select=%2A&telefono=eq.3128833350 "HTTP/2 200 OK"
+2026-02-24 16:23:47,519 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:47,763 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes_favoritos?select=%2A&cliente_id=eq.f70aff89-2cdb-498a-9ad8-166eb427b74a&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:23:47,901 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:23:48,035 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:23:48,171 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:24:02,685 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:24:02,832 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:24:03,104 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:24:03,294 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:24:03,438 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:24:03,578 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:24:03,728 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:24:03,867 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:24:04,027 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:24:04,180 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:24:04,320 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:24:04,469 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:24:04,629 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:24:04,770 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:26:07,507 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:26:07,651 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:26:07,827 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:26:08,031 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:26:08,172 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:26:08,314 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:26:08,458 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:26:08,605 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:26:08,760 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:26:08,896 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:26:09,029 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:26:09,171 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:26:09,304 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:26:09,446 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:26:09,583 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:26:09,722 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:28:53,114 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:28:53,265 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:28:53,418 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:28:53,571 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:28:53,968 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:28:54,128 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:28:54,329 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:28:54,531 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:28:54,688 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:28:54,873 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:28:55,033 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:28:55,185 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:28:55,339 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:28:55,493 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:28:55,659 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:28:55,813 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:29:59,905 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:30:00,061 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:30:00,248 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:30:00,508 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:30:00,669 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:30:00,830 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:30:00,989 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:30:01,137 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:30:01,295 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:30:01,531 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:30:01,707 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:30:01,863 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:30:02,016 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:30:02,270 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:30:02,512 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:30:02,657 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:31:58,708 - server - ERROR - Error en análisis nutricional IA: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2026-02-24 16:32:05,175 - server - ERROR - Error en análisis nutricional IA: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2026-02-24 16:33:13,051 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:33:13,691 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?id=eq.0856b2e2-50bb-45af-9789-909f45e39efc&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:33:13,898 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:33:14,065 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:33:14,542 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:33:14,700 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:33:14,869 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:33:15,022 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/etiquetas?select=nombre&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:33:27,645 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:33:27,789 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:33:27,926 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:33:28,061 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:33:28,245 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:33:28,432 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:33:28,580 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:33:28,715 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:33:28,857 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:33:29,227 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:33:29,372 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:33:29,563 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:33:29,702 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:33:29,852 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:33:29,996 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:33:30,146 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:34:13,472 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:34:13,719 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?id=eq.0856b2e2-50bb-45af-9789-909f45e39efc&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:34:13,923 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:34:14,084 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/etiquetas?select=nombre&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:34:14,241 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:34:14,408 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:34:14,615 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:34:14,774 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:34:21,575 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:34:21,733 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:34:21,874 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:34:22,015 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:34:22,187 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:34:22,384 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:34:22,527 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:34:22,667 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:34:22,810 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:34:22,958 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:34:23,122 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:34:23,267 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:34:23,646 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:34:23,830 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:34:23,971 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:34:24,112 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:38:34,199 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:38:34,407 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?id=eq.0856b2e2-50bb-45af-9789-909f45e39efc&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:38:34,588 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:38:34,731 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/etiquetas?select=nombre&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:38:34,870 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:38:35,024 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:38:35,454 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:38:35,594 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:38:37,866 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:38:38,019 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:38:39,306 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:38:39,445 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:38:39,621 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:38:39,826 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:38:39,978 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:38:40,119 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:38:40,263 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:38:40,413 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:38:40,575 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 16:38:40,741 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:38:40,899 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 16:38:41,064 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 16:38:41,210 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 16:38:41,347 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 17:13:37,674 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:13:37,897 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:13:38,350 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:13:38,576 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 17:13:38,793 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:13:39,185 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/etiquetas?select=nombre&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:13:39,341 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:13:39,502 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 17:13:39,657 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:13:39,816 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:13:39,954 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 17:13:40,091 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:13:40,225 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/etiquetas?select=nombre&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:13:40,361 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:13:40,503 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 17:13:40,698 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:13:53,134 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:13:53,405 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?id=eq.0856b2e2-50bb-45af-9789-909f45e39efc&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:13:53,585 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:13:53,743 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 17:13:53,944 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:13:54,094 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 17:13:54,266 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:13:54,685 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/etiquetas?select=nombre&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:14:01,795 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:01,942 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:02,124 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 17:14:02,333 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:02,469 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 17:14:02,631 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:02,777 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:14:02,917 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:03,057 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:14:03,199 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:14:03,334 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:03,469 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:14:03,609 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:03,741 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 17:14:03,897 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:04,041 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 17:14:30,839 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:31,063 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:14:31,206 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:31,340 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:14:31,529 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:31,758 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 17:14:32,179 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:32,733 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:14:32,877 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:33,014 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:14:33,164 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:33,306 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 17:14:33,456 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:33,631 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 17:14:33,942 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:34,077 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 17:14:39,791 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:39,938 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:40,117 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 17:14:40,346 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:40,489 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 17:14:40,644 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:40,789 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:40,937 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/etiquetas?select=nombre&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:14:41,093 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:41,238 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 17:14:41,460 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:41,603 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 17:14:41,781 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:41,930 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:42,076 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/etiquetas?select=nombre&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:14:42,231 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:43,951 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:44,129 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes?select=%2A&telefono=eq.3128833350 "HTTP/2 200 OK"
+2026-02-24 17:14:44,278 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:44,430 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes_favoritos?select=%2A&cliente_id=eq.f70aff89-2cdb-498a-9ad8-166eb427b74a&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:14:44,579 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:44,764 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 17:14:44,974 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:45,124 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes?select=%2A&telefono=eq.3128833350 "HTTP/2 200 OK"
+2026-02-24 17:14:45,284 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:45,439 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes_favoritos?select=%2A&cliente_id=eq.f70aff89-2cdb-498a-9ad8-166eb427b74a&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:14:45,589 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:14:45,739 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 17:21:46,017 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:21:46,158 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:21:46,350 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 17:21:46,777 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:21:46,912 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:21:47,060 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:21:47,423 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:21:47,598 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/menu_items?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=created_at.desc "HTTP/2 200 OK"
+2026-02-24 17:21:47,775 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:21:47,910 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/fidelizacion_config?select=%2A&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-24 17:21:48,050 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:21:48,190 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 17:21:48,347 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=id&slug=eq.don-jediondo "HTTP/2 200 OK"
+2026-02-24 17:21:48,486 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/categorias?select=nombre%2Cicono&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&order=orden.asc "HTTP/2 200 OK"
+2026-02-24 17:28:29,247 - server - ERROR - Error en análisis nutricional IA: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2026-02-24 17:33:35,063 - server - ERROR - Error en análisis nutricional IA: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2026-02-24 18:40:05,820 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-25 10:18:57,831 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-25 10:19:45,724 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-25 10:19:45,966 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-25 10:28:56,809 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-25 10:34:00,135 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-25 12:52:14,279 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-25 12:53:50,856 - server - INFO - WhatsApp webhook received from +573017810256: Hola, prueba local
+2026-02-25 12:53:50,857 - server - INFO - Mensaje recibido en el número oficial SaaS: +16617952400
+2026-02-25 12:53:52,582 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=negocio_id&phone_number=in.%28%2B573017810256%2C573017810256%2C3017810256%2Cweb_573017810256%2Cweb_3017810256%29&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 12:53:52,780 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-25 12:53:52,782 - server - INFO - Usuario +573017810256 vinculado a negocio don-jediondo por historial
+2026-02-25 12:53:53,548 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes?select=nombre&telefono=eq.%2B573017810256 "HTTP/2 200 OK"
+2026-02-25 12:53:53,705 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-25 12:53:53,707 - whatsapp_agent - ERROR - Error procesando mensaje WA: name 'slug' is not defined
+2026-02-25 12:53:54,235 - twilio.http_client - INFO - -- BEGIN Twilio API Request --
+2026-02-25 12:53:54,236 - twilio.http_client - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC7bde986ff3ef63f525e9d260d2ecbdb6/Messages.json
+2026-02-25 12:53:54,236 - twilio.http_client - INFO - Headers:
+2026-02-25 12:53:54,236 - twilio.http_client - INFO - Content-Type : application/x-www-form-urlencoded
+2026-02-25 12:53:54,236 - twilio.http_client - INFO - Accept : application/json
+2026-02-25 12:53:54,236 - twilio.http_client - INFO - User-Agent : twilio-python/9.10.2 (Windows AMD64) Python/3.12.10
+2026-02-25 12:53:54,236 - twilio.http_client - INFO - X-Twilio-Client : python-9.10.2
+2026-02-25 12:53:54,236 - twilio.http_client - INFO - Accept-Charset : utf-8
+2026-02-25 12:53:54,236 - twilio.http_client - INFO - -- END Twilio API Request --
+2026-02-25 12:53:55,061 - twilio.http_client - INFO - Response Status Code: 201
+2026-02-25 12:53:55,061 - twilio.http_client - INFO - Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '872', 'Connection': 'keep-alive', 'Date': 'Wed, 25 Feb 2026 17:53:55 GMT', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQ3ac1993fc78fa7fa9d6857d60b491f6a', 'Twilio-Request-Duration': '0.109', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 99c5e7f74f5882cd14f81bffeb3770f8.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': 'BdUCZ1tahu6pghdiVqu8RjrhHwzK8JclFvFVjQ8l32rdvg8Pnvaf_w==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+2026-02-25 12:53:55,062 - whatsapp_agent - INFO - Mensaje enviado a +573017810256 [SID: Global]: SM3ac1993fc78fa7fa9d6857d60b491f6a
+2026-02-25 12:53:55,257 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-25 12:56:05,889 - server - INFO - WhatsApp webhook received from +573017810256: Hola, prueba local
+2026-02-25 12:56:05,889 - server - INFO - Mensaje recibido en el número oficial SaaS: +16617952400
+2026-02-25 12:56:06,345 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=negocio_id&phone_number=in.%28%2B573017810256%2C573017810256%2C3017810256%2Cweb_573017810256%2Cweb_3017810256%29&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 12:56:06,543 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-25 12:56:06,545 - server - INFO - Usuario +573017810256 vinculado a negocio don-jediondo por historial
+2026-02-25 12:56:06,965 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes?select=nombre&telefono=eq.%2B573017810256 "HTTP/2 200 OK"
+2026-02-25 12:56:07,125 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-25 12:56:07,126 - whatsapp_agent - ERROR - Error procesando mensaje WA: name 'slug' is not defined
+2026-02-25 12:56:07,126 - twilio.http_client - INFO - -- BEGIN Twilio API Request --
+2026-02-25 12:56:07,126 - twilio.http_client - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC7bde986ff3ef63f525e9d260d2ecbdb6/Messages.json
+2026-02-25 12:56:07,126 - twilio.http_client - INFO - Headers:
+2026-02-25 12:56:07,126 - twilio.http_client - INFO - Content-Type : application/x-www-form-urlencoded
+2026-02-25 12:56:07,126 - twilio.http_client - INFO - Accept : application/json
+2026-02-25 12:56:07,126 - twilio.http_client - INFO - User-Agent : twilio-python/9.10.2 (Windows AMD64) Python/3.12.10
+2026-02-25 12:56:07,127 - twilio.http_client - INFO - X-Twilio-Client : python-9.10.2
+2026-02-25 12:56:07,127 - twilio.http_client - INFO - Accept-Charset : utf-8
+2026-02-25 12:56:07,127 - twilio.http_client - INFO - -- END Twilio API Request --
+2026-02-25 12:56:07,859 - twilio.http_client - INFO - Response Status Code: 201
+2026-02-25 12:56:07,861 - twilio.http_client - INFO - Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '872', 'Connection': 'keep-alive', 'Date': 'Wed, 25 Feb 2026 17:56:08 GMT', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQb1124b8b9a2dbbee6bb410bf50c2be40', 'Twilio-Request-Duration': '0.109', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 3e0b73b9ff3a5cabba79c382175c1576.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': 'zzNn3vf1QvlmeGMOoZjbe4Nh2D1vNf2sHokGvBNhu-7zBRLxkVHexA==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+2026-02-25 12:56:07,863 - whatsapp_agent - INFO - Mensaje enviado a +573017810256 [SID: Global]: SMb1124b8b9a2dbbee6bb410bf50c2be40
+2026-02-25 12:56:08,044 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-25 12:56:53,077 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-25 12:58:01,805 - server - INFO - WhatsApp webhook received from +573017810256: Hola, prueba local
+2026-02-25 12:58:01,805 - server - INFO - Mensaje recibido en el número oficial SaaS: +16617952400
+2026-02-25 12:58:02,646 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=negocio_id&phone_number=in.%28%2B573017810256%2C573017810256%2C3017810256%2Cweb_573017810256%2Cweb_3017810256%29&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 12:58:02,832 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-25 12:58:02,836 - server - INFO - Usuario +573017810256 vinculado a negocio don-jediondo por historial
+2026-02-25 12:58:04,719 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes?select=nombre&telefono=eq.%2B573017810256 "HTTP/2 200 OK"
+2026-02-25 12:58:04,880 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-25 12:58:05,045 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=id&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&phone_number=eq.%2B573017810256&status=eq.active&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 12:58:05,219 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations "HTTP/2 201 Created"
+2026-02-25 12:58:05,375 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=id&negocio_id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28&phone_number=eq.%2B573017810256&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 12:58:05,523 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages "HTTP/2 201 Created"
+2026-02-25 12:58:05,685 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?id=eq.b3bfd069-1e5b-4ace-90a6-cf59f76ab70e "HTTP/2 200 OK"
+2026-02-25 12:58:05,820 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages?select=direction%2Ccontent&conversation_id=eq.b3bfd069-1e5b-4ace-90a6-cf59f76ab70e&order=created_at.desc&limit=10 "HTTP/2 200 OK"
+2026-02-25 12:58:10,380 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-25 12:58:10,388 - whatsapp_agent - INFO - OpenAI response tool_calls: None
+2026-02-25 12:58:10,534 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages "HTTP/2 201 Created"
+2026-02-25 12:58:10,670 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?id=eq.b3bfd069-1e5b-4ace-90a6-cf59f76ab70e "HTTP/2 200 OK"
+2026-02-25 12:58:10,869 - twilio.http_client - INFO - -- BEGIN Twilio API Request --
+2026-02-25 12:58:10,869 - twilio.http_client - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC7bde986ff3ef63f525e9d260d2ecbdb6/Messages.json
+2026-02-25 12:58:10,869 - twilio.http_client - INFO - Headers:
+2026-02-25 12:58:10,870 - twilio.http_client - INFO - Content-Type : application/x-www-form-urlencoded
+2026-02-25 12:58:10,870 - twilio.http_client - INFO - Accept : application/json
+2026-02-25 12:58:10,870 - twilio.http_client - INFO - User-Agent : twilio-python/9.10.2 (Windows AMD64) Python/3.12.10
+2026-02-25 12:58:10,870 - twilio.http_client - INFO - X-Twilio-Client : python-9.10.2
+2026-02-25 12:58:10,870 - twilio.http_client - INFO - Accept-Charset : utf-8
+2026-02-25 12:58:10,870 - twilio.http_client - INFO - -- END Twilio API Request --
+2026-02-25 12:58:11,591 - twilio.http_client - INFO - Response Status Code: 201
+2026-02-25 12:58:11,591 - twilio.http_client - INFO - Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '909', 'Connection': 'keep-alive', 'Date': 'Wed, 25 Feb 2026 17:58:11 GMT', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQb037fb75d31c9585dddff1cffaffb9c6', 'Twilio-Request-Duration': '0.110', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 fd6e4a0cbd41069ef3a4da793556a202.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': 'BaBn8cAfbJTAgV6GNh9cyXwhtOKKtKRjttqOm26GV3Lir3Cr3vSUKw==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+2026-02-25 12:58:11,591 - whatsapp_agent - INFO - Mensaje enviado a +573017810256 [SID: Global]: SMb037fb75d31c9585dddff1cffaffb9c6
+2026-02-25 12:58:11,984 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?id=eq.37a07d0f-e8b4-4f23-bfe9-02be72d76c28 "HTTP/2 200 OK"
+2026-02-25 13:49:46,563 - twilio.http_client - INFO - -- BEGIN Twilio API Request --
+2026-02-25 13:49:46,564 - twilio.http_client - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC7bde986ff3ef63f525e9d260d2ecbdb6/Messages.json
+2026-02-25 13:49:46,564 - twilio.http_client - INFO - Headers:
+2026-02-25 13:49:46,564 - twilio.http_client - INFO - Content-Type : application/x-www-form-urlencoded
+2026-02-25 13:49:46,564 - twilio.http_client - INFO - Accept : application/json
+2026-02-25 13:49:46,564 - twilio.http_client - INFO - User-Agent : twilio-python/9.10.2 (Windows AMD64) Python/3.12.10
+2026-02-25 13:49:46,564 - twilio.http_client - INFO - X-Twilio-Client : python-9.10.2
+2026-02-25 13:49:46,565 - twilio.http_client - INFO - Accept-Charset : utf-8
+2026-02-25 13:49:46,565 - twilio.http_client - INFO - -- END Twilio API Request --
+2026-02-25 13:49:47,703 - twilio.http_client - INFO - Response Status Code: 201
+2026-02-25 13:49:47,703 - twilio.http_client - INFO - Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '883', 'Connection': 'keep-alive', 'Date': 'Wed, 25 Feb 2026 18:49:48 GMT', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQ7f59674dea27c7b8bfb01694112ff912', 'Twilio-Request-Duration': '0.101', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 975617464234925f8d09b6969ec6238c.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': '8iU_HnfUj9igqMb4NmRRG3TB5yOLhi7Q52N-bE0tNflnETXMF7m48g==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+2026-02-25 13:49:47,703 - whatsapp_agent - INFO - Mensaje enviado a +573128833350 [SID: Global]: SM7f59674dea27c7b8bfb01694112ff912
+2026-02-25 14:01:28,299 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-25 14:02:02,931 - server - INFO - WhatsApp webhook received from +573111111111: Hola, tengo hambre y quiero pedir algo.
+2026-02-25 14:02:02,942 - server - INFO - Mensaje recibido en el número oficial SaaS: +16617952400
+2026-02-25 14:02:05,622 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=negocio_id&phone_number=eq.%2B573111111111&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 14:02:05,864 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&whatsapp=eq.%2B16617952400 "HTTP/2 200 OK"
+2026-02-25 14:02:06,264 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 14:02:06,283 - server - WARNING - Fallback de desarrollo: vinculando mensaje a bandeja-paisa
+2026-02-25 14:02:07,430 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes?select=nombre&telefono=eq.%2B573111111111 "HTTP/2 200 OK"
+2026-02-25 14:02:07,585 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.a255305e-fcd9-4c4f-9ed3-abecf53b0546 "HTTP/2 200 OK"
+2026-02-25 14:02:07,593 - whatsapp_agent - ERROR - Error procesando mensaje WA: name 'slug' is not defined
+2026-02-25 14:02:08,130 - twilio.http_client - INFO - -- BEGIN Twilio API Request --
+2026-02-25 14:02:08,131 - twilio.http_client - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC8266b538b1ebfda112b8da75c1b13ec5/Messages.json
+2026-02-25 14:02:08,131 - twilio.http_client - INFO - Headers:
+2026-02-25 14:02:08,131 - twilio.http_client - INFO - Content-Type : application/x-www-form-urlencoded
+2026-02-25 14:02:08,131 - twilio.http_client - INFO - Accept : application/json
+2026-02-25 14:02:08,131 - twilio.http_client - INFO - User-Agent : twilio-python/9.10.2 (Windows AMD64) Python/3.12.10
+2026-02-25 14:02:08,131 - twilio.http_client - INFO - X-Twilio-Client : python-9.10.2
+2026-02-25 14:02:08,131 - twilio.http_client - INFO - Accept-Charset : utf-8
+2026-02-25 14:02:08,131 - twilio.http_client - INFO - -- END Twilio API Request --
+2026-02-25 14:02:09,464 - twilio.http_client - INFO - Response Status Code: 400
+2026-02-25 14:02:09,464 - twilio.http_client - INFO - Response Headers: {'Content-Type': 'application/json', 'Content-Length': '158', 'Connection': 'keep-alive', 'Date': 'Wed, 25 Feb 2026 19:02:09 GMT', 'X-Twilio-Error-Code': '63007', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQ4bbb915768e3af10f50e1b082489c45c', 'Twilio-Request-Duration': '0.077', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Error from cloudfront', 'Via': '1.1 975617464234925f8d09b6969ec6238c.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': '0FbEpgLoIZM5kN8XVTBlUGWemOW-QIf5FskFP0qSeFHQzb-iUjiSrg==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+2026-02-25 14:02:09,468 - whatsapp_agent - ERROR - Error enviando respuesta WA a +573111111111: 
+[31m[49mHTTP Error[0m [37m[49mYour request was:[0m
+
+[36m[49mPOST /Accounts/AC8266b538b1ebfda112b8da75c1b13ec5/Messages.json[0m
+
+[37m[49mTwilio returned the following information:[0m
+
+[34m[49mUnable to create record: Twilio could not find a Channel with the specified From address[0m
+
+[37m[49mMore information may be available here:[0m
+
+[34m[49mhttps://www.twilio.com/docs/errors/63007[0m
+
+
+2026-02-25 14:02:09,655 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?id=eq.a255305e-fcd9-4c4f-9ed3-abecf53b0546 "HTTP/2 200 OK"
+2026-02-25 14:02:21,693 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-25 14:02:53,850 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-25 14:02:56,327 - server - INFO - WhatsApp webhook received from +573111111111: Hola, tengo hambre y quiero pedir algo.
+2026-02-25 14:02:56,327 - server - INFO - Mensaje recibido en el número oficial SaaS: +16617952400
+2026-02-25 14:02:57,658 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=negocio_id&phone_number=in.%28%2B573111111111%2C573111111111%2C3111111111%2Cweb_573111111111%2Cweb_3111111111%29&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 14:02:57,661 - server - INFO - Nuevo usuario en número oficial: +573111111111. Entrando en modo PLATFORM.
+2026-02-25 14:02:58,839 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes?select=nombre&telefono=eq.%2B573111111111 "HTTP/2 200 OK"
+2026-02-25 14:02:59,009 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=id&negocio_id=eq.PLATFORM&phone_number=eq.%2B573111111111&status=eq.active&order=last_message_at.desc&limit=1 "HTTP/2 400 Bad Request"
+2026-02-25 14:02:59,013 - whatsapp_agent - ERROR - Error managing conversation: {'message': 'invalid input syntax for type uuid: "PLATFORM"', 'code': '22P02', 'hint': None, 'details': None}
+2026-02-25 14:02:59,152 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages?select=direction%2Ccontent&conversation_id=eq.None&order=created_at.desc&limit=10 "HTTP/2 400 Bad Request"
+2026-02-25 14:02:59,153 - whatsapp_agent - ERROR - Error fetching history: {'message': 'invalid input syntax for type uuid: "None"', 'code': '22P02', 'hint': None, 'details': None}
+2026-02-25 14:03:02,494 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-25 14:03:03,062 - twilio.http_client - INFO - -- BEGIN Twilio API Request --
+2026-02-25 14:03:03,063 - twilio.http_client - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC7bde986ff3ef63f525e9d260d2ecbdb6/Messages.json
+2026-02-25 14:03:03,063 - twilio.http_client - INFO - Headers:
+2026-02-25 14:03:03,063 - twilio.http_client - INFO - Content-Type : application/x-www-form-urlencoded
+2026-02-25 14:03:03,063 - twilio.http_client - INFO - Accept : application/json
+2026-02-25 14:03:03,063 - twilio.http_client - INFO - User-Agent : twilio-python/9.10.2 (Windows AMD64) Python/3.12.10
+2026-02-25 14:03:03,063 - twilio.http_client - INFO - X-Twilio-Client : python-9.10.2
+2026-02-25 14:03:03,064 - twilio.http_client - INFO - Accept-Charset : utf-8
+2026-02-25 14:03:03,064 - twilio.http_client - INFO - -- END Twilio API Request --
+2026-02-25 14:03:04,503 - twilio.http_client - INFO - Response Status Code: 201
+2026-02-25 14:03:04,504 - twilio.http_client - INFO - Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '988', 'Connection': 'keep-alive', 'Date': 'Wed, 25 Feb 2026 19:03:04 GMT', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQ8474a99d63eb0d6afda553869a2ee1bb', 'Twilio-Request-Duration': '0.116', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 96cdd2151853f0a63d67e9c60088d534.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': 'QD6mC6Jc2dOyg04deQi1UsgEYRp71o_Lxfkk45jnI88orkvksJoIZQ==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+2026-02-25 14:03:04,504 - whatsapp_agent - INFO - Mensaje enviado a +573111111111 [SID: Global]: SM8474a99d63eb0d6afda553869a2ee1bb
+2026-02-25 14:03:06,562 - server - INFO - WhatsApp webhook received from +573111111111: Estoy cerca de la Calle 100 con Carrera 15 en Bogotá. ¿Qué hay cerca?
+2026-02-25 14:03:06,563 - server - INFO - Mensaje recibido en el número oficial SaaS: +16617952400
+2026-02-25 14:03:06,872 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=negocio_id&phone_number=in.%28%2B573111111111%2C573111111111%2C3111111111%2Cweb_573111111111%2Cweb_3111111111%29&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 14:03:06,872 - server - INFO - Nuevo usuario en número oficial: +573111111111. Entrando en modo PLATFORM.
+2026-02-25 14:03:07,272 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes?select=nombre&telefono=eq.%2B573111111111 "HTTP/2 200 OK"
+2026-02-25 14:03:07,422 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=id&negocio_id=eq.PLATFORM&phone_number=eq.%2B573111111111&status=eq.active&order=last_message_at.desc&limit=1 "HTTP/2 400 Bad Request"
+2026-02-25 14:03:07,423 - whatsapp_agent - ERROR - Error managing conversation: {'message': 'invalid input syntax for type uuid: "PLATFORM"', 'code': '22P02', 'hint': None, 'details': None}
+2026-02-25 14:03:07,657 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages?select=direction%2Ccontent&conversation_id=eq.None&order=created_at.desc&limit=10 "HTTP/2 400 Bad Request"
+2026-02-25 14:03:07,658 - whatsapp_agent - ERROR - Error fetching history: {'message': 'invalid input syntax for type uuid: "None"', 'code': '22P02', 'hint': None, 'details': None}
+2026-02-25 14:03:10,311 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-25 14:03:10,321 - whatsapp_agent - INFO - AI calling function: find_nearest_restaurant with {'address': 'Calle 100 con Carrera 15, Bogotá'}
+2026-02-25 14:03:12,595 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-25 14:03:12,603 - twilio.http_client - INFO - -- BEGIN Twilio API Request --
+2026-02-25 14:03:12,606 - twilio.http_client - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC7bde986ff3ef63f525e9d260d2ecbdb6/Messages.json
+2026-02-25 14:03:12,608 - twilio.http_client - INFO - Headers:
+2026-02-25 14:03:12,609 - twilio.http_client - INFO - Content-Type : application/x-www-form-urlencoded
+2026-02-25 14:03:12,609 - twilio.http_client - INFO - Accept : application/json
+2026-02-25 14:03:12,609 - twilio.http_client - INFO - User-Agent : twilio-python/9.10.2 (Windows AMD64) Python/3.12.10
+2026-02-25 14:03:12,609 - twilio.http_client - INFO - X-Twilio-Client : python-9.10.2
+2026-02-25 14:03:12,609 - twilio.http_client - INFO - Accept-Charset : utf-8
+2026-02-25 14:03:12,609 - twilio.http_client - INFO - -- END Twilio API Request --
+2026-02-25 14:03:13,871 - twilio.http_client - INFO - Response Status Code: 201
+2026-02-25 14:03:13,871 - twilio.http_client - INFO - Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '992', 'Connection': 'keep-alive', 'Date': 'Wed, 25 Feb 2026 19:03:14 GMT', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQe8f8320474e51c50dd83a5d2f62f2f00', 'Twilio-Request-Duration': '0.122', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 96cdd2151853f0a63d67e9c60088d534.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': 'rhNrspYglfPRybCa-MJ7f2NtitbW16QZnvK3Pnpj0Dg-xSDZAuuFHQ==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+2026-02-25 14:03:13,871 - whatsapp_agent - INFO - Mensaje enviado a +573111111111 [SID: Global]: SMe8f8320474e51c50dd83a5d2f62f2f00
+2026-02-25 14:04:24,206 - server - INFO - WhatsApp webhook received from +573111111111: Hola, tengo hambre y quiero pedir algo.
+2026-02-25 14:04:24,206 - server - INFO - Mensaje recibido en el número oficial SaaS: +16617952400
+2026-02-25 14:04:24,654 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=negocio_id&phone_number=in.%28%2B573111111111%2C573111111111%2C3111111111%2Cweb_573111111111%2Cweb_3111111111%29&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 14:04:24,657 - server - INFO - Nuevo usuario en número oficial: +573111111111. Entrando en modo PLATFORM.
+2026-02-25 14:04:24,989 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes?select=nombre&telefono=eq.%2B573111111111 "HTTP/2 200 OK"
+2026-02-25 14:04:25,169 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=id&negocio_id=eq.PLATFORM&phone_number=eq.%2B573111111111&status=eq.active&order=last_message_at.desc&limit=1 "HTTP/2 400 Bad Request"
+2026-02-25 14:04:25,500 - whatsapp_agent - ERROR - Error managing conversation: {'message': 'invalid input syntax for type uuid: "PLATFORM"', 'code': '22P02', 'hint': None, 'details': None}
+2026-02-25 14:04:25,642 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages?select=direction%2Ccontent&conversation_id=eq.None&order=created_at.desc&limit=10 "HTTP/2 400 Bad Request"
+2026-02-25 14:04:25,643 - whatsapp_agent - ERROR - Error fetching history: {'message': 'invalid input syntax for type uuid: "None"', 'code': '22P02', 'hint': None, 'details': None}
+2026-02-25 14:04:27,454 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-25 14:04:27,459 - twilio.http_client - INFO - -- BEGIN Twilio API Request --
+2026-02-25 14:04:27,459 - twilio.http_client - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC7bde986ff3ef63f525e9d260d2ecbdb6/Messages.json
+2026-02-25 14:04:27,459 - twilio.http_client - INFO - Headers:
+2026-02-25 14:04:27,459 - twilio.http_client - INFO - Content-Type : application/x-www-form-urlencoded
+2026-02-25 14:04:27,459 - twilio.http_client - INFO - Accept : application/json
+2026-02-25 14:04:27,459 - twilio.http_client - INFO - User-Agent : twilio-python/9.10.2 (Windows AMD64) Python/3.12.10
+2026-02-25 14:04:27,465 - twilio.http_client - INFO - X-Twilio-Client : python-9.10.2
+2026-02-25 14:04:27,465 - twilio.http_client - INFO - Accept-Charset : utf-8
+2026-02-25 14:04:27,465 - twilio.http_client - INFO - -- END Twilio API Request --
+2026-02-25 14:04:28,752 - twilio.http_client - INFO - Response Status Code: 201
+2026-02-25 14:04:28,753 - twilio.http_client - INFO - Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '1002', 'Connection': 'keep-alive', 'Date': 'Wed, 25 Feb 2026 19:04:29 GMT', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQf2f6645573011a842fbd487d3c90c50e', 'Twilio-Request-Duration': '0.086', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 9bd6f99099f3fce7cd14df7a4cc324d4.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': 'iycFLByTD-O2Ld0hCbyfvsHeY8uCGLKQgT2mZizhaY7iBFCDpKXi2g==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+2026-02-25 14:04:28,753 - whatsapp_agent - INFO - Mensaje enviado a +573111111111 [SID: Global]: SMf2f6645573011a842fbd487d3c90c50e
+2026-02-25 14:04:37,843 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-25 14:04:37,990 - server - INFO - WhatsApp webhook received from +573111111111: Estoy cerca de la Calle 100 con Carrera 15 en Bogotá. ¿Qué hay cerca?
+2026-02-25 14:04:37,990 - server - INFO - Mensaje recibido en el número oficial SaaS: +16617952400
+2026-02-25 14:04:39,136 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=negocio_id&phone_number=in.%28%2B573111111111%2C573111111111%2C3111111111%2Cweb_573111111111%2Cweb_3111111111%29&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 14:04:39,136 - server - INFO - Nuevo usuario en número oficial: +573111111111. Entrando en modo PLATFORM.
+2026-02-25 14:04:39,136 - server - ERROR - No se pudo encontrar un negocio para el número: +16617952400
+2026-02-25 14:04:56,404 - server - INFO - WhatsApp webhook received from +573111111111: Hola, tengo hambre y quiero pedir algo.
+2026-02-25 14:04:56,404 - server - INFO - Mensaje recibido en el número oficial SaaS: +16617952400
+2026-02-25 14:04:56,746 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=negocio_id&phone_number=in.%28%2B573111111111%2C573111111111%2C3111111111%2Cweb_573111111111%2Cweb_3111111111%29&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 14:04:56,747 - server - INFO - Nuevo usuario en número oficial: +573111111111. Entrando en modo PLATFORM.
+2026-02-25 14:04:56,747 - server - ERROR - No se pudo encontrar un negocio para el número: +16617952400
+2026-02-25 14:05:05,028 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-25 14:05:05,257 - server - INFO - WhatsApp webhook received from +573111111111: Estoy cerca de la Calle 100 con Carrera 15 en Bogotá. ¿Qué hay cerca?
+2026-02-25 14:05:05,257 - server - INFO - Mensaje recibido en el número oficial SaaS: +16617952400
+2026-02-25 14:05:07,310 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=negocio_id&phone_number=in.%28%2B573111111111%2C573111111111%2C3111111111%2Cweb_573111111111%2Cweb_3111111111%29&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 14:05:07,310 - server - INFO - Nuevo usuario en número oficial: +573111111111. Entrando en modo PLATFORM.
+2026-02-25 14:05:08,905 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes?select=nombre&telefono=eq.%2B573111111111 "HTTP/2 200 OK"
+2026-02-25 14:05:09,076 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=id&negocio_id=eq.f92dc309-3b2b-4ddd-b8c6-723de6da38f3&phone_number=eq.%2B573111111111&status=eq.active&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 14:05:09,230 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations "HTTP/2 201 Created"
+2026-02-25 14:05:09,389 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=id&negocio_id=eq.f92dc309-3b2b-4ddd-b8c6-723de6da38f3&phone_number=eq.%2B573111111111&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 14:05:09,534 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages "HTTP/2 201 Created"
+2026-02-25 14:05:09,702 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?id=eq.9adbf510-bd60-4e2e-b969-1653eefb420a "HTTP/2 200 OK"
+2026-02-25 14:05:09,843 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages?select=direction%2Ccontent&conversation_id=eq.9adbf510-bd60-4e2e-b969-1653eefb420a&order=created_at.desc&limit=10 "HTTP/2 200 OK"
+2026-02-25 14:05:13,569 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-25 14:05:13,589 - whatsapp_agent - INFO - AI calling function: find_nearest_restaurant with {'address': 'Calle 100 con Carrera 15, Bogotá'}
+2026-02-25 14:05:16,418 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-25 14:05:16,726 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages "HTTP/2 201 Created"
+2026-02-25 14:05:16,865 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?id=eq.9adbf510-bd60-4e2e-b969-1653eefb420a "HTTP/2 200 OK"
+2026-02-25 14:05:17,552 - twilio.http_client - INFO - -- BEGIN Twilio API Request --
+2026-02-25 14:05:17,552 - twilio.http_client - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC7bde986ff3ef63f525e9d260d2ecbdb6/Messages.json
+2026-02-25 14:05:17,552 - twilio.http_client - INFO - Headers:
+2026-02-25 14:05:17,553 - twilio.http_client - INFO - Content-Type : application/x-www-form-urlencoded
+2026-02-25 14:05:17,553 - twilio.http_client - INFO - Accept : application/json
+2026-02-25 14:05:17,553 - twilio.http_client - INFO - User-Agent : twilio-python/9.10.2 (Windows AMD64) Python/3.12.10
+2026-02-25 14:05:17,554 - twilio.http_client - INFO - X-Twilio-Client : python-9.10.2
+2026-02-25 14:05:17,554 - twilio.http_client - INFO - Accept-Charset : utf-8
+2026-02-25 14:05:17,554 - twilio.http_client - INFO - -- END Twilio API Request --
+2026-02-25 14:05:20,844 - twilio.http_client - INFO - Response Status Code: 201
+2026-02-25 14:05:20,845 - twilio.http_client - INFO - Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '973', 'Connection': 'keep-alive', 'Date': 'Wed, 25 Feb 2026 19:05:21 GMT', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQ5e77dc59de18ee664c56fd126b88f936', 'Twilio-Request-Duration': '0.085', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 4410ff6f476bccd229a9ea9b3c8e1238.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': 'bwytDvtEieHVLBM2JSFNC73_Z9F7cc2A-GtvvjwlePW6VmSvqOH7pg==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+2026-02-25 14:05:20,845 - whatsapp_agent - INFO - Mensaje enviado a +573111111111 [SID: Global]: SM5e77dc59de18ee664c56fd126b88f936
+2026-02-25 14:05:33,376 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-25 14:05:45,775 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-25 14:05:45,957 - server - INFO - --- WHATSAPP WEBHOOK RECEIVED --- Data: {'To': 'whatsapp:+16617952400', 'From': 'whatsapp:+573111111111', 'Body': 'Hola, tengo hambre y quiero pedir algo.'}
+2026-02-25 14:05:45,958 - server - INFO - WhatsApp webhook received from +573111111111: Hola, tengo hambre y quiero pedir algo.
+2026-02-25 14:05:45,959 - server - INFO - Mensaje recibido en el número oficial SaaS: +16617952400
+2026-02-25 14:05:47,240 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=negocio_id&phone_number=in.%28%2B573111111111%2C573111111111%2C3111111111%2Cweb_573111111111%2Cweb_3111111111%29&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 14:05:47,375 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.f92dc309-3b2b-4ddd-b8c6-723de6da38f3 "HTTP/2 200 OK"
+2026-02-25 14:05:47,394 - server - INFO - Usuario +573111111111 vinculado a negocio platform por historial
+2026-02-25 14:05:48,476 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes?select=nombre&telefono=eq.%2B573111111111 "HTTP/2 200 OK"
+2026-02-25 14:05:48,635 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=id&negocio_id=eq.f92dc309-3b2b-4ddd-b8c6-723de6da38f3&phone_number=eq.%2B573111111111&status=eq.active&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 14:05:48,804 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages "HTTP/2 201 Created"
+2026-02-25 14:05:48,962 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?id=eq.9adbf510-bd60-4e2e-b969-1653eefb420a "HTTP/2 200 OK"
+2026-02-25 14:05:49,114 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages?select=direction%2Ccontent&conversation_id=eq.9adbf510-bd60-4e2e-b969-1653eefb420a&order=created_at.desc&limit=10 "HTTP/2 200 OK"
+2026-02-25 14:05:51,471 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-25 14:05:51,630 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages "HTTP/2 201 Created"
+2026-02-25 14:05:51,779 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?id=eq.9adbf510-bd60-4e2e-b969-1653eefb420a "HTTP/2 200 OK"
+2026-02-25 14:05:52,062 - twilio.http_client - INFO - -- BEGIN Twilio API Request --
+2026-02-25 14:05:52,062 - twilio.http_client - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC7bde986ff3ef63f525e9d260d2ecbdb6/Messages.json
+2026-02-25 14:05:52,062 - twilio.http_client - INFO - Headers:
+2026-02-25 14:05:52,062 - twilio.http_client - INFO - Content-Type : application/x-www-form-urlencoded
+2026-02-25 14:05:52,062 - twilio.http_client - INFO - Accept : application/json
+2026-02-25 14:05:52,062 - twilio.http_client - INFO - User-Agent : twilio-python/9.10.2 (Windows AMD64) Python/3.12.10
+2026-02-25 14:05:52,063 - twilio.http_client - INFO - X-Twilio-Client : python-9.10.2
+2026-02-25 14:05:52,063 - twilio.http_client - INFO - Accept-Charset : utf-8
+2026-02-25 14:05:52,063 - twilio.http_client - INFO - -- END Twilio API Request --
+2026-02-25 14:05:53,301 - twilio.http_client - INFO - Response Status Code: 201
+2026-02-25 14:05:53,301 - twilio.http_client - INFO - Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '948', 'Connection': 'keep-alive', 'Date': 'Wed, 25 Feb 2026 19:05:53 GMT', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQ25743c0811c50a75f19784cb7f510f59', 'Twilio-Request-Duration': '0.125', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 977c115ca5f0c2de6bbdcbd84fa183e2.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': 'B0rniXEE2i6rc69NfkEzf5WC6eOC1x5YK9131J0LqM-RXFf4cH0Wlw==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+2026-02-25 14:05:53,302 - whatsapp_agent - INFO - Mensaje enviado a +573111111111 [SID: Global]: SM25743c0811c50a75f19784cb7f510f59
+2026-02-25 14:05:53,605 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?id=eq.f92dc309-3b2b-4ddd-b8c6-723de6da38f3 "HTTP/2 200 OK"
+2026-02-25 14:05:55,658 - server - INFO - --- WHATSAPP WEBHOOK RECEIVED --- Data: {'To': 'whatsapp:+16617952400', 'From': 'whatsapp:+573111111111', 'Body': 'Estoy cerca de la Calle 100 con Carrera 15 en Bogotá. ¿Qué hay cerca?'}
+2026-02-25 14:05:55,660 - server - INFO - WhatsApp webhook received from +573111111111: Estoy cerca de la Calle 100 con Carrera 15 en Bogotá. ¿Qué hay cerca?
+2026-02-25 14:05:55,660 - server - INFO - Mensaje recibido en el número oficial SaaS: +16617952400
+2026-02-25 14:05:55,800 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=negocio_id&phone_number=in.%28%2B573111111111%2C573111111111%2C3111111111%2Cweb_573111111111%2Cweb_3111111111%29&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 14:05:55,934 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.f92dc309-3b2b-4ddd-b8c6-723de6da38f3 "HTTP/2 200 OK"
+2026-02-25 14:05:55,935 - server - INFO - Usuario +573111111111 vinculado a negocio platform por historial
+2026-02-25 14:05:56,083 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes?select=nombre&telefono=eq.%2B573111111111 "HTTP/2 200 OK"
+2026-02-25 14:05:56,230 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=id&negocio_id=eq.f92dc309-3b2b-4ddd-b8c6-723de6da38f3&phone_number=eq.%2B573111111111&status=eq.active&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 14:05:56,374 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages "HTTP/2 201 Created"
+2026-02-25 14:05:56,517 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?id=eq.9adbf510-bd60-4e2e-b969-1653eefb420a "HTTP/2 200 OK"
+2026-02-25 14:05:56,665 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages?select=direction%2Ccontent&conversation_id=eq.9adbf510-bd60-4e2e-b969-1653eefb420a&order=created_at.desc&limit=10 "HTTP/2 200 OK"
+2026-02-25 14:05:58,731 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-25 14:05:58,741 - whatsapp_agent - INFO - AI calling function: find_nearest_restaurant with {'address': 'Calle 100 con Carrera 15, Bogotá'}
+2026-02-25 14:06:01,408 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-25 14:06:01,560 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages "HTTP/2 201 Created"
+2026-02-25 14:06:01,711 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?id=eq.9adbf510-bd60-4e2e-b969-1653eefb420a "HTTP/2 200 OK"
+2026-02-25 14:06:01,711 - twilio.http_client - INFO - -- BEGIN Twilio API Request --
+2026-02-25 14:06:01,711 - twilio.http_client - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC7bde986ff3ef63f525e9d260d2ecbdb6/Messages.json
+2026-02-25 14:06:01,711 - twilio.http_client - INFO - Headers:
+2026-02-25 14:06:01,711 - twilio.http_client - INFO - Content-Type : application/x-www-form-urlencoded
+2026-02-25 14:06:01,711 - twilio.http_client - INFO - Accept : application/json
+2026-02-25 14:06:01,711 - twilio.http_client - INFO - User-Agent : twilio-python/9.10.2 (Windows AMD64) Python/3.12.10
+2026-02-25 14:06:01,711 - twilio.http_client - INFO - X-Twilio-Client : python-9.10.2
+2026-02-25 14:06:01,711 - twilio.http_client - INFO - Accept-Charset : utf-8
+2026-02-25 14:06:01,711 - twilio.http_client - INFO - -- END Twilio API Request --
+2026-02-25 14:06:02,505 - twilio.http_client - INFO - Response Status Code: 201
+2026-02-25 14:06:02,506 - twilio.http_client - INFO - Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '967', 'Connection': 'keep-alive', 'Date': 'Wed, 25 Feb 2026 19:06:02 GMT', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQ46fb15ce72a09afb332cc8adc861941d', 'Twilio-Request-Duration': '0.096', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 467443b79d3e2cadfa97b08983db8d4a.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': 'loa7xQx9B3WfDdwWIhJEWMmkj-HhuDA2kFDCJBiCTF76GVEQDwzMUg==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+2026-02-25 14:06:02,506 - whatsapp_agent - INFO - Mensaje enviado a +573111111111 [SID: Global]: SM46fb15ce72a09afb332cc8adc861941d
+2026-02-25 14:06:03,835 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?id=eq.f92dc309-3b2b-4ddd-b8c6-723de6da38f3 "HTTP/2 200 OK"
+2026-02-25 14:06:40,350 - server - INFO - --- WHATSAPP WEBHOOK RECEIVED --- Data: {'To': 'whatsapp:+16617952400', 'From': 'whatsapp:+573111111111', 'Body': 'Hola, tengo hambre y quiero pedir algo.'}
+2026-02-25 14:06:40,350 - server - INFO - WhatsApp webhook received from +573111111111: Hola, tengo hambre y quiero pedir algo.
+2026-02-25 14:06:40,350 - server - INFO - Mensaje recibido en el número oficial SaaS: +16617952400
+2026-02-25 14:06:40,867 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=negocio_id&phone_number=in.%28%2B573111111111%2C573111111111%2C3111111111%2Cweb_573111111111%2Cweb_3111111111%29&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 14:06:41,014 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.f92dc309-3b2b-4ddd-b8c6-723de6da38f3 "HTTP/2 200 OK"
+2026-02-25 14:06:41,015 - server - INFO - Usuario +573111111111 vinculado a negocio platform por historial
+2026-02-25 14:06:41,321 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes?select=nombre&telefono=eq.%2B573111111111 "HTTP/2 200 OK"
+2026-02-25 14:06:41,453 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=id&negocio_id=eq.f92dc309-3b2b-4ddd-b8c6-723de6da38f3&phone_number=eq.%2B573111111111&status=eq.active&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 14:06:41,600 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages "HTTP/2 201 Created"
+2026-02-25 14:06:41,728 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?id=eq.9adbf510-bd60-4e2e-b969-1653eefb420a "HTTP/2 200 OK"
+2026-02-25 14:06:41,865 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages?select=direction%2Ccontent&conversation_id=eq.9adbf510-bd60-4e2e-b969-1653eefb420a&order=created_at.desc&limit=10 "HTTP/2 200 OK"
+2026-02-25 14:06:43,633 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-25 14:06:43,794 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages "HTTP/2 201 Created"
+2026-02-25 14:06:43,930 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?id=eq.9adbf510-bd60-4e2e-b969-1653eefb420a "HTTP/2 200 OK"
+2026-02-25 14:06:43,931 - twilio.http_client - INFO - -- BEGIN Twilio API Request --
+2026-02-25 14:06:43,931 - twilio.http_client - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC7bde986ff3ef63f525e9d260d2ecbdb6/Messages.json
+2026-02-25 14:06:43,932 - twilio.http_client - INFO - Headers:
+2026-02-25 14:06:43,932 - twilio.http_client - INFO - Content-Type : application/x-www-form-urlencoded
+2026-02-25 14:06:43,932 - twilio.http_client - INFO - Accept : application/json
+2026-02-25 14:06:43,932 - twilio.http_client - INFO - User-Agent : twilio-python/9.10.2 (Windows AMD64) Python/3.12.10
+2026-02-25 14:06:43,932 - twilio.http_client - INFO - X-Twilio-Client : python-9.10.2
+2026-02-25 14:06:43,932 - twilio.http_client - INFO - Accept-Charset : utf-8
+2026-02-25 14:06:43,932 - twilio.http_client - INFO - -- END Twilio API Request --
+2026-02-25 14:06:44,898 - twilio.http_client - INFO - Response Status Code: 201
+2026-02-25 14:06:44,898 - twilio.http_client - INFO - Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '966', 'Connection': 'keep-alive', 'Date': 'Wed, 25 Feb 2026 19:06:45 GMT', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQ207b886de5da092adb20d6384e6017bb', 'Twilio-Request-Duration': '0.102', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 40c99634272a5ae87f4f1698d4c22efc.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': 'GQzNHb6lenJrbmsX-h7uyGe3ZZo1zgRgmFYPjBYRWhau3EA-rMP_Hw==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+2026-02-25 14:06:44,898 - whatsapp_agent - INFO - Mensaje enviado a +573111111111 [SID: Global]: SM207b886de5da092adb20d6384e6017bb
+2026-02-25 14:06:45,033 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?id=eq.f92dc309-3b2b-4ddd-b8c6-723de6da38f3 "HTTP/2 200 OK"
+2026-02-25 14:06:52,717 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-25 14:06:52,839 - server - INFO - --- WHATSAPP WEBHOOK RECEIVED --- Data: {'To': 'whatsapp:+16617952400', 'From': 'whatsapp:+573111111111', 'Body': 'Estoy cerca de la Calle 100 con Carrera 15 en Bogotá. ¿Qué hay cerca?'}
+2026-02-25 14:06:52,839 - server - INFO - WhatsApp webhook received from +573111111111: Estoy cerca de la Calle 100 con Carrera 15 en Bogotá. ¿Qué hay cerca?
+2026-02-25 14:06:52,839 - server - INFO - Mensaje recibido en el número oficial SaaS: +16617952400
+2026-02-25 14:06:53,684 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=negocio_id&phone_number=in.%28%2B573111111111%2C573111111111%2C3111111111%2Cweb_573111111111%2Cweb_3111111111%29&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 14:06:53,819 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?select=%2A&id=eq.f92dc309-3b2b-4ddd-b8c6-723de6da38f3 "HTTP/2 200 OK"
+2026-02-25 14:06:53,819 - server - INFO - Usuario +573111111111 vinculado a negocio platform por historial
+2026-02-25 14:06:54,621 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/clientes?select=nombre&telefono=eq.%2B573111111111 "HTTP/2 200 OK"
+2026-02-25 14:06:54,756 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?select=id&negocio_id=eq.f92dc309-3b2b-4ddd-b8c6-723de6da38f3&phone_number=eq.%2B573111111111&status=eq.active&order=last_message_at.desc&limit=1 "HTTP/2 200 OK"
+2026-02-25 14:06:54,896 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages "HTTP/2 201 Created"
+2026-02-25 14:06:55,033 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?id=eq.9adbf510-bd60-4e2e-b969-1653eefb420a "HTTP/2 200 OK"
+2026-02-25 14:06:55,167 - httpx - INFO - HTTP Request: GET https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages?select=direction%2Ccontent&conversation_id=eq.9adbf510-bd60-4e2e-b969-1653eefb420a&order=created_at.desc&limit=10 "HTTP/2 200 OK"
+2026-02-25 14:06:57,513 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-25 14:06:57,521 - whatsapp_agent - INFO - AI calling function: find_nearest_restaurant with {'address': 'Calle 100 con Carrera 15, Bogotá'}
+2026-02-25 14:06:58,221 - whatsapp_agent - INFO - Tool find_nearest_restaurant response: {"error": "No pude ubicar esa direcci\u00f3n. \u00bfPodr\u00edas ser m\u00e1s espec\u00edfico?"}
+2026-02-25 14:06:59,353 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-25 14:06:59,613 - httpx - INFO - HTTP Request: POST https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_messages "HTTP/2 201 Created"
+2026-02-25 14:06:59,763 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/agent_conversations?id=eq.9adbf510-bd60-4e2e-b969-1653eefb420a "HTTP/2 200 OK"
+2026-02-25 14:07:00,000 - twilio.http_client - INFO - -- BEGIN Twilio API Request --
+2026-02-25 14:07:00,000 - twilio.http_client - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC7bde986ff3ef63f525e9d260d2ecbdb6/Messages.json
+2026-02-25 14:07:00,000 - twilio.http_client - INFO - Headers:
+2026-02-25 14:07:00,000 - twilio.http_client - INFO - Content-Type : application/x-www-form-urlencoded
+2026-02-25 14:07:00,000 - twilio.http_client - INFO - Accept : application/json
+2026-02-25 14:07:00,000 - twilio.http_client - INFO - User-Agent : twilio-python/9.10.2 (Windows AMD64) Python/3.12.10
+2026-02-25 14:07:00,001 - twilio.http_client - INFO - X-Twilio-Client : python-9.10.2
+2026-02-25 14:07:00,001 - twilio.http_client - INFO - Accept-Charset : utf-8
+2026-02-25 14:07:00,001 - twilio.http_client - INFO - -- END Twilio API Request --
+2026-02-25 14:07:00,833 - twilio.http_client - INFO - Response Status Code: 201
+2026-02-25 14:07:00,833 - twilio.http_client - INFO - Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '1002', 'Connection': 'keep-alive', 'Date': 'Wed, 25 Feb 2026 19:07:01 GMT', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQ820124b5fb1d1f63c19cccaf138410b3', 'Twilio-Request-Duration': '0.106', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 17958ab807b2df3164d1d4004473bdc6.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': 'nl-9GElCG0-B8zHfOalY33vcNLFC5daYYYDvJSeTJCpCqPLt8BTkLg==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+2026-02-25 14:07:00,834 - whatsapp_agent - INFO - Mensaje enviado a +573111111111 [SID: Global]: SM820124b5fb1d1f63c19cccaf138410b3
+2026-02-25 14:07:01,143 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?id=eq.f92dc309-3b2b-4ddd-b8c6-723de6da38f3 "HTTP/2 200 OK"
+2026-02-25 14:07:52,029 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-25 14:58:58,705 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
