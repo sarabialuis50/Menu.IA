@@ -6299,3 +6299,4 @@ postgrest.exceptions.APIError: {'message': "Could not find the 'mesero_nombre' c
 2026-02-25 14:07:01,143 - httpx - INFO - HTTP Request: PATCH https://kgzbixgmunmbgzlegobb.supabase.co/rest/v1/negocios?id=eq.f92dc309-3b2b-4ddd-b8c6-723de6da38f3 "HTTP/2 200 OK"
 2026-02-25 14:07:52,029 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
 2026-02-25 14:58:58,705 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']
+2026-02-25 15:04:00,094 - server - INFO - Allowed CORS origins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://menuia.co', 'https://www.menuia.co']

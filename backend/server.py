@@ -2111,11 +2111,12 @@ async def handle_whatsapp_webhook(request: Request):
     try:
         # Twilio sends form-encoded data
         form_data = await request.form()
-        logger.info(f"--- WHATSAPP WEBHOOK RECEIVED --- Data: {dict(form_data)}")
-        sender_phone = form_data.get('From', '').replace('whatsapp:', '')
-        message_body = form_data.get('Body', '')
+        data_dict = dict(form_data)
+        print(f"--- WHATSAPP WEBHOOK RECEIVED --- Data: {data_dict}")
+        sender_phone = data_dict.get('From', '').replace('whatsapp:', '')
+        message_body = data_dict.get('Body', '')
         
-        logger.info(f"WhatsApp webhook received from {sender_phone}: {message_body}")
+        print(f"DEBUG: Message from {sender_phone}: {message_body}")
         
         if not sender_phone or not message_body:
             return {"status": "ignored", "reason": "missing_data"}
@@ -2127,11 +2128,17 @@ async def handle_whatsapp_webhook(request: Request):
         from whatsapp_agent import GLOBAL_TWILIO_NUMBER
         
         # Si el mensaje llega al número oficial de la plataforma
-        is_official_number = (to_number_raw == GLOBAL_TWILIO_NUMBER or to_number == GLOBAL_TWILIO_NUMBER.replace('whatsapp:', ''))
+        # Limpiamos el número para comparar (quitando 'whatsapp:' y '+')
+        clean_to = to_number.replace('+', '')
+        clean_official = GLOBAL_TWILIO_NUMBER.replace('whatsapp:', '').replace('+', '')
+        
+        is_official_number = (clean_to == clean_official)
+        
+        print(f"DEBUG: to_number={to_number}, official={GLOBAL_TWILIO_NUMBER}, is_official={is_official_number}")
         
         business_data = None
         if is_official_number:
-            logger.info(f"Mensaje recibido en el número oficial SaaS: {to_number}")
+            print(f"Mensaje recibido en el número oficial SaaS: {to_number}")
             
             # Buscamos en el historial, probando el número real y versiones con/sin prefijo web_
             # Intentamos: +57..., 57..., 301..., web_57..., web_301...
