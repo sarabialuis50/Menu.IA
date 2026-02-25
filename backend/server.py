@@ -2130,8 +2130,18 @@ async def handle_whatsapp_webhook(request: Request):
         if is_official_number:
             logger.info(f"Mensaje recibido en el número oficial SaaS: {to_number}")
             
-            # Buscamos en el historial, probando el número real y la versión con prefijo web_
-            possible_phones = [sender_phone, sender_phone.replace('+', ''), f"web_{sender_phone.replace('+', '')}"]
+            # Buscamos en el historial, probando el número real y versiones con/sin prefijo web_
+            # Intentamos: +57..., 57..., 301..., web_57..., web_301...
+            raw_phone = sender_phone.replace('+', '')
+            phone_no_country = raw_phone[2:] if raw_phone.startswith('57') else raw_phone
+            
+            possible_phones = [
+                sender_phone, 
+                raw_phone, 
+                phone_no_country,
+                f"web_{raw_phone}", 
+                f"web_{phone_no_country}"
+            ]
             
             conv_res = supabase.table('agent_conversations') \
                 .select('negocio_id') \
