@@ -289,6 +289,7 @@ async def process_whatsapp_message(message_body: str, sender_phone: str, negocio
             
         biz = biz_res.data[0]
         biz_name = biz.get('nombre', 'Menu.IA')
+        biz_slug = biz.get('slug', '')
         
         # AI Configuration
         ai_habilitado = biz.get('ai_habilitado', True)
@@ -320,7 +321,7 @@ REGISTRO DE CLIENTES Y FIDELIZACIÓN (PRIORIDAD ALTA):
 
 REGLAS DE RESPUESTA DE PRODUCTOS Y MENÚ:
 - Si el cliente quiere ver todo el menú, envíale el siguiente enlace interactivo: 
-  https://menuia-production.up.railway.app/{slug}
+  https://menuia-production.up.railway.app/{biz_slug}
 - Al mostrar productos del menú de forma textual, estructúralos como una tabla o lista clara, rápida de leer (evita lenguaje tipo periódico o densos párrafos).
 - Enumera los items o dales un código numérico para que el cliente pueda pedir más rápido enviando solo el número (Ej: "1. Hamburguesa Sencilla").
 - Menciona siempre en la misma línea: NÚMERO DE ITEM, NOMBRE, PRECIO y DESCUENTO (si lo tiene). Agrega la descripción brevemente debajo.
