@@ -2156,6 +2156,14 @@ async def handle_whatsapp_webhook(request: Request):
                 if biz_res.data:
                     business_data = biz_res.data[0]
                     logger.info(f"Usuario {sender_phone} vinculado a negocio {business_data.get('slug')} por historial")
+            
+            # Si aún no sabemos quién es (nuevo usuario en el número oficial), 
+            # tomamos el último restaurante creado como 'demo' para que no ignore el mensaje.
+            if not business_data:
+                logger.info(f"Nuevo usuario en número oficial: {sender_phone}. Usando negocio por defecto.")
+                biz_res = supabase.table('negocios').select('*').order('created_at', desc=True).limit(1).execute()
+                if biz_res.data:
+                    business_data = biz_res.data[0]
         
         # Si no es el número oficial o no se encontró historial, buscar por número configurado
         if not business_data:
