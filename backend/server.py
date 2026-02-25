@@ -2136,19 +2136,45 @@ async def handle_whatsapp_webhook(request: Request):
         print(f"DEBUG: to={to_number}, official={GLOBAL_TWILIO_NUMBER}, is_official={is_official_number}")
         
         if is_official_number:
-            # Numero oficial: SIEMPRE Modo Plataforma, sin importar historial previo
-            print(f"Modo PLATFORM para {sender_phone}")
-            negocio_id = PLATFORM_BIZ_ID
+            # Número oficial de la plataforma:
+            # Buscar si el usuario es cliente activo de algún restaurante (conversación reciente)
+            # Solo consideramos conversaciones de las últimas 48 horas con negocios reales
+            from datetime import datetime, timezone, timedelta
+            cutoff = (datetime.now(timezone.utc) - timedelta(hours=48)).isoformat()
+            
+            # Buscamos conversaciones recientes excluyendo la plataforma misma
+            # y solo conversaciones del canal WhatsApp (no web_)
+            conv_res = supabase.table('agent_conversations') \
+                .select('negocio_id, last_message_at') \
+                .eq('phone_number', sender_phone) \
+                .neq('negocio_id', PLATFORM_BIZ_ID) \
+                .gte('last_message_at', cutoff) \
+                .order('last_message_at', desc=True) \
+                .limit(1) \
+                .execute()
+            
+            if conv_res.data:
+                # El usuario tiene conversación activa con un restaurante
+                neg_id_found = conv_res.data[0]['negocio_id']
+                biz_res = supabase.table('negocios').select('*').eq('id', neg_id_found).execute()
+                if biz_res.data:
+                    business_data = biz_res.data[0]
+                    negocio_id = business_data['id']
+                    print(f"Usuario {sender_phone} es cliente activo de {business_data.get('nombre')}")
+            
+            if not business_data:
+                # Usuario nuevo o sin conversación activa → Modo Plataforma
+                print(f"Modo PLATFORM para {sender_phone} (nuevo usuario o sin negocio activo)")
+                negocio_id = PLATFORM_BIZ_ID
         else:
-            # Numero de negocio especifico: buscar por whatsapp configurado
+            # Número de whatsapp de un negocio específico
             biz_res = supabase.table('negocios').select('*').eq('whatsapp', to_number).execute()
             if biz_res.data:
                 business_data = biz_res.data[0]
                 negocio_id = business_data['id']
             else:
-                print(f"No se encontro negocio para: {to_number}")
+                print(f"No se encontró negocio para: {to_number}")
                 return {"status": "error", "reason": "no_business_linked"}
-        
         
         if business_data:
             negocio_id = business_data['id']
