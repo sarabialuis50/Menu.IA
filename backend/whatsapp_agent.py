@@ -24,10 +24,10 @@ supabase_url = os.environ.get("SUPABASE_URL")
 supabase_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY") # Use Service Role Key for backend ops
 supabase: SupabaseClient = create_client(supabase_url, supabase_key)
 
-# Initialize Twilio (Global Fallback)
-GLOBAL_TWILIO_SID = os.environ.get("TWILIO_ACCOUNT_SID")
-GLOBAL_TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN")
-GLOBAL_TWILIO_NUMBER = os.environ.get("TWILIO_WHATSAPP_NUMBER")
+# Initialize Twilio (Global Fallback - SaaS_MenuIA subaccount)
+GLOBAL_TWILIO_SID = os.environ.get("TWILIO_ACCOUNT_SID_MENU_IA") or os.environ.get("TWILIO_ACCOUNT_SID")
+GLOBAL_TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN_MENU_IA") or os.environ.get("TWILIO_AUTH_TOKEN")
+GLOBAL_TWILIO_NUMBER = os.environ.get("TWILIO_WHATSAPP_FROM_MENU_IA") or os.environ.get("TWILIO_WHATSAPP_NUMBER")
 
 def get_twilio_client(sid: str = None, token: str = None):
     """Returns a Twilio client using provided credentials or global defaults"""
@@ -635,9 +635,35 @@ async def register_customer(negocio_id: str, nombre: str, email: str, telefono: 
             f.write(f"Error register_customer: {str(e)}\n")
         return json.dumps({"status": "error", "message": f"Lo siento, hubo un error al registrarte: {str(e)}"})
 
+async def send_whatsapp_message(to_number: str, body: str):
+    """
+    Función reutilizable para enviar mensajes de WhatsApp usando la cuenta SaaS_MenuIA.
+    to_number: número en formato E.164 (+57xxxxxxxxxx) sin el prefijo 'whatsapp:'
+    """
+    try:
+        client = Client(GLOBAL_TWILIO_SID, GLOBAL_TWILIO_AUTH_TOKEN)
+        
+        # Asegurar formato E.164 (+...) y luego whatsapp:
+        clean_to = to_number.strip().replace(' ', '')
+        if not clean_to.startswith('+') and not clean_to.startswith('whatsapp:'):
+            clean_to = f"+{clean_to}"
+        
+        formatted_to = f"whatsapp:{clean_to}" if not clean_to.startswith('whatsapp:') else clean_to
+        
+        message = client.messages.create(
+            from_=GLOBAL_TWILIO_NUMBER,
+            body=body,
+            to=formatted_to
+        )
+        logger.info(f"Mensaje enviado a {to_number} [SaaS_MenuIA]: {message.sid}")
+        return message
+    except Exception as e:
+        logger.error(f"Error en send_whatsapp_message: {e}")
+        raise e
+
 def send_whatsapp_response(to_number: str, body: str, custom_config: Dict[str, Any] = None):
     """
-    Sends a WhatsApp message using custom business credentials or global fallback.
+    Sends a WhatsApp message using custom business credentials or global fallback (SaaS_MenuIA).
     custom_config: { 'sid': str, 'token': str, 'number': str }
     """
     try:
@@ -674,4 +700,4 @@ def send_whatsapp_response(to_number: str, body: str, custom_config: Dict[str, A
         return None
 
 # Export for external use
-__all__ = ['send_whatsapp_response', 'process_whatsapp_message', 'get_or_create_conversation']
+__all__ = ['send_whatsapp_response', 'send_whatsapp_message', 'process_whatsapp_message', 'get_or_create_conversation']
