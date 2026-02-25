@@ -2122,67 +2122,33 @@ async def handle_whatsapp_webhook(request: Request):
             return {"status": "ignored", "reason": "missing_data"}
 
         # 1. Identificar el negocio
-        to_number_raw = form_data.get('To', '')
+        to_number_raw = data_dict.get('To', '')
         to_number = to_number_raw.replace('whatsapp:', '')
         
         from whatsapp_agent import GLOBAL_TWILIO_NUMBER
         
-        # Si el mensaje llega al número oficial de la plataforma
-        # Limpiamos el número para comparar (quitando 'whatsapp:' y '+')
+        PLATFORM_BIZ_ID = "f92dc309-3b2b-4ddd-b8c6-723de6da38f3"
         clean_to = to_number.replace('+', '')
         clean_official = GLOBAL_TWILIO_NUMBER.replace('whatsapp:', '').replace('+', '')
-        
         is_official_number = (clean_to == clean_official)
         
-        print(f"DEBUG: to_number={to_number}, official={GLOBAL_TWILIO_NUMBER}, is_official={is_official_number}")
-        
         business_data = None
-        if is_official_number:
-            print(f"Mensaje recibido en el número oficial SaaS: {to_number}")
-            
-            # Buscamos en el historial, probando el número real y versiones con/sin prefijo web_
-            # Intentamos: +57..., 57..., 301..., web_57..., web_301...
-            raw_phone = sender_phone.replace('+', '')
-            phone_no_country = raw_phone[2:] if raw_phone.startswith('57') else raw_phone
-            
-            possible_phones = [
-                sender_phone, 
-                raw_phone, 
-                phone_no_country,
-                f"web_{raw_phone}", 
-                f"web_{phone_no_country}"
-            ]
-            
-            conv_res = supabase.table('agent_conversations') \
-                .select('negocio_id') \
-                .in_('phone_number', possible_phones) \
-                .order('last_message_at', desc=True) \
-                .limit(1) \
-                .execute()
-            
-            if conv_res.data:
-                neg_id_found = conv_res.data[0]['negocio_id']
-                biz_res = supabase.table('negocios').select('*').eq('id', neg_id_found).execute()
-                if biz_res.data:
-                    business_data = biz_res.data[0]
-                    logger.info(f"Usuario {sender_phone} vinculado a negocio {business_data.get('slug')} por historial")
-            
-            # Si es número oficial y NO hay historial, entramos en modo PLATFORM
-            if not business_data:
-                logger.info(f"Nuevo usuario en número oficial: {sender_phone}. Entrando en modo PLATFORM.")
-                negocio_id = "f92dc309-3b2b-4ddd-b8c6-723de6da38f3"
+        print(f"DEBUG: to={to_number}, official={GLOBAL_TWILIO_NUMBER}, is_official={is_official_number}")
         
-        # Si no es el número oficial o no se encontró historial, buscar por número configurado
-        if not business_data and not (is_official_number and not business_data):
+        if is_official_number:
+            # Numero oficial: SIEMPRE Modo Plataforma, sin importar historial previo
+            print(f"Modo PLATFORM para {sender_phone}")
+            negocio_id = PLATFORM_BIZ_ID
+        else:
+            # Numero de negocio especifico: buscar por whatsapp configurado
             biz_res = supabase.table('negocios').select('*').eq('whatsapp', to_number).execute()
             if biz_res.data:
                 business_data = biz_res.data[0]
                 negocio_id = business_data['id']
-
-        PLATFORM_BIZ_ID = "f92dc309-3b2b-4ddd-b8c6-723de6da38f3"
-        if not business_data and not (is_official_number and negocio_id == PLATFORM_BIZ_ID):
-             logger.error(f"No se pudo encontrar un negocio para el número: {to_number}")
-             return {"status": "error", "reason": "no_business_linked"}
+            else:
+                print(f"No se encontro negocio para: {to_number}")
+                return {"status": "error", "reason": "no_business_linked"}
+        
         
         if business_data:
             negocio_id = business_data['id']
