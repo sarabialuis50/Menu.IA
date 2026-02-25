@@ -2118,18 +2118,49 @@ async def handle_whatsapp_webhook(request: Request):
             return {"status": "ignored", "reason": "missing_data"}
 
         # 1. Identificar el negocio
-        to_number = form_data.get('To', '').replace('whatsapp:', '')
+        to_number_raw = form_data.get('To', '')
+        to_number = to_number_raw.replace('whatsapp:', '')
         
-        # Buscar por número configurado o fallback al más reciente (para desarrollo)
-        biz_res = supabase.table('negocios').select('*').eq('whatsapp', to_number).execute()
-        if not biz_res.data:
-             biz_res = supabase.table('negocios').select('*').order('created_at', desc=True).limit(1).execute()
+        from whatsapp_agent import GLOBAL_TWILIO_NUMBER
+        
+        # Si el mensaje llega al número oficial de la plataforma
+        is_official_number = (to_number_raw == GLOBAL_TWILIO_NUMBER or to_number == GLOBAL_TWILIO_NUMBER.replace('whatsapp:', ''))
+        
+        business_data = None
+        if is_official_number:
+            logger.info(f"Mensaje recibido en el número oficial SaaS: {to_number}")
+            # Intentar encontrar la última conversación activa de este usuario para saber a qué negocio se refiere
+            conv_res = supabase.table('agent_conversations') \
+                .select('negocio_id') \
+                .eq('phone_number', sender_phone) \
+                .order('last_message_at', desc=True) \
+                .limit(1) \
+                .execute()
+            
+            if conv_res.data:
+                negocio_id = conv_res.data[0]['negocio_id']
+                biz_res = supabase.table('negocios').select('*').eq('id', negocio_id).execute()
+                if biz_res.data:
+                    business_data = biz_res.data[0]
+                    logger.info(f"Usuario {sender_phone} vinculado a negocio {business_data.get('slug')} por historial")
+        
+        # Si no es el número oficial o no se encontró historial, buscar por número configurado
+        if not business_data:
+            biz_res = supabase.table('negocios').select('*').eq('whatsapp', to_number).execute()
+            if biz_res.data:
+                business_data = biz_res.data[0]
+            else:
+                # Fallback solo para desarrollo si no hay nada más
+                if os.environ.get("DEBUG") == "True":
+                    biz_res = supabase.table('negocios').select('*').order('created_at', desc=True).limit(1).execute()
+                    if biz_res.data:
+                        business_data = biz_res.data[0]
+                        logger.warning(f"Fallback de desarrollo: vinculando mensaje a {business_data.get('slug')}")
 
-        if not biz_res.data:
-             logger.error("No business found in database to link agent")
-             return {"status": "error", "reason": "no_business_found"}
+        if not business_data:
+             logger.error(f"No se pudo encontrar un negocio para el número: {to_number}")
+             return {"status": "error", "reason": "no_business_linked"}
         
-        business_data = biz_res.data[0]
         negocio_id = business_data['id']
         biz_plan = business_data.get('plan', 'trial')
         wa_count = business_data.get('wa_messages_count', 0)
