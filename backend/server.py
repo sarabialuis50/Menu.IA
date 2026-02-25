@@ -2129,10 +2129,13 @@ async def handle_whatsapp_webhook(request: Request):
         business_data = None
         if is_official_number:
             logger.info(f"Mensaje recibido en el número oficial SaaS: {to_number}")
-            # Intentar encontrar la última conversación activa de este usuario para saber a qué negocio se refiere
+            
+            # Buscamos en el historial, probando el número real y la versión con prefijo web_
+            possible_phones = [sender_phone, sender_phone.replace('+', ''), f"web_{sender_phone.replace('+', '')}"]
+            
             conv_res = supabase.table('agent_conversations') \
                 .select('negocio_id') \
-                .eq('phone_number', sender_phone) \
+                .in_('phone_number', possible_phones) \
                 .order('last_message_at', desc=True) \
                 .limit(1) \
                 .execute()
