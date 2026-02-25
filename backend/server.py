@@ -1473,7 +1473,7 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
             
             phone = rep.get('telefono')
             if phone:
-                await send_whatsapp_message(phone, msg)
+                send_whatsapp_response(phone, msg)
             else:
                 logger.warning(f"Repartidor {rep['nombre']} sin telefono") 
             
@@ -1481,19 +1481,19 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
             # Notify Customer
             link = f"{frontend_url}/{slug}/mis-pedidos"
             msg = f"🔔 *¡Tu pedido va en camino!* (#ID: {order_id[:8].upper()})\n\nNuestro repartidor ya salió del local. Puedes seguir el rastro en tiempo real aquí: {link}\n\n¡Prepárate!"
-            await send_whatsapp_message(order['cliente_telefono'], msg)
+            send_whatsapp_response(order['cliente_telefono'], msg)
             
         elif type == 'entregado':
             # Notify Customer
             msg_cust = f"✅ *¡Pedido Entregado!* (#ID: {order_id[:8].upper()})\n\nEsperamos que disfrutes tu comida. ¡Gracias por elegir {biz['nombre']}!"
             if order.get('cliente_telefono'):
-                await send_whatsapp_message(order['cliente_telefono'], msg_cust)
+                send_whatsapp_response(order['cliente_telefono'], msg_cust)
             
             # Notify Admin/Business
             msg_admin = f"💰 *ENTREGA COMPLETADA*\n\nEl pedido #{order_id[:8].upper()} ha sido entregado exitosamente al cliente {order.get('cliente_nombre', 'Cliente')}."
             biz_phone = biz.get('whatsapp') or biz.get('telefono')
             if biz_phone:
-                await send_whatsapp_message(biz_phone, msg_admin)
+                send_whatsapp_response(biz_phone, msg_admin)
 
     except Exception as e:
         logger.error(f"Error in delivery notification background: {str(e)}")
