@@ -2109,6 +2109,7 @@ async def handle_whatsapp_webhook(request: Request):
     try:
         # Twilio sends form-encoded data
         form_data = await request.form()
+        logger.info(f"--- WHATSAPP WEBHOOK RECEIVED --- Data: {dict(form_data)}")
         sender_phone = form_data.get('From', '').replace('whatsapp:', '')
         message_body = form_data.get('Body', '')
         
@@ -2151,63 +2152,82 @@ async def handle_whatsapp_webhook(request: Request):
                 .execute()
             
             if conv_res.data:
-                negocio_id = conv_res.data[0]['negocio_id']
-                biz_res = supabase.table('negocios').select('*').eq('id', negocio_id).execute()
+                neg_id_found = conv_res.data[0]['negocio_id']
+                biz_res = supabase.table('negocios').select('*').eq('id', neg_id_found).execute()
                 if biz_res.data:
                     business_data = biz_res.data[0]
                     logger.info(f"Usuario {sender_phone} vinculado a negocio {business_data.get('slug')} por historial")
             
-            # Si aún no sabemos quién es (nuevo usuario en el número oficial), 
-            # tomamos el último restaurante creado como 'demo' para que no ignore el mensaje.
+            # Si es número oficial y NO hay historial, entramos en modo PLATFORM
             if not business_data:
-                logger.info(f"Nuevo usuario en número oficial: {sender_phone}. Usando negocio por defecto.")
-                biz_res = supabase.table('negocios').select('*').order('created_at', desc=True).limit(1).execute()
-                if biz_res.data:
-                    business_data = biz_res.data[0]
+                logger.info(f"Nuevo usuario en número oficial: {sender_phone}. Entrando en modo PLATFORM.")
+                negocio_id = "f92dc309-3b2b-4ddd-b8c6-723de6da38f3"
         
         # Si no es el número oficial o no se encontró historial, buscar por número configurado
-        if not business_data:
+        if not business_data and not (is_official_number and not business_data):
             biz_res = supabase.table('negocios').select('*').eq('whatsapp', to_number).execute()
             if biz_res.data:
                 business_data = biz_res.data[0]
-            else:
-                # Fallback solo para desarrollo si no hay nada más
-                if os.environ.get("DEBUG") == "True":
-                    biz_res = supabase.table('negocios').select('*').order('created_at', desc=True).limit(1).execute()
-                    if biz_res.data:
-                        business_data = biz_res.data[0]
-                        logger.warning(f"Fallback de desarrollo: vinculando mensaje a {business_data.get('slug')}")
+                negocio_id = business_data['id']
 
-        if not business_data:
+        PLATFORM_BIZ_ID = "f92dc309-3b2b-4ddd-b8c6-723de6da38f3"
+        if not business_data and not (is_official_number and negocio_id == PLATFORM_BIZ_ID):
              logger.error(f"No se pudo encontrar un negocio para el número: {to_number}")
              return {"status": "error", "reason": "no_business_linked"}
         
-        negocio_id = business_data['id']
-        biz_plan = business_data.get('plan', 'trial')
-        wa_count = business_data.get('wa_messages_count', 0)
-        wa_limit = business_data.get('wa_messages_limit', 0)
-        wa_credits = business_data.get('wa_credits', 0)
+        if business_data:
+            negocio_id = business_data['id']
+            biz_plan = business_data.get('plan', 'trial')
+            wa_count = business_data.get('wa_messages_count', 0)
+            wa_limit = business_data.get('wa_messages_limit', 0)
+            wa_credits = business_data.get('wa_credits', 0)
 
-        # PLAN CHECK: WhatsApp disabled for 'trial', 'free'
-        if biz_plan in ['trial', 'free']:
-             return {"status": "blocked", "reason": "trial_plan_no_whatsapp"}
+            # PLAN CHECK: WhatsApp disabled for 'trial', 'free'
+            if biz_plan in ['trial', 'free']:
+                 return {"status": "blocked", "reason": "trial_plan_no_whatsapp"}
+            
+            # 2. Verificar límites de mensajes operativos
+            use_credits = False
+            if wa_count >= wa_limit:
+                if wa_credits > 0:
+                    use_credits = True
+                else:
+                    # Notify Owner if they confirm the service is stopped
+                    # SERVICE STOPPED WARNING
+                    # Only send once when they try to exceed
+                    try:
+                        # Get owner phone
+                        owner_res = supabase.table('users').select('telefono').eq('negocio_id', negocio_id).execute()
+                        if owner_res.data:
+                             owner_phone = owner_res.data[0].get('telefono')
+                             if owner_phone:
+                                 msg = f"⚠️ ALERTA MENU.IA: Tu agente IA se ha detenido.\nHas agotado tu plan mensual ({wa_limit} msjs) y tus créditos adicionales.\n\nPara reactivar el servicio:\n1. Compra un Pack de Mensajes.\n2. O mejora tu Plan (Más mensajes + Funciones Premium).\n\nReactiva aquí: https://menuia.co/dashboard/{business_data.get('slug')}/marketing"
+                                 
+                                 twilio_config = {
+                                     "sid": business_data.get('twilio_sid'),
+                                     "token": business_data.get('twilio_token'),
+                                     "number": business_data.get('twilio_number')
+                                 } if business_data.get('twilio_sid') else None
+                                 
+                                 send_whatsapp_response(owner_phone, msg, twilio_config)
+                    except Exception as ex:
+                        logger.error(f"Failed to send stop alert to owner: {ex}")
+
+                    logger.warning(f"Business {negocio_id} has reached its WhatsApp message limit ({wa_limit}) and has no credits")
+                    return {"status": "limit_reached", "reason": "operational_limit_exceeded"}
         
-        # 2. Verificar límites de mensajes operativos
-        use_credits = False
-        if wa_count >= wa_limit:
-            if wa_credits > 0:
-                use_credits = True
-            else:
-                # SERVICE STOPPED WARNING
-                # Notify Owner if they confirm the service is stopped
-                # Only send once when they try to exceed
-                try:
+            # 2.1 Check for Low Balance (50 messages left)
+            remaining_plan = max(0, wa_limit - wa_count)
+            total_remaining = remaining_plan + wa_credits
+            
+            if total_remaining == 50:
+                 try:
                     # Get owner phone
-                    owner_res = supabase.table('users').select('telefono').eq('negocio_id', negocio_id).execute()
+                    owner_res = supabase.table('users').select('telefono').eq('negocio_id', negocio_id).limit(1).execute()
                     if owner_res.data:
                          owner_phone = owner_res.data[0].get('telefono')
                          if owner_phone:
-                             msg = f"⚠️ ALERTA MENU.IA: Tu agente IA se ha detenido.\nHas agotado tu plan mensual ({wa_limit} msjs) y tus créditos adicionales.\n\nPara reactivar el servicio:\n1. Compra un Pack de Mensajes.\n2. O mejora tu Plan (Más mensajes + Funciones Premium).\n\nReactiva aquí: https://menuia.co/dashboard/{business_data.get('slug')}/marketing"
+                             msg = f"⚠️ AVISO MENU.IA: Te quedan solo 50 mensajes disponibles.\nTu agente IA podría detenerse pronto.\n\nOpciones:\n1. Adquiere un Pack de Mensajes.\n2. Sube de Plan para más capacidad.\n\nRecarga aquí: https://menuia.co/dashboard/{business_data.get('slug')}/marketing"
                              
                              twilio_config = {
                                  "sid": business_data.get('twilio_sid'),
@@ -2216,62 +2236,34 @@ async def handle_whatsapp_webhook(request: Request):
                              } if business_data.get('twilio_sid') else None
                              
                              send_whatsapp_response(owner_phone, msg, twilio_config)
-                except Exception as ex:
-                    logger.error(f"Failed to send stop alert to owner: {ex}")
-
-                logger.warning(f"Business {negocio_id} has reached its WhatsApp message limit ({wa_limit}) and has no credits")
-                return {"status": "limit_reached", "reason": "operational_limit_exceeded"}
-        
-        # 2.1 Check for Low Balance (50 messages left)
-        # Total capacity = wa_limit + wa_credits
-        # Total used = wa_count
-        # Remaining plan = max(0, wa_limit - wa_count)
-        # Total remaining = Remaining plan + wa_credits
-        
-        remaining_plan = max(0, wa_limit - wa_count)
-        total_remaining = remaining_plan + wa_credits
-        
-        if total_remaining == 50:
-             try:
-                # Get owner phone
-                owner_res = supabase.table('users').select('telefono').eq('negocio_id', negocio_id).limit(1).execute()
-                if owner_res.data:
-                     owner_phone = owner_res.data[0].get('telefono')
-                     if owner_phone:
-                         msg = f"⚠️ AVISO MENU.IA: Te quedan solo 50 mensajes disponibles.\nTu agente IA podría detenerse pronto.\n\nOpciones:\n1. Adquiere un Pack de Mensajes.\n2. Sube de Plan para más capacidad.\n\nRecarga aquí: https://menuia.co/dashboard/{business_data.get('slug')}/marketing"
-                         
-                         twilio_config = {
-                             "sid": business_data.get('twilio_sid'),
-                             "token": business_data.get('twilio_token'),
-                             "number": business_data.get('twilio_number')
-                         } if business_data.get('twilio_sid') else None
-                         
-                         send_whatsapp_response(owner_phone, msg, twilio_config)
-             except Exception as ex:
-                logger.error(f"Failed to send low balance alert: {ex}")
+                 except Exception as ex:
+                    logger.error(f"Failed to send low balance alert: {ex}")
 
         # 3. Procesar con IA
         response_text = await process_whatsapp_message(message_body, sender_phone, negocio_id)
         
         # 4. Enviar respuesta y actualizar contador
         if response_text:
-            twilio_config = {
-                "sid": business_data.get('twilio_sid'),
-                "token": business_data.get('twilio_token'),
-                "number": business_data.get('twilio_number')
-            } if business_data.get('twilio_sid') else None
+            twilio_config = None
+            if business_data and business_data.get('twilio_sid'):
+                twilio_config = {
+                    "sid": business_data.get('twilio_sid'),
+                    "token": business_data.get('twilio_token'),
+                    "number": business_data.get('twilio_number')
+                }
 
             send_whatsapp_response(sender_phone, response_text, twilio_config)
             
-            # Actualizar contador o créditos
-            if use_credits:
-                supabase.table('negocios').update({
-                    "wa_credits": wa_credits - 1
-                }).eq('id', negocio_id).execute()
-            else:
-                supabase.table('negocios').update({
-                    "wa_messages_count": wa_count + 1
-                }).eq('id', negocio_id).execute()
+            # Actualizar contador o créditos (solo si hay negocio)
+            if business_data:
+                if use_credits:
+                    supabase.table('negocios').update({
+                        "wa_credits": wa_credits - 1
+                    }).eq('id', negocio_id).execute()
+                else:
+                    supabase.table('negocios').update({
+                        "wa_messages_count": wa_count + 1
+                    }).eq('id', negocio_id).execute()
             
         return {"status": "processed", "response": response_text}
 

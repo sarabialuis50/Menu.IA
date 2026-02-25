@@ -275,34 +275,134 @@ async def get_recent_messages(conversation_id: str, limit: int = 10) -> List[Dic
         logger.error(f"Error fetching history: {e}")
         return []
 
-async def process_whatsapp_message(message_body: str, sender_phone: str, negocio_id: str):
+PLATFORM_TOOLS = [
+    {
+        "type": "function",
+        "function": {
+            "name": "find_nearest_restaurant",
+            "description": "Busca el restaurante más cercano dada una dirección del usuario.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "address": {
+                        "type": "string",
+                        "description": "La dirección completa del usuario (ej: 'Calle 100 #15-30, Bogotá')"
+                    }
+                },
+                "required": ["address"]
+            }
+        }
+    }
+]
+
+PLATFORM_SYSTEM_PROMPT = """
+Eres el Asistente Global de Menu.IA, una plataforma inteligente que conecta a clientes con los mejores restaurantes.
+Tu objetivo es ayudar al usuario a encontrar el restaurante que busca o recomendarle el más cercano basado en su ubicación.
+
+REGLAS DE INTERACCIÓN:
+1. Saluda amablemente y preséntate como el asistente de Menu.IA.
+2. Si el usuario no menciona un restaurante específico, pregúntale qué tipo de comida se le antoja o en qué zona se encuentra.
+3. Si el usuario quiere hacer un pedido o ver opciones cercanas, usa la herramienta 'find_nearest_restaurant' pidiéndole su dirección.
+4. Una vez encuentres el restaurante ideal, proporciona el nombre del negocio y su enlace de menú (URL).
+5. Sé amable, servicial y conciso.
+
+HOY ES: {current_date}
+"""
+
+async def find_nearest_restaurant(address: str) -> str:
+    """Finds the nearest business based on geocoding and distance"""
+    try:
+        import requests
+        import math
+
+        # 1. Geocode address
+        api_key = os.environ.get("GOOGLE_MAPS_API_KEY")
+        if not api_key:
+            return json.dumps({"error": "Geocoding service unavailable (missing API key)"})
+
+        geo_url = f"https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={api_key}"
+        geo_res = requests.get(geo_url).json()
+        
+        if not geo_res.get('results'):
+            return json.dumps({"error": "No pude ubicar esa dirección. ¿Podrías ser más específico?"})
+        
+        user_loc = geo_res['results'][0]['geometry']['location']
+        u_lat, u_lng = user_loc['lat'], user_loc['lng']
+
+        # 2. Fetch all businesses with coordinates
+        biz_res = supabase.table('negocios').select('id, nombre, slug, lat, lng, direccion').execute()
+        if not biz_res.data:
+            return json.dumps({"error": "No hay negocios registrados en el sistema."})
+
+        # 3. Calculate distances (Haversine)
+        def haversine(lat1, lon1, lat2, lon2):
+            R = 6371 # Radius of Earth in KM
+            dLat = math.radians(lat2 - lat1)
+            dLon = math.radians(lon2 - lon1)
+            a = math.sin(dLat/2) * math.sin(dLat/2) + \
+                math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * \
+                math.sin(dLon/2) * math.sin(dLon/2)
+            c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+            return R * c
+
+        nearest = None
+        min_dist = float('inf')
+
+        for biz in biz_res.data:
+            if biz.get('lat') and biz.get('lng'):
+                dist = haversine(u_lat, u_lng, biz['lat'], biz['lng'])
+                if dist < min_dist:
+                    min_dist = dist
+                    nearest = biz
+        
+        if nearest:
+            return json.dumps({
+                "status": "success",
+                "negocio": nearest['nombre'],
+                "slug": nearest['slug'],
+                "distancia_km": round(min_dist, 2),
+                "direccion": nearest['direccion'],
+                "menu_url": f"https://menuia-production.up.railway.app/{nearest['slug']}"
+            })
+        else:
+            return json.dumps({"error": "No encontré negocios con coordenadas configuradas cerca de ti."})
+
+    except Exception as e:
+        logger.error(f"Error find_nearest_restaurant: {e}")
+        return json.dumps({"error": f"Error interno: {str(e)}"})
+
+async def process_whatsapp_message(message_body: str, sender_phone: str, negocio_id: str = None):
     """
     Procesa un mensaje de WhatsApp entrante usando OpenAI.
+    Si negocio_id es None o 'PLATFORM', actúa como asistente global.
     """
     try:
+        PLATFORM_BIZ_ID = "f92dc309-3b2b-4ddd-b8c6-723de6da38f3"
+        is_platform = not negocio_id or negocio_id == 'PLATFORM' or negocio_id == PLATFORM_BIZ_ID
         customer_name = await get_customer_name(sender_phone)
         
-        # Get business info for the prompt
-        biz_res = supabase.table('negocios').select('*').eq('id', negocio_id).execute()
-        if not biz_res.data:
-            return "Lo siento, este negocio no está configurado correctamente."
-            
-        biz = biz_res.data[0]
-        biz_name = biz.get('nombre', 'Menu.IA')
-        biz_slug = biz.get('slug', '')
-        
         # AI Configuration
-        ai_habilitado = biz.get('ai_habilitado', True)
-        if not ai_habilitado:
-            return "El asistente virtual está desactivado en este momento."
+        if is_platform:
+            biz_name = "Menu.IA"
+            biz_slug = "platform"
+            ai_habilitado = True
+            current_tools = PLATFORM_TOOLS
+            system_prompt_template = PLATFORM_SYSTEM_PROMPT
+        else:
+            # Get business info for the prompt
+            biz_res = supabase.table('negocios').select('*').eq('id', negocio_id).execute()
+            if not biz_res.data:
+                return "Lo siento, este negocio no está configurado correctamente."
+                
+            biz = biz_res.data[0]
+            biz_name = biz.get('nombre', 'Menu.IA')
+            biz_slug = biz.get('slug', '')
+            ai_habilitado = biz.get('ai_habilitado', True)
+            ai_personalidad = biz.get('ai_personalidad', 'Amigable y cercano')
+            ai_conocimiento = biz.get('ai_conocimiento', '')
+            current_tools = TOOLS
             
-        ai_personalidad = biz.get('ai_personalidad', 'Amigable y cercano')
-        ai_conocimiento = biz.get('ai_conocimiento', '')
-        
-        # 1. Definir System Prompt dinámico
-        now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
-        
-        system_prompt = f"""
+            system_prompt_template = f"""
 Eres Menu.IA Bot, el asistente virtual oficial de {biz_name}. Tu objetivo es ayudar a los clientes a realizar pedidos de manera eficiente y gestionar su fidelización.
 
 TU PERSONALIDAD:
@@ -312,11 +412,11 @@ CONOCIMIENTO ESPECIAL SOBRE EL NEGOCIO (ENTRENAMIENTO):
 {ai_conocimiento if ai_conocimiento else 'Eres un asistente de restaurante estándar. Consulta el menú para dar información exacta.'}
 
 REGISTRO DE CLIENTES Y FIDELIZACIÓN (PRIORIDAD ALTA):
-- Si el nombre del cliente es '{customer_name if customer_name else 'cliente'}' (o desconocido), debes preguntarle su nombre al inicio para dar una atención personalizada.
+- Si el nombre del cliente es '{{customer_name if customer_name else 'cliente'}}' (o desconocido), debes preguntarle su nombre al inicio para dar una atención personalizada.
 - Si el cliente no está registrado, invítalo amablemente a unirse al programa de fidelización.
 - Explica los beneficios: acumular puntos por cada compra, descuentos exclusivos y atención personalizada.
 - Si el cliente acepta, pídele: Nombre completo, Correo electrónico y su Fecha de cumpleaños (opcional).
-- IMPORTANTE: Pregunta si desea usar su número actual ({sender_phone}) o uno diferente.
+- IMPORTANTE: Pregunta si desea usar su número actual ({{sender_phone}}) o uno diferente.
 - UNA VEZ TENGAS LOS DATOS (Nombre, Email, Teléfono), EJECUTA LA FUNCIÓN 'register_customer'. NO confirmes el registro sin llamar a la función.
 
 REGLAS DE RESPUESTA DE PRODUCTOS Y MENÚ:
@@ -334,28 +434,34 @@ REGLAS DE INTERACCIÓN:
 - Sé conciso, apropiado para un chat rápido.
 - Dirígete al cliente por su nombre si ya lo tienes.
 
-HOY ES: {now} (UTC)
+HOY ES: {{now}} (UTC)
 """
+
+        if not ai_habilitado:
+            return "El asistente virtual está desactivado en este momento."
+            
+        # 1. Definir System Prompt dinámico
+        now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
+        system_prompt = system_prompt_template.format(
+            biz_name=biz_name, 
+            biz_slug=biz_slug, 
+            customer_name=customer_name, 
+            sender_phone=sender_phone, 
+            now=now,
+            current_date=now
+        )
         
         # 1.1 Gestionar Historial
-        conversation_id = await get_or_create_conversation(negocio_id, sender_phone)
+        target_biz_id = negocio_id if negocio_id else 'PLATFORM'
+        conversation_id = await get_or_create_conversation(target_biz_id, sender_phone)
         
         # Save Incoming Message
         if conversation_id:
             await save_message(conversation_id, 'inbound', message_body)
             
         # Fetch History
-        history_messages = []
-        if conversation_id:
-            # We fetch previous messages (excluding the one we just saved if we want, 
-            # but wait, fetching limit=10 will include it. 
-            # OpenAI expects the last message to be user? 
-            # Actually, standard chat format is list of messages.
-            # If we saved 'inbound', get_recent_messages will return it as the last item.
-            # So we don't need to append message_body manually to 'messages'.
-            history_messages = await get_recent_messages(conversation_id, limit=10)
+        history_messages = await get_recent_messages(conversation_id, limit=10)
         
-        # If history extraction failed or returned empty (unlikely if we just saved), fallback using message_body
         if not history_messages:
              messages = [
                 {"role": "system", "content": system_prompt},
@@ -368,77 +474,61 @@ HOY ES: {now} (UTC)
         response = openai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=messages,
-            tools=TOOLS,
+            tools=current_tools,
             tool_choice="auto"
         )
         
+        # 3. Procesar Tool Calls
         response_message = response.choices[0].message
         tool_calls = response_message.tool_calls
         
-        logger.info(f"OpenAI response tool_calls: {tool_calls}")
-
-        # 3. Manejar llamadas a herramientas (Function Calling Loop)
         if tool_calls:
-            # Añadir mensaje del asistente con las llamadas a herramientas al historial
             messages.append(response_message)
             
             for tool_call in tool_calls:
                 function_name = tool_call.function.name
                 function_args = json.loads(tool_call.function.arguments)
-                tool_call_id = tool_call.id
                 
-                logger.info(f"OpenAI sugirió ejecutar: {function_name} con {function_args}")
+                logger.info(f"AI calling function: {function_name} with {function_args}")
                 
-                function_response = None
-                
-                # Ejecutar función real
+                function_response = ""
                 if function_name == "get_menu_categories":
                     function_response = await get_menu_categories(negocio_id)
                 elif function_name == "get_products_by_category":
-                    function_response = await get_products_by_category(negocio_id, function_args.get("category"))
+                    function_response = await get_products_by_category(negocio_id, function_args.get('category'))
                 elif function_name == "search_products":
-                    function_response = await search_products(negocio_id, function_args.get("query"))
+                    function_response = await search_products(negocio_id, function_args.get('query'))
                 elif function_name == "register_customer":
                     function_response = await register_customer(
                         negocio_id, 
-                        function_args.get("nombre"),
-                        function_args.get("email"),
-                        function_args.get("telefono"),
-                        function_args.get("fecha_nacimiento")
+                        function_args.get('nombre'),
+                        function_args.get('email'),
+                        function_args.get('telefono'),
+                        function_args.get('fecha_nacimiento')
                     )
                 elif function_name == "create_order":
                     function_response = await create_order_ai(negocio_id, function_args)
-                else:
-                    function_response = json.dumps({"error": "Función no implementada"})
-
-                # Añadir respuesta de la función al historial
-                messages.append(
-                    {
-                        "tool_call_id": tool_call_id,
-                        "role": "tool",
-                        "name": function_name,
-                        "content": function_response,
-                    }
-                )
+                elif function_name == "find_nearest_restaurant":
+                    function_response = await find_nearest_restaurant(function_args.get('address'))
+                
+                logger.info(f"Tool {function_name} response: {function_response}")
+                
+                messages.append({
+                    "tool_call_id": tool_call.id,
+                    "role": "tool",
+                    "name": function_name,
+                    "content": function_response,
+                })
             
-            # Segunda llamada a OpenAI con las respuestas de las funciones
+            # Segunda llamada con resultados de funciones
             second_response = openai_client.chat.completions.create(
                 model="gpt-4o-mini",
-                messages=messages,
+                messages=messages
             )
-            
             final_response = second_response.choices[0].message.content
+        else:
+            final_response = response_message.content
             
-            # Save Outbound Response (after tool execution)
-            if conversation_id and final_response:
-                 await save_message(conversation_id, 'outbound', final_response)
-
-            return final_response
-
-        # 4. Si no hubo herramientas, devolver texto directo
-        # 4. Si no hubo herramientas, devolver texto directo
-        final_response = response_message.content
-        
         # Save Outbound Response
         if conversation_id and final_response:
              await save_message(conversation_id, 'outbound', final_response)
@@ -450,6 +540,7 @@ HOY ES: {now} (UTC)
         return "Lo siento, tuve un problema procesando tu mensaje. ¿Podrías intentarlo de nuevo?"
 
 # --- IMPLEMENTACIÓN DE HERRAMIENTAS ---
+
 
 async def get_menu_categories(negocio_id: str) -> str:
     try:
