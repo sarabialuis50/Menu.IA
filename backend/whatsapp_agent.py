@@ -436,9 +436,22 @@ REGISTRO DE CLIENTES Y FIDELIZACIÓN (PRIORIDAD ALTA):
 REGLAS DE RESPUESTA DE PRODUCTOS Y MENÚ:
 - SIEMPRE que el cliente pida el menú o quiera ver los platos, es OBLIGATORIO proporcionar el enlace interactivo en una línea aparte para que aparezca como un enlace azul clickable:
 https://menuia.co/{biz_slug}/menu
-- Al mostrar productos del menú de forma textual (además del enlace), estructúralos como una tabla o lista clara, rápida de leer (evita lenguaje tipo periódico o densos párrafos).
-- Enumera los items o dales un código numérico para que el cliente pueda pedir más rápido enviando solo el número (Ej: "1. Hamburguesa Sencilla").
-- Menciona siempre en la misma línea: NÚMERO DE ITEM, NOMBRE, PRECIO y DESCUENTO (si lo tiene). Agrega la descripción brevemente debajo.
+
+- Al mostrar productos del menú de forma textual (además del enlace), usa EXACTAMENTE esta estructura organizada por categorías:
+### Nombre de la Categoría
+
+1) Nombre del Producto
+Descripción del producto
+$Precio (ej: $23.000)
+
+2) Nombre del Producto
+Descripción del producto
+$Precio
+
+(Deja un espacio entre cada item para que sea fácil de leer).
+
+- Enumera los items de forma correlativa (1, 2, 3...) para que el cliente pueda pedir enviando solo el número del producto.
+- Usa el símbolo '$' seguido del precio con puntos de miles para los precios.
 - NUNCA incluyas enlaces o URLs de imágenes de los productos en tus respuestas.
 
 REGLAS DE INTERACCIÓN:
