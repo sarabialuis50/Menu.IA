@@ -326,9 +326,13 @@ REGLAS DE INTERACCIÓN:
 4. Una vez que tengas la ubicación (y el tipo de comida si aplica), usa la herramienta 'find_nearest_restaurant'.
 5. Cuando encuentres el restaurante:
    - Indica el nombre del negocio, qué tan cerca está y si vende lo que el usuario buscaba.
-   - Proporciona OBLIGATORIAMENTE el enlace interactivo al menú de la siguiente forma: "Puedes ver el menú completo y hacer tu pedido aquí: https://menuia.co/{{slug}}/menu" (Asegúrate de que sea un enlace azul clickable).
-6. Si no encuentras exactamente lo que pidió pero hay opciones cerca, menciónalo cordialmente.
-7. Sé amable, conciso y directo, optimizado para WhatsApp.
+   - Proporciona OBLIGATORIAMENTE el enlace interactivo al menú en una línea nueva e independiente (con saltos de línea):
+
+Puedes ver el menú completo aquí:
+https://menuia.co/{{slug}}/menu
+6. PROHIBIDO usar sintaxis de Markdown para enlaces como [Texto](URL). En WhatsApp esto no funciona. Proporciona ÚNICAMENTE la URL plana (ej: https://menuia.co/slug/menu) para que el sistema la convierta automáticamente en un enlace azul clickable.
+7. Si no encuentras exactamente lo que pidió pero hay opciones cerca, menciónalo cordialmente.
+8. Sé amable, conciso y directo, optimizado para WhatsApp.
 
 HOY ES: {current_date}
 """
@@ -472,8 +476,12 @@ REGISTRO DE CLIENTES Y FIDELIZACIÓN (PRIORIDAD ALTA):
 - UNA VEZ TENGAS LOS DATOS (Nombre, Email, Teléfono), EJECUTA LA FUNCIÓN 'register_customer'. NO confirmes el registro sin llamar a la función.
 
 REGLAS DE RESPUESTA DE PRODUCTOS Y MENÚ:
-- SIEMPRE que el cliente pida el menú o quiera ver los platos, es OBLIGATORIO proporcionar el enlace interactivo en una línea aparte para que aparezca como un enlace azul clickable:
+- SIEMPRE que el cliente pida el menú o quiera ver los platos, es OBLIGATORIO proporcionar el enlace interactivo en UNA LÍNEA NUEVA E INDEPENDIENTE (con un salto de línea antes y después) para que sea resaltado como un enlace azul clickable:
+
 https://menuia.co/{biz_slug}/menu
+
+(Asegúrate de que no haya texto en la misma línea que el enlace).
+- PROHIBIDO usar sintaxis de Markdown como [Texto](URL). En WhatsApp esto no funciona. Proporciona la URL plana: https://menuia.co/{biz_slug}/menu
 
 - Al mostrar productos del menú de forma textual (además del enlace), usa EXACTAMENTE esta estructura organizada por categorías:
 ### Nombre de la Categoría

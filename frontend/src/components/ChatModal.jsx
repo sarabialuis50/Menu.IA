@@ -280,7 +280,27 @@ export const ChatModal = ({ isOpen, onClose, businessName, slug, aiSaludo }) => 
                                                 : 'bg-white border border-gray-100 text-[#111814] rounded-tl-none font-bold self-start'
                                                 }`}
                                         >
-                                            <div className="pr-4">{msg.content}</div>
+                                            <div className="pr-4 whitespace-pre-wrap">
+                                                {msg.content.split(/((?:https?:\/\/[^\s]+)|(?:\*\*.*?\*\*))/g).map((part, i) => {
+                                                    if (part.startsWith('http')) {
+                                                        return (
+                                                            <a
+                                                                key={i}
+                                                                href={part}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-blue-500 underline hover:text-blue-700 break-all transition-colors"
+                                                            >
+                                                                {part}
+                                                            </a>
+                                                        );
+                                                    }
+                                                    if (part.startsWith('**') && part.endsWith('**')) {
+                                                        return <strong key={i} className="font-black text-[#111814]">{part.slice(2, -2)}</strong>;
+                                                    }
+                                                    return part;
+                                                })}
+                                            </div>
                                             {msg.role === 'assistant' && (
                                                 <button
                                                     onClick={() => speak(msg.content, msg.id || i)}

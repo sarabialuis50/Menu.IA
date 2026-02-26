@@ -224,7 +224,27 @@ export default function LandingAgent() {
                                         ? 'bg-[#4ADE80] text-[#111814] rounded-tr-none self-end'
                                         : 'bg-white text-[#111814] rounded-tl-none border border-gray-100 self-start'
                                         }`}>
-                                        <div>{msg.content.replace('[LINK_CALENDLY]', '')}</div>
+                                        <div className="whitespace-pre-wrap">
+                                            {msg.content.replace('[LINK_CALENDLY]', '').split(/((?:https?:\/\/[^\s]+)|(?:\*\*.*?\*\*))/g).map((part, i) => {
+                                                if (part.startsWith('http')) {
+                                                    return (
+                                                        <a
+                                                            key={i}
+                                                            href={part}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-blue-500 underline font-black hover:text-blue-700 break-all transition-colors"
+                                                        >
+                                                            {part}
+                                                        </a>
+                                                    );
+                                                }
+                                                if (part.startsWith('**') && part.endsWith('**')) {
+                                                    return <strong key={i} className="font-black text-[#111814]">{part.slice(2, -2)}</strong>;
+                                                }
+                                                return part;
+                                            })}
+                                        </div>
 
                                         {/* Botón de Agendamiento Automático */}
                                         {msg.role === 'model' && (msg.content.includes('calendly.com') || msg.content.includes('[LINK_CALENDLY]')) && (
