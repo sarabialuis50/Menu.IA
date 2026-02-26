@@ -2202,11 +2202,18 @@ async def handle_whatsapp_webhook(request: Request):
         print(f"--- WHATSAPP WEBHOOK RECEIVED --- Data: {data_dict}")
         sender_phone = data_dict.get('From', '').replace('whatsapp:', '')
         message_body = data_dict.get('Body', '')
+        lat = data_dict.get('Latitude')
+        lng = data_dict.get('Longitude')
         
-        print(f"DEBUG: Message from {sender_phone}: {message_body}")
+        print(f"DEBUG: Message from {sender_phone}: {message_body} (GPS: {lat}, {lng})")
         
-        if not sender_phone or not message_body:
-            return {"status": "ignored", "reason": "missing_data"}
+        if not sender_phone:
+            return {"status": "ignored", "reason": "missing_phone"}
+
+        # If it's a location message, normalize the body
+        if lat and lng:
+            gps_info = f"[UBICACIÓN GPS: {lat}, {lng}]"
+            message_body = f"{message_body} {gps_info}".strip()
 
         # 1. Identificar el negocio
         to_number_raw = data_dict.get('To', '')

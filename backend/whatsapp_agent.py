@@ -288,16 +288,27 @@ PLATFORM_TOOLS = [
         "type": "function",
         "function": {
             "name": "find_nearest_restaurant",
-            "description": "Busca el restaurante más cercano dada una dirección del usuario.",
+            "description": "Busca el restaurante más cercano dada una dirección del usuario o sus coordenadas GPS. También permite filtrar por tipo de comida.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "address": {
                         "type": "string",
-                        "description": "La dirección completa del usuario (ej: 'Calle 100 #15-30, Bogotá')"
+                        "description": "La dirección completa del usuario (opcional si se pasan coordenadas)."
+                    },
+                    "latitude": {
+                        "type": "number",
+                        "description": "Latitud GPS del usuario (opcional)."
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "description": "Longitud GPS del usuario (opcional)."
+                    },
+                    "food_query": {
+                        "type": "string",
+                        "description": "Tipo de comida que busca el usuario (ej: 'hamburguesa', 'pizza')."
                     }
-                },
-                "required": ["address"]
+                }
             }
         }
     }
@@ -309,41 +320,67 @@ Tu objetivo principal es ayudar al usuario a encontrar el lugar ideal para comer
 
 REGLAS DE INTERACCIÓN:
 1. Saluda amablemente y preséntate como el asistente de Menu.IA.
-2. Si el usuario busca un restaurante o quiere comer algo, es OBLIGATORIO preguntarle su dirección o zona (ej: "Calle 100 con 15, Bogotá") para ubicar las opciones más cercanas.
-3. Una vez que el usuario proporcione su dirección, usa la herramienta 'find_nearest_restaurant'.
-4. Cuando encuentres el restaurante:
-   - Indica el nombre del negocio y a qué distancia se encuentra.
+2. Si el usuario busca un restaurante o quiere comer algo específico (ej: "hamburguesa", "pizza"), es OBLIGATORIO pedirle su ubicación para encontrar la opción más cercana que tenga lo que busca.
+3. El usuario puede enviarte su dirección por texto o compartirte su ubicación GPS de WhatsApp.
+   - Si recibes algo como "[UBICACIÓN GPS: lat, lng]", usa esos valores directamente en 'find_nearest_restaurant'.
+4. Una vez que tengas la ubicación (y el tipo de comida si aplica), usa la herramienta 'find_nearest_restaurant'.
+5. Cuando encuentres el restaurante:
+   - Indica el nombre del negocio, qué tan cerca está y si vende lo que el usuario buscaba.
    - Proporciona OBLIGATORIAMENTE el enlace interactivo al menú de la siguiente forma: "Puedes ver el menú completo y hacer tu pedido aquí: https://menuia.co/{{slug}}/menu" (Asegúrate de que sea un enlace azul clickable).
-5. Si el usuario pregunta por un restaurante específico por su nombre (ej: "Don Jediondo"), búscalo directamente y proporciónale su enlace de menú: https://menuia.co/{{slug}}/menu.
-6. Sé amable, conciso y directo, optimizado para WhatsApp.
+6. Si no encuentras exactamente lo que pidió pero hay opciones cerca, menciónalo cordialmente.
+7. Sé amable, conciso y directo, optimizado para WhatsApp.
 
 HOY ES: {current_date}
 """
 
-async def find_nearest_restaurant(address: str) -> str:
-    """Finds the nearest business based on geocoding and distance"""
+async def find_nearest_restaurant(address: str = None, latitude: float = None, longitude: float = None, food_query: str = None) -> str:
+    """Finds the nearest business based on geocoding/coords and distance, optionally filtered by food"""
     try:
         import requests
         import math
 
-        # 1. Geocode address
-        api_key = os.environ.get("GOOGLE_MAPS_API_KEY")
-        if not api_key:
-            return json.dumps({"error": "Geocoding service unavailable (missing API key)"})
+        u_lat, u_lng = None, None
 
-        geo_url = f"https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={api_key}"
-        geo_res = requests.get(geo_url).json()
-        
-        if not geo_res.get('results'):
-            return json.dumps({"error": "No pude ubicar esa dirección. ¿Podrías ser más específico?"})
-        
-        user_loc = geo_res['results'][0]['geometry']['location']
-        u_lat, u_lng = user_loc['lat'], user_loc['lng']
+        # 1. Get user coordinates
+        if latitude is not None and longitude is not None:
+            u_lat, u_lng = float(latitude), float(longitude)
+        elif address:
+            api_key = os.environ.get("GOOGLE_MAPS_API_KEY")
+            if not api_key:
+                return json.dumps({"error": "Geocoding service unavailable (missing API key)"})
 
-        # 2. Fetch all businesses with coordinates
-        biz_res = supabase.table('negocios').select('id, nombre, slug, lat, lng, direccion').execute()
+            # Append Colombia for better precision if not present
+            geo_address = address if "colombia" in address.lower() else f"{address}, Colombia"
+            geo_url = f"https://maps.googleapis.com/maps/api/geocode/json?address={geo_address}&key={api_key}"
+            geo_res = requests.get(geo_url).json()
+            
+            if geo_res.get('results'):
+                user_loc = geo_res['results'][0]['geometry']['location']
+                u_lat, u_lng = user_loc['lat'], user_loc['lng']
+        
+        if u_lat is None or u_lng is None:
+            return json.dumps({"error": "No pude ubicar esa dirección o coordenadas. ¿Podrías ser más específico?"})
+
+        # 2. Fetch businesses
+        # Ideally we'd filter by food_query in the DB, but for now we fetch and maybe filter later
+        # If food_query is provided, we might want to join with menu_items
+        if food_query:
+            # Simple keyword search in products to find businesses that have it
+            prod_res = supabase.table('menu_items') \
+                .select('negocio_id') \
+                .ilike('name', f'%{food_query}%') \
+                .execute()
+            
+            if not prod_res.data:
+                return json.dumps({"error": f"No encontré restaurantes que vendan '{food_query}' cerca de ti."})
+            
+            biz_ids = list(set([p['negocio_id'] for p in prod_res.data]))
+            biz_res = supabase.table('negocios').select('id, nombre, slug, lat, lng, direccion').in_('id', biz_ids).execute()
+        else:
+            biz_res = supabase.table('negocios').select('id, nombre, slug, lat, lng, direccion').execute()
+
         if not biz_res.data:
-            return json.dumps({"error": "No hay negocios registrados en el sistema."})
+            return json.dumps({"error": "No hay negocios registrados que coincidan con tu búsqueda."})
 
         # 3. Calculate distances (Haversine)
         def haversine(lat1, lon1, lat2, lon2):
@@ -373,10 +410,11 @@ async def find_nearest_restaurant(address: str) -> str:
                 "slug": nearest['slug'],
                 "distancia_km": round(min_dist, 2),
                 "direccion": nearest['direccion'],
-                "menu_url": f"https://menuia.co/{nearest['slug']}/menu"
+                "menu_url": f"https://menuia.co/{nearest['slug']}/menu",
+                "food_found": food_query is not None
             })
         else:
-            return json.dumps({"error": "No encontré negocios con coordenadas configuradas cerca de ti."})
+            return json.dumps({"error": "No encontré negocios con ubicación configurada cerca de ti."})
 
     except Exception as e:
         logger.error(f"Error find_nearest_restaurant: {e}")
@@ -525,7 +563,12 @@ HOY ES: {now} (UTC)
                 elif function_name == "create_order":
                     function_response = await create_order_ai(negocio_id, function_args)
                 elif function_name == "find_nearest_restaurant":
-                    function_response = await find_nearest_restaurant(function_args.get('address'))
+                    function_response = await find_nearest_restaurant(
+                        function_args.get('address'),
+                        function_args.get('latitude'),
+                        function_args.get('longitude'),
+                        function_args.get('food_query')
+                    )
                 
                 logger.info(f"Tool {function_name} response: {function_response}")
                 
