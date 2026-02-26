@@ -248,7 +248,7 @@ export default function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-[300px] w-full">
+              <div className="h-[300px] w-full" style={{ minHeight: '300px' }}>
                 <ResponsiveContainer width="99%" height="100%">
                   <AreaChart data={chartData}>
                     <defs>

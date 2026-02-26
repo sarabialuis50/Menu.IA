@@ -22,7 +22,9 @@ import {
     Loader2,
     Upload,
     Power,
-    Store
+    Store,
+    Shield,
+    Lock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -57,6 +59,15 @@ export default function MiPerfilPage() {
 
     const [uploadingLogo, setUploadingLogo] = useState(false);
     const [uploadingBanner, setUploadingBanner] = useState(false);
+
+    const [passwordData, setPasswordData] = useState({
+        old_password: '',
+        new_password: '',
+        confirm_password: ''
+    });
+    const [changingPassword, setChangingPassword] = useState(false);
+
+    const isPasswordDirty = passwordData.old_password || passwordData.new_password || passwordData.confirm_password;
 
     const handleImageUpload = async (e, type) => {
         const file = e.target.files[0];
@@ -202,6 +213,31 @@ export default function MiPerfilPage() {
             toast.error('Error al guardar los cambios');
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleChangePassword = async (e) => {
+        e.preventDefault();
+        if (!passwordData.old_password || !passwordData.new_password) {
+            toast.error('Por favor completa todos los campos');
+            return;
+        }
+        if (passwordData.new_password !== passwordData.confirm_password) {
+            toast.error('Las contraseñas no coinciden');
+            return;
+        }
+        setChangingPassword(true);
+        try {
+            await api().post('/auth/change-password', {
+                old_password: passwordData.old_password,
+                new_password: passwordData.new_password
+            });
+            toast.success('Contraseña actualizada correctamente');
+            setPasswordData({ old_password: '', new_password: '', confirm_password: '' });
+        } catch (error) {
+            toast.error(error.response?.data?.detail || 'Error al cambiar la contraseña');
+        } finally {
+            setChangingPassword(false);
         }
     };
 
@@ -384,6 +420,7 @@ export default function MiPerfilPage() {
                             </CardContent>
                         </Card>
 
+
                         {/* Contact Info Card */}
                         <Card className="border-none shadow-sm rounded-[2.5rem] bg-white overflow-hidden">
                             <CardHeader className="px-10 pt-10 pb-2">
@@ -396,7 +433,7 @@ export default function MiPerfilPage() {
                                 <CardDescription className="ml-13">Estos datos serán públicos para que tus clientes te encuentren.</CardDescription>
                             </CardHeader>
                             <CardContent className="px-10 pb-10 pt-6 space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-6">
                                     <div className="space-y-2.5">
                                         <Label className="text-[#111814] font-bold ml-1">Dirección Física</Label>
                                         <div className="relative group/input">
@@ -413,7 +450,7 @@ export default function MiPerfilPage() {
                                                 )}
                                             </button>
                                             <Input
-                                                className="pl-11 h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium"
+                                                className="pl-11 h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium w-full"
                                                 value={businessData.direccion || ''}
                                                 onChange={e => setBusinessData({ ...businessData, direccion: e.target.value })}
                                                 placeholder="Calle 123 #45-67, Ciudad"
@@ -425,7 +462,7 @@ export default function MiPerfilPage() {
                                         <div className="relative">
                                             <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#618972]" />
                                             <Input
-                                                className="pl-11 h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium"
+                                                className="pl-11 h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-[#22C55E]/20 transition-all font-medium w-full"
                                                 value={businessData.telefono || ''}
                                                 onChange={e => setBusinessData({ ...businessData, telefono: e.target.value })}
                                                 placeholder="+57 300 123 4567"
@@ -434,8 +471,8 @@ export default function MiPerfilPage() {
                                     </div>
                                 </div>
 
-                                <div className="space-y-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="space-y-6 pt-4 border-t border-gray-50">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-2.5">
                                             <Label className="text-[#111814] font-bold ml-1 flex items-center gap-2">
                                                 <Clock className="w-4 h-4 text-[#22C55E]" />
@@ -466,21 +503,21 @@ export default function MiPerfilPage() {
                                                 placeholder="Ej: 12:00 PM - 11:00 PM"
                                             />
                                         </div>
-                                        <div className="space-y-2.5">
-                                            <Label className="text-[#111814] font-bold ml-1 flex items-center gap-2">
-                                                <Clock className="w-4 h-4 text-[#22C55E]" />
-                                                Domingos y Festivos
-                                            </Label>
-                                            <Input
-                                                value={businessData.horarios?.domingos || ''}
-                                                onChange={e => setBusinessData({
-                                                    ...businessData,
-                                                    horarios: { ...businessData.horarios, domingos: e.target.value }
-                                                })}
-                                                className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white transition-all font-medium"
-                                                placeholder="Ej: 12:00 PM - 9:00 PM"
-                                            />
-                                        </div>
+                                    </div>
+                                    <div className="space-y-2.5">
+                                        <Label className="text-[#111814] font-bold ml-1 flex items-center gap-2">
+                                            <Clock className="w-4 h-4 text-[#22C55E]" />
+                                            Domingos y Festivos
+                                        </Label>
+                                        <Input
+                                            value={businessData.horarios?.domingos || ''}
+                                            onChange={e => setBusinessData({
+                                                ...businessData,
+                                                horarios: { ...businessData.horarios, domingos: e.target.value }
+                                            })}
+                                            className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white transition-all font-medium w-full"
+                                            placeholder="Ej: 12:00 PM - 9:00 PM"
+                                        />
                                     </div>
                                 </div>
                             </CardContent>
@@ -490,14 +527,13 @@ export default function MiPerfilPage() {
                         <Card className="border-none shadow-sm rounded-[2.5rem] bg-gray-100 overflow-hidden h-[300px] relative group">
                             <iframe
                                 title="Ubicación del Negocio"
-                                src={`https://maps.google.com/maps?q=${encodeURIComponent(businessData.direccion || 'Colombia')}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                                src={`https://maps.google.com/maps?q=${encodeURIComponent(businessData.direccion || 'Colombia')}&output=embed&hl=es`}
                                 width="100%"
                                 height="100%"
-                                style={{ border: 0, filter: 'grayscale(100%)' }}
+                                style={{ border: 0 }}
                                 allowFullScreen=""
                                 loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
-                                className="opacity-60 group-hover:opacity-100 group-hover:filter-none transition-all duration-500"
+                                className="opacity-90 group-hover:opacity-100 transition-all duration-500"
                             ></iframe>
                             <div className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg pointer-events-none">
                                 <p className="text-sm font-bold text-[#111814] flex items-center gap-2 truncate">
@@ -567,11 +603,11 @@ export default function MiPerfilPage() {
                                     <div className="flex gap-2">
                                         <Input
                                             readOnly
-                                            value={`menuia.co/${slug}/menu`}
+                                            value={`menuia.co/${slug}`}
                                             className="h-10 bg-white border-dashed rounded-xl text-xs font-mono text-[#111814]"
                                         />
                                         <Button variant="ghost" size="icon" className="rounded-xl hover:bg-white" onClick={() => {
-                                            navigator.clipboard.writeText(`https://menuia.co/${slug}/menu`);
+                                            navigator.clipboard.writeText(`https://menuia.co/${slug}`);
                                             toast.success('Link copiado');
                                         }}>
                                             <Share2 className="w-4 h-4 text-[#22C55E]" />
@@ -618,6 +654,74 @@ export default function MiPerfilPage() {
                             </CardContent>
                         </Card>
 
+                        {/* Vertical Security Section */}
+                        <Card className="border-none shadow-sm rounded-[2.5rem] bg-white overflow-hidden">
+                            <CardHeader className="p-8 pb-4">
+                                <CardTitle className="text-lg font-bold flex items-center gap-3">
+                                    <div className="p-2 bg-[#FACC15]/10 rounded-xl">
+                                        <Shield className="w-5 h-5 text-[#EAB308]" />
+                                    </div>
+                                    Seguridad y Contraseña
+                                </CardTitle>
+                                <CardDescription className="text-xs font-medium">Actualiza tu acceso para mantener la cuenta segura.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-8 pt-2">
+                                <form onSubmit={handleChangePassword} className="space-y-5">
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <Label className="text-[#111814] font-bold ml-1 text-xs">Contraseña Actual</Label>
+                                            <div className="relative">
+                                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                                <Input
+                                                    type="password"
+                                                    value={passwordData.old_password}
+                                                    onChange={e => setPasswordData({ ...passwordData, old_password: e.target.value })}
+                                                    className="pl-11 h-11 rounded-xl border-gray-100 bg-gray-50 focus:bg-white transition-all text-sm"
+                                                    placeholder="••••••••"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-[#111814] font-bold ml-1 text-xs">Nueva Contraseña</Label>
+                                            <div className="relative">
+                                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                                <Input
+                                                    type="password"
+                                                    value={passwordData.new_password}
+                                                    onChange={e => setPasswordData({ ...passwordData, new_password: e.target.value })}
+                                                    className="pl-11 h-11 rounded-xl border-gray-100 bg-gray-50 focus:bg-white transition-all text-sm"
+                                                    placeholder="••••••••"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-[#111814] font-bold ml-1 text-xs">Confirmar Nueva</Label>
+                                            <div className="relative">
+                                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                                <Input
+                                                    type="password"
+                                                    value={passwordData.confirm_password}
+                                                    onChange={e => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
+                                                    className="pl-11 h-11 rounded-xl border-gray-100 bg-gray-50 focus:bg-white transition-all text-sm"
+                                                    placeholder="••••••••"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <Button
+                                        type="submit"
+                                        disabled={changingPassword}
+                                        className={`w-full rounded-2xl h-12 font-black transition-all border-2 border-[#4ADE80] flex items-center justify-center gap-2 ${isPasswordDirty
+                                            ? 'bg-[#4ADE80] text-[#111814] hover:bg-[#22C55E]'
+                                            : 'bg-white text-[#22C55E] hover:bg-green-50'
+                                            }`}
+                                    >
+                                        {changingPassword ? <Loader2 className="w-4 h-4 animate-spin" /> : <Shield className="w-4 h-4" />}
+                                        {changingPassword ? 'Actualizando...' : 'Cambiar Contraseña'}
+                                    </Button>
+                                </form>
+                            </CardContent>
+                        </Card>
                     </div>
                 </div >
             </div >

@@ -11,7 +11,8 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import {
     User, Edit, MapPin, Package, Heart, Ticket, LogOut, ArrowLeft,
-    Truck, Star, Plus, Briefcase, Home, CheckCircle2, Loader2, Phone, ShieldCheck
+    Truck, Star, Plus, Briefcase, Home, CheckCircle2, Loader2, Phone, ShieldCheck,
+    Lock, Shield
 } from 'lucide-react';
 
 export default function ClientProfilePage() {
@@ -33,6 +34,14 @@ export default function ClientProfilePage() {
     // Favorites State
     const [favorites, setFavorites] = useState([]);
     const [loyalty, setLoyalty] = useState(null);
+
+    // Password change state
+    const [passwordData, setPasswordData] = useState({
+        old_password: '',
+        new_password: '',
+        confirm_password: ''
+    });
+    const [changingPassword, setChangingPassword] = useState(false);
 
     useEffect(() => {
         if (token) {
@@ -114,6 +123,36 @@ export default function ClientProfilePage() {
             toast.error("Código inválido o expirado");
         } finally {
             setSubmitting(false);
+        }
+    };
+
+    const handleChangePassword = async (e) => {
+        e.preventDefault();
+        if (!passwordData.new_password || !passwordData.confirm_password) {
+            toast.error("Completa los campos de contraseña");
+            return;
+        }
+        if (passwordData.new_password !== passwordData.confirm_password) {
+            toast.error("Las contraseñas no coinciden");
+            return;
+        }
+
+        setChangingPassword(true);
+        try {
+            const api = axios.create({
+                baseURL: (import.meta.env && import.meta.env.REACT_APP_BACKEND_URL) || '/api',
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            await api.post('/client/change-password', {
+                old_password: passwordData.old_password,
+                new_password: passwordData.new_password
+            });
+            toast.success("Contraseña actualizada con éxito");
+            setPasswordData({ old_password: '', new_password: '', confirm_password: '' });
+        } catch (error) {
+            toast.error(error.response?.data?.detail || "Error al cambiar contraseña");
+        } finally {
+            setChangingPassword(false);
         }
     };
 
@@ -495,6 +534,75 @@ export default function ClientProfilePage() {
                             ))
                         )}
                     </div>
+                </div>
+
+                {/* Security Section */}
+                <div className="space-y-4 pt-4">
+                    <div className="px-2">
+                        <h3 className="text-lg font-black text-[#111814] flex items-center gap-2">
+                            <Shield className="w-5 h-5 text-[#EAB308]" />
+                            Seguridad
+                        </h3>
+                    </div>
+                    <Card className="border-none shadow-sm rounded-[2rem] bg-white overflow-hidden">
+                        <CardContent className="p-8">
+                            <form onSubmit={handleChangePassword} className="space-y-5">
+                                <p className="text-sm text-gray-500 font-medium mb-4">
+                                    Si deseas establecer una contraseña para tu cuenta, o cambiar la actual, ingresa los detalles abajo.
+                                </p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div className="space-y-2">
+                                        <Label className="font-bold text-gray-700">Contraseña Actual (si ya tienes una)</Label>
+                                        <div className="relative">
+                                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                            <Input
+                                                type="password"
+                                                placeholder="••••••••"
+                                                className="pl-11 h-12 rounded-xl bg-gray-50 border-gray-200"
+                                                value={passwordData.old_password}
+                                                onChange={e => setPasswordData({ ...passwordData, old_password: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="font-bold text-gray-700">Nueva Contraseña</Label>
+                                        <div className="relative">
+                                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                            <Input
+                                                type="password"
+                                                placeholder="••••••••"
+                                                className="pl-11 h-12 rounded-xl bg-gray-50 border-gray-200"
+                                                value={passwordData.new_password}
+                                                onChange={e => setPasswordData({ ...passwordData, new_password: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2 md:col-span-2">
+                                        <Label className="font-bold text-gray-700">Confirmar Nueva Contraseña</Label>
+                                        <div className="relative">
+                                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                            <Input
+                                                type="password"
+                                                placeholder="••••••••"
+                                                className="pl-11 h-12 rounded-xl bg-gray-50 border-gray-200"
+                                                value={passwordData.confirm_password}
+                                                onChange={e => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="pt-2">
+                                    <Button
+                                        type="submit"
+                                        className="w-full md:w-auto px-10 h-12 rounded-xl bg-[#111814] hover:bg-black text-white font-bold"
+                                        disabled={changingPassword}
+                                    >
+                                        {changingPassword ? <Loader2 className="w-5 h-5 animate-spin" /> : "Actualizar Contraseña"}
+                                    </Button>
+                                </div>
+                            </form>
+                        </CardContent>
+                    </Card>
                 </div>
             </main >
         </div >

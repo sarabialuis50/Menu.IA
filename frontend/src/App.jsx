@@ -10,6 +10,8 @@ import LandingPage from "@/pages/LandingPage";
 import PreciosPage from "@/pages/PreciosPage";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
+import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
+import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import DashboardPage from "@/pages/dashboard/DashboardPage";
 import CustomersPage from "@/pages/dashboard/CustomersPage";
 import AllCustomersPage from "@/pages/dashboard/AllCustomersPage";
@@ -85,6 +87,8 @@ function AppRoutes() {
       <Route path="/precios" element={<PreciosPage />} />
       <Route path="/login" element={<AuthRoute><LoginPage /></AuthRoute>} />
       <Route path="/register" element={<AuthRoute><RegisterPage /></AuthRoute>} />
+      <Route path="/forgot-password" element={<AuthRoute><ForgotPasswordPage /></AuthRoute>} />
+      <Route path="/reset-password" element={<AuthRoute><ResetPasswordPage /></AuthRoute>} />
 
       {/* Dashboard Routes (Protected) */}
       <Route path="/dashboard/:slug" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />

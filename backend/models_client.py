@@ -62,6 +62,10 @@ class OTPVerify(BaseModel):
     telefono: str
     otp: str
 
+class ChangePasswordRequest(BaseModel):
+    old_password: Optional[str] = None # Optional if they logged in via OTP
+    new_password: str
+
 class ClientTokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"

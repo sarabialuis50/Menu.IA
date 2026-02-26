@@ -353,14 +353,13 @@ const BusinessHomePageContent = () => {
                             <div className="w-full h-full bg-gray-100 rounded-[2rem] relative overflow-hidden group">
                                 <iframe
                                     title="Ubicación del Negocio"
-                                    src={`https://maps.google.com/maps?q=${encodeURIComponent(business.direccion || 'Colombia')}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                                    src={`https://maps.google.com/maps?q=${encodeURIComponent(business.direccion || 'Colombia')}&output=embed&hl=es`}
                                     width="100%"
                                     height="100%"
-                                    style={{ border: 0, filter: 'grayscale(100%)' }}
+                                    style={{ border: 0 }}
                                     allowFullScreen=""
                                     loading="lazy"
-                                    referrerPolicy="no-referrer-when-downgrade"
-                                    className="opacity-80 group-hover:opacity-100 group-hover:filter-none transition-all duration-700"
+                                    className="opacity-90 group-hover:opacity-100 transition-all duration-700"
                                 ></iframe>
                             </div>
                         </div>

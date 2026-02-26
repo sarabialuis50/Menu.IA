@@ -137,6 +137,17 @@ class BusinessLogin(BaseModel):
     email: str
     password: str
 
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+class ChangePasswordRequest(BaseModel):
+    old_password: str
+    new_password: str
+
 class Business(BusinessBase):
     model_config = ConfigDict(extra="ignore", populate_by_name=True)
     id: str = Field(default_factory=generate_id)

@@ -7,6 +7,9 @@ from openai import OpenAI
 from twilio.rest import Client
 from supabase import create_client, Client as SupabaseClient
 from ai_base import get_shared_instructions, get_fallback_message
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Configuración de logging (stdout para Railway)
 logging.basicConfig(
@@ -23,10 +26,16 @@ supabase_url = os.environ.get("SUPABASE_URL")
 supabase_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY") # Use Service Role Key for backend ops
 supabase: SupabaseClient = create_client(supabase_url, supabase_key)
 
+logger.info(f"ENV CHECK: TWILIO_ACCOUNT_SID_MENU_IA={'SET' if os.environ.get('TWILIO_ACCOUNT_SID_MENU_IA') else 'MISSING'}")
+logger.info(f"ENV CHECK: TWILIO_AUTH_TOKEN_MENU_IA={'SET' if os.environ.get('TWILIO_AUTH_TOKEN_MENU_IA') else 'MISSING'}")
+logger.info(f"ENV CHECK: TWILIO_WHATSAPP_FROM_MENU_IA={'SET' if os.environ.get('TWILIO_WHATSAPP_FROM_MENU_IA') else 'MISSING'}")
+
 # Initialize Twilio (Global Fallback - SaaS_MenuIA subaccount)
 GLOBAL_TWILIO_SID = os.environ.get("TWILIO_ACCOUNT_SID_MENU_IA") or os.environ.get("TWILIO_ACCOUNT_SID")
 GLOBAL_TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN_MENU_IA") or os.environ.get("TWILIO_AUTH_TOKEN")
 GLOBAL_TWILIO_NUMBER = os.environ.get("TWILIO_WHATSAPP_FROM_MENU_IA") or os.environ.get("TWILIO_WHATSAPP_NUMBER")
+
+logger.info(f"Twilio Config Loaded: SID={str(GLOBAL_TWILIO_SID)[:6]}... Number={GLOBAL_TWILIO_NUMBER}")
 
 def get_twilio_client(sid: str = None, token: str = None):
     """Returns a Twilio client using provided credentials or global defaults"""
@@ -361,7 +370,7 @@ async def find_nearest_restaurant(address: str) -> str:
                 "slug": nearest['slug'],
                 "distancia_km": round(min_dist, 2),
                 "direccion": nearest['direccion'],
-                "menu_url": f"https://menuia-production.up.railway.app/{nearest['slug']}"
+                "menu_url": f"https://menuia.co/{nearest['slug']}/menu"
             })
         else:
             return json.dumps({"error": "No encontré negocios con coordenadas configuradas cerca de ti."})
@@ -380,13 +389,16 @@ async def process_whatsapp_message(message_body: str, sender_phone: str, negocio
         is_platform = not negocio_id or negocio_id == 'PLATFORM' or negocio_id == PLATFORM_BIZ_ID
         customer_name = await get_customer_name(sender_phone)
         
+        # 0. Common variables
+        now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
+        
         # AI Configuration
         if is_platform:
             biz_name = "Menu.IA"
             biz_slug = "platform"
             ai_habilitado = True
             current_tools = PLATFORM_TOOLS
-            system_prompt_template = PLATFORM_SYSTEM_PROMPT
+            system_prompt = PLATFORM_SYSTEM_PROMPT.format(current_date=now)
         else:
             # Get business info for the prompt
             biz_res = supabase.table('negocios').select('*').eq('id', negocio_id).execute()
@@ -401,7 +413,7 @@ async def process_whatsapp_message(message_body: str, sender_phone: str, negocio
             ai_conocimiento = biz.get('ai_conocimiento', '')
             current_tools = TOOLS
             
-            system_prompt_template = f"""
+            system_prompt = f"""
 Eres Menu.IA Bot, el asistente virtual oficial de {biz_name}. Tu objetivo es ayudar a los clientes a realizar pedidos de manera eficiente y gestionar su fidelización.
 
 TU PERSONALIDAD:
@@ -411,17 +423,16 @@ CONOCIMIENTO ESPECIAL SOBRE EL NEGOCIO (ENTRENAMIENTO):
 {ai_conocimiento if ai_conocimiento else 'Eres un asistente de restaurante estándar. Consulta el menú para dar información exacta.'}
 
 REGISTRO DE CLIENTES Y FIDELIZACIÓN (PRIORIDAD ALTA):
-- Si el nombre del cliente es '{{customer_name if customer_name else 'cliente'}}' (o desconocido), debes preguntarle su nombre al inicio para dar una atención personalizada.
+- Si el nombre del cliente es '{customer_name if customer_name else 'cliente'}' (o desconocido), debes preguntarle su nombre al inicio para dar una atención personalizada.
 - Si el cliente no está registrado, invítalo amablemente a unirse al programa de fidelización.
 - Explica los beneficios: acumular puntos por cada compra, descuentos exclusivos y atención personalizada.
 - Si el cliente acepta, pídele: Nombre completo, Correo electrónico y su Fecha de cumpleaños (opcional).
-- IMPORTANTE: Pregunta si desea usar su número actual ({{sender_phone}}) o uno diferente.
+- IMPORTANTE: Pregunta si desea usar su número actual ({sender_phone}) o uno diferente.
 - UNA VEZ TENGAS LOS DATOS (Nombre, Email, Teléfono), EJECUTA LA FUNCIÓN 'register_customer'. NO confirmes el registro sin llamar a la función.
 
 REGLAS DE RESPUESTA DE PRODUCTOS Y MENÚ:
-- Si el cliente quiere ver todo el menú, envíale el siguiente enlace interactivo: 
-  https://menuia-production.up.railway.app/{biz_slug}
-- Al mostrar productos del menú de forma textual, estructúralos como una tabla o lista clara, rápida de leer (evita lenguaje tipo periódico o densos párrafos).
+- SIEMPRE que el cliente pida el menú o quiera ver los platos, es OBLIGATORIO proporcionar primero el siguiente enlace interactivo: https://menuia.co/{biz_slug}/menu
+- Al mostrar productos del menú de forma textual (además del enlace), estructúralos como una tabla o lista clara, rápida de leer (evita lenguaje tipo periódico o densos párrafos).
 - Enumera los items o dales un código numérico para que el cliente pueda pedir más rápido enviando solo el número (Ej: "1. Hamburguesa Sencilla").
 - Menciona siempre en la misma línea: NÚMERO DE ITEM, NOMBRE, PRECIO y DESCUENTO (si lo tiene). Agrega la descripción brevemente debajo.
 - NUNCA incluyas enlaces o URLs de imágenes de los productos en tus respuestas.
@@ -433,23 +444,12 @@ REGLAS DE INTERACCIÓN:
 - Sé conciso, apropiado para un chat rápido.
 - Dirígete al cliente por su nombre si ya lo tienes.
 
-HOY ES: {{now}} (UTC)
+HOY ES: {now} (UTC)
 """
 
         if not ai_habilitado:
             return "El asistente virtual está desactivado en este momento."
             
-        # 1. Definir System Prompt dinámico
-        now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
-        system_prompt = system_prompt_template.format(
-            biz_name=biz_name, 
-            biz_slug=biz_slug, 
-            customer_name=customer_name, 
-            sender_phone=sender_phone, 
-            now=now,
-            current_date=now
-        )
-        
         # 1.1 Gestionar Historial
         target_biz_id = negocio_id if negocio_id else 'PLATFORM'
         conversation_id = await get_or_create_conversation(target_biz_id, sender_phone)
@@ -735,11 +735,18 @@ async def send_whatsapp_message(to_number: str, body: str):
         client = Client(GLOBAL_TWILIO_SID, GLOBAL_TWILIO_AUTH_TOKEN)
         
         # Asegurar formato E.164 (+...) y luego whatsapp:
-        clean_to = to_number.strip().replace(' ', '')
-        if not clean_to.startswith('+') and not clean_to.startswith('whatsapp:'):
-            clean_to = f"+{clean_to}"
+        clean_to = str(to_number).strip().replace('whatsapp:', '').replace(' ', '').replace('+', '')
         
-        formatted_to = f"whatsapp:{clean_to}" if not clean_to.startswith('whatsapp:') else clean_to
+        # Validar si es un número de Colombia (10 dígitos empezando por 3)
+        if len(clean_to) == 10 and clean_to.startswith('3'):
+            formatted_to_e164 = f"+57{clean_to}"
+        elif len(clean_to) == 12 and clean_to.startswith('57'):
+            formatted_to_e164 = f"+{clean_to}"
+        else:
+            formatted_to_e164 = f"+{clean_to}" if not str(to_number).startswith('+') else str(to_number)
+
+        formatted_to = f"whatsapp:{formatted_to_e164}"
+        logger.info(f"Twilio Send Attempt: From={GLOBAL_TWILIO_NUMBER} To={formatted_to} Body={body}")
         
         message = client.messages.create(
             from_=GLOBAL_TWILIO_NUMBER,

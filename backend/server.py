@@ -15,6 +15,7 @@ import json
 import asyncio
 import uuid
 from pathlib import Path
+import secrets
 
 # Force deploy trigger
 ROOT_DIR = Path(__file__).parent
@@ -32,6 +33,7 @@ logger = logging.getLogger(__name__)
 from whatsapp_agent import process_whatsapp_message, send_whatsapp_response, send_whatsapp_message, get_or_create_conversation
 
 from models import Business, BusinessCreate, BusinessLogin, BusinessPublic, BusinessAnalytics, DailyStats
+from models import ForgotPasswordRequest, ResetPasswordRequest, ChangePasswordRequest
 from models import Product, ProductCreate, ProductUpdate
 from models import Table, TableCreate, TableUpdate, TableStatus
 from models import Employee, EmployeeCreate, EmployeeLogin, EmployeeRole
@@ -475,12 +477,15 @@ async def register_business(data: BusinessCreate):
 
 @api_router.post("/auth/login", response_model=TokenResponse)
 async def login_business(data: BusinessLogin):
+    logger.info(f"Login attempt for email: {data.email}")
     response = supabase.table('negocios').select('*').eq('email', data.email).execute()
     if not response.data:
+        logger.warning(f"Login failed: User {data.email} not found")
         raise HTTPException(status_code=401, detail="Credenciales inválidas")
     
     business_doc = response.data[0]
     if not verify_password(data.password, business_doc.get('password_hash', '')):
+        logger.warning(f"Login failed: Incorrect password for {data.email}")
         raise HTTPException(status_code=401, detail="Credenciales inválidas")
     
     if 'password_hash' in business_doc:
@@ -524,6 +529,88 @@ async def login_employee(slug: str, data: EmployeeLogin):
     token = create_token({"sub": employee.id, "type": "employee", "negocio_id": business_doc['id']})
     
     return EmployeeTokenResponse(access_token=token, employee=employee)
+
+
+@api_router.post("/auth/forgot-password")
+async def forgot_password(data: ForgotPasswordRequest):
+    try:
+        # Usar el servicio nativo de Supabase Auth
+        # Esto enviará automáticamente el correo desde Supabase
+        supabase.auth.reset_password_for_email(data.email)
+        
+        logger.info(f"Correo de recuperación solicitado para: {data.email} vía Supabase Auth")
+        
+        return {"message": "Si el correo está registrado, recibirás un enlace de recuperación."}
+    except Exception as e:
+        logger.error(f"Error al solicitar recuperación en Supabase: {e}")
+        # Por seguridad, devolvemos el mismo mensaje aunque falle (si el usuario no existe)
+        return {"message": "Si el correo está registrado, recibirás un enlace de recuperación."}
+
+
+@api_router.post("/auth/reset-password")
+async def reset_password(data: ResetPasswordRequest):
+    # Verify token
+    res = supabase.table('password_reset_tokens').select('*').eq('token', data.token).execute()
+    if not res.data:
+        raise HTTPException(status_code=400, detail="Token inválido o expirado")
+    
+    token_doc = res.data[0]
+    expires_at = datetime.fromisoformat(token_doc['expires_at'].replace('Z', '+00:00'))
+    
+    if expires_at < datetime.now(timezone.utc):
+        supabase.table('password_reset_tokens').delete().eq('token', data.token).execute()
+        raise HTTPException(status_code=400, detail="Token expirado")
+    
+    # Update password
+    new_hash = hash_password(data.new_password)
+    supabase.table('negocios').update({"password_hash": new_hash}).eq('email', token_doc['email']).execute()
+    
+    # Delete token
+    supabase.table('password_reset_tokens').delete().eq('token', data.token).execute()
+    
+    return {"message": "Contraseña actualizada con éxito"}
+
+
+@api_router.post("/auth/change-password")
+async def change_password(data: ChangePasswordRequest, business: Business = Depends(get_current_business)):
+    # Verify old password
+    # We need the hash from DB because the 'business' object from Depends doesn't have it
+    res = supabase.table('negocios').select('password_hash').eq('id', business.id).execute()
+    if not res.data:
+        raise HTTPException(status_code=404, detail="Negocio no encontrado")
+    
+    curr_hash = res.data[0]['password_hash']
+    if not verify_password(data.old_password, curr_hash):
+        raise HTTPException(status_code=401, detail="Contraseña actual incorrecta")
+    
+    # Update to new password
+    new_hash = hash_password(data.new_password)
+    supabase.table('negocios').update({"password_hash": new_hash}).eq('id', business.id).execute()
+    
+    return {"message": "Contraseña actualizada correctamente"}
+
+
+@api_router.post("/client/change-password")
+async def client_change_password(data: ChangePasswordRequest, client: Cliente = Depends(get_current_client)):
+    # If they have a password_hash, verify it. If not (first time setting), allow it?
+    # Actually, if old_password is provided in model, we use it.
+    res = supabase.table('clientes').select('password_hash').eq('id', client.id).execute()
+    curr_hash = res.data[0].get('password_hash') if res.data else None
+    
+    if curr_hash and data.old_password:
+        if not verify_password(data.old_password, curr_hash):
+            raise HTTPException(status_code=401, detail="Contraseña actual incorrecta")
+    elif curr_hash and not data.old_password:
+        raise HTTPException(status_code=401, detail="Se requiere la contraseña actual")
+        
+    # Update to new password
+    new_hash = hash_password(data.new_password)
+    supabase.table('clientes').update({
+        "password_hash": new_hash,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }).eq('id', client.id).execute()
+    
+    return {"message": "Contraseña actualizada correctamente"}
 
 
 # ============ BUSINESS ROUTES ============
