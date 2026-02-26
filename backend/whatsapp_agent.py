@@ -313,8 +313,8 @@ REGLAS DE INTERACCIÓN:
 3. Una vez que el usuario proporcione su dirección, usa la herramienta 'find_nearest_restaurant'.
 4. Cuando encuentres el restaurante:
    - Indica el nombre del negocio y a qué distancia se encuentra.
-   - Proporciona OBLIGATORIAMENTE el enlace interactivo al menú de la siguiente forma: "Puedes ver el menú completo y hacer tu pedido aquí: https://menuia.co/{slug}/menu" (Asegúrate de que sea un enlace azul clickable).
-5. Si el usuario pregunta por un restaurante específico por su nombre (ej: "Don Jediondo"), búscalo directamente y proporciónale su enlace de menú: https://menuia.co/{slug}/menu.
+   - Proporciona OBLIGATORIAMENTE el enlace interactivo al menú de la siguiente forma: "Puedes ver el menú completo y hacer tu pedido aquí: https://menuia.co/{{slug}}/menu" (Asegúrate de que sea un enlace azul clickable).
+5. Si el usuario pregunta por un restaurante específico por su nombre (ej: "Don Jediondo"), búscalo directamente y proporciónale su enlace de menú: https://menuia.co/{{slug}}/menu.
 6. Sé amable, conciso y directo, optimizado para WhatsApp.
 
 HOY ES: {current_date}
@@ -552,7 +552,11 @@ HOY ES: {now} (UTC)
         return final_response
 
     except Exception as e:
-        logger.error(f"Error procesando mensaje WA: {e}")
+        import traceback
+        error_msg = f"Error procesando mensaje WA: {e}\n{traceback.format_exc()}"
+        logger.error(error_msg)
+        with open("agent_errors.log", "a", encoding="utf-8") as f:
+            f.write(f"\n--- {datetime.now()} ---\n{error_msg}\n")
         return "Lo siento, tuve un problema procesando tu mensaje. ¿Podrías intentarlo de nuevo?"
 
 # --- IMPLEMENTACIÓN DE HERRAMIENTAS ---
