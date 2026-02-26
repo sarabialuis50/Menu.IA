@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -12,8 +11,15 @@ import { toast } from 'sonner';
 import {
     User, Edit, MapPin, Package, Heart, Ticket, LogOut, ArrowLeft,
     Truck, Star, Plus, Briefcase, Home, CheckCircle2, Loader2, Phone, ShieldCheck,
-    Lock, Shield
+    Lock, Shield, Navigation
 } from 'lucide-react';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default function ClientProfilePage() {
     const { slug } = useParams();
@@ -43,6 +49,16 @@ export default function ClientProfilePage() {
     });
     const [changingPassword, setChangingPassword] = useState(false);
 
+    // Address Modal State
+    const [showAddressModal, setShowAddressModal] = useState(false);
+    const [addressForm, setAddressForm] = useState({
+        nombre: '',
+        direccion: '',
+        es_principal: false
+    });
+    const [savingAddress, setSavingAddress] = useState(false);
+    const [detectingLocation, setDetectingLocation] = useState(false);
+
     useEffect(() => {
         if (token) {
             fetchProfile();
@@ -51,7 +67,7 @@ export default function ClientProfilePage() {
         }
     }, [token]);
 
-    const fetchProfile = async () => {
+    async function fetchProfile() {
         setLoading(true);
         try {
             const api = axios.create({
@@ -82,16 +98,16 @@ export default function ClientProfilePage() {
         } finally {
             setLoading(false);
         }
-    };
+    }
 
-    const logout = () => {
+    function logout() {
         localStorage.removeItem('client_token');
         setToken(null);
         setUser(null);
         setAuthStep('phone');
-    };
+    }
 
-    const handleRequestOtp = async (e) => {
+    async function handleRequestOtp(e) {
         e.preventDefault();
         if (!phone || phone.length < 10) {
             toast.error("Ingresa un número válido");
@@ -108,9 +124,9 @@ export default function ClientProfilePage() {
         } finally {
             setSubmitting(false);
         }
-    };
+    }
 
-    const handleVerifyOtp = async (e) => {
+    async function handleVerifyOtp(e) {
         e.preventDefault();
         setSubmitting(true);
         try {
@@ -124,9 +140,9 @@ export default function ClientProfilePage() {
         } finally {
             setSubmitting(false);
         }
-    };
+    }
 
-    const handleChangePassword = async (e) => {
+    async function handleChangePassword(e) {
         e.preventDefault();
         if (!passwordData.new_password || !passwordData.confirm_password) {
             toast.error("Completa los campos de contraseña");
@@ -154,7 +170,68 @@ export default function ClientProfilePage() {
         } finally {
             setChangingPassword(false);
         }
-    };
+    }
+
+    async function handleSaveAddress(e) {
+        e.preventDefault();
+        if (!addressForm.nombre || !addressForm.direccion) {
+            toast.error("Completa todos los campos");
+            return;
+        }
+
+        setSavingAddress(true);
+        try {
+            const api = axios.create({
+                baseURL: (import.meta.env && import.meta.env.REACT_APP_BACKEND_URL) || '/api',
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            await api.post('/client/addresses', addressForm);
+            toast.success("Dirección guardada");
+            setShowAddressModal(false);
+            setAddressForm({ nombre: '', direccion: '', es_principal: false });
+            fetchProfile(); // Refresh list
+        } catch (error) {
+            toast.error("Error al guardar dirección");
+        } finally {
+            setSavingAddress(false);
+        }
+    }
+
+    function handleGetCurrentLocation() {
+        if (!navigator.geolocation) {
+            toast.error("Geolocalización no soportada por tu navegador");
+            return;
+        }
+
+        setDetectingLocation(true);
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const { latitude, longitude } = position.coords;
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`);
+                    const data = await res.json();
+                    if (data.display_name) {
+                        setAddressForm(prev => ({ ...prev, direccion: data.display_name }));
+                        toast.success("Ubicación detectada");
+                    } else {
+                        setAddressForm(prev => ({ ...prev, direccion: `${latitude}, ${longitude}` }));
+                    }
+                } catch (error) {
+                    setAddressForm(prev => ({ ...prev, direccion: `${latitude}, ${longitude}` }));
+                } finally {
+                    setDetectingLocation(false);
+                }
+            },
+            (error) => {
+                toast.error("Error al obtener ubicación");
+                setDetectingLocation(false);
+            }
+        );
+    }
+
+    const isPasswordDirty = passwordData.new_password &&
+        passwordData.confirm_password &&
+        passwordData.new_password === passwordData.confirm_password;
 
     if (loading) {
         return (
@@ -321,13 +398,10 @@ export default function ClientProfilePage() {
                     </CardContent>
                 </Card>
 
-                {/* Grid Layout */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
 
-                    {/* Left Column (Orders) */}
                     <div className="md:col-span-12 lg:col-span-7 space-y-6">
 
-                        {/* Recent Orders */}
                         <div className="space-y-4">
                             <div className="flex items-center justify-between px-2">
                                 <h3 className="text-lg font-black text-[#111814] flex items-center gap-2">
@@ -354,7 +428,6 @@ export default function ClientProfilePage() {
                                         <Card key={order.id} className="border-none shadow-sm hover:shadow-md transition-shadow rounded-[1.5rem] overflow-hidden group cursor-pointer" onClick={() => navigate(`/${order.negocio_slug || slug}/mis-pedidos?order=${order.id}`)}>
                                             <CardContent className="p-6">
                                                 <div className="flex gap-4">
-                                                    {/* Icon */}
                                                     <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center shrink-0">
                                                         {order.negocio_logo ? (
                                                             <img src={order.negocio_logo} alt="Logo" className="w-full h-full object-cover rounded-2xl" />
@@ -363,9 +436,7 @@ export default function ClientProfilePage() {
                                                         )}
                                                     </div>
 
-                                                    {/* Content */}
                                                     <div className="flex-1 min-w-0">
-                                                        {/* Top Row: Product Name + Date */}
                                                         <div className="flex justify-between items-start">
                                                             <div className="flex items-center gap-2 min-w-0 pr-4">
                                                                 <h4 className="font-bold text-[#111814] leading-tight truncate text-base">
@@ -389,12 +460,10 @@ export default function ClientProfilePage() {
                                                             </span>
                                                         </div>
 
-                                                        {/* Middle Row: Business Info + Price */}
                                                         <p className="text-sm text-gray-500 mt-1 truncate">
                                                             {order.negocio_nombre || 'Restaurante'} • {order.items?.length || 0} items • <span className="text-gray-900 font-bold ml-1">${order.total?.toLocaleString()}</span>
                                                         </p>
 
-                                                        {/* Bottom Row: Status + Action */}
                                                         <div className="flex items-center gap-3 mt-3">
                                                             <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-gray-100 ${['entregado'].includes(order.estado) ? 'text-gray-500' : 'text-green-700 bg-green-50'}`}>
                                                                 {order.estado?.replace('_', ' ')}
@@ -428,19 +497,78 @@ export default function ClientProfilePage() {
 
                     </div>
 
-                    {/* Right Column */}
                     <div className="md:col-span-12 lg:col-span-5 flex flex-col">
                         <div className="space-y-6">
-                            {/* Addresses */}
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between px-2">
                                     <h3 className="text-lg font-black text-[#111814] flex items-center gap-2">
                                         <MapPin className="w-5 h-5 text-[#22C55E]" />
                                         Direcciones
                                     </h3>
-                                    <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full bg-gray-100 text-gray-600 hover:bg-[#4ADE80] hover:text-[#111814]">
-                                        <Plus className="w-4 h-4" />
-                                    </Button>
+                                    <Dialog open={showAddressModal} onOpenChange={setShowAddressModal}>
+                                        <DialogTrigger asChild>
+                                            <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full border-2 border-[#4ADE80] bg-white text-[#22C55E] hover:bg-[#4ADE80] hover:text-[#111814] transition-all">
+                                                <Plus className="w-4 h-4" />
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent className="rounded-[2rem] max-w-md">
+                                            <DialogHeader>
+                                                <DialogTitle className="text-xl font-black">Nueva Dirección</DialogTitle>
+                                            </DialogHeader>
+                                            <form onSubmit={handleSaveAddress} className="space-y-6 pt-4">
+                                                <div className="space-y-4">
+                                                    <div className="space-y-2">
+                                                        <Label className="font-bold">Nombre (Ej: Casa, Oficina)</Label>
+                                                        <Input
+                                                            placeholder="Mi Casa"
+                                                            value={addressForm.nombre}
+                                                            onChange={e => setAddressForm({ ...addressForm, nombre: e.target.value })}
+                                                            className="rounded-xl h-11"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className="font-bold">Dirección Completa</Label>
+                                                        <div className="relative">
+                                                            <Input
+                                                                placeholder="Calle 123 #45-67..."
+                                                                value={addressForm.direccion}
+                                                                onChange={e => setAddressForm({ ...addressForm, direccion: e.target.value })}
+                                                                className="rounded-xl h-11 pr-12"
+                                                            />
+                                                            <Button
+                                                                type="button"
+                                                                size="icon"
+                                                                variant="ghost"
+                                                                className="absolute right-1 top-1/2 -translate-y-1/2 rounded-lg text-[#22C55E] hover:bg-green-50"
+                                                                onClick={handleGetCurrentLocation}
+                                                                disabled={detectingLocation}
+                                                            >
+                                                                {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <Navigation className="w-4 h-4" />}
+                                                            </Button>
+                                                        </div>
+                                                        <p className="text-[10px] text-gray-400 font-medium ml-1">Usa el ícono de GPS para autocompletar</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-3 pt-2">
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        className="flex-1 rounded-xl h-12 font-bold"
+                                                        onClick={() => setShowAddressModal(false)}
+                                                    >
+                                                        Cancelar
+                                                    </Button>
+                                                    <Button
+                                                        type="submit"
+                                                        disabled={savingAddress}
+                                                        className="flex-1 rounded-xl h-12 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black"
+                                                    >
+                                                        {savingAddress ? <Loader2 className="w-4 h-4 animate-spin" /> : "Guardar"}
+                                                    </Button>
+                                                </div>
+                                            </form>
+                                        </DialogContent>
+                                    </Dialog>
                                 </div>
                                 <div className="space-y-3">
                                     {addresses.length === 0 ? (
@@ -471,10 +599,8 @@ export default function ClientProfilePage() {
                             </div>
                         </div>
 
-                        {/* Spacer to push points card down */}
                         <div className="flex-1 min-h-[1.5rem]" />
 
-                        {/* Loyalty Points */}
                         <Card className="border-none rounded-[2rem] bg-[#4ADE80] text-[#111814] overflow-hidden relative shadow-lg">
                             <CardContent className="p-8 relative z-10 text-center space-y-4">
                                 <div className="space-y-1">
@@ -495,7 +621,6 @@ export default function ClientProfilePage() {
                     </div>
                 </div>
 
-                {/* Favorites Section (Outside grid for full width) */}
                 <div className="space-y-4 pt-4">
                     <div className="flex items-center justify-between px-2">
                         <h3 className="text-lg font-black text-[#111814] flex items-center gap-2">
@@ -536,7 +661,6 @@ export default function ClientProfilePage() {
                     </div>
                 </div>
 
-                {/* Security Section */}
                 <div className="space-y-4 pt-4">
                     <div className="px-2">
                         <h3 className="text-lg font-black text-[#111814] flex items-center gap-2">
@@ -594,17 +718,21 @@ export default function ClientProfilePage() {
                                 <div className="pt-2">
                                     <Button
                                         type="submit"
-                                        className="w-full md:w-auto px-10 h-12 rounded-xl bg-[#111814] hover:bg-black text-white font-bold"
                                         disabled={changingPassword}
+                                        className={`w-full md:w-auto px-10 h-12 rounded-2xl font-black transition-all border-2 border-[#4ADE80] flex items-center justify-center gap-2 ${isPasswordDirty
+                                            ? 'bg-[#4ADE80] text-[#111814] hover:bg-[#22C55E]'
+                                            : 'bg-white text-[#22C55E] hover:bg-green-50'
+                                            }`}
                                     >
-                                        {changingPassword ? <Loader2 className="w-5 h-5 animate-spin" /> : "Actualizar Contraseña"}
+                                        {changingPassword ? <Loader2 className="w-5 h-5 animate-spin" /> : <Shield className="w-4 h-4" />}
+                                        {changingPassword ? 'Actualizando...' : 'Actualizar Contraseña'}
                                     </Button>
                                 </div>
                             </form>
                         </CardContent>
                     </Card>
                 </div>
-            </main >
-        </div >
+            </main>
+        </div>
     );
 }

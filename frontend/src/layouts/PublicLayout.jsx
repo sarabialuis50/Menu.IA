@@ -11,11 +11,17 @@ export const PublicLayout = ({
   aiEnabled,
   aiSaludo,
   aiUseModal,
-  isClosed = false
+  isClosed = false,
+  backPath
 }) => {
   const navigate = useNavigate();
 
   const handleBack = () => {
+    // Si hay un path específico para volver, lo usamos
+    if (backPath) {
+      navigate(backPath);
+      return;
+    }
     // Si hay historial de navegación en esta pestaña, retrocedemos
     if (window.history.length > 1) {
       navigate(-1);

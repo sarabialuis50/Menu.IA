@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useSearchParams, Link } from 'react-router-dom';
+import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { PublicLayout } from '@/layouts/PublicLayout';
 import axios from 'axios';
 import { Clock, Check, ChefHat, Truck, Package, RefreshCw, Phone, ArrowLeft, Smartphone, Search } from 'lucide-react';
@@ -14,6 +14,7 @@ const API = (import.meta.env?.VITE_BACKEND_URL || import.meta.env?.REACT_APP_BAC
 
 export default function MisPedidos() {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [business, setBusiness] = useState(null);
   const [phone, setPhone] = useState('');
@@ -124,17 +125,19 @@ export default function MisPedidos() {
       aiEnabled={business?.ai_habilitado}
       aiSaludo={business?.ai_saludo}
       aiUseModal={business?.ai_use_modal}
+      backPath={localStorage.getItem('client_token') ? `/${slug}/mi-cuenta` : `/${slug}`}
     >
       <div className="max-w-lg mx-auto px-6 py-10 min-h-[80vh]">
         {/* Header Section */}
         <div className="flex items-center justify-between mb-10">
           <div>
-            <Link
-              to={`/${slug}`}
-              className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#618972] mb-4 hover:text-[#22C55E] transition-colors"
+            <Button
+              variant="ghost"
+              onClick={() => navigate(localStorage.getItem('client_token') ? `/${slug}/mi-cuenta` : `/${slug}`)}
+              className="inline-flex items-center gap-2 p-0 h-auto text-[10px] font-black uppercase tracking-widest text-[#618972] mb-4 hover:text-[#22C55E] hover:bg-transparent transition-colors"
             >
-              <ArrowLeft className="w-3 h-3" /> Volver al Menú
-            </Link>
+              <ArrowLeft className="w-3 h-3" /> {localStorage.getItem('client_token') ? 'Volver a Mi Cuenta' : 'Volver al Menú'}
+            </Button>
             <h1 className="text-4xl font-black text-[#111814] tracking-tighter leading-none">Mis Pedidos</h1>
           </div>
           <div className="size-14 rounded-2xl bg-[#4ADE80]/10 flex items-center justify-center text-[#22C55E]">
