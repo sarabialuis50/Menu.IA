@@ -15,7 +15,10 @@ import {
   CheckCircle,
   ExternalLink,
   Users,
-  MessageCircle
+  MessageCircle,
+  UserPlus,
+  Gift,
+  Truck
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -195,6 +198,34 @@ export default function DashboardPage() {
             icon={TableProperties}
             color="bg-purple-500"
             subtitle="Ocupadas"
+          />
+          <StatCard
+            title="Clientes Nuevos"
+            value={analytics?.clientes_nuevos_hoy || 0}
+            icon={UserPlus}
+            color="bg-indigo-500"
+            subtitle="Hoy"
+          />
+          <StatCard
+            title="Puntos de Fidelidad"
+            value={(analytics?.puntos_otorgados_hoy || 0).toLocaleString()}
+            icon={Gift}
+            color="bg-rose-500"
+            subtitle="Puntos otorgados hoy"
+          />
+          <StatCard
+            title="Mensajes Enviados"
+            value={(analytics?.mensajes_enviados_hoy || 0).toLocaleString()}
+            icon={MessageCircle}
+            color="bg-emerald-500"
+            subtitle="Total campaña/soporte"
+          />
+          <StatCard
+            title="Domicilios Hoy"
+            value={analytics?.domicilios_hoy || 0}
+            icon={Truck}
+            color="bg-cyan-500"
+            subtitle="Entrega a domicilio"
           />
         </div>
 

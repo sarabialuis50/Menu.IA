@@ -684,6 +684,22 @@ async def get_business_analytics(slug: str, business: Business = Depends(get_cur
     ventas_hoy = sum(float(o.get('total', 0)) for o in today_orders)
     pedidos_hoy = len(today_orders)
     pedidos_activos = len([o for o in today_orders if o.get('estado') in ['pendiente', 'preparando']])
+    domicilios_hoy = len([o for o in today_orders if o.get('tipo_pedido') in ['domicilio', 'delivery']])
+    
+    # Clientes nuevos hoy
+    response = supabase.table('clientes_puntos').select('id').match({"negocio_id": business.id}).gte("created_at", today_start.isoformat()).execute()
+    clientes_nuevos_hoy = len(response.data) if response.data else 0
+    
+    # Puntos otorgados hoy
+    clients_res = supabase.table('clientes_puntos').select('id').eq('negocio_id', business.id).execute()
+    client_ids = [c['id'] for c in clients_res.data] if clients_res.data else []
+    puntos_otorgados_hoy = 0
+    if client_ids:
+        points_res = supabase.table('transacciones_puntos').select('puntos').match({"tipo": "ganado"}).in_('cliente_puntos_id', client_ids).gte("created_at", today_start.isoformat()).execute()
+        puntos_otorgados_hoy = sum(int(p.get('puntos', 0)) for p in points_res.data) if points_res.data else 0
+
+    # Mensajes enviados (Total count from business profile)
+    mensajes_enviados_hoy = business.wa_messages_count
     
     # Get tables
     response = supabase.table('mesas').select('*').eq("negocio_id", business.id).execute()
@@ -722,6 +738,10 @@ async def get_business_analytics(slug: str, business: Business = Depends(get_cur
         mesas_ocupadas=mesas_ocupadas,
         mesas_totales=mesas_totales,
         productos_agotados=productos_agotados,
+        clientes_nuevos_hoy=clientes_nuevos_hoy,
+        puntos_otorgados_hoy=puntos_otorgados_hoy,
+        mensajes_enviados_hoy=mensajes_enviados_hoy,
+        domicilios_hoy=domicilios_hoy,
         ultimos_7_dias=ultimos_7_dias
     )
 

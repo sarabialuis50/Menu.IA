@@ -388,6 +388,10 @@ class BusinessAnalytics(BaseModel):
     mesas_ocupadas: int
     mesas_totales: int
     productos_agotados: int
+    clientes_nuevos_hoy: int = 0
+    puntos_otorgados_hoy: int = 0
+    mensajes_enviados_hoy: int = 0
+    domicilios_hoy: int = 0
     ultimos_7_dias: List[DailyStats]
 
 
