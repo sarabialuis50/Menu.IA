@@ -186,25 +186,23 @@ export default function WhatsappHubPage() {
                                 </div>
 
                                 <div className="space-y-4 py-2">
-                                    <div className="flex flex-col gap-1">
-                                        <div className="flex items-center justify-between">
+                                    <div className="flex items-end justify-between">
+                                        <div>
                                             <h3 className="text-4xl font-black leading-none">
-                                                {user?.wa_credits > 0 ? user.wa_credits.toLocaleString() : '0/0'}
+                                                {user?.wa_messages_limit > 0 ? (user?.wa_messages_count || 0) : 0}/{user?.wa_messages_limit || 0}
                                             </h3>
-                                            <Badge className="bg-white/20 text-white text-[7px] font-black tracking-widest border-white border-2 px-2 py-0.5 text-center ml-2 uppercase">Saldo Disponible</Badge>
+                                            <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest mt-2 px-1">Mensajes Venta/Soporte</p>
                                         </div>
-                                        <p className="text-[9px] font-bold text-white/60 uppercase tracking-widest px-1">Créditos de Campaña</p>
+                                        <Badge className="bg-white/20 text-white text-[9px] font-black tracking-widest border-white border-2 px-2 py-0.5 mb-1">PLAN {user?.plan?.toUpperCase() || 'GRATUITO'}</Badge>
                                     </div>
                                     <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden">
                                         <div
                                             className="h-full bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-1000"
-                                            style={{ width: user?.wa_credits > 0 ? '100%' : '0%' }}
+                                            style={{ width: `${Math.min(100, user?.wa_messages_limit > 0 ? ((user?.wa_messages_count || 0) / user.wa_messages_limit) * 100 : 0)}%` }}
                                         />
                                     </div>
                                     <p className="text-[9px] font-bold text-white/80 italic text-center">
-                                        {user?.wa_credits > 0
-                                            ? `🚀 Tienes ${user.wa_credits.toLocaleString()} mensajes listos para enviar.`
-                                            : "⚠️ No tienes créditos para campañas masivas."}
+                                        ✨ Has usado el {user?.wa_messages_limit > 0 ? (((user?.wa_messages_count || 0) / user.wa_messages_limit) * 100).toFixed(1) : '0.0'}% de tu cupo incluido.
                                     </p>
                                 </div>
 
@@ -219,12 +217,21 @@ export default function WhatsappHubPage() {
                                     <ExternalLink className="w-4 h-4 text-white/40" />
                                 </div>
 
-                                <Button
-                                    onClick={() => setIsPurchaseModalOpen(true)}
-                                    className="col-span-2 bg-white text-[#22C55E] border-2 border-transparent hover:bg-transparent hover:text-white hover:border-white font-black text-[9px] uppercase h-10 rounded-xl tracking-wider shadow-xl shadow-green-900/10 transition-all px-2 w-full"
-                                >
-                                    ADQUIRIR PACK DE MENSAJES
-                                </Button>
+                                <div className="grid grid-cols-2 gap-3 pt-2">
+                                    <Button
+                                        onClick={() => setIsPurchaseModalOpen(true)}
+                                        className="bg-white text-[#22C55E] border-2 border-transparent hover:bg-transparent hover:text-white hover:border-white font-black text-[9px] uppercase h-10 rounded-xl tracking-widest shadow-xl shadow-green-900/10 transition-all px-2"
+                                    >
+                                        Comprar Mensajes
+                                    </Button>
+                                    <Button
+                                        onClick={() => window.location.href = '/precios'}
+                                        variant="outline"
+                                        className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-[#22C55E] font-black text-[9px] uppercase h-10 rounded-xl tracking-widest transition-all px-2"
+                                    >
+                                        Mejorar Plan
+                                    </Button>
+                                </div>
                             </CardContent>
                         </Card>
 
