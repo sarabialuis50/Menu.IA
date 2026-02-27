@@ -12,7 +12,8 @@ export const PublicLayout = ({
   aiSaludo,
   aiUseModal,
   isClosed = false,
-  backPath
+  backPath,
+  hidden = false
 }) => {
   const navigate = useNavigate();
 
@@ -89,6 +90,7 @@ export const PublicLayout = ({
         slug={slug}
         aiUseModal={aiUseModal}
         isClosed={isClosed}
+        hidden={hidden}
       />
 
       {/* Shared Footer or Spacing */}

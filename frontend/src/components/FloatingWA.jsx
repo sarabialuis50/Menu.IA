@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Sparkles } from 'lucide-react';
 import { ChatModal } from './ChatModal';
 
-export const FloatingWA = ({ businessName, whatsapp, aiEnabled, aiSaludo, slug, aiUseModal = true, isClosed = false }) => {
+export const FloatingWA = ({ businessName, whatsapp, aiEnabled, aiSaludo, slug, aiUseModal = true, isClosed = false, hidden = false }) => {
     const [showTooltip, setShowTooltip] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -33,7 +33,7 @@ export const FloatingWA = ({ businessName, whatsapp, aiEnabled, aiSaludo, slug, 
 
     return (
         <>
-            <div className="fixed bottom-20 right-6 z-[60] flex flex-col items-end gap-3 pointer-events-none">
+            <div className={`fixed bottom-20 right-6 z-[60] flex-col items-end gap-3 pointer-events-none ${hidden ? 'hidden md:flex' : 'flex'}`}>
                 <AnimatePresence>
                     {showTooltip && (
                         <motion.div

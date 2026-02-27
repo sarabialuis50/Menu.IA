@@ -45,7 +45,13 @@ export const useGoogleMaps = (apiKey) => {
 
         // Error handling
         script.onerror = () => {
-            console.error("Failed to load Google Maps API");
+            console.error("Failed to load Google Maps API script");
+            isLoading = false;
+        };
+
+        // Standard Google Maps auth failure listener
+        window.gm_authFailure = () => {
+            console.error("Google Maps API Authentication Failure. Check your API Key and Console restrictions.");
             isLoading = false;
         };
 

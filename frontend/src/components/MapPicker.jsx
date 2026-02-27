@@ -53,11 +53,11 @@ export const MapPicker = ({ lat, lng, onChange, address }) => {
             markerRef.current = marker;
             setMapInstance(map);
         }
-    }, [isLoaded, mapInstance]);
+    }, [isLoaded, mapInstance, lat, lng]);
 
     useEffect(() => {
-        if (mapInstance && lat && lng) {
-            const newPos = { lat, lng };
+        if (mapInstance && markerRef.current && (lat !== undefined && lng !== undefined)) {
+            const newPos = { lat: parseFloat(lat) || 4.6097, lng: parseFloat(lng) || -74.0817 };
             markerRef.current.setPosition(newPos);
             mapInstance.panTo(newPos);
         }

@@ -407,14 +407,17 @@ const MenuContent = () => {
           const calculado = dist * precioKm;
           setCostoEnvio(Math.max(calculado, costoMin));
 
-          // Intentar obtener dirección legible
+          // Intentar obtener dirección legible usando Google Geocoding
           try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-            const data = await response.json();
-            if (data.display_name) {
-              setDireccion(data.display_name);
+            const geocoder = new window.google.maps.Geocoder();
+            const response = await geocoder.geocode({ location: { lat: latitude, lng: longitude } });
+            if (response.results && response.results[0]) {
+              setDireccion(response.results[0].formatted_address);
+            } else {
+              setDireccion(`Ubicación GPS (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`);
             }
           } catch (e) {
+            console.error("Geocoding failed:", e);
             setDireccion(`Ubicación GPS (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`);
           }
         }
@@ -1930,6 +1933,7 @@ const MenuContent = () => {
         slug={slug}
         aiUseModal={business?.ai_use_modal}
         isClosed={!business?.abierto}
+        hidden={!!selectedProduct || cartOpen || showSuccessModal}
       />
     </div>
   );

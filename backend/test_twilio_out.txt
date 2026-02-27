@@ -1,0 +1,12 @@
+﻿SID: AC7bde986ff3ef63f525e9d260d2ecbdb6
+From Number raw: whatsapp:+16617952400
+
+=== Incoming Phone Numbers ===
+  Number: +16617952400 | SMS: True | Voice: True
+
+=== Last 5 Messages Sent ===
+  [2026-02-26 15:52:11+00:00] whatsapp:+16617952400 -> whatsapp:+573128833350 | Status: delivered | Error: None
+  [2026-02-26 15:52:11+00:00] whatsapp:+573128833350 -> whatsapp:+16617952400 | Status: received | Error: None
+  [2026-02-26 15:51:43+00:00] whatsapp:+16617952400 -> whatsapp:+3128833350 | Status: undelivered | Error: None
+  [2026-02-26 15:51:21+00:00] whatsapp:+16617952400 -> whatsapp:+3128833350 | Status: undelivered | Error: None
+  [2026-02-26 15:04:08+00:00] whatsapp:+16617952400 -> whatsapp:+573128833350 | Status: delivered | Error: None
