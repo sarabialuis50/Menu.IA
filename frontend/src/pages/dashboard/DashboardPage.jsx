@@ -314,52 +314,78 @@ export default function DashboardPage() {
         </div>
 
         {/* SECTION: SEGMENTACIÓN Y WHATSAPP HUB */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-12">
 
           {/* Análisis de Participación */}
-          <Card className="rounded-[2rem] border-none shadow-2xl bg-white overflow-hidden">
+          <Card className="lg:col-span-2 rounded-[2rem] border-none shadow-2xl bg-white overflow-hidden">
             <CardHeader className="p-8 pb-4">
               <CardTitle className="text-sm font-black uppercase tracking-[0.2em] text-gray-900">Análisis de Participación</CardTitle>
               <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase tracking-widest leading-relaxed">
                 Distribución de clientes según su actividad y acumulación de puntos.
               </p>
             </CardHeader>
-            <CardContent className="p-8 pt-0 flex flex-col sm:flex-row items-center gap-10">
-              <div className="relative w-48 h-48 shrink-0">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={segmentationData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={55}
-                      outerRadius={80}
-                      paddingAngle={5}
-                      dataKey="value"
-                      startAngle={90}
-                      endAngle={450}
-                    >
-                      {segmentationData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <p className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">Retención</p>
-                  <p className="text-sm font-black text-[#22C55E] uppercase tracking-tighter">Óptima</p>
+            <CardContent className="p-8 pt-0 flex flex-col">
+              <div className="flex flex-col sm:flex-row items-center gap-10">
+                <div className="relative w-48 h-48 shrink-0">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={segmentationData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={55}
+                        outerRadius={80}
+                        paddingAngle={5}
+                        dataKey="value"
+                        startAngle={90}
+                        endAngle={450}
+                      >
+                        {segmentationData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">Retención</p>
+                    <p className="text-sm font-black text-[#22C55E] uppercase tracking-tighter">Óptima</p>
+                  </div>
+                </div>
+                <div className="w-full space-y-3">
+                  {segmentationData.map((item, i) => (
+                    <div key={i} className="flex items-center justify-between group">
+                      <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
+                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{item.name}</span>
+                      </div>
+                      <span className="text-xs font-black text-gray-900">{item.value}%</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-              <div className="w-full space-y-3">
-                {segmentationData.map((item, i) => (
-                  <div key={i} className="flex items-center justify-between group">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
-                      <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{item.name}</span>
+
+              {/* Bar Chart Section below */}
+              <div className="w-full mt-8 space-y-4 border-t border-gray-100 pt-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-4">
+                  {segmentationData.map((item, i) => (
+                    <div key={i} className="space-y-2">
+                      <div className="flex justify-between items-center px-1">
+                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">{item.name}</span>
+                        <span className="text-[10px] font-black text-gray-900">{item.value}%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-gray-50 rounded-full overflow-hidden border border-gray-100/50">
+                        <div
+                          className="h-full rounded-full transition-all duration-1000"
+                          style={{
+                            width: `${item.value}%`,
+                            backgroundColor: item.color,
+                            boxShadow: `0 0 12px ${item.color}40`
+                          }}
+                        />
+                      </div>
                     </div>
-                    <span className="text-xs font-black text-gray-900">{item.value}%</span>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -384,13 +410,17 @@ export default function DashboardPage() {
               </div>
 
               <div className="space-y-4 py-2">
-                <div className="flex items-end justify-between">
-                  <div>
-                    <h3 className="text-4xl font-black leading-none">{user?.wa_messages_limit > 0 ? (user?.wa_messages_count || 0) : 0}/{user?.wa_messages_limit || 0}</h3>
-                    <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest mt-2 px-1">Mensajes Venta/Soporte</p>
-                  </div>
-                  <Badge className="bg-white/20 text-white text-[9px] font-black tracking-widest border-white border-2 px-2 py-0.5 mb-1">PLAN {user?.plan?.toUpperCase() || 'GRATUITO'}</Badge>
+                <div className="flex items-start justify-between">
+                  <h3 className="text-4xl font-black leading-none tracking-tight">
+                    {user?.wa_messages_limit > 0 ? (user?.wa_messages_count || 0) : 0}/{user?.wa_messages_limit || 0}
+                  </h3>
+                  <Badge className="bg-white/20 text-white text-[9px] font-black tracking-widest border-white border-2 px-3 py-1 shrink-0 mt-1">
+                    PLAN {user?.plan?.toUpperCase() || 'GRATUITO'}
+                  </Badge>
                 </div>
+                <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest px-1 whitespace-nowrap mt-1">
+                  Mensajes Venta/Soporte
+                </p>
                 <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-1000"
@@ -416,14 +446,14 @@ export default function DashboardPage() {
               <div className="grid grid-cols-2 gap-3 pt-2">
                 <Button
                   onClick={() => setIsSupportModalOpen(true)}
-                  className="bg-white text-[#22C55E] border-2 border-transparent hover:bg-transparent hover:text-white hover:border-white font-black text-[10px] uppercase h-12 rounded-xl tracking-widest shadow-xl shadow-green-900/10 transition-all"
+                  className="bg-white text-[#22C55E] border-2 border-transparent hover:bg-transparent hover:text-white hover:border-white font-black text-[8px] uppercase h-12 rounded-xl tracking-widest shadow-xl shadow-green-900/10 transition-all px-1"
                 >
                   Comprar Mensajes
                 </Button>
                 <Button
                   onClick={() => navigate('/precios')}
                   variant="outline"
-                  className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-[#22C55E] font-black text-[10px] uppercase h-12 rounded-xl tracking-widest transition-all"
+                  className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-[#22C55E] font-black text-[8px] uppercase h-12 rounded-xl tracking-widest transition-all px-1"
                 >
                   Mejorar Plan
                 </Button>

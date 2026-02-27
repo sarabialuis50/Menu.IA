@@ -31,8 +31,9 @@ export default function WhatsappHubPage() {
     const [campaignMessage, setCampaignMessage] = useState('');
     const [isSendingCampaign, setIsSendingCampaign] = useState(false);
 
-    // Purchase Modal state
-    const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
+    // Purchase Modals state
+    const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+    const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
     const [isCreatingLink, setIsCreatingLink] = useState(false);
 
     const tags = ['[Nombre]', '[Puntos]', '[Saldo]', '[Premio]', '[Codigo]', '[Nivel]'];
@@ -118,7 +119,7 @@ export default function WhatsappHubPage() {
 
         // Auto-open purchase modal if requested via URL
         if (searchParams.get('purchase') === 'true') {
-            setIsPurchaseModalOpen(true);
+            setIsSupportModalOpen(true);
         }
     }, [searchParams]);
 
@@ -143,7 +144,27 @@ export default function WhatsappHubPage() {
     };
 
     const { api } = useAuth();
-    const handlePurchasePack = async (amount) => {
+
+    // Función para comprar Packs de Venta/Soporte (Uso mensual)
+    const handlePurchaseSupportPack = async (amount) => {
+        try {
+            setIsCreatingLink(true);
+            const response = await api().post('/payments/create-support-pack-link', { amount });
+            if (response.data.init_point) {
+                window.location.href = response.data.init_point;
+            } else {
+                toast.error("No se pudo generar el link de pago");
+            }
+        } catch (error) {
+            console.error("Error creating support pack payment:", error);
+            toast.error("Error al procesar la compra");
+        } finally {
+            setIsCreatingLink(false);
+        }
+    };
+
+    // Función para comprar Packs de Campañas (Prepago) - Se usará en la pestaña de campañas
+    const handlePurchaseCampaignPack = async (amount) => {
         try {
             setIsCreatingLink(true);
             const response = await api().post('/payments/create-wa-pack-link', { amount });
@@ -153,7 +174,7 @@ export default function WhatsappHubPage() {
                 toast.error("No se pudo generar el link de pago");
             }
         } catch (error) {
-            console.error("Error creating pack payment:", error);
+            console.error("Error creating campaign pack payment:", error);
             toast.error("Error al procesar la compra");
         } finally {
             setIsCreatingLink(false);
@@ -175,7 +196,7 @@ export default function WhatsappHubPage() {
                                             <MessageSquare className="w-5 h-5 text-white" />
                                         </div>
                                         <div>
-                                            <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-white">WhatsApp Hub</CardTitle>
+                                            <CardTitle className="text-sm font-black uppercase tracking-[0.2em]">WhatsApp Hub</CardTitle>
                                             <div className="flex items-center gap-1.5 text-[8px] font-bold text-white/60">
                                                 <div className="w-1 h-1 rounded-full bg-white opacity-40" />
                                                 SINCRONIZACIÓN ACTIVA
@@ -186,15 +207,17 @@ export default function WhatsappHubPage() {
                                 </div>
 
                                 <div className="space-y-4 py-2">
-                                    <div className="flex items-end justify-between">
-                                        <div>
-                                            <h3 className="text-4xl font-black leading-none">
-                                                {user?.wa_messages_limit > 0 ? (user?.wa_messages_count || 0) : 0}/{user?.wa_messages_limit || 0}
-                                            </h3>
-                                            <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest mt-2 px-1">Mensajes Venta/Soporte</p>
-                                        </div>
-                                        <Badge className="bg-white/20 text-white text-[9px] font-black tracking-widest border-white border-2 px-2 py-0.5 mb-1">PLAN {user?.plan?.toUpperCase() || 'GRATUITO'}</Badge>
+                                    <div className="flex items-start justify-between">
+                                        <h3 className="text-4xl font-black leading-none tracking-tight">
+                                            {user?.wa_messages_limit > 0 ? (user?.wa_messages_count || 0) : 0}/{user?.wa_messages_limit || 0}
+                                        </h3>
+                                        <Badge className="bg-white/20 text-white text-[9px] font-black tracking-widest border-white border-2 px-3 py-1 shrink-0 mt-1">
+                                            PLAN {user?.plan?.toUpperCase() || 'GRATUITO'}
+                                        </Badge>
                                     </div>
+                                    <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest px-1 whitespace-nowrap mt-1">
+                                        Pack Mensaje/Campañas
+                                    </p>
                                     <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden">
                                         <div
                                             className="h-full bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-1000"
@@ -217,19 +240,12 @@ export default function WhatsappHubPage() {
                                     <ExternalLink className="w-4 h-4 text-white/40" />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-3 pt-2">
+                                <div className="pt-2">
                                     <Button
-                                        onClick={() => setIsPurchaseModalOpen(true)}
-                                        className="bg-white text-[#22C55E] border-2 border-transparent hover:bg-transparent hover:text-white hover:border-white font-black text-[9px] uppercase h-10 rounded-xl tracking-widest shadow-xl shadow-green-900/10 transition-all px-2"
+                                        onClick={() => setIsCampaignModalOpen(true)}
+                                        className="w-full bg-white text-[#22C55E] border-2 border-transparent hover:bg-transparent hover:text-white hover:border-white font-black text-[10px] uppercase h-12 rounded-xl tracking-widest shadow-xl shadow-green-900/10 transition-all px-2"
                                     >
-                                        Comprar Mensajes
-                                    </Button>
-                                    <Button
-                                        onClick={() => window.location.href = '/precios'}
-                                        variant="outline"
-                                        className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-[#22C55E] font-black text-[9px] uppercase h-10 rounded-xl tracking-widest transition-all px-2"
-                                    >
-                                        Mejorar Plan
+                                        Comprar paquetes de mensajes
                                     </Button>
                                 </div>
                             </CardContent>
@@ -602,7 +618,62 @@ export default function WhatsappHubPage() {
                 </div>
             </div>
 
-            <Dialog open={isPurchaseModalOpen} onOpenChange={setIsPurchaseModalOpen}>
+            {/* Modal de Packs VENTAS/SOPORTE */}
+            <Dialog open={isSupportModalOpen} onOpenChange={setIsSupportModalOpen}>
+                <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden">
+                    <div className="bg-[#4ADE80] p-8 text-[#111814] relative">
+                        <div className="absolute top-0 right-0 p-8 opacity-10">
+                            <MessageSquare className="w-24 h-24" />
+                        </div>
+                        <DialogHeader>
+                            <DialogTitle className="text-2xl font-black uppercase tracking-tight">Pack Mensaje/Campañas</DialogTitle>
+                            <DialogDescription className="text-white/80 font-bold text-xs uppercase tracking-widest mt-2">
+                                Recarga créditos para tus envíos masivos. Elige el pack que mejor se adapte a tu próxima gran campaña.
+                            </DialogDescription>
+                        </DialogHeader>
+                    </div>
+
+                    <div className="p-8 space-y-4 bg-[#FAFAF9]">
+                        {[
+                            { amount: 1000, price: "$59.900", desc: "Extra ideal para cubrir tu demanda mensual" },
+                            { amount: 3000, price: "$163.900", desc: "Mayor soporte a clientes frecuentes", popular: true },
+                            { amount: 6000, price: "$299.900", desc: "Operación de muy alto volumen" }
+                        ].map((pack) => (
+                            <button
+                                key={pack.amount}
+                                onClick={() => handlePurchaseSupportPack(pack.amount)}
+                                disabled={isCreatingLink}
+                                className={`w-full p-4 rounded-2xl border-2 transition-all flex items-center justify-between text-left group
+                                    ${pack.popular ? 'bg-white border-[#22C55E] shadow-lg shadow-green-100' : 'bg-white border-gray-100 hover:border-gray-200'}
+                                    ${isCreatingLink ? 'opacity-50 cursor-not-allowed' : 'active:scale-[0.98]'}`}
+                            >
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-black text-gray-900 text-lg">{pack.amount.toLocaleString('es-CO')}</span>
+                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter">MENSAJES</span>
+                                        {pack.popular && <Badge className="bg-[#4ADE80] text-[#111814] text-[7px] font-black px-2 border-none">RECOMENDADO</Badge>}
+                                    </div>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight leading-none">{pack.desc}</p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="font-black text-[#22C55E] text-xl leading-none">{pack.price}</p>
+                                    <p className="text-[8px] font-bold text-gray-300 uppercase tracking-widest mt-1">COP</p>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="px-8 pb-8 bg-[#FAFAF9]">
+                        <p className="text-[9px] text-gray-400 font-bold text-center uppercase tracking-widest leading-relaxed">
+                            🔒 Pago seguro vía MercadoPago. <br />
+                            Los mensajes se añaden inmediatamente a tu cuenta.
+                        </p>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Modal de Packs CAMPAÑAS (Prepago) - Próximamente integrado en pestaña Campañas */}
+            <Dialog open={isCampaignModalOpen} onOpenChange={setIsCampaignModalOpen}>
                 <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden">
                     <div className="bg-[#4ADE80] p-8 text-[#111814] relative">
                         <div className="absolute top-0 right-0 p-8 opacity-10">
@@ -611,7 +682,7 @@ export default function WhatsappHubPage() {
                         <DialogHeader>
                             <DialogTitle className="text-2xl font-black uppercase tracking-tight">Recargar Mensajes</DialogTitle>
                             <DialogDescription className="text-white/80 font-bold text-xs uppercase tracking-widest mt-2">
-                                Elige el pack que mejor se adapte a tu próxima campaña
+                                Elige el pack que mejor se adapte a tu próxima campaña masiva.
                             </DialogDescription>
                         </DialogHeader>
                     </div>
@@ -624,7 +695,7 @@ export default function WhatsappHubPage() {
                         ].map((pack) => (
                             <button
                                 key={pack.amount}
-                                onClick={() => handlePurchasePack(pack.amount)}
+                                onClick={() => handlePurchaseCampaignPack(pack.amount)}
                                 disabled={isCreatingLink}
                                 className={`w-full p-4 rounded-2xl border-2 transition-all flex items-center justify-between text-left group
                                     ${pack.popular ? 'bg-white border-[#22C55E] shadow-lg shadow-green-100' : 'bg-white border-gray-100 hover:border-gray-200'}
@@ -654,6 +725,6 @@ export default function WhatsappHubPage() {
                     </div>
                 </DialogContent>
             </Dialog>
-        </DashboardLayout>
+        </DashboardLayout >
     );
 }
