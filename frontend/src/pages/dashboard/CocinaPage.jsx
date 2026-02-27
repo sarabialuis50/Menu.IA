@@ -168,6 +168,11 @@ function OrderCard({ order, onUpdateStatus }) {
                 <span className="bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-sm font-bold">{item.cantidad}x</span>
                 <span className="font-medium text-gray-900">{item.nombre}</span>
               </div>
+              {item.descripcion && (
+                <div className="ml-8 text-xs text-gray-400 line-clamp-2 leading-tight italic">
+                  {item.descripcion}
+                </div>
+              )}
               {item.modificadores && item.modificadores.length > 0 && (
                 <div className="ml-8 flex flex-wrap gap-1">
                   {item.modificadores.map((mod, i) => (

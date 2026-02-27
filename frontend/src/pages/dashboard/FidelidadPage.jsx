@@ -95,7 +95,8 @@ export default function FidelidadPage() {
       if (configRes.data) {
         setConfig(configRes.data);
         setOriginalConfig(configRes.data);
-        setTempConfigValue('');
+        // Show the real value from DB in the config input
+        setTempConfigValue(configRes.data.pesos_por_punto > 0 ? configRes.data.pesos_por_punto : '');
       }
       setCustomers(customersRes.data || []);
 
@@ -114,13 +115,21 @@ export default function FidelidadPage() {
   };
 
   const handleSave = async () => {
+    // Validate: Can't activate the program without proper configuration
+    if (config.activo && (!config.pesos_por_punto || config.pesos_por_punto <= 0)) {
+      toast.error('No puedes activar el programa sin configurar el valor de pesos por punto. Define la "Configuración Técnica Definitiva" primero.');
+      setConfig({ ...config, activo: false });
+      return;
+    }
+
     setSaving(true);
     try {
       const res = await api().post(`/loyalty/${slug}/config`, config);
       setOriginalConfig(res.data || config);
       toast.success('¡Configuración guardada exitosamente!');
     } catch (error) {
-      toast.error('Hubo un error al guardar los cambios.');
+      const detail = error?.response?.data?.detail;
+      toast.error(detail || 'Hubo un error al guardar los cambios.');
     } finally {
       setSaving(false);
     }
@@ -196,8 +205,13 @@ export default function FidelidadPage() {
     let description = '';
     let amount = 0;
 
-    if (!config || !config.pesos_por_punto) {
-      toast.error('Configuración de fidelidad no detectada');
+    if (!config || !config.activo) {
+      toast.error('El programa de fidelidad está pausado. Actívalo primero.');
+      return;
+    }
+
+    if (!config.pesos_por_punto || config.pesos_por_punto <= 0) {
+      toast.error('Configuración de fidelidad no detectada. Define el valor de pesos por punto primero.');
       return;
     }
 

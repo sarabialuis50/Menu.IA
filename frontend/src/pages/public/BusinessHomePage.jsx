@@ -437,14 +437,14 @@ const BusinessHomePageContent = () => {
                     animate={{ y: 0 }}
                     className="fixed bottom-0 left-0 w-full z-50 bg-white/80 dark:bg-[#1a2e22]/95 backdrop-blur-xl border-t border-[#f0f4f2] py-3 px-4 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)]"
                 >
-                    <div className="max-w-[1200px] mx-auto flex items-center justify-between gap-6 px-2 md:px-6">
+                    <div className="max-w-[1200px] mx-auto flex items-center justify-center sm:justify-between gap-6 px-2 md:px-6">
                         <div className="hidden sm:flex flex-col">
                             <span className="text-[10px] text-[#618972] uppercase tracking-[0.2em] font-black">¿Tienes hambre?</span>
                             <span className="text-sm font-bold text-[#111814]">Explora nuestra carta completa</span>
                         </div>
                         <Button
                             onClick={() => navigate(`/${slug}/menu`)}
-                            className="flex-1 sm:flex-none sm:min-w-[200px] h-11 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] text-sm font-black rounded-xl shadow-lg shadow-[#4ADE80]/30 transform active:scale-95 transition-all flex items-center justify-center gap-2 overflow-hidden group mr-16 sm:mr-0"
+                            className="w-full max-w-[280px] sm:w-auto sm:min-w-[200px] h-12 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] text-sm font-black rounded-xl shadow-lg shadow-[#4ADE80]/30 transform active:scale-95 transition-all flex items-center justify-center gap-2 overflow-hidden group mx-auto sm:mx-0"
                         >
                             <div className="bg-white/20 p-1.5 rounded-lg group-hover:rotate-12 transition-transform">
                                 <UtensilsCrossed className="w-4 h-4" />

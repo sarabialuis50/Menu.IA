@@ -164,7 +164,12 @@ TOOLS = [
                             "properties": {
                                 "nombre": {"type": "string"},
                                 "cantidad": {"type": "integer"},
-                                "precio": {"type": "number"}
+                                "precio": {"type": "number"},
+                                "modificadores": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                    "description": "Lista de opciones seleccionadas (ej: ['Grande', 'Extra Queso'])"
+                                }
                             }
                         }
                     },
@@ -710,7 +715,11 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
         # 4. Send Notifications (Async/Background simplified)
         summary = f"💰 *Total: ${total:,.0f}*\n"
         for item in items:
-            summary += f"- {item['cantidad']}x {item['nombre']} (${item['precio']:,.0f})\n"
+            item_text = f"- {item['cantidad']}x {item['nombre']}"
+            if item.get('modificadores'):
+                item_text += f" ({', '.join(item['modificadores'])})"
+            item_text += f" (${item['precio']:,.0f})"
+            summary += item_text + "\n"
         
         client_phone = args.get('cliente_telefono')
         if client_phone:

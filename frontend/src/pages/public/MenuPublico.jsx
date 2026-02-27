@@ -177,20 +177,17 @@ const MenuContent = () => {
   const [metodoEntregaNombre, setMetodoEntregaNombre] = useState('');
 
   const handleBack = () => {
-    // If user is logged in and viewing their own menu, go back to configuration
+    // 1. Si soy el dueño viendo mi propio menú, vuelvo al dashboard
     if (user && user.slug === slug) {
       navigate(`/dashboard/${slug}/configuracion`);
       return;
     }
 
-    const fromDashboard = document.referrer?.includes('/dashboard/');
-
-    if (fromDashboard && window.history.length > 2) {
-      navigate(-1);
-    } else if (slug) {
-      navigate(`/${slug}`);
+    // 2. Si soy cliente, el botón de atrás del menú SIEMPRE me lleva al Perfil del negocio
+    if (slug) {
+      navigate(`/${slug}`, { replace: true });
     } else {
-      navigate('/');
+      navigate('/', { replace: true });
     }
   };
 
@@ -476,6 +473,7 @@ const MenuContent = () => {
         items: items.map(item => ({
           producto_id: item.producto_id,
           nombre: item.nombre,
+          descripcion: item.descripcion,
           cantidad: item.cantidad,
           precio_unitario: item.precio_unitario,
           notas: item.notas,

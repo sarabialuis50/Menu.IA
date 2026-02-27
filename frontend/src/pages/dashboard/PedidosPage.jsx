@@ -646,8 +646,15 @@ export default function PedidosPage() {
                             <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-50 divide-y divide-gray-50">
                                 {selectedOrder?.items.map((item, idx) => (
                                     <div key={idx} className="py-4 first:pt-0 last:pb-0">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <span className="text-sm font-black text-gray-900">{idx + 1}. {item.nombre}</span>
+                                        <div className="flex justify-between items-start mb-1">
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-black text-gray-900">{idx + 1}. {item.nombre}</span>
+                                                {item.descripcion && (
+                                                    <p className="text-[11px] text-gray-500 line-clamp-2 leading-tight">
+                                                        {item.descripcion}
+                                                    </p>
+                                                )}
+                                            </div>
                                             <span className="text-sm font-black text-gray-900">{formatCurrency(item.precio * item.cantidad)}</span>
                                         </div>
                                         <div className="space-y-1">

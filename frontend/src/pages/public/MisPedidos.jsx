@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useGoogleMaps } from '@/hooks/useGoogleMaps';
 
 // Backend API URL
-const API = (import.meta.env?.VITE_BACKEND_URL || import.meta.env?.REACT_APP_BACKEND_URL) || '';
+const API = (import.meta.env && (import.meta.env.VITE_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL)) || '/api';
 
 
 export default function MisPedidos() {
@@ -21,13 +21,13 @@ export default function MisPedidos() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [polling, setPolling] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${API}/api/business/${slug}`);
+        const response = await axios.get(`${API}/business/${slug}`);
         setBusiness(response.data);
 
         const orderId = searchParams.get('order');
@@ -47,20 +47,17 @@ export default function MisPedidos() {
               if (orderId) {
                 const found = clientOrdersRes.data.find(o => o.id === orderId);
                 if (found) setSelectedOrder(found);
-              } else {
-                // Optional: Select most recent if no ID? User asked to track A order, so maybe not.
               }
               setLoading(false);
-              return; // Skip guest fetch if auth successful
+              return;
             }
           } catch (e) {
             console.error("Auth fetch failed", e);
-            // Fallback to guest logic
           }
         }
 
         if (orderId) {
-          const orderRes = await axios.get(`${API}/api/orders/${slug}/track/${orderId}`);
+          const orderRes = await axios.get(`${API}/orders/${slug}/track/${orderId}`);
           setSelectedOrder(orderRes.data);
           setOrders([orderRes.data]);
         }
@@ -79,18 +76,26 @@ export default function MisPedidos() {
     if (selectedOrder && (selectedOrder.estado === 'enviado' || selectedOrder.estado === 'listo')) {
       interval = setInterval(() => {
         refreshOrder();
-      }, 5000); // Pool every 5 seconds
+      }, 5000);
     }
     return () => clearInterval(interval);
   }, [selectedOrder?.id, selectedOrder?.estado]);
 
   const searchOrders = async () => {
-    if (!phone) return;
+    const cleanPhone = phone.trim();
+    if (!cleanPhone) return;
+
     setSearching(true);
+    setHasSearched(false);
+
     try {
-      const response = await axios.get(`${API}/api/orders/${slug}/my-orders?telefono=${encodeURIComponent(phone)}`);
+      const response = await axios.get(`${API}/orders/${slug}/my-orders?telefono=${encodeURIComponent(cleanPhone)}`);
       setOrders(response.data);
-      if (response.data.length > 0) setSelectedOrder(response.data[0]);
+      setHasSearched(true);
+
+      if (response.data.length > 0) {
+        setSelectedOrder(response.data[0]);
+      }
     } catch (error) {
       console.error('Error:', error);
     } finally {
@@ -101,7 +106,7 @@ export default function MisPedidos() {
   const refreshOrder = async () => {
     if (!selectedOrder) return;
     try {
-      const response = await axios.get(`${API}/api/orders/${slug}/track/${selectedOrder.id}`);
+      const response = await axios.get(`${API}/orders/${slug}/track/${selectedOrder.id}`);
       setSelectedOrder(response.data);
     } catch (error) {
       console.error('Error:', error);
@@ -128,7 +133,6 @@ export default function MisPedidos() {
       backPath={localStorage.getItem('client_token') ? `/${slug}/mi-cuenta` : `/${slug}`}
     >
       <div className="max-w-lg mx-auto px-6 py-10 min-h-[80vh]">
-        {/* Header Section */}
         <div className="flex items-center justify-between mb-10">
           <div>
             <Button
@@ -152,7 +156,7 @@ export default function MisPedidos() {
               animate={{ opacity: 1, scale: 1 }}
               key="timeline"
             >
-              <OrderTimeline order={selectedOrder} onRefresh={refreshOrder} onReset={() => { setSelectedOrder(null); setOrders([]); }} />
+              <OrderTimeline order={selectedOrder} onRefresh={refreshOrder} onReset={() => { setSelectedOrder(null); setOrders([]); setHasSearched(false); }} />
             </motion.div>
           ) : (
             <motion.div
@@ -166,7 +170,7 @@ export default function MisPedidos() {
           )}
         </AnimatePresence>
 
-        {!selectedOrder && orders.length === 0 && phone && !searching && <EmptyState />}
+        {!selectedOrder && orders.length === 0 && hasSearched && !searching && <EmptyState />}
       </div>
     </PublicLayout>
   );
@@ -188,6 +192,11 @@ function SearchSection({ phone, setPhone, searchOrders, searching }) {
           <Input
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                searchOrders();
+              }
+            }}
             placeholder="Tu número de teléfono"
             className="h-16 pl-14 rounded-2xl bg-gray-50/50 border-gray-100 font-bold text-lg focus:ring-[#22C55E] focus:border-[#22C55E] transition-all"
           />

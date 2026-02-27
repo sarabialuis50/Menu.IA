@@ -8,16 +8,19 @@ const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || import.meta.env.REAC
 export const MapPicker = ({ lat, lng, onChange, address }) => {
     const mapRef = useRef(null);
     const markerRef = useRef(null);
-    const googleMapRef = useRef(null);
     const isLoaded = useGoogleMaps(API_KEY);
     const [mapInstance, setMapInstance] = useState(null);
 
+    // Initial map setup
     useEffect(() => {
         if (isLoaded && mapRef.current && !mapInstance && window.google && window.google.maps) {
-            const defaultCenter = { lat: lat || 4.6097, lng: lng || -74.0817 };
+            console.log("Initializing map at:", lat, lng);
+            const initialLat = parseFloat(lat) || 4.6097;
+            const initialLng = parseFloat(lng) || -74.0817;
+            const center = { lat: initialLat, lng: initialLng };
 
             const map = new window.google.maps.Map(mapRef.current, {
-                center: defaultCenter,
+                center: center,
                 zoom: 15,
                 mapTypeControl: false,
                 streetViewControl: false,
@@ -32,7 +35,7 @@ export const MapPicker = ({ lat, lng, onChange, address }) => {
             });
 
             const marker = new window.google.maps.Marker({
-                position: defaultCenter,
+                position: center,
                 map: map,
                 draggable: true,
                 animation: window.google.maps.Animation.DROP,
@@ -49,35 +52,49 @@ export const MapPicker = ({ lat, lng, onChange, address }) => {
                 onChange({ lat: newPos.lat(), lng: newPos.lng() });
             });
 
-            googleMapRef.current = map;
             markerRef.current = marker;
             setMapInstance(map);
         }
-    }, [isLoaded, mapInstance, lat, lng]);
+    }, [isLoaded, mapInstance]);
 
+    // Update map when coordinates change externaly
     useEffect(() => {
-        if (mapInstance && markerRef.current && (lat !== undefined && lng !== undefined)) {
-            const newPos = { lat: parseFloat(lat) || 4.6097, lng: parseFloat(lng) || -74.0817 };
-            markerRef.current.setPosition(newPos);
-            mapInstance.panTo(newPos);
+        if (mapInstance && markerRef.current && lat != null && lng != null) {
+            const newPos = { lat: parseFloat(lat), lng: parseFloat(lng) };
+            if (!isNaN(newPos.lat) && !isNaN(newPos.lng)) {
+                console.log("Panning map to:", newPos);
+                markerRef.current.setPosition(newPos);
+                mapInstance.panTo(newPos);
+
+                // Trigger a resize event with delay to ensure it renders correctly in modals/sheets
+                setTimeout(() => {
+                    if (window.google && window.google.maps) {
+                        window.google.maps.event.trigger(mapInstance, 'resize');
+                        mapInstance.setCenter(newPos);
+                    }
+                }, 300);
+            }
         }
     }, [lat, lng, mapInstance]);
 
-    if (!isLoaded) {
-        return (
-            <div className="h-64 rounded-3xl bg-gray-100 flex items-center justify-center border-2 border-dashed border-gray-200">
-                <Loader2 className="w-8 h-8 text-[#22C55E] animate-spin" />
-            </div>
-        );
-    }
-
     return (
         <div className="space-y-4">
-            <div ref={mapRef} className="h-64 w-full rounded-2xl overflow-hidden border-2 border-gray-100 shadow-inner" />
-            <p className="text-[10px] text-gray-500 italic flex items-center gap-1">
-                <MapPin className="w-3 h-3" />
-                Arrastra el marcador o haz clic en el mapa para fijar la ubicación exacta.
-            </p>
+            <div
+                ref={mapRef}
+                className="h-64 w-full rounded-3xl overflow-hidden border-2 border-gray-100 shadow-md relative bg-gray-50"
+            >
+                {!isLoaded && (
+                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                        <Loader2 className="w-8 h-8 text-[#4ADE80] animate-spin" />
+                    </div>
+                )}
+            </div>
+            {isLoaded && (
+                <p className="text-[10px] text-gray-500 italic flex items-center gap-1 ml-2">
+                    <MapPin className="w-3 h-3 text-[#4ADE80]" />
+                    Arrastra el marcador para ajustar tu ubicación exacta.
+                </p>
+            )}
         </div>
     );
 };

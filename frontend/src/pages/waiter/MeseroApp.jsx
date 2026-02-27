@@ -219,6 +219,7 @@ const WaiterAppContent = ({ employee, slug, onLogout }) => {
         items: items.map(item => ({
           producto_id: item.producto_id,
           nombre: item.nombre,
+          descripcion: item.descripcion,
           cantidad: item.cantidad,
           precio_unitario: item.precio_unitario,
           notas: item.notas

@@ -1,6 +1,7 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { UtensilsCrossed, ArrowLeft } from 'lucide-react';
 import { FloatingWA } from '@/components/FloatingWA';
+import { useAuth } from '@/context/AuthContext';
 
 export const PublicLayout = ({
   children,
@@ -16,24 +17,41 @@ export const PublicLayout = ({
   hidden = false
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useAuth();
 
   const handleBack = () => {
-    // Si hay un path específico para volver, lo usamos
+    // 1. Prioridad: Path específico inyectado
     if (backPath) {
       navigate(backPath);
       return;
     }
-    // Si hay historial de navegación en esta pestaña, retrocedemos
-    if (window.history.length > 1) {
-      navigate(-1);
+
+    // 2. Lógica para la raíz del negocio (Perfil)
+    // Si estamos en /slug, ir atrás significa salir del flujo del negocio
+    if (location.pathname === `/${slug}` || location.pathname === `/${slug}/`) {
+      // Si soy el dueño, vuelvo al dashboard
+      if (user && user.slug === slug) {
+        navigate(`/dashboard/${slug}/perfil`);
+      } else {
+        // Si soy cliente, salgo a la landing
+        // Usamos replace para no ensuciar el historial y evitar bucles con el botón físico del móvil
+        navigate('/', { replace: true });
+      }
+      return;
     }
-    // Si no hay historial pero tenemos el slug (somos dueños), volvemos al dashboard
-    else if (slug) {
-      navigate(`/dashboard/${slug}/perfil`);
-    }
-    // Si no, a la página principal
-    else {
-      navigate('/');
+
+    // 3. Lógica para páginas internas (Menú, Mis Pedidos, etc.)
+    // Intentamos volver al perfil del negocio
+    if (slug) {
+      navigate(`/${slug}`, { replace: true });
+    } else {
+      // Último recurso
+      if (window.history.length > 1) {
+        navigate(-1);
+      } else {
+        navigate('/', { replace: true });
+      }
     }
   };
 

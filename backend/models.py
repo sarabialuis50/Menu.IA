@@ -294,10 +294,11 @@ class OrderItem(BaseModel):
     model_config = ConfigDict(extra="ignore")
     producto_id: Optional[str] = None
     nombre: str
+    descripcion: Optional[str] = None
     cantidad: int
     precio_unitario: float = Field(..., alias="precio")  # Handle both names
     notas: Optional[str] = None
-    modificadores: Optional[List[str]] = None
+    modificadores: Optional[List[Any]] = None
 
     def __init__(self, **data):
         # Fallback for precio_unitario if given directly
@@ -416,7 +417,7 @@ class EmployeeTokenResponse(BaseModel):
 
 # Loyalty Program Models
 class LoyaltyConfigBase(BaseModel):
-    activo: bool = True
+    activo: bool = False
     pesos_por_punto: int = 1000  # Cuantos pesos equivalen a 1 punto
     puntos_minimo_canje: int = 100  # Minimo de puntos para canjear
     valor_punto_descuento: int = 100  # Cuantos pesos vale 1 punto al canjear

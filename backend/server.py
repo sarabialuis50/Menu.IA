@@ -359,9 +359,24 @@ def format_order_summary_wa(business_name: str, order: Order) -> str:
         item_subtotal = item.cantidad * item.precio_unitario
         subtotal_items += item_subtotal
         items_text += f"{i}. {item.nombre}\n"
+        if item.modificadores:
+            mods = []
+            for m in item.modificadores:
+                if isinstance(m, dict):
+                    name = m.get('nombre', '')
+                    price = m.get('precio', 0)
+                    if price and price > 0:
+                        mods.append(f"{name} (+${price:,.0f})")
+                    else:
+                        mods.append(name)
+                else:
+                    mods.append(str(m))
+            items_text += f"   Opciones/Adicionales: {', '.join(mods)}\n"
+        if item.notas and item.notas != "No aplica":
+            items_text += f"   Nota: {item.notas}\n"
         items_text += f"   Cantidad: {item.cantidad}\n"
-        items_text += f"   Precio: ${item.precio_unitario:,.2f}\n"
-        items_text += f"   Subtotal: ${item_subtotal:,.2f}\n\n"
+        items_text += f"   Precio: ${item.precio_unitario:,.0f}\n"
+        items_text += f"   Subtotal: ${item_subtotal:,.0f}\n\n"
     
     delivery_info = ""
     if order.tipo == "delivery":
@@ -1503,7 +1518,21 @@ def format_order_notification_business(order: Order, business_name: str) -> str:
     msg += "\n*--- DETALLE DEL PEDIDO ---*\n"
     for item in order.items:
         msg += f"• {item.cantidad}x {item.nombre}\n"
-        if item.notas: msg += f"  (Nota: {item.notas})\n"
+        if item.modificadores:
+            mods = []
+            for m in item.modificadores:
+                if isinstance(m, dict):
+                    name = m.get('nombre', '')
+                    price = m.get('precio', 0)
+                    if price and price > 0:
+                        mods.append(f"{name} (+${price:,.0f})")
+                    else:
+                        mods.append(name)
+                else:
+                    mods.append(str(m))
+            msg += f"  (Opciones: {', '.join(mods)})\n"
+        if item.notas and item.notas != "No aplica":
+            msg += f"  (Nota: {item.notas})\n"
         
     msg += f"\n💰 *TOTAL: ${order.total:,.0f}*\n"
     msg += f"💳 *Pago:* {order.metodo_pago}\n"
@@ -1616,6 +1645,7 @@ async def update_order(slug: str, order_id: str, data: OrderUpdate, background_t
         # Award loyalty points when order is delivered
         points_info = None
         if data.estado == OrderStatus.ENTREGADO and order.cliente_telefono:
+            logger.info(f"[LOYALTY] Order {order.id} delivered. Checking loyalty for business {business_id}...")
             points_info = await award_loyalty_points(
                 negocio_id=business_id,
                 telefono=order.cliente_telefono,
@@ -1623,6 +1653,10 @@ async def update_order(slug: str, order_id: str, data: OrderUpdate, background_t
                 total=order.total,
                 pedido_id=order.id
             )
+            if points_info:
+                logger.info(f"[LOYALTY] Awarded {points_info['puntos_ganados']} points for order {order.id}")
+            else:
+                logger.info(f"[LOYALTY] No points awarded for order {order.id} (program inactive or not configured)")
         
         # Broadcast order update
         broadcast_data = serialize_doc(Order(**updated_order).model_dump())
@@ -1675,10 +1709,16 @@ async def get_customer_orders(slug: str, telefono: str):
         raise HTTPException(status_code=404, detail="Negocio no encontrado")
     business_id = response.data[0]['id']
     
-    response = supabase.table('pedidos').select('*').match({
-        "negocio_id": business_id,
-        "cliente_telefono": telefono
-    }).order('created_at', desc=True).limit(20).execute()
+    # Búsqueda flexible: con y sin prefijo +57
+    possible_phones = [telefono]
+    if not telefono.startswith('+'):
+        possible_phones.append(f"+57{telefono}")
+    
+    or_filter = ",".join([f"cliente_telefono.eq.{p}" for p in possible_phones])
+    
+    response = supabase.table('pedidos').select('*').eq('negocio_id', business_id)\
+        .or_(or_filter)\
+        .order('created_at', desc=True).limit(20).execute()
     
     orders = response.data
     return [Order(**o) for o in orders]
@@ -1722,6 +1762,13 @@ async def create_or_update_loyalty_config(slug: str, data: LoyaltyConfigCreate, 
     if business.plan in ['trial', 'impulso']:
          raise HTTPException(status_code=403, detail="Esta función requiere el plan Crecimiento Pro o superior.")
     
+    # VALIDATION: Can't activate without proper pesos_por_punto configuration
+    if data.activo and (not data.pesos_por_punto or data.pesos_por_punto <= 0):
+        raise HTTPException(
+            status_code=400, 
+            detail="No puedes activar el programa sin configurar el valor de pesos por punto. Define la 'Configuración Técnica Definitiva' primero."
+        )
+    
     existing_response = supabase.table('fidelizacion_config').select('*').eq('negocio_id', business.id).execute()
     
     if existing_response.data:
@@ -1754,6 +1801,21 @@ async def update_loyalty_config(slug: str, data: LoyaltyConfigUpdate, business: 
     update_data = {k: v for k, v in data.model_dump().items() if v is not None}
     if not update_data:
         raise HTTPException(status_code=400, detail="No hay datos para actualizar")
+    
+    # VALIDATION: If trying to activate, ensure pesos_por_punto is configured
+    if update_data.get('activo') is True:
+        # Check if pesos_por_punto is being set in this request or exists in DB
+        ppp = update_data.get('pesos_por_punto')
+        if ppp is None:
+            # Not in this update, check current DB value
+            existing = supabase.table('fidelizacion_config').select('pesos_por_punto').eq('negocio_id', business.id).execute()
+            if existing.data:
+                ppp = existing.data[0].get('pesos_por_punto', 0)
+        if not ppp or ppp <= 0:
+            raise HTTPException(
+                status_code=400,
+                detail="No puedes activar el programa sin configurar el valor de pesos por punto."
+            )
     
     response = supabase.table('fidelizacion_config').update(update_data).eq('negocio_id', business.id).execute()
     
@@ -1905,6 +1967,18 @@ async def award_points_manual(slug: str, data: AwardPointsRequest, business: Bus
         if business.slug != slug:
             raise HTTPException(status_code=403, detail="No autorizado")
         
+        # CHECK: Verify loyalty program is active and configured
+        config_res = supabase.table('fidelizacion_config').select('activo, pesos_por_punto').eq('negocio_id', business.id).execute()
+        if not config_res.data:
+            raise HTTPException(status_code=400, detail="El programa de fidelidad no ha sido configurado. Configúralo primero en la sección de Fidelización.")
+        
+        loyalty_config = config_res.data[0]
+        if not loyalty_config.get('activo', False):
+            raise HTTPException(status_code=400, detail="El programa de fidelidad está pausado. Actívalo primero para poder acreditar puntos.")
+        
+        if (loyalty_config.get('pesos_por_punto', 0) or 0) <= 0:
+            raise HTTPException(status_code=400, detail="Debes configurar el valor de pesos por punto antes de acreditar puntos.")
+        
         # Get customer points record or create it
         response = supabase.table('clientes_puntos').select('*').match({
             "negocio_id": business.id,
@@ -1969,38 +2043,48 @@ async def award_points_manual(slug: str, data: AwardPointsRequest, business: Bus
 @api_router.post("/loyalty/{slug}/redeem", response_model=RedeemPointsResponse)
 async def redeem_points(slug: str, data: RedeemPointsRequest):
     """Redeem loyalty points for a discount"""
-    business_doc = await db.businesses.find_one({"slug": slug}, {"_id": 0})
-    if not business_doc:
+    # Get business
+    biz_res = supabase.table('negocios').select('id').eq('slug', slug).execute()
+    if not biz_res.data:
         raise HTTPException(status_code=404, detail="Negocio no encontrado")
+    business_id = biz_res.data[0]['id']
     
-    # Get loyalty config
-    config = await db.loyalty_configs.find_one({"negocio_id": business_doc['id']}, {"_id": 0})
-    if not config or not config.get('activo', False):
+    # Get loyalty config - MUST be active
+    config_res = supabase.table('fidelizacion_config').select('*').eq('negocio_id', business_id).execute()
+    if not config_res.data or not config_res.data[0].get('activo', False):
         raise HTTPException(status_code=400, detail="El programa de fidelidad no está activo")
+    config = config_res.data[0]
+    
+    if (config.get('pesos_por_punto', 0) or 0) <= 0:
+        raise HTTPException(status_code=400, detail="El programa de fidelidad no está configurado correctamente")
     
     # Get customer points
-    customer = await db.customer_points.find_one({
-        "negocio_id": business_doc['id'],
+    cust_res = supabase.table('clientes_puntos').select('*').match({
+        "negocio_id": business_id,
         "telefono": data.telefono
-    }, {"_id": 0})
+    }).execute()
     
-    if not customer:
-        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+    if not cust_res.data:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado en el programa de fidelidad")
     
-    if customer['puntos_disponibles'] < data.puntos_a_canjear:
+    customer = cust_res.data[0]
+    puntos_actuales = customer.get('puntos_actuales', 0)
+    
+    if puntos_actuales < data.puntos_a_canjear:
         return RedeemPointsResponse(
             exito=False,
-            mensaje=f"No tienes suficientes puntos. Disponibles: {customer['puntos_disponibles']}",
+            mensaje=f"No tienes suficientes puntos. Disponibles: {puntos_actuales}",
             descuento_aplicado=0,
-            puntos_restantes=customer['puntos_disponibles']
+            puntos_restantes=puntos_actuales
         )
     
-    if data.puntos_a_canjear < config.get('puntos_minimo_canje', 100):
+    minimo_canje = config.get('puntos_minimo_canje', 100)
+    if data.puntos_a_canjear < minimo_canje:
         return RedeemPointsResponse(
             exito=False,
-            mensaje=f"Mínimo {config['puntos_minimo_canje']} puntos para canjear",
+            mensaje=f"Mínimo {minimo_canje} puntos para canjear",
             descuento_aplicado=0,
-            puntos_restantes=customer['puntos_disponibles']
+            puntos_restantes=puntos_actuales
         )
     
     # Calculate discount
@@ -2008,33 +2092,30 @@ async def redeem_points(slug: str, data: RedeemPointsRequest):
     descuento = data.puntos_a_canjear * valor_punto
     
     # Update customer points
-    new_disponibles = customer['puntos_disponibles'] - data.puntos_a_canjear
-    new_canjeados = customer['puntos_canjeados'] + data.puntos_a_canjear
+    new_actuales = puntos_actuales - data.puntos_a_canjear
     
-    await db.customer_points.update_one(
-        {"negocio_id": business_doc['id'], "telefono": data.telefono},
-        {"$set": {
-            "puntos_disponibles": new_disponibles,
-            "puntos_canjeados": new_canjeados,
-            "updated_at": datetime.now(timezone.utc).isoformat()
-        }}
-    )
+    supabase.table('clientes_puntos').update({
+        "puntos_actuales": new_actuales,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }).eq('id', customer['id']).execute()
     
     # Create transaction record
-    transaction = PointsTransaction(
-        negocio_id=business_doc['id'],
-        telefono=data.telefono,
-        tipo="canjeado",
-        puntos=-data.puntos_a_canjear,
-        descripcion=f"Canje de {data.puntos_a_canjear} puntos por descuento de ${descuento:,.0f}"
-    )
-    await db.points_transactions.insert_one(serialize_doc(transaction.model_dump()))
+    try:
+        transaction = {
+            "cliente_puntos_id": customer['id'],
+            "tipo": "canjeado",
+            "puntos": -data.puntos_a_canjear,
+            "descripcion": f"Canje de {data.puntos_a_canjear} puntos por descuento de ${descuento:,.0f}"
+        }
+        supabase.table('transacciones_puntos').insert(transaction).execute()
+    except Exception as te:
+        logger.error(f"Error creating redeem transaction: {te}")
     
     return RedeemPointsResponse(
         exito=True,
         mensaje=f"¡Canjeaste {data.puntos_a_canjear} puntos! Descuento: ${descuento:,.0f} COP",
         descuento_aplicado=descuento,
-        puntos_restantes=new_disponibles
+        puntos_restantes=new_actuales
     )
 
 
@@ -2112,12 +2193,23 @@ async def award_loyalty_points(negocio_id: str, telefono: str, nombre: str, tota
     
     # Get loyalty config
     response = supabase.table('fidelizacion_config').select('*').eq("negocio_id", negocio_id).execute()
-    if not response.data or not response.data[0].get('activo', False):
+    if not response.data:
+        logger.info(f"[LOYALTY] No loyalty config found for business {negocio_id}. Skipping points.")
         return None
+    
     config = response.data[0]
+    is_active = config.get('activo', False)
+    
+    if not is_active:
+        logger.info(f"[LOYALTY] Program INACTIVE for business {negocio_id}. Skipping points for order {pedido_id}.")
+        return None
     
     # Calculate points
-    pesos_por_punto = float(config.get('pesos_por_punto', 1000))
+    pesos_por_punto = float(config.get('pesos_por_punto', 0))
+    if pesos_por_punto <= 0:
+        logger.warning(f"[LOYALTY] Business {negocio_id} has program active but pesos_por_punto={pesos_por_punto}. Skipping points.")
+        return None
+        
     puntos_ganados = int(total / pesos_por_punto)
     
     if puntos_ganados < 1:
