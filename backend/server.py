@@ -1735,13 +1735,13 @@ async def get_loyalty_config(slug: str):
     
     response = supabase.table('fidelizacion_config').select('*').eq('negocio_id', business_id).execute()
     if not response.data:
-        # Return default config if none exists
+        # Return default config if none exists (all zeros = not configured)
         return LoyaltyConfig(
             negocio_id=business_id,
             activo=False,
-            pesos_por_punto=1000,
-            puntos_minimo_canje=100,
-            valor_punto_descuento=100
+            pesos_por_punto=0,
+            puntos_minimo_canje=0,
+            valor_punto_descuento=0
         )
     
     # Check plan for loyalty access

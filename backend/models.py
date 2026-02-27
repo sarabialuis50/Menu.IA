@@ -418,9 +418,9 @@ class EmployeeTokenResponse(BaseModel):
 # Loyalty Program Models
 class LoyaltyConfigBase(BaseModel):
     activo: bool = False
-    pesos_por_punto: int = 1000  # Cuantos pesos equivalen a 1 punto
-    puntos_minimo_canje: int = 100  # Minimo de puntos para canjear
-    valor_punto_descuento: int = 100  # Cuantos pesos vale 1 punto al canjear
+    pesos_por_punto: int = 0  # Cuantos pesos equivalen a 1 punto (0 = no configurado)
+    puntos_minimo_canje: int = 0  # Minimo de puntos para canjear
+    valor_punto_descuento: int = 0  # Cuantos pesos vale 1 punto al canjear
 
 
 class LoyaltyConfigCreate(LoyaltyConfigBase):
