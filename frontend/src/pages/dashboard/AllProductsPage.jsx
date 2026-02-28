@@ -236,7 +236,7 @@ export default function AllProductsPage() {
                                                 <div>
                                                     <div className="flex items-center gap-2 mb-1">
                                                         <p className="font-black text-sm text-gray-900 leading-none group-hover:text-[#22C55E] transition-colors">{p.name || p.nombre}</p>
-                                                        {(p.is_recommended || p.destacado) && <Badge className="bg-yellow-400 text-white border-none py-0 px-1.5 h-4 text-[7px] font-black uppercase">Destacado</Badge>}
+                                                        {p.etiqueta && <Badge className="bg-[#4ADE80] text-black border-none py-0 px-1.5 h-4 text-[7px] font-black uppercase">{p.etiqueta}</Badge>}
                                                         {p.oferta_porcentaje && <Badge className="bg-red-400 text-white border-none py-0 px-1.5 h-4 text-[7px] font-black uppercase">-{p.oferta_porcentaje}%</Badge>}
                                                     </div>
                                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter truncate max-w-[200px]">{p.description || p.descripcion || 'Sin descripción'}</p>
