@@ -620,14 +620,14 @@ export default function WhatsappHubPage() {
 
             {/* Modal de Packs VENTAS/SOPORTE */}
             <Dialog open={isSupportModalOpen} onOpenChange={setIsSupportModalOpen}>
-                <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden">
+                <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden" aria-describedby="support-pack-description">
                     <div className="bg-[#4ADE80] p-8 text-[#111814] relative">
                         <div className="absolute top-0 right-0 p-8 opacity-10">
                             <MessageSquare className="w-24 h-24" />
                         </div>
                         <DialogHeader>
                             <DialogTitle className="text-2xl font-black uppercase tracking-tight">Pack Mensaje/Campañas</DialogTitle>
-                            <DialogDescription className="text-white/80 font-bold text-xs uppercase tracking-widest mt-2">
+                            <DialogDescription id="support-pack-description" className="text-white/80 font-bold text-xs uppercase tracking-widest mt-2">
                                 Recarga créditos para tus envíos masivos. Elige el pack que mejor se adapte a tu próxima gran campaña.
                             </DialogDescription>
                         </DialogHeader>
@@ -674,14 +674,14 @@ export default function WhatsappHubPage() {
 
             {/* Modal de Packs CAMPAÑAS (Prepago) - Próximamente integrado en pestaña Campañas */}
             <Dialog open={isCampaignModalOpen} onOpenChange={setIsCampaignModalOpen}>
-                <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden">
+                <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden" aria-describedby="campaign-pack-description">
                     <div className="bg-[#4ADE80] p-8 text-[#111814] relative">
                         <div className="absolute top-0 right-0 p-8 opacity-10">
                             <MessageSquareMore className="w-24 h-24" />
                         </div>
                         <DialogHeader>
                             <DialogTitle className="text-2xl font-black uppercase tracking-tight">Recargar Mensajes</DialogTitle>
-                            <DialogDescription className="text-white/80 font-bold text-xs uppercase tracking-widest mt-2">
+                            <DialogDescription id="campaign-pack-description" className="text-white/80 font-bold text-xs uppercase tracking-widest mt-2">
                                 Elige el pack que mejor se adapte a tu próxima campaña masiva.
                             </DialogDescription>
                         </DialogHeader>

@@ -497,10 +497,12 @@ export default function AllCustomersPage() {
 
             {/* Add Customer Modal */}
             <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-                <DialogContent className="sm:max-w-[450px] rounded-[2rem] border-None shadow-2xl p-0 overflow-hidden">
+                <DialogContent className="sm:max-w-[450px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden" aria-describedby="add-customer-description">
                     <DialogHeader className="p-8 pb-0">
                         <DialogTitle className="text-2xl font-black text-gray-900 uppercase tracking-tight">Nuevo Cliente</DialogTitle>
-                        <p className="text-sm text-gray-500 font-medium">Registra los datos básicos para fidelizar un nuevo cliente.</p>
+                        <DialogDescription id="add-customer-description" className="text-sm text-gray-500 font-medium">
+                            Registra los datos básicos para fidelizar un nuevo cliente.
+                        </DialogDescription>
                     </DialogHeader>
 
                     <form onSubmit={handleAddCustomer} className="p-8 space-y-6">

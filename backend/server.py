@@ -2643,40 +2643,38 @@ class ProductImageRequest(BaseModel):
 @api_router.post("/ai/generate-product-image")
 async def generate_product_image_endpoint(req: ProductImageRequest, business: Business = Depends(get_current_business)):
     try:
-        # Prompt enhancement with Gemini (the user asked for the "pro" model)
+        # Prompt enhancement with Gemini Flash (most stable in this environment)
         genai.configure(api_key=os.environ.get("GOOGLE_GEMINI_API_KEY"))
-        model = genai.GenerativeModel('gemini-1.5-pro')
+        model = genai.GenerativeModel('models/gemini-flash-latest')
         
         prompt_refinement = f"""
-        Eres un experto en fotografía gastronómica y generación de imágenes por IA. 
-        A partir del siguiente producto y descripción, crea un PROMPT EN INGLÉS extremadamente detallado para un generador de imágenes de alta fidelidad.
-        El prompt debe describir:
-        - Iluminación profesional de restaurante (soft bokeh, cinematic lighting, appetizing focus).
-        - Presentación premium en un plato elegante y limpio.
-        - Texturas realistas (crispy, juicy, steam if hot, fresh if cold).
-        - Fondo de restaurante de lujo desenfocado.
-        - Composición de regla de tercios.
-        - No incluyas texto, ni logos, solo la comida de forma hiperrealista.
+        Actúa como un experto en fotografía publicitaria de alimentos.
+        Genera un prompt detallado para DALL-E 3 para crear una imagen profesional del siguiente producto:
+        "{req.nombre}" - {req.descripcion if req.descripcion else 'Un plato delicioso'}
         
-        PRODUCTO: {req.nombre}
-        DESCRIPCIÓN: {req.descripcion}
-        
-        Responde SOLO con el prompt en inglés.
+        El prompt debe:
+        1. Ser en inglés.
+        2. Describir la iluminación profesional de estudio.
+        3. Describir el fondo desenfocado (bokeh).
+        4. Enfocarse en la frescura y textura.
+        5. NO incluir ningún texto, logos o marca de agua.
         """
         
-        response = model.generate_content(prompt_refinement)
-        enhanced_prompt = response.text.strip()
+        # Generar el prompt refinado usando el modelo de Gemini
+        res_refinement = model.generate_content(prompt_refinement)
+        enhanced_prompt = res_refinement.text.strip()
         
-        # Image generation with DALL-E 3 using the user's OpenAI key
-        # (It's currently the most reliable for consistent 1024x1024 food shots via API)
-        client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-        
-        img_gen_res = client.images.generate(
+        if not enhanced_prompt:
+             enhanced_prompt = f"Professional food photography of {req.nombre}, studio lighting, highly detailed."
+             
+        # Generate image with OpenAI's DALL-E 3
+        openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+        img_gen_res = openai_client.images.generate(
             model="dall-e-3",
             prompt=enhanced_prompt,
             size="1024x1024",
-            quality="hd",
-            n=1
+            quality="standard",
+            n=1,
         )
         
         dalle_url = img_gen_res.data[0].url
@@ -2706,9 +2704,44 @@ async def generate_product_image_endpoint(req: ProductImageRequest, business: Bu
         return {"url": public_url}
         
     except Exception as e:
-        logger.error(f"Error generating AI image: {str(e)}")
-        # If Gemini pro fails, try a quick fallback with flash or just return error
+        tb = traceback.format_exc()
+        logger.error(f"Error generating AI image: {tb}")
+        with open("debug_ai_error.txt", "w") as f:
+            f.write(tb)
         raise HTTPException(status_code=500, detail=f"Error en la generación de imagen: {str(e)}")
+
+class ProductDescriptionRequest(BaseModel):
+    nombre: str
+
+@api_router.post("/ai/generate-product-description")
+async def generate_product_description_endpoint(req: ProductDescriptionRequest, business: Business = Depends(get_current_business)):
+    try:
+        genai.configure(api_key=os.environ.get("GOOGLE_GEMINI_API_KEY"))
+        model = genai.GenerativeModel('models/gemini-flash-latest')
+        
+        prompt = f"""
+        Actúa como un experto redactor de menús gastronómicos. 
+        Crea una descripción detallada y apetitosa para el siguiente producto: "{req.nombre}" del restaurante "{business.nombre}".
+        
+        Sigue estas reglas estrictas:
+        1. Enfócate EN LOS INGREDIENTES Y LA PREPARACIÓN (ej: carne 100% de res, pan fresco, vegetales crujientes, salsas de la casa).
+        2. Describe texturas y sabores reales (jugoso, sazonado, fresco, crujiente).
+        3. Evita frases vacías de marketing como "explosión de sabor" o "calmar el antojo" si no van acompañadas de una descripción real.
+        4. No uses lenguaje excesivamente coloquial o regional a menos que sea necesario para describir un ingrediente.
+        5. Longitud ideal: 2 a 3 frases (aprox 200 caracteres).
+        6. Responde ÚNICAMENTE con la descripción terminada.
+        
+        EJEMPLO DE ESTILO DESEADO:
+        "Hamburguesa con dos porciones de carne 100% de res, jugosas y bien sazonadas, servidas en pan fresco con queso fundido, vegetales frescos y salsas de la casa, ideal para quien busca gran sabor en un tamaño compacto."
+        """
+        
+        response = model.generate_content(prompt)
+        description = response.text.strip()
+        
+        return {"description": description}
+    except Exception as e:
+        logger.error(f"Error generating AI description: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Error en la generación de descripción: {str(e)}")
 
 
 
@@ -3102,7 +3135,7 @@ async def public_landing_chat(request: LandingChatRequest):
     2. Resalta el ahorro de tiempo y el aumento de ventas gracias a la IA.
     3. Si preguntan algo que no sabes, invítalos a registrarse gratis para probar la plataforma en https://menuia.co/register.
     4. Cuando detectes interés en una demo o asesoría, incluye el marcador [LINK_CALENDLY] en tu respuesta.
-    5. Usa emojis de forma moderada (🚀, 📈, 🍔, ✨).
+    5. Usa emojis de forma moderada.
     6. No inventes precios o funciones que no estén listadas aquí.
     7. Tus respuestas deben ser en español.
     """

@@ -218,6 +218,7 @@ const ConfiguracionPage = () => {
     const [showTwilioToken, setShowTwilioToken] = useState(false);
     const [analyzingNutrition, setAnalyzingNutrition] = useState(false);
     const [generatingAIImage, setGeneratingAIImage] = useState(false);
+    const [generatingAIDescription, setGeneratingAIDescription] = useState(false);
 
     // Modal states
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
@@ -661,11 +662,35 @@ const ConfiguracionPage = () => {
         }
     };
 
+    const handleGenerateAIDescription = async () => {
+        if (!productForm.nombre) {
+            toast.error('Asigna un nombre al producto para generar su descripción');
+            return;
+        }
+        setGeneratingAIDescription(true);
+        try {
+            const res = await api().post('/ai/generate-product-description', {
+                nombre: productForm.nombre
+            });
+
+            if (res.data.description) {
+                setProductForm(prev => ({ ...prev, descripcion: res.data.description }));
+                toast.success('¡Descripción generada con éxito!');
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error('Error al generar descripción con IA.');
+        } finally {
+            setGeneratingAIDescription(false);
+        }
+    };
+
     const handleProductSubmit = async (e) => {
         e.preventDefault();
         setSaving(true);
         try {
-            const basePrice = parseFloat(productForm.precio);
+            const rawPrice = productForm.precio ? productForm.precio.toString().replace(/\./g, '').replace(',', '.') : '0';
+            const basePrice = parseFloat(rawPrice) || 0;
             const discount = parseInt(productForm.oferta_porcentaje) || 0;
             const finalPrice = discount > 0 ? basePrice * (1 - discount / 100) : basePrice;
 
@@ -2468,7 +2493,24 @@ const ConfiguracionPage = () => {
                                 </div>
                                 <div className="space-y-4 p-6 rounded-[2rem] border border-[#4ADE80]/20 bg-white/50">
                                     <div className="space-y-2">
-                                        <Label className="font-bold text-[#111814]">Descripción / Ingredientes</Label>
+                                        <div className="flex items-center justify-between">
+                                            <Label className="font-bold text-[#111814]">Descripción / Ingredientes</Label>
+                                            <Button
+                                                type="button"
+                                                variant="link"
+                                                size="sm"
+                                                onClick={handleGenerateAIDescription}
+                                                disabled={generatingAIDescription || !productForm.nombre}
+                                                className="h-auto p-0 text-[#22C55E] hover:text-[#4ADE80] font-bold text-[10px] gap-1.5"
+                                            >
+                                                {generatingAIDescription ? (
+                                                    <Loader2 className="w-3 h-3 animate-spin" />
+                                                ) : (
+                                                    <Sparkles className="w-3 h-3" />
+                                                )}
+                                                {generatingAIDescription ? 'GENERANDO...' : 'DESCRIBIR CON IA'}
+                                            </Button>
+                                        </div>
                                         <Textarea
                                             value={productForm.descripcion}
                                             onChange={e => setProductForm({ ...productForm, descripcion: e.target.value })}
