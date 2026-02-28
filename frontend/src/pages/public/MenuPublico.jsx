@@ -260,7 +260,7 @@ const MenuContent = () => {
           ...p,
           nombre: nombreNormalizado,
           descripcion: p.description || p.descripcion,
-          precio: p.base_price || p.precio,
+          precio: p.base_price ?? p.precio ?? 0,
           imagen: p.image_url || p.imagen,
           categoria: p.category || p.categoria,
           disponible: p.available ?? p.disponible,
@@ -325,6 +325,7 @@ const MenuContent = () => {
   };
 
   const formatCurrency = (value) => {
+    if (!value || isNaN(value) || parseFloat(value) === 0) return '';
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
@@ -1874,7 +1875,7 @@ const MenuContent = () => {
                       <div className="flex items-center gap-3">
                         <div className="w-[1px] h-6 bg-[#111814]/10" />
                         <span className="text-xl">
-                          {formatCurrency((selectedProduct.precio + selectedModifiers.reduce((acc, m) => acc + (m.precio || 0), 0)) * qty)}
+                          {formatCurrency(((selectedProduct.precio || 0) + selectedModifiers.reduce((acc, m) => acc + (m.precio || 0), 0)) * qty)}
                         </span>
                       </div>
                     </Button>

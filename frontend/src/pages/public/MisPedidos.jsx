@@ -231,7 +231,10 @@ function EmptyState() {
 }
 
 function OrderTimeline({ order, onRefresh, onReset }) {
-  const formatCurrency = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(v);
+  const formatCurrency = (v) => {
+    if (!v || isNaN(v) || parseFloat(v) === 0) return '';
+    return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(v);
+  };
   const steps = ['pendiente', 'aceptado', 'preparando', 'listo', 'enviado', 'entregado'];
   const stepData = [
     { label: 'Pendiente', Icon: Clock, desc: 'Ya recibimos tu pedido' },

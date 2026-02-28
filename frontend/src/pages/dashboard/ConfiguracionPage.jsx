@@ -149,7 +149,7 @@ const getModalButtonStyle = (hasPendingChanges) => {
 };
 
 const formatPrice = (val) => {
-    if (!val && val !== 0) return '';
+    if (!val || val === '0' || val === 0) return '';
     const numeric = val.toString().replace(/\D/g, '');
     return numeric.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
@@ -361,7 +361,7 @@ const ConfiguracionPage = () => {
                 ...p,
                 nombre: p.name || p.nombre,
                 descripcion: p.description || p.descripcion,
-                precio: p.base_price || p.precio,
+                precio: p.base_price ?? p.precio ?? 0,
                 imagen: p.image_url || p.imagen,
                 categoria: p.category || p.categoria,
                 disponible: p.available ?? p.disponible,
@@ -584,7 +584,7 @@ const ConfiguracionPage = () => {
         const initial = {
             nombre: product.nombre,
             descripcion: product.descripcion || '',
-            precio: (product.precio_original || product.precio).toString(),
+            precio: (product.precio_original || product.precio || 0).toString(),
             categoria: catName,
             etiqueta: product.etiqueta || '',
             imagen: product.imagen || '',
@@ -689,6 +689,9 @@ const ConfiguracionPage = () => {
         e.preventDefault();
         setSaving(true);
         try {
+            if (!productForm.precio || parseInt(productForm.precio) === 0) {
+                toast.info('Guardando producto sin precio base (útil para productos con opciones variables)');
+            }
             const rawPrice = productForm.precio ? productForm.precio.toString().replace(/\./g, '').replace(',', '.') : '0';
             const basePrice = parseFloat(rawPrice) || 0;
             const discount = parseInt(productForm.oferta_porcentaje) || 0;
@@ -925,6 +928,7 @@ const ConfiguracionPage = () => {
     };
 
     const formatCurrency = (value) => {
+        if (!value || isNaN(value) || parseFloat(value) === 0) return '';
         return new Intl.NumberFormat('es-CO', {
             style: 'currency',
             currency: 'COP',
@@ -2485,7 +2489,6 @@ const ConfiguracionPage = () => {
                                                 const raw = e.target.value.replace(/\D/g, '');
                                                 setProductForm({ ...productForm, precio: raw });
                                             }}
-                                            required
                                             className="h-12 rounded-2xl bg-gray-50 border-gray-100 font-bold text-[#111814]"
                                             placeholder="25.000"
                                         />

@@ -140,6 +140,7 @@ export default function DemoRestaurante() {
     });
 
     const formatCurrency = (value) => {
+        if (!value || isNaN(value) || parseFloat(value) === 0) return '';
         return new Intl.NumberFormat('es-CO', {
             style: 'currency',
             currency: 'COP',

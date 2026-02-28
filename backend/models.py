@@ -518,7 +518,7 @@ class MenuItemBase(BaseModel):
     negocio_id: str
     name: str
     description: Optional[str] = None
-    base_price: float
+    base_price: Optional[float] = 0.0
     currency: str = "COP"
     category: Optional[str] = None
     image_url: Optional[str] = None

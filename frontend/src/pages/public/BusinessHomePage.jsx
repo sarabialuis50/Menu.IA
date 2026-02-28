@@ -59,7 +59,7 @@ const BusinessHomePageContent = () => {
                     ...p,
                     nombre: p.name || p.nombre,
                     descripcion: p.description || p.descripcion,
-                    precio: p.base_price || p.precio,
+                    precio: p.base_price ?? p.precio ?? 0,
                     imagen: p.image_url || p.imagen,
                     categoria: p.category || p.categoria,
                     disponible: p.available ?? p.disponible,
@@ -129,6 +129,7 @@ const BusinessHomePageContent = () => {
     };
 
     const formatCurrency = (value) => {
+        if (!value || isNaN(value) || parseFloat(value) === 0) return '';
         return new Intl.NumberFormat('es-CO', {
             style: 'currency',
             currency: 'COP',
