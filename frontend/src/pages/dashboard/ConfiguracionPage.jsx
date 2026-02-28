@@ -2851,11 +2851,11 @@ const ConfiguracionPage = () => {
                                                                         newList[gIdx].nombre = e.target.value;
                                                                         setProductForm({ ...productForm, [section.id]: newList });
                                                                     }}
-                                                                    className="h-10 rounded-xl bg-gray-50 border-gray-50 focus:bg-white"
+                                                                    className="h-10 rounded-xl bg-gray-50 border-[#4ADE80]/40 focus:bg-white"
                                                                     placeholder={`Ej: ${section.id === 'tamanos' ? 'Tamaño P' : 'Ingredientes'}`}
                                                                 />
                                                             </div>
-                                                            <div className="flex items-center gap-6 pt-4">
+                                                            <div className="flex flex-wrap items-center gap-x-6 gap-y-4 pt-4">
                                                                 <div className="flex items-center gap-2">
                                                                     <Switch
                                                                         checked={group.obligatorio}
@@ -2880,11 +2880,11 @@ const ConfiguracionPage = () => {
                                                                             newList[gIdx].seleccion_maxima = parseInt(e.target.value) || 1;
                                                                             setProductForm({ ...productForm, [section.id]: newList });
                                                                         }}
-                                                                        className="h-10 w-16 rounded-xl bg-gray-50 border-gray-50 text-center font-bold"
+                                                                        className="h-10 w-16 rounded-xl bg-gray-50 border-[#4ADE80]/40 text-center font-bold"
                                                                     />
                                                                 </div>
                                                                 <div className="flex items-center gap-2">
-                                                                    <Label className="text-[10px] font-black uppercase text-gray-400 whitespace-nowrap" title="Cantidad máxima por cada opción individual. 0 = ilimitado">CANTIDADES POR OPCIONES</Label>
+                                                                    <Label className="text-[10px] font-black uppercase text-gray-400" title="Cantidad máxima por cada opción individual. 0 = ilimitado">Cant. x Opción</Label>
                                                                     <Input
                                                                         type="number"
                                                                         min="0"
@@ -2894,7 +2894,7 @@ const ConfiguracionPage = () => {
                                                                             newList[gIdx].max_qty_per_option = parseInt(e.target.value) || 0;
                                                                             setProductForm({ ...productForm, [section.id]: newList });
                                                                         }}
-                                                                        className="h-10 w-16 rounded-xl bg-gray-50 border-gray-50 text-center font-bold"
+                                                                        className="h-10 w-16 rounded-xl bg-gray-50 border-[#4ADE80]/40 text-center font-bold"
                                                                         placeholder="1"
                                                                     />
                                                                 </div>
@@ -2914,7 +2914,7 @@ const ConfiguracionPage = () => {
                                                                                     newList[gIdx].opciones[oIdx].nombre = e.target.value;
                                                                                     setProductForm({ ...productForm, [section.id]: newList });
                                                                                 }}
-                                                                                className="h-9 rounded-xl bg-white border-gray-100 text-xs"
+                                                                                className="h-9 rounded-xl bg-white border-[#4ADE80]/40 text-xs"
                                                                                 placeholder="Nombre de la opción"
                                                                             />
                                                                         </div>
@@ -2929,7 +2929,7 @@ const ConfiguracionPage = () => {
                                                                                         newList[gIdx].opciones[oIdx].precio = parseFloat(raw) || 0;
                                                                                         setProductForm({ ...productForm, [section.id]: newList });
                                                                                     }}
-                                                                                    className="h-9 rounded-xl bg-white border-gray-100 text-xs pl-6"
+                                                                                    className="h-9 rounded-xl bg-white border-[#4ADE80]/40 text-xs pl-6"
                                                                                     placeholder="+ 0"
                                                                                 />
                                                                                 <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-400">$</span>
@@ -2943,7 +2943,7 @@ const ConfiguracionPage = () => {
                                                                                 setProductForm({ ...productForm, [section.id]: newList });
                                                                             }}
                                                                             disabled={group.opciones.length <= 1}
-                                                                            className="size-9 rounded-xl border border-gray-100 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-30"
+                                                                            className="size-9 rounded-xl border border-[#4ADE80]/40 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-30"
                                                                         >
                                                                             <Trash2 className="w-3.5 h-3.5" />
                                                                         </button>
