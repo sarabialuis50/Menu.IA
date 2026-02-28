@@ -39,8 +39,8 @@ export const CartProvider = ({ children }) => {
         return updated;
       }
 
-      // Calculate extra price from modifiers
-      const modifiersPrice = selectedModifiers ? selectedModifiers.reduce((acc, m) => acc + (m.precio || 0), 0) : 0;
+      // Calculate extra price from modifiers (accounting for quantity per modifier)
+      const modifiersPrice = selectedModifiers ? selectedModifiers.reduce((acc, m) => acc + ((m.precio || 0) * (m.cantidad || 1)), 0) : 0;
       const finalUnitPrice = product.precio + modifiersPrice;
 
       return [...prev, {
@@ -50,7 +50,10 @@ export const CartProvider = ({ children }) => {
         precio_unitario: finalUnitPrice,
         notas: notas || null,
         imagen: product.imagen,
-        modificadores: selectedModifiers?.map(m => typeof m === 'string' ? m : m.nombre) || []
+        modificadores: selectedModifiers?.map(m => {
+          if (typeof m === 'string') return m;
+          return (m.cantidad && m.cantidad > 1) ? `${m.cantidad}x ${m.nombre}` : m.nombre;
+        }) || []
       }];
     });
   }, []);

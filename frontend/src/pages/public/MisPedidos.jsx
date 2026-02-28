@@ -232,8 +232,12 @@ function EmptyState() {
 
 function OrderTimeline({ order, onRefresh, onReset }) {
   const formatCurrency = (v) => {
-    if (!v || isNaN(v) || parseFloat(v) === 0) return '';
-    return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(v);
+    if (v === undefined || v === null || isNaN(v) || Number(v) === 0) return '';
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0
+    }).format(v);
   };
   const steps = ['pendiente', 'aceptado', 'preparando', 'listo', 'enviado', 'entregado'];
   const stepData = [
@@ -327,6 +331,15 @@ function OrderTimeline({ order, onRefresh, onReset }) {
                 <div className="flex flex-col">
                   <span className="font-bold text-[#111814]">{item.nombre}</span>
                   <span className="text-[10px] font-black text-[#618972] uppercase tracking-[0.1em]">{item.cantidad} unidades</span>
+                  {item.modificadores && item.modificadores.length > 0 && (
+                    <div className="mt-1 flex flex-wrap gap-1">
+                      {item.modificadores.map((mod, modIdx) => (
+                        <span key={modIdx} className="text-[9px] font-bold text-[#22C55E]/80 bg-[#22C55E]/5 px-2 py-0.5 rounded-full border border-[#22C55E]/10">
+                          {mod}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <span className="font-black text-[#111814]">{formatCurrency(item.cantidad * (item.precio_unitario || item.precio || 0))}</span>
               </div>

@@ -207,11 +207,11 @@ export default function WhatsappHubPage() {
                                 </div>
 
                                 <div className="space-y-4 py-2">
-                                    <div className="flex items-start justify-between">
+                                    <div className="flex items-start justify-between gap-4">
                                         <h3 className="text-4xl font-black leading-none tracking-tight">
                                             {user?.wa_messages_limit > 0 ? (user?.wa_messages_count || 0) : 0}/{user?.wa_messages_limit || 0}
                                         </h3>
-                                        <Badge className="bg-white/20 text-white text-[9px] font-black tracking-widest border-white border-2 px-3 py-1 shrink-0 mt-1">
+                                        <Badge className="bg-white/20 text-white text-[7px] md:text-[8px] font-black tracking-widest border-white border-2 px-2 py-0.5 shrink-0 mt-1 uppercase">
                                             PLAN {user?.plan?.toUpperCase() || 'GRATUITO'}
                                         </Badge>
                                     </div>

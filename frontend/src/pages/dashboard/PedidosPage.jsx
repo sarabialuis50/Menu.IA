@@ -217,7 +217,7 @@ export default function PedidosPage() {
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Total del Día */}
                     <Card className="p-5 border-2 border-gray-100 rounded-3xl bg-white shadow-sm hover:shadow-md transition-all">
                         <div className="flex items-center gap-4">
@@ -351,42 +351,50 @@ export default function PedidosPage() {
                             />
                         </div>
 
-                        <div className="flex items-center gap-3 w-full md:w-auto">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="h-12 px-6 rounded-2xl border-2 font-black text-[10px] tracking-widest gap-2 bg-white hover:bg-gray-50 transition-all border-gray-100 min-w-[160px] justify-between">
-                                        <div className="flex items-center gap-2 text-gray-400 uppercase">
-                                            <Filter className="w-3.5 h-3.5" />
-                                            <span>Filtrar: {filterStatus}</span>
-                                        </div>
-                                        <ChevronDown className="w-4 h-4 text-gray-300" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="rounded-2xl border-2 border-gray-100 shadow-xl p-2 min-w-[200px]">
-                                    {['TODOS', 'PENDIENTE', 'ACEPTADO', 'PREPARANDO', 'LISTO', 'ENVIADO', 'ENTREGADO', 'CANCELADO'].map((status) => (
-                                        <DropdownMenuItem
-                                            key={status}
-                                            onClick={() => {
-                                                setFilterStatus(status);
-                                                setCurrentPage(1);
-                                            }}
-                                            className={`rounded-xl px-4 py-2.5 text-[11px] font-bold cursor-pointer mb-1 last:mb-0 ${filterStatus === status ? 'bg-[#4ADE80]/10 text-[#22C55E]' : 'text-gray-600 hover:bg-gray-50'
-                                                }`}
-                                        >
-                                            {status}
-                                            {filterStatus === status && <CheckCircle2 className="w-4 h-4 ml-auto" />}
-                                        </DropdownMenuItem>
-                                    ))}
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                        <div className="flex flex-row gap-2 w-full md:w-auto">
+                            <div className="flex-1 md:flex-none">
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" className="w-full h-12 px-4 rounded-2xl border-2 font-black text-[9px] md:text-[10px] tracking-widest gap-2 bg-white hover:bg-gray-50 transition-all border-gray-100 md:min-w-[180px] justify-between group">
+                                            <div className="flex items-center gap-2 text-gray-500 uppercase overflow-hidden">
+                                                <Filter className="w-4 h-4 text-emerald-500 group-hover:scale-110 transition-transform" />
+                                                <span className="truncate">Filtrar: {filterStatus}</span>
+                                            </div>
+                                            <ChevronDown className="w-4 h-4 text-gray-300 shrink-0" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="rounded-2xl border-2 border-gray-100 shadow-xl p-2 min-w-[200px] animate-in slide-in-from-top-2 duration-200">
+                                        <p className="px-4 py-2 text-[9px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50 mb-1">Estado del Pedido</p>
+                                        {['TODOS', 'PENDIENTE', 'ACEPTADO', 'PREPARANDO', 'LISTO', 'ENVIADO', 'ENTREGADO', 'CANCELADO'].map((status) => (
+                                            <DropdownMenuItem
+                                                key={status}
+                                                onClick={() => {
+                                                    setFilterStatus(status);
+                                                    setCurrentPage(1);
+                                                }}
+                                                className={`rounded-xl px-4 py-2.5 text-[11px] font-bold cursor-pointer mb-1 last:mb-0 transition-colors ${filterStatus === status ? 'bg-[#4ADE80]/10 text-[#22C55E]' : 'text-gray-600 hover:bg-gray-50'
+                                                    }`}
+                                            >
+                                                {status}
+                                                {filterStatus === status && <CheckCircle2 className="w-4 h-4 ml-auto" />}
+                                            </DropdownMenuItem>
+                                        ))}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
 
-                            <Link
-                                to={`/dashboard/${slug}/pedidos/historial`}
-                                className="h-12 px-8 rounded-full border-2 border-gray-100 bg-white hover:bg-gray-50 flex items-center gap-3 transition-all shadow-sm group min-w-[180px] justify-between"
-                            >
-                                <span className="text-[10px] font-black text-[#5C6B89] uppercase tracking-widest">Ver Historial</span>
-                                <ArrowUpRight className="w-4 h-4 text-[#A0AEC0] group-hover:text-indigo-500 transition-colors" />
-                            </Link>
+                            <div className="flex-1 md:flex-none">
+                                <Link
+                                    to={`/dashboard/${slug}/pedidos/historial`}
+                                    className="w-full h-12 px-4 rounded-2xl border-2 border-gray-100 bg-white hover:bg-gray-50 flex items-center justify-between gap-2 transition-all shadow-sm group md:min-w-[180px]"
+                                >
+                                    <div className="flex items-center gap-2 text-gray-500 uppercase overflow-hidden">
+                                        <History className="w-4 h-4 text-indigo-500 group-hover:rotate-12 transition-transform" />
+                                        <span className="text-[9px] md:text-[10px] font-black tracking-widest truncate">Ver Historial</span>
+                                    </div>
+                                    <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
+                                </Link>
+                            </div>
                         </div>
                     </div>
 

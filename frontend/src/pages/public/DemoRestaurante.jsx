@@ -21,10 +21,17 @@ import {
     ChefHat,
     ArrowRight,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    Heart
 } from 'lucide-react';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 
 // Mock Data for the Demo
@@ -54,15 +61,15 @@ const DEMO_CATEGORIES = [
 
 const DEMO_PRODUCTS = [
     // Hamburguesas
-    { id: 1, categoria: 'Hamburguesas', nombre: 'Clásica Grill', precio: 18000, descripcion: 'Carne artesanal, queso cheddar, lechuga y tomate.', imagen: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80', destacado: true, etiqueta: 'NUEVO', nutri_kcal: 750, nutri_proteina: '28g', nutri_carbohidratos: '42g', nutri_grasa: '35g' },
-    { id: 2, categoria: 'Hamburguesas', nombre: 'Monster Bacon', precio: 25000, descripcion: 'Doble carne, triple tocino crujiente y mucha salsa.', imagen: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=500&q=80', destacado: true, etiqueta: 'OFERTA', precio_original: 28000, oferta_porcentaje: 10, nutri_kcal: 1150, nutri_proteina: '45g', nutri_carbohidratos: '38g', nutri_grasa: '65g' },
-    { id: 3, categoria: 'Hamburguesas', nombre: 'Crispy Chicken', precio: 22000, descripcion: 'Pechuga de pollo apanada, cole slaw y pepinillos.', imagen: 'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=500&q=80', etiqueta: 'HOT', nutri_kcal: 680, nutri_proteina: '32g', nutri_carbohidratos: '45g', nutri_grasa: '28g' },
-    { id: 4, categoria: 'Hamburguesas', nombre: 'Veggie Power', precio: 20000, descripcion: 'Hamburguesa de lentejas, champiñones y rúcula.', imagen: 'https://images.unsplash.com/photo-1525059696034-4967a8504e71?w=500&q=80', nutri_kcal: 420, nutri_proteina: '18g', nutri_carbohidratos: '55g', nutri_grasa: '12g' },
+    { id: 1, categoria: 'Hamburguesas', nombre: 'Clásica Grill', precio: 18000, descripcion: 'Carne artesanal, queso cheddar, lechuga y tomate.', imagen: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80', destacado: true, etiqueta: 'NUEVO', nutri_kcal: 750, nutri_proteina: '28g', nutri_carbohidratos: '42g', nutri_grasa: '35g', prep_time_minutes: 15, is_gluten_free: true, modificadores: [{ nombre: "Adicionales", obligatorio: false, seleccion_maxima: 5, opciones: [{ nombre: "Queso Extra", precio: 3500 }, { nombre: "Tocineta", precio: 4500 }, { nombre: "Huevo", precio: 2000 }] }] },
+    { id: 2, categoria: 'Hamburguesas', nombre: 'Monster Bacon', precio: 25000, descripcion: 'Doble carne, triple tocino crujiente y mucha salsa.', imagen: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=500&q=80', destacado: true, etiqueta: 'OFERTA', precio_original: 28000, oferta_porcentaje: 10, nutri_kcal: 1150, nutri_proteina: '45g', nutri_carbohidratos: '38g', nutri_grasa: '65g', prep_time_minutes: 20, is_spicy: true, modificadores: [{ nombre: "Toppings Premium", obligatorio: false, seleccion_maxima: 3, opciones: [{ nombre: "Cebolla Caramelizada", precio: 2500 }, { nombre: "Champiñones", precio: 3000 }, { nombre: "Aros de Cebolla", precio: 4000 }] }] },
+    { id: 3, categoria: 'Hamburguesas', nombre: 'Crispy Chicken', precio: 22000, descripcion: 'Pechuga de pollo apanada, cole slaw y pepinillos.', imagen: 'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=500&q=80', etiqueta: 'HOT', nutri_kcal: 680, nutri_proteina: '32g', nutri_carbohidratos: '45g', nutri_grasa: '28g', prep_time_minutes: 18, is_spicy: true },
+    { id: 4, categoria: 'Hamburguesas', nombre: 'Veggie Power', precio: 20000, descripcion: 'Hamburguesa de lentejas, champiñones y rúcula.', imagen: 'https://images.unsplash.com/photo-1525059696034-4967a8504e71?w=500&q=80', nutri_kcal: 420, nutri_proteina: '18g', nutri_carbohidratos: '55g', nutri_grasa: '12g', prep_time_minutes: 15, is_vegan: true, is_vegetarian: true },
     { id: 37, categoria: 'Hamburguesas', nombre: 'Doble Queso XL', precio: 24000, descripcion: 'Doble carne y cuatro capas de queso monterey jack.', imagen: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=500&q=80', destacado: false },
 
     // Pizzas
-    { id: 5, categoria: 'Pizzas', nombre: 'Pepperoni Supreme', precio: 32000, descripcion: 'Mucho pepperoni, mozzarella y salsa de la casa.', imagen: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500&q=80', destacado: true, etiqueta: 'NUEVO' },
-    { id: 6, categoria: 'Pizzas', nombre: 'Hawaiana Special', precio: 23800, descripcion: 'Jamón, piña caramelizada y extra queso.', imagen: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&q=80', precio_original: 28000, oferta_porcentaje: 15, etiqueta: 'OFERTA' },
+    { id: 5, categoria: 'Pizzas', nombre: 'Pepperoni Supreme', precio: 32000, descripcion: 'Mucho pepperoni, mozzarella y salsa de la casa.', imagen: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500&q=80', destacado: true, etiqueta: 'NUEVO', tamanos: [{ nombre: "Tamaño", obligatorio: true, seleccion_maxima: 1, opciones: [{ nombre: "Personal", precio: 0 }, { nombre: "Mediana", precio: 8000 }, { nombre: "Familiar", precio: 15000 }] }] },
+    { id: 6, categoria: 'Pizzas', nombre: 'Hawaiana Special', precio: 23800, descripcion: 'Jamón, piña caramelizada y extra queso.', imagen: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&q=80', precio_original: 28000, oferta_porcentaje: 15, etiqueta: 'OFERTA', tamanos: [{ nombre: "Tamaño", obligatorio: true, seleccion_maxima: 1, opciones: [{ nombre: "Personal", precio: 0 }, { nombre: "Mediana", precio: 8000 }, { nombre: "Familiar", precio: 15000 }] }] },
     { id: 7, categoria: 'Pizzas', nombre: 'Carnes Frías', precio: 35000, descripcion: 'Salami, jamón, tocino y salchicha italiana.', imagen: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=80' },
     { id: 8, categoria: 'Pizzas', nombre: 'Margarita Italiana', precio: 26000, descripcion: 'Tomates frescos, albahaca y aceite de oliva.', imagen: 'https://images.unsplash.com/photo-1574071318508-1cdbad80ad38?w=500&q=80' },
     { id: 38, categoria: 'Pizzas', nombre: 'Vegetales Grill', precio: 29000, descripcion: 'Pimentón, cebolla, champiñones y aceitunas negras.', imagen: 'https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=500&q=80', etiqueta: 'OFERTA', precio_original: 34000, oferta_porcentaje: 15 },
@@ -118,6 +125,10 @@ export default function DemoRestaurante() {
     const [searchQuery, setSearchQuery] = useState('');
     const [cart, setCart] = useState([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [selectedModifiers, setSelectedModifiers] = useState([]);
+    const [qty, setQty] = useState(1);
+    const [productNotes, setProductNotes] = useState('');
     const categoriesRef = useRef(null);
 
     const scrollCategories = (direction) => {
@@ -140,7 +151,7 @@ export default function DemoRestaurante() {
     });
 
     const formatCurrency = (value) => {
-        if (!value || isNaN(value) || parseFloat(value) === 0) return '';
+        if (value === undefined || value === null || isNaN(value) || Number(value) === 0) return '';
         return new Intl.NumberFormat('es-CO', {
             style: 'currency',
             currency: 'COP',
@@ -148,16 +159,7 @@ export default function DemoRestaurante() {
         }).format(value);
     };
 
-    const handleAddToCart = (product) => {
-        setCart(prev => {
-            const exists = prev.find(item => item.id === product.id);
-            if (exists) {
-                return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
-            }
-            return [...prev, { ...product, quantity: 1 }];
-        });
-        toast.success(`${product.nombre} agregado al carrito`);
-    };
+
 
     const updateQuantity = (id, delta) => {
         setCart(prev => prev.map(item => item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item));
@@ -200,11 +202,55 @@ export default function DemoRestaurante() {
         }
     };
 
+    const addToCartAndConfirm = () => {
+        if (!selectedProduct) return;
+
+        // Check if required modifiers are selected
+        const allModifierGroups = [
+            ...(selectedProduct.tamanos || []),
+            ...(selectedProduct.modificadores || []),
+            ...(selectedProduct.opciones || [])
+        ];
+
+        const missingRequired = allModifierGroups.find(group =>
+            group.obligatorio && !selectedModifiers.some(m => group.opciones.some(opt => opt.nombre === m.nombre))
+        );
+
+        if (missingRequired) {
+            toast.error(`Por favor selecciona: ${missingRequired.nombre}`);
+            return;
+        }
+
+        const finalUnitPrice = selectedProduct.precio + selectedModifiers.reduce((acc, m) => acc + (m.precio * (m.cantidad || 1)), 0);
+
+        const cartItem = {
+            id: selectedProduct.id + Date.now(),
+            productId: selectedProduct.id,
+            nombre: selectedProduct.nombre,
+            precio: finalUnitPrice,
+            quantity: qty,
+            imagen: selectedProduct.imagen,
+            notas: productNotes,
+            modificadores_visual: selectedModifiers.map(m => (m.cantidad && m.cantidad > 1) ? `${m.cantidad}x ${m.nombre}` : m.nombre)
+        };
+
+        setCart(prev => [...prev, cartItem]);
+        setSelectedProduct(null);
+        toast.success(`${selectedProduct.nombre} agregado al carrito`);
+    };
+
     const resetAll = () => {
         setCart([]);
         setStep('cart');
         setIsCartOpen(false);
         setCheckoutData({ nombre: '', direccion: '', telefono: '', metodo: 'WhatsApp' });
+    };
+
+    const handleProductClick = (product) => {
+        setSelectedProduct(product);
+        setQty(1);
+        setSelectedModifiers([]);
+        setProductNotes('');
     };
 
     const ProductCard = ({ product }) => (
@@ -214,71 +260,93 @@ export default function DemoRestaurante() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="group bg-white rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden border border-[#f0f4f2] shadow-sm hover:shadow-xl transition-all duration-300 flex flex-row h-auto cursor-pointer"
-            onClick={() => handleAddToCart(product)}
+            onClick={() => handleProductClick(product)}
         >
-            <div className="relative w-32 h-32 md:w-48 md:h-48 shrink-0 overflow-hidden m-2 md:m-3 rounded-2xl md:rounded-[2rem]">
-                <img
-                    src={product.imagen}
-                    alt={product.nombre}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80";
-                    }}
-                />
+            {/* Left Column (Image + Prep Time) */}
+            <div className="flex flex-col shrink-0">
+                <div className="relative w-32 h-32 md:w-48 md:h-48 overflow-hidden m-2 md:m-3 rounded-2xl md:rounded-[2rem]">
+                    <img
+                        src={product.imagen || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80"}
+                        alt={product.nombre}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
 
-                {/* Badge Etiqueta - Fixed position */}
-                <div className="absolute top-2 left-2 md:top-3 md:left-3 z-20">
-                    {product.etiqueta && (
-                        <div className="bg-[#4ADE80] text-[#111814] text-[7px] md:text-[8px] font-black uppercase tracking-widest px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg shadow-md border border-white/10 flex items-center gap-1 ring-1 ring-white/20">
-                            <div className="size-1 rounded-full bg-white animate-pulse" />
-                            {product.etiqueta}
-                        </div>
-                    )}
-                </div>
-
-                {/* Rating on Image Top Right */}
-                <div className="absolute top-2 right-2 md:top-3 md:right-3 z-20">
-                    <div className="flex items-center gap-0.5 bg-white/95 backdrop-blur-sm px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg text-[#111814] text-[7px] md:text-[8px] font-black shadow-md border border-[#4ADE80]">
-                        <Star className="w-2.5 h-2.5 md:w-3 md:h-3 text-orange-400 fill-orange-400" />
-                        4.8
+                    {/* Badge Etiqueta - Fixed position */}
+                    <div className="absolute top-2 left-2 md:top-3 md:left-3 z-20">
+                        {(product.etiqueta || product.destacado) && (
+                            <div className="bg-[#4ADE80] text-[#111814] text-[7px] md:text-[8px] font-black uppercase tracking-widest px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg shadow-md border border-white/10 flex items-center gap-1 ring-1 ring-white/20">
+                                <div className="size-1 rounded-full bg-white animate-pulse" />
+                                {product.etiqueta || 'DESTACADO'}
+                            </div>
+                        )}
                     </div>
+
+                    {/* Rating removed as requested */}
+
                 </div>
+
+                {/* Prep Time - Positioned in the white space below image */}
+                {product.prep_time_minutes > 0 && (
+                    <div className="flex justify-center -mt-1 mb-2 md:mb-4">
+                        <div className="inline-flex items-center gap-1 px-2 py-0.5 md:px-3 md:py-1 rounded-xl bg-blue-50/50 text-blue-600 text-[8px] md:text-[10px] font-black border border-blue-100 shadow-sm transition-all duration-300 group-hover:bg-blue-600 group-hover:text-white">
+                            <Clock className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 stroke-[3]" />
+                            {product.prep_time_minutes} MIN
+                        </div>
+                    </div>
+                )}
             </div>
             <div className="p-3 md:p-6 flex flex-col flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1 md:mb-4">
-                    <div className="inline-flex items-center px-2 py-0.5 md:px-3 md:py-1.5 rounded-full bg-[#4ADE80]/10 text-[8px] md:text-[10px] font-black text-[#22C55E] uppercase tracking-wider">
-                        {product.categoria}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                        <div className="inline-flex items-center px-1.5 py-0.5 md:px-3 md:py-1.5 rounded-full bg-[#4ADE80]/10 text-[7px] md:text-[10px] font-black text-[#22C55E] uppercase tracking-wider">
+                            {product.categoria}
+                        </div>
                     </div>
-                    {product.nutri_kcal && (
-                        <div title="Calorías estimadas" className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-[#4ADE80]/10 text-[#22C55E] text-[8px] md:text-[10px] font-black border border-[#4ADE80]/20">
-                            🔥 {product.nutri_kcal} kcal
-                        </div>
-                    )}
 
-                    {/* Discount/Offer Badge - At the top right of the card content */}
-                    {product.oferta_porcentaje && (
-                        <div className="bg-[#ff4b4b] text-white text-[9px] md:text-[11px] font-black px-1.5 py-0.5 md:px-2 md:py-1 rounded-lg shadow-sm">
-                            -{product.oferta_porcentaje}%
-                        </div>
-                    )}
+                    <div className="flex items-center gap-1.5">
+                        {product.oferta_porcentaje && (
+                            <div className="bg-[#ff4b4b] text-white text-[8px] md:text-[11px] font-black px-1 py-0.5 md:px-2 md:py-1 rounded-lg shadow-sm">
+                                -{product.oferta_porcentaje}%
+                            </div>
+                        )}
+                    </div>
                 </div>
-                <h3 className="text-sm md:text-xl font-black text-[#111814] group-hover:text-[#22C55E] transition-colors mb-1 md:mb-3 leading-tight truncate">
+
+                <h3 className="text-sm md:text-xl font-black text-[#111814] group-hover:text-[#22C55E] transition-colors mb-1 md:mb-1.5 leading-tight line-clamp-2 min-h-[1.2em] md:min-h-[1.5em]">
                     {product.nombre}
                 </h3>
-                <p className="text-[#618972] text-[10px] md:text-sm font-medium leading-tight md:leading-relaxed mb-2 md:mb-6 line-clamp-2 md:line-clamp-3">
+                <p className="text-[#618972] text-[10px] md:text-sm font-medium leading-tight md:leading-relaxed mb-2 line-clamp-2 md:line-clamp-3">
                     {product.descripcion}
                 </p>
-                <div className="flex items-center justify-between mt-auto pt-2 md:pt-6 border-t border-[#f0f4f2]">
+
+                {/* Nutritional Info (IA) - Compact row below description */}
+                {(product.nutri_kcal || product.nutri_proteina) && (
+                    <div className="flex flex-nowrap items-center gap-1 md:gap-1.5 mb-2 pb-0.5 w-full overflow-hidden">
+                        {product.nutri_kcal && (
+                            <div title="Calorías" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#4ADE80]/10 text-[#22C55E] text-[7px] md:text-[8px] font-black border border-[#4ADE80]/20 whitespace-nowrap">
+                                🔥 {product.nutri_kcal} <span className="md:inline hidden">kcal</span>
+                            </div>
+                        )}
+                        {product.nutri_proteina && (
+                            <div title="Proteína" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#4ADE80]/10 text-[#22C55E] text-[7px] md:text-[8px] font-black border border-[#4ADE80]/20 whitespace-nowrap">
+                                🥩 {product.nutri_proteina} <span className="md:inline hidden">prot</span>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                <div className="flex items-center justify-between mt-auto pt-2 md:pt-3 border-t border-[#f0f4f2]">
                     <div className="flex items-baseline gap-2 md:gap-3">
-                        <span className="text-base md:text-2xl font-black text-[#111814]">{formatCurrency(product.precio)}</span>
-                        {product.precio_original && (
+                        {product.precio > 0 && (
+                            <span className="text-base md:text-2xl font-black text-[#111814]">{formatCurrency(product.precio)}</span>
+                        )}
+                        {product.precio_original > 0 && product.precio_original > product.precio && (
                             <span className="text-[9px] md:text-[13px] font-bold text-gray-400 line-through decoration-1 opacity-70">
                                 {formatCurrency(product.precio_original)}
                             </span>
                         )}
                     </div>
-                    <div className="size-9 md:size-12 bg-[#4ADE80] rounded-full flex items-center justify-center shadow-lg shadow-[#4ADE80]/20 text-[#111814] group-hover:scale-110 transition-all border-2 border-white/20">
+                    <div className="size-9 md:size-12 bg-[#4ADE80] rounded-full flex items-center justify-center shadow-lg shadow-[#4ADE80]/20 text-[#111814] group-hover:scale-110 active:scale-95 transition-all border-2 border-white/20">
                         <Plus className="w-4 h-4 md:w-6 md:h-6 stroke-[3]" />
                     </div>
                 </div>
@@ -351,16 +419,16 @@ export default function DemoRestaurante() {
             <main className="max-w-[1200px] mx-auto px-4 md:px-10 py-8">
                 {/* Banner Section */}
                 <div className="mb-10">
-                    <div className="relative w-full h-48 md:h-[430px] rounded-[2.5rem] overflow-hidden group shadow-2xl border border-white">
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#102218]/80 via-[#102218]/20 to-transparent z-10" />
+                    <div className="relative w-full h-80 md:h-[450px] rounded-[2.5rem] overflow-hidden group shadow-2xl border border-white">
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#102218]/90 via-[#102218]/40 to-transparent z-10" />
                         <img src={DEMO_BUSINESS.banner_url} alt="Banner" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                        <div className="absolute bottom-0 left-0 p-8 md:p-12 z-20 w-full pb-16 md:pb-24">
-                            <span className="inline-flex items-center gap-2 px-4 py-1.5 mb-4 text-[10px] font-black text-[#111814] bg-[#4ADE80] rounded-full uppercase tracking-[0.2em] shadow-lg shadow-[#4ADE80]/20">
+                        <div className="absolute bottom-0 left-0 p-6 md:p-12 z-20 w-full pb-20 md:pb-24 flex flex-col items-start gap-3 md:gap-4">
+                            <span className="inline-flex items-center gap-2 px-4 py-1.5 md:py-2 text-[10px] font-black text-[#111814] bg-[#4ADE80] rounded-full uppercase tracking-[0.2em] shadow-lg shadow-[#4ADE80]/20">
                                 <Star className="w-3 h-3 fill-[#111814]" />
                                 {DEMO_BUSINESS.banner_tag}
                             </span>
-                            <h1 className="text-4xl md:text-6xl font-black text-white mb-3 tracking-tighter">{DEMO_BUSINESS.banner_title}</h1>
-                            <p className="text-gray-300 text-sm md:text-lg max-w-xl font-medium leading-relaxed">{DEMO_BUSINESS.banner_description}</p>
+                            <h1 className="text-3xl md:text-6xl font-black text-white mb-2 md:mb-3 tracking-tighter leading-none">{DEMO_BUSINESS.banner_title}</h1>
+                            <p className="text-gray-300 text-sm md:text-lg max-w-xl font-medium leading-relaxed line-clamp-2 md:line-clamp-none">{DEMO_BUSINESS.banner_description}</p>
                         </div>
                     </div>
                     <div className="relative z-30 -mt-10 max-w-3xl mx-auto px-4">
@@ -455,10 +523,20 @@ export default function DemoRestaurante() {
                                                 <p className="font-black text-gray-300">Aún no has añadido nada delicioso</p>
                                             </div>
                                         ) : cart.map((item) => (
-                                            <div key={item.id} className="flex gap-4 p-3 rounded-2xl bg-gray-50 border border-gray-100 group">
-                                                <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0"><img src={item.imagen} alt="" className="w-full h-full object-cover" /></div>
+                                            <div key={item.id} className="flex gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 group">
+                                                <div className="size-20 rounded-xl overflow-hidden shrink-0 shadow-sm">
+                                                    <img src={item.imagen} alt={item.nombre} className="w-full h-full object-cover" />
+                                                </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <h4 className="font-black text-gray-900 text-sm truncate">{item.nombre}</h4>
+                                                    <h4 className="font-black text-gray-900 truncate">{item.nombre}</h4>
+                                                    {item.modificadores_visual && item.modificadores_visual.length > 0 && (
+                                                        <p className="text-[10px] font-bold text-[#618972] mb-1 leading-tight">
+                                                            {item.modificadores_visual.join(' · ')}
+                                                        </p>
+                                                    )}
+                                                    {item.notas && (
+                                                        <p className="text-[9px] italic text-gray-400 truncate mb-1">"{item.notas}"</p>
+                                                    )}
                                                     <p className="text-[#22C55E] font-black text-sm">{formatCurrency(item.precio)}</p>
                                                     <div className="mt-2 flex items-center justify-between">
                                                         <div className="flex items-center gap-3 bg-white rounded-full p-1 border shadow-sm">
@@ -521,38 +599,272 @@ export default function DemoRestaurante() {
                                             <div className="flex justify-between text-xs font-bold"><span>Orden #</span><span className="text-gray-900">DEMO-001</span></div>
                                             <div className="flex justify-between text-xs font-bold"><span>Total</span><span className="text-[#22C55E] font-black">{formatCurrency(cartTotal)}</span></div>
                                         </div>
-                                        <Button onClick={resetAll} className="w-full h-14 bg-white hover:bg-[#4ADE80] text-[#22C55E] hover:text-[#111814] border-2 border-[#4ADE80] font-black rounded-2xl transition-all">Seguir Explorando</Button>
                                     </div>
                                 )}
                             </div>
 
-                            {step !== 'success' && (
-                                <div className="p-6 border-t bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
-                                    <div className="flex justify-between items-center mb-6">
-                                        <span className="text-gray-400 font-black uppercase tracking-wider text-xs">Total a pagar</span>
-                                        <span className="text-3xl font-black text-[#111814] tracking-tighter">{formatCurrency(cartTotal)}</span>
-                                    </div>
-                                    <Button
-                                        disabled={cart.length === 0}
-                                        onClick={handleConfirmOrder}
-                                        className="w-full h-16 bg-white hover:bg-[#4ADE80] text-[#22C55E] hover:text-[#111814] border-2 border-[#4ADE80] font-black rounded-2xl text-lg flex items-center justify-center gap-3 transition-all shadow-xl hover:shadow-[#4ADE80]/20 active:scale-95"
-                                    >
-                                        {step === 'cart' ? (
-                                            <>Siguiente <ArrowRight className="w-6 h-6" /></>
-                                        ) : (
-                                            <>Confirmar Pedido <Send className="w-6 h-6" /></>
+                            <div className="p-6 border-t mt-auto">
+                                {step !== 'success' ? (
+                                    <>
+                                        <button
+                                            onClick={handleConfirmOrder}
+                                            className="w-full h-14 bg-[#4ADE80] text-[#111814] rounded-2xl font-black text-lg shadow-xl shadow-[#4ADE80]/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                                        >
+                                            {step === 'cart' ? 'Continuar Compra' : 'Confirmar Pedido'}
+                                            <Send className="w-5 h-5" />
+                                        </button>
+                                        {step === 'checkout' && (
+                                            <button onClick={() => setStep('cart')} className="w-full mt-4 text-xs font-black text-gray-400 uppercase tracking-widest hover:text-gray-900 transition-colors">Volver al carrito</button>
                                         )}
-                                    </Button>
-                                    {step === 'checkout' && (
-                                        <button onClick={() => setStep('cart')} className="w-full mt-4 text-xs font-black text-gray-400 uppercase tracking-widest hover:text-gray-900 transition-colors">Volver al carrito</button>
-                                    )}
-                                </div>
-                            )}
-
+                                    </>
+                                ) : (
+                                    <button
+                                        onClick={resetAll}
+                                        className="w-full h-14 bg-gray-900 text-white rounded-2xl font-black text-lg shadow-xl hover:scale-[1.02] active:scale-95 transition-all"
+                                    >
+                                        Volver al Menú
+                                    </button>
+                                )}
+                            </div>
                         </motion.div>
                     </>
                 )}
             </AnimatePresence>
+
+            {/* Product Detail Modal */}
+            <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
+                <DialogContent className="max-w-[95vw] lg:max-w-6xl xl:max-w-[1300px] w-full p-0 overflow-hidden rounded-[2.5rem] md:rounded-[3rem] bg-white border-none shadow-2xl [&>button]:hidden outline-none" aria-describedby="product-description">
+                    <DialogHeader className="sr-only">
+                        <DialogTitle>Detalles del Producto</DialogTitle>
+                        <DialogDescription id="product-description">Vista detallada del producto seleccionado con opciones de personalización.</DialogDescription>
+                    </DialogHeader>
+
+                    {selectedProduct && (
+                        <div className="flex flex-col md:flex-row h-full max-h-[90vh] md:max-h-[85vh]">
+                            {/* Left Side: Product Image */}
+                            <div className="relative w-full md:w-[45%] h-64 md:h-auto overflow-hidden bg-gray-50 flex-shrink-0">
+                                <img
+                                    src={selectedProduct.imagen || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80"}
+                                    alt={selectedProduct.nombre}
+                                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
+                                />
+                                <button
+                                    onClick={() => setSelectedProduct(null)}
+                                    className="absolute top-6 left-6 size-10 bg-white/90 backdrop-blur-xl text-[#111814] rounded-full flex items-center justify-center hover:bg-white transition-all shadow-xl md:hidden z-20"
+                                >
+                                    <ArrowLeft className="w-5 h-5" />
+                                </button>
+
+                                {selectedProduct.etiqueta && (
+                                    <div className="absolute top-6 right-6 z-20">
+                                        <span className="bg-[#4ADE80] text-[#111814] text-[10px] font-black px-3 py-1.5 rounded-xl uppercase tracking-widest shadow-lg shadow-[#4ADE80]/30">
+                                            {selectedProduct.etiqueta}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Right Side: Product Details & Modifiers */}
+                            <div className="flex-1 flex flex-col min-w-0 bg-white relative overflow-hidden">
+                                <div className="hidden md:flex items-center justify-end p-6 pb-0 absolute top-0 right-0 z-40">
+                                    <button
+                                        onClick={() => setSelectedProduct(null)}
+                                        className="size-10 bg-gray-100 hover:bg-gray-200 text-gray-400 hover:text-gray-600 rounded-full flex items-center justify-center transition-all"
+                                    >
+                                        <X className="w-5 h-5" />
+                                    </button>
+                                </div>
+
+                                <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-10 pb-48 md:pb-56">
+                                    <div className="max-w-2xl mx-auto space-y-8">
+                                        <div className="space-y-4">
+                                            <div>
+                                                <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#4ADE80]/10 text-[10px] font-black text-[#22C55E] uppercase tracking-wider mb-2">
+                                                    {selectedProduct.categoria}
+                                                </div>
+                                                <h2 className="text-3xl md:text-4xl font-black text-[#111814] tracking-tighter leading-tight">
+                                                    {selectedProduct.nombre}
+                                                </h2>
+                                            </div>
+
+                                            <div className="flex items-center gap-4">
+                                                <span className="text-3xl font-black text-[#22C55E]">
+                                                    {formatCurrency(selectedProduct.precio)}
+                                                </span>
+                                                {selectedProduct.precio_original > 0 && (
+                                                    <span className="text-lg font-bold text-gray-300 line-through">
+                                                        {formatCurrency(selectedProduct.precio_original)}
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                                                <h3 className="text-[10px] font-black text-[#111814] uppercase tracking-widest opacity-40 mb-2">Descripción</h3>
+                                                <p className="text-[#618972] font-medium leading-relaxed text-sm">
+                                                    {selectedProduct.descripcion}
+                                                </p>
+                                            </div>
+
+                                            {/* Nutritional Info Section (Requested Design) */}
+                                            {(selectedProduct.nutri_kcal || selectedProduct.nutri_proteina) && (
+                                                <div className="space-y-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <h3 className="text-[10px] font-black text-[#5C6B89] uppercase tracking-widest">Información Nutricional (Estimada por IA)</h3>
+                                                        <div className="size-1.5 rounded-full bg-[#4ADE80] animate-pulse" />
+                                                    </div>
+
+                                                    <div className="grid grid-cols-4 gap-2 md:gap-3">
+                                                        <div className="p-3 md:p-4 bg-[#edfdf2] rounded-3xl border border-[#d3f9d8] flex flex-col items-center justify-center text-center">
+                                                            <span className="text-sm md:text-xl font-black text-[#00a854]">{selectedProduct.nutri_kcal || '0'}</span>
+                                                            <span className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Kcal</span>
+                                                        </div>
+                                                        <div className="p-3 md:p-4 bg-[#edfdf2] rounded-3xl border border-[#d3f9d8] flex flex-col items-center justify-center text-center">
+                                                            <span className="text-sm md:text-xl font-black text-[#00a854]">{selectedProduct.nutri_proteina || '0g'}</span>
+                                                            <span className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Prot</span>
+                                                        </div>
+                                                        <div className="p-3 md:p-4 bg-[#edfdf2] rounded-3xl border border-[#d3f9d8] flex flex-col items-center justify-center text-center">
+                                                            <span className="text-sm md:text-xl font-black text-[#00a854]">{selectedProduct.nutri_carbohidratos || '25g'}</span>
+                                                            <span className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Carb</span>
+                                                        </div>
+                                                        <div className="p-3 md:p-4 bg-[#edfdf2] rounded-3xl border border-[#d3f9d8] flex flex-col items-center justify-center text-center">
+                                                            <span className="text-sm md:text-xl font-black text-[#00a854]">{selectedProduct.nutri_grasa || '12g'}</span>
+                                                            <span className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Grasa</span>
+                                                        </div>
+                                                    </div>
+                                                    <p className="text-[9px] font-medium text-gray-400 italic">
+                                                        * Valores aproximados calculados por inteligencia artificial basados en la receta estándar.
+                                                    </p>
+
+                                                    {/* Dietary Labels - Relocated below grid */}
+                                                    {(selectedProduct.is_vegan || selectedProduct.is_vegetarian || selectedProduct.is_gluten_free || selectedProduct.is_spicy) && (
+                                                        <div className="flex flex-wrap gap-2 pt-2">
+                                                            {selectedProduct.is_vegan && (
+                                                                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#edfdf2] border border-[#d3f9d8] text-[#00a854] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm">
+                                                                    <span>🌱</span> VEGANO
+                                                                </div>
+                                                            )}
+                                                            {selectedProduct.is_vegetarian && !selectedProduct.is_vegan && (
+                                                                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fffbe6] border border-[#fff1b8] text-[#c49c00] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm">
+                                                                    <span>🥗</span> VEGETARIANO
+                                                                </div>
+                                                            )}
+                                                            {selectedProduct.is_gluten_free && (
+                                                                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fff2e8] border border-[#ffd8bf] text-[#d46b08] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm">
+                                                                    <span>🌾</span> SIN GLUTEN
+                                                                </div>
+                                                            )}
+                                                            {selectedProduct.is_spicy && (
+                                                                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fff1f0] border border-[#ffa39e] text-[#cf1322] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm">
+                                                                    <span>🌶️</span> PICANTE
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Modifiers Simulation */}
+                                        <div className="space-y-8">
+                                            {['tamanos', 'modificadores', 'opciones'].map((categoryKey) => {
+                                                const groups = selectedProduct[categoryKey];
+                                                if (!groups || !Array.isArray(groups)) return null;
+
+                                                return groups.map((group, groupIdx) => (
+                                                    <div key={`${categoryKey}-${groupIdx}`} className="space-y-4">
+                                                        <div className="flex justify-between items-center bg-white sticky top-0 z-10 py-2 border-b border-gray-100">
+                                                            <div className="space-y-1">
+                                                                <h3 className="text-lg font-black text-[#111814] tracking-tight">{group.nombre}</h3>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className={`text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider ${group.obligatorio ? 'bg-orange-50 text-orange-500 border border-orange-100' : 'bg-gray-50 text-gray-400 border border-gray-100'}`}>
+                                                                        {group.obligatorio ? 'Obligatorio' : 'Opcional'}
+                                                                    </span>
+                                                                    <span className="text-[10px] font-bold text-gray-400">
+                                                                        Escoge {group.seleccion_maxima === 1 ? '1 opción' : `hasta ${group.seleccion_maxima} opciones`}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="grid grid-cols-1 gap-3">
+                                                            {group.opciones.map((option, optIdx) => {
+                                                                const isSelected = selectedModifiers.some(m => m.nombre === option.nombre);
+                                                                return (
+                                                                    <button
+                                                                        key={`${categoryKey}-${groupIdx}-${optIdx}`}
+                                                                        onClick={() => {
+                                                                            if (isSelected) {
+                                                                                setSelectedModifiers(prev => prev.filter(m => m.nombre !== option.nombre));
+                                                                            } else {
+                                                                                if (group.seleccion_maxima === 1) {
+                                                                                    setSelectedModifiers(prev => [
+                                                                                        ...prev.filter(m => !group.opciones.some(opt => opt.nombre === m.nombre)),
+                                                                                        option
+                                                                                    ]);
+                                                                                } else if (selectedModifiers.filter(m => group.opciones.some(opt => opt.nombre === m.nombre)).length < group.seleccion_maxima) {
+                                                                                    setSelectedModifiers(prev => [...prev, option]);
+                                                                                }
+                                                                            }
+                                                                        }}
+                                                                        className={`w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all ${isSelected ? 'bg-[#4ADE80]/5 border-[#4ADE80] shadow-sm' : 'bg-white border-gray-100 hover:border-gray-200'}`}
+                                                                    >
+                                                                        <span className={`text-sm font-black ${isSelected ? 'text-[#111814]' : 'text-gray-600'}`}>
+                                                                            {option.nombre}
+                                                                        </span>
+                                                                        {option.precio > 0 && (
+                                                                            <span className={`text-xs font-black ${isSelected ? 'text-[#22C55E]' : 'text-gray-400'}`}>
+                                                                                + {formatCurrency(option.precio)}
+                                                                            </span>
+                                                                        )}
+                                                                    </button>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                ));
+                                            })}
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <h3 className="text-[10px] font-black text-[#111814] uppercase tracking-widest opacity-40">Notas Especiales</h3>
+                                            <textarea
+                                                value={productNotes}
+                                                onChange={(e) => setProductNotes(e.target.value)}
+                                                placeholder="Ej: Sin cebolla, salsas aparte..."
+                                                className="w-full h-32 p-4 bg-gray-50 border border-gray-100 rounded-[2rem] text-sm font-medium focus:outline-none focus:border-[#4ADE80] transition-all resize-none"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Footer Sticky Actions */}
+                                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 bg-white/80 backdrop-blur-xl border-t border-gray-100 z-50">
+                                    <div className="max-w-2xl mx-auto flex items-center gap-4">
+                                        <div className="flex items-center gap-4 bg-gray-100 p-2 rounded-2xl border border-gray-200">
+                                            <button onClick={() => setQty(Math.max(1, qty - 1))} className="size-10 rounded-xl bg-white flex items-center justify-center text-gray-600 hover:text-[#22C55E] shadow-sm"><Minus className="w-5 h-5" /></button>
+                                            <span className="text-xl font-black text-[#111814] w-6 text-center">{qty}</span>
+                                            <button onClick={() => setQty(qty + 1)} className="size-10 rounded-xl bg-white flex items-center justify-center text-gray-600 hover:text-[#22C55E] shadow-sm"><Plus className="w-5 h-5" /></button>
+                                        </div>
+                                        <Button
+                                            onClick={addToCartAndConfirm}
+                                            className="flex-1 h-16 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] rounded-2xl font-black text-xl shadow-xl shadow-[#4ADE80]/20 flex items-center justify-between px-8 group transition-all"
+                                        >
+                                            <div className="flex flex-col items-start leading-none">
+                                                <span className="text-[10px] uppercase tracking-widest opacity-60">Agregar</span>
+                                                <span>{formatCurrency((selectedProduct.precio + selectedModifiers.reduce((acc, m) => acc + (m.precio * (m.cantidad || 1)), 0)) * qty)}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-base">Confirmar</span>
+                                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                            </div>
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

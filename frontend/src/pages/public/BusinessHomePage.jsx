@@ -129,7 +129,7 @@ const BusinessHomePageContent = () => {
     };
 
     const formatCurrency = (value) => {
-        if (!value || isNaN(value) || parseFloat(value) === 0) return '';
+        if (value === undefined || value === null || isNaN(value) || Number(value) === 0) return '';
         return new Intl.NumberFormat('es-CO', {
             style: 'currency',
             currency: 'COP',
@@ -321,10 +321,12 @@ const BusinessHomePageContent = () => {
                                         <div className="p-4 pt-3 flex flex-col gap-1">
                                             <div className="flex justify-between items-start gap-2">
                                                 <h3 className="font-bold text-[#111814] text-base leading-tight flex-1 line-clamp-1">{product.nombre}</h3>
-                                                <div className="flex flex-col items-end">
-                                                    <span className="text-[#22C55E] font-black text-base">{formatCurrency(product.precio)}</span>
-                                                    {product.precio_original && product.precio_original > product.precio && (
-                                                        <span className="text-[10px] text-gray-400 line-through font-bold opacity-70">
+                                                <div className="flex items-center gap-2">
+                                                    {product.precio > 0 && (
+                                                        <span className="text-[#22C55E] font-black text-base">{formatCurrency(product.precio)}</span>
+                                                    )}
+                                                    {product.precio_original > 0 && product.precio_original > product.precio && (
+                                                        <span className="text-gray-400 line-through text-[10px] font-bold">
                                                             {formatCurrency(product.precio_original)}
                                                         </span>
                                                     )}

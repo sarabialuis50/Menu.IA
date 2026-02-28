@@ -2811,6 +2811,7 @@ const ConfiguracionPage = () => {
                                                             obligatorio: section.id === 'tamanos',
                                                             seleccion_minima: section.id === 'tamanos' ? 1 : 0,
                                                             seleccion_maxima: 1,
+                                                            max_qty_per_option: 1,
                                                             opciones: [{ id: Date.now().toString() + '-opt', nombre: '', precio: 0 }]
                                                         };
                                                         setProductForm({
@@ -2868,7 +2869,7 @@ const ConfiguracionPage = () => {
                                                                     />
                                                                     <Label className="text-[10px] font-black uppercase text-gray-600">Obligatorio</Label>
                                                                 </div>
-                                                                <div className="flex items-center gap-2 flex-1">
+                                                                <div className="flex items-center gap-2">
                                                                     <Label className="text-[10px] font-black uppercase text-gray-400">Max</Label>
                                                                     <Input
                                                                         type="number"
@@ -2880,6 +2881,21 @@ const ConfiguracionPage = () => {
                                                                             setProductForm({ ...productForm, [section.id]: newList });
                                                                         }}
                                                                         className="h-10 w-16 rounded-xl bg-gray-50 border-gray-50 text-center font-bold"
+                                                                    />
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <Label className="text-[10px] font-black uppercase text-gray-400 whitespace-nowrap" title="Cantidad máxima por cada opción individual. 0 = ilimitado">CANTIDADES POR OPCIONES</Label>
+                                                                    <Input
+                                                                        type="number"
+                                                                        min="0"
+                                                                        value={group.max_qty_per_option ?? 1}
+                                                                        onChange={e => {
+                                                                            const newList = [...productForm[section.id]];
+                                                                            newList[gIdx].max_qty_per_option = parseInt(e.target.value) || 0;
+                                                                            setProductForm({ ...productForm, [section.id]: newList });
+                                                                        }}
+                                                                        className="h-10 w-16 rounded-xl bg-gray-50 border-gray-50 text-center font-bold"
+                                                                        placeholder="1"
                                                                     />
                                                                 </div>
                                                             </div>

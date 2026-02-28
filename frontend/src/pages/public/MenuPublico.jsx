@@ -325,7 +325,7 @@ const MenuContent = () => {
   };
 
   const formatCurrency = (value) => {
-    if (!value || isNaN(value) || parseFloat(value) === 0) return '';
+    if (value === undefined || value === null || isNaN(value) || Number(value) === 0) return '';
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
@@ -564,37 +564,44 @@ const MenuContent = () => {
       onClick={() => handleProductClick(product)}
       className={`group bg-white rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden border border-[#f0f4f2] shadow-sm hover:shadow-xl transition-all duration-300 flex flex-row h-auto cursor-pointer ${!product.disponible ? 'opacity-60 grayscale' : ''}`}
     >
-      {/* Image Container - Square/Horizontal */}
-      <div className="relative w-32 h-32 md:w-48 md:h-48 shrink-0 overflow-hidden m-2 md:m-3 rounded-2xl md:rounded-[2rem]">
-        <img
-          src={product.imagen || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80"}
-          alt={product.nombre}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-        />
+      {/* Left Column (Image + Prep Time) */}
+      <div className="flex flex-col shrink-0">
+        <div className="relative w-32 h-32 md:w-48 md:h-48 overflow-hidden m-2 md:m-3 rounded-2xl md:rounded-[2rem]">
+          <img
+            src={product.imagen || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80"}
+            alt={product.nombre}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
 
-        {/* Badge Etiqueta - Fixed position */}
-        <div className="absolute top-2 left-2 md:top-3 md:left-3 z-20">
-          {(product.etiqueta || product.destacado) && (
-            <div className="bg-[#4ADE80] text-[#111814] text-[7px] md:text-[8px] font-black uppercase tracking-widest px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg shadow-md border border-white/10 flex items-center gap-1 ring-1 ring-white/20">
-              <div className="size-1 rounded-full bg-white animate-pulse" />
-              {product.etiqueta || 'DESTACADO'}
+          {/* Badge Etiqueta - Fixed position */}
+          <div className="absolute top-2 left-2 md:top-3 md:left-3 z-20">
+            {(product.etiqueta || product.destacado) && (
+              <div className="bg-[#4ADE80] text-[#111814] text-[7px] md:text-[8px] font-black uppercase tracking-widest px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg shadow-md border border-white/10 flex items-center gap-1 ring-1 ring-white/20">
+                <div className="size-1 rounded-full bg-white animate-pulse" />
+                {product.etiqueta || 'DESTACADO'}
+              </div>
+            )}
+          </div>
+
+          {/* Rating removed as requested */}
+
+
+          {!product.disponible && (
+            <div className="absolute inset-0 bg-[#618972]/80 backdrop-blur-sm flex items-center justify-center">
+              <span className="bg-white/20 backdrop-blur border border-white/50 text-white font-black px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest text-center">
+                Agotado
+              </span>
             </div>
           )}
         </div>
 
-        {/* Rating on Image Top Right */}
-        <div className="absolute top-2 right-2 md:top-3 md:right-3 z-20">
-          <div className="flex items-center gap-0.5 bg-white/95 backdrop-blur-sm px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg text-[#111814] text-[7px] md:text-[8px] font-black shadow-md border border-[#4ADE80]">
-            <Star className="w-2.5 h-2.5 md:w-3 md:h-3 text-orange-400 fill-orange-400" />
-            4.8
-          </div>
-        </div>
-
-        {!product.disponible && (
-          <div className="absolute inset-0 bg-[#618972]/80 backdrop-blur-sm flex items-center justify-center">
-            <span className="bg-white/20 backdrop-blur border border-white/50 text-white font-black px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest text-center">
-              Agotado
-            </span>
+        {/* Prep Time - Positioned in the white space below image */}
+        {product.prep_time_minutes > 0 && (
+          <div className="flex justify-center -mt-1 mb-2 md:mb-4">
+            <div className="inline-flex items-center gap-1 px-2 py-0.5 md:px-3 md:py-1 rounded-xl bg-blue-50/50 text-blue-600 text-[8px] md:text-[10px] font-black border border-blue-100 shadow-sm transition-all duration-300 group-hover:bg-blue-600 group-hover:text-white">
+              <Clock className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 stroke-[3]" />
+              {product.prep_time_minutes} MIN
+            </div>
           </div>
         )}
       </div>
@@ -607,13 +614,8 @@ const MenuContent = () => {
             </div>
           </div>
 
-          {/* Discount and Prep Time Badges */}
+          {/* Discount Badges only here */}
           <div className="flex items-center gap-1.5">
-            {product.prep_time_minutes > 0 && (
-              <div className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-blue-50 text-blue-600 text-[8px] md:text-[10px] font-bold border border-blue-100">
-                ⏱️ {product.prep_time_minutes} min
-              </div>
-            )}
             {(product.oferta_porcentaje || (product.precio_original && product.precio_original > product.precio)) && (
               <div className="bg-[#ff4b4b] text-white text-[9px] md:text-[11px] font-black px-1.5 py-0.5 md:px-2 md:py-1 rounded-lg shadow-sm">
                 {product.oferta_porcentaje ? `-${product.oferta_porcentaje}%` : 'OFERTA'}
@@ -622,17 +624,17 @@ const MenuContent = () => {
           </div>
         </div>
 
-        <h3 className="text-sm md:text-xl font-black text-[#111814] group-hover:text-[#22C55E] transition-colors mb-1 md:mb-3 leading-tight truncate">
+        <h3 className="text-sm md:text-xl font-black text-[#111814] group-hover:text-[#22C55E] transition-colors mb-1 md:mb-1.5 leading-tight line-clamp-2 min-h-[1.2em] md:min-h-[1.5em]">
           {product.nombre}
         </h3>
 
-        <p className="text-[#618972] text-[10px] md:text-sm font-medium leading-tight md:leading-relaxed mb-2 md:mb-4 line-clamp-2 md:line-clamp-3">
+        <p className="text-[#618972] text-[10px] md:text-sm font-medium leading-tight md:leading-relaxed mb-2 line-clamp-2 md:line-clamp-3">
           {product.descripcion || "Plato especial preparado con ingredientes seleccionados."}
         </p>
 
         {/* Nutritional Info (IA) - Compact row below description */}
         {(product.nutri_kcal || product.nutri_proteina) && (
-          <div className="flex flex-nowrap items-center gap-1 md:gap-1.5 mb-4 pb-1 w-full overflow-hidden">
+          <div className="flex flex-nowrap items-center gap-1 md:gap-1.5 mb-2 pb-0.5 w-full overflow-hidden">
             {product.nutri_kcal && (
               <div title="Calorías" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#4ADE80]/10 text-[#22C55E] text-[7px] md:text-[8px] font-black border border-[#4ADE80]/20 whitespace-nowrap">
                 🔥 {product.nutri_kcal} <span className="md:inline hidden">kcal</span>
@@ -656,10 +658,12 @@ const MenuContent = () => {
           </div>
         )}
 
-        <div className="flex items-center justify-between mt-auto pt-2 md:pt-6 border-t border-[#f0f4f2]">
+        <div className="flex items-center justify-between mt-auto pt-2 md:pt-3 border-t border-[#f0f4f2]">
           <div className="flex items-baseline gap-2 md:gap-3">
-            <span className="text-base md:text-2xl font-black text-[#111814]">{formatCurrency(product.precio)}</span>
-            {product.precio_original && product.precio_original > product.precio && (
+            {product.precio > 0 && (
+              <span className="text-base md:text-2xl font-black text-[#111814]">{formatCurrency(product.precio)}</span>
+            )}
+            {product.precio_original > 0 && product.precio_original > product.precio && (
               <span className="text-[9px] md:text-[13px] font-bold text-gray-400 line-through decoration-1 opacity-70">
                 {formatCurrency(product.precio_original)}
               </span>
@@ -1657,10 +1661,12 @@ const MenuContent = () => {
                       </div>
 
                       <div className="flex items-center gap-4">
-                        <span className="text-3xl font-black text-[#22C55E]">
-                          {formatCurrency(selectedProduct.precio)}
-                        </span>
-                        {selectedProduct.precio_original && (
+                        {selectedProduct.precio > 0 && (
+                          <span className="text-3xl font-black text-[#22C55E]">
+                            {formatCurrency(selectedProduct.precio)}
+                          </span>
+                        )}
+                        {selectedProduct.precio_original > 0 && selectedProduct.precio_original > selectedProduct.precio && (
                           <span className="text-lg font-bold text-gray-300 line-through decoration-2">
                             {formatCurrency(selectedProduct.precio_original)}
                           </span>
@@ -1763,10 +1769,79 @@ const MenuContent = () => {
 
                             <div className="grid grid-cols-1 gap-3">
                               {group.opciones.map((option, optIdx) => {
-                                const isSelected = selectedModifiers.some(m => m.nombre === option.nombre);
+                                const maxQtyPerOpt = group.max_qty_per_option ?? 1;
+                                const hasQtyControl = maxQtyPerOpt > 1 || maxQtyPerOpt === 0;
+                                const existingMod = selectedModifiers.find(m => m.nombre === option.nombre);
+                                const isSelected = !!existingMod;
+                                const optQty = existingMod?.cantidad || 0;
                                 const groupSelections = selectedModifiers.filter(m => group.opciones.some(opt => opt.nombre === m.nombre));
+                                const totalGroupQty = groupSelections.reduce((acc, m) => acc + (m.cantidad || 1), 0);
                                 const selectorMax = group.seleccion_maxima || 1;
-                                const isMaxed = groupSelections.length >= selectorMax && !isSelected;
+                                const isMaxed = !hasQtyControl && groupSelections.length >= selectorMax && !isSelected;
+
+                                if (hasQtyControl) {
+                                  // Quantity controls mode (+/-)
+                                  const canAdd = (maxQtyPerOpt === 0 || optQty < maxQtyPerOpt);
+                                  return (
+                                    <div
+                                      key={`${categoryKey}-${groupIdx}-${optIdx}`}
+                                      className={`w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all ${optQty > 0
+                                        ? 'bg-[#4ADE80]/5 border-[#4ADE80] shadow-sm'
+                                        : 'bg-white border-gray-100'
+                                        }`}
+                                    >
+                                      <div className="flex items-center gap-4">
+                                        <div className="text-left">
+                                          <span className={`text-sm font-black ${optQty > 0 ? 'text-[#111814]' : 'text-gray-600'}`}>
+                                            {option.nombre}
+                                          </span>
+                                          {option.precio > 0 && (
+                                            <span className={`ml-2 text-xs font-black ${optQty > 0 ? 'text-[#22C55E]' : 'text-gray-400'}`}>
+                                              + {formatCurrency(option.precio)} c/u
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <button
+                                          type="button"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (optQty <= 1) {
+                                              setSelectedModifiers(prev => prev.filter(m => m.nombre !== option.nombre));
+                                            } else {
+                                              setSelectedModifiers(prev => prev.map(m =>
+                                                m.nombre === option.nombre ? { ...m, cantidad: m.cantidad - 1 } : m
+                                              ));
+                                            }
+                                          }}
+                                          disabled={optQty === 0}
+                                          className="size-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200 active:scale-90 transition-all disabled:opacity-30"
+                                        >
+                                          <Minus className="w-4 h-4 stroke-[3]" />
+                                        </button>
+                                        <span className="text-sm font-black text-[#111814] min-w-[24px] text-center">{optQty}</span>
+                                        <button
+                                          type="button"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (!isSelected) {
+                                              setSelectedModifiers(prev => [...prev, { ...option, cantidad: 1 }]);
+                                            } else if (canAdd) {
+                                              setSelectedModifiers(prev => prev.map(m =>
+                                                m.nombre === option.nombre ? { ...m, cantidad: (m.cantidad || 1) + 1 } : m
+                                              ));
+                                            }
+                                          }}
+                                          disabled={!canAdd && isSelected}
+                                          className="size-8 rounded-lg bg-[#4ADE80] flex items-center justify-center text-white hover:bg-[#22C55E] active:scale-90 transition-all disabled:opacity-30"
+                                        >
+                                          <Plus className="w-4 h-4 stroke-[3]" />
+                                        </button>
+                                      </div>
+                                    </div>
+                                  );
+                                }
 
                                 return (
                                   <button
@@ -1779,10 +1854,10 @@ const MenuContent = () => {
                                         if (selectorMax === 1) {
                                           setSelectedModifiers(prev => [
                                             ...prev.filter(m => !group.opciones.some(opt => opt.nombre === m.nombre)),
-                                            option
+                                            { ...option, cantidad: 1 }
                                           ]);
                                         } else {
-                                          setSelectedModifiers(prev => [...prev, option]);
+                                          setSelectedModifiers(prev => [...prev, { ...option, cantidad: 1 }]);
                                         }
                                       }
                                     }}
@@ -1875,7 +1950,7 @@ const MenuContent = () => {
                       <div className="flex items-center gap-3">
                         <div className="w-[1px] h-6 bg-[#111814]/10" />
                         <span className="text-xl">
-                          {formatCurrency(((selectedProduct.precio || 0) + selectedModifiers.reduce((acc, m) => acc + (m.precio || 0), 0)) * qty)}
+                          {formatCurrency(((selectedProduct.precio || 0) + selectedModifiers.reduce((acc, m) => acc + ((m.precio || 0) * (m.cantidad || 1)), 0)) * qty)}
                         </span>
                       </div>
                     </Button>
