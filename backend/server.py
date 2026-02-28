@@ -2635,6 +2635,81 @@ async def get_ai_insights(negocio_id: str, business: Business = Depends(get_curr
             "tendencias_semana": {"dia_mas_fuerte": "-", "categoria_en_crecimiento": "-"}
         }
 
+# --- AI IMAGE GENERATION ---
+class ProductImageRequest(BaseModel):
+    nombre: str
+    descripcion: str
+
+@api_router.post("/ai/generate-product-image")
+async def generate_product_image_endpoint(req: ProductImageRequest, business: Business = Depends(get_current_business)):
+    try:
+        # Prompt enhancement with Gemini (the user asked for the "pro" model)
+        genai.configure(api_key=os.environ.get("GOOGLE_GEMINI_API_KEY"))
+        model = genai.GenerativeModel('gemini-1.5-pro')
+        
+        prompt_refinement = f"""
+        Eres un experto en fotografía gastronómica y generación de imágenes por IA. 
+        A partir del siguiente producto y descripción, crea un PROMPT EN INGLÉS extremadamente detallado para un generador de imágenes de alta fidelidad.
+        El prompt debe describir:
+        - Iluminación profesional de restaurante (soft bokeh, cinematic lighting, appetizing focus).
+        - Presentación premium en un plato elegante y limpio.
+        - Texturas realistas (crispy, juicy, steam if hot, fresh if cold).
+        - Fondo de restaurante de lujo desenfocado.
+        - Composición de regla de tercios.
+        - No incluyas texto, ni logos, solo la comida de forma hiperrealista.
+        
+        PRODUCTO: {req.nombre}
+        DESCRIPCIÓN: {req.descripcion}
+        
+        Responde SOLO con el prompt en inglés.
+        """
+        
+        response = model.generate_content(prompt_refinement)
+        enhanced_prompt = response.text.strip()
+        
+        # Image generation with DALL-E 3 using the user's OpenAI key
+        # (It's currently the most reliable for consistent 1024x1024 food shots via API)
+        client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+        
+        img_gen_res = client.images.generate(
+            model="dall-e-3",
+            prompt=enhanced_prompt,
+            size="1024x1024",
+            quality="hd",
+            n=1
+        )
+        
+        dalle_url = img_gen_res.data[0].url
+        
+        # Download and save to Supabase
+        import httpx
+        async with httpx.AsyncClient() as http_client:
+            img_res = await http_client.get(dalle_url, timeout=30.0)
+            if img_res.status_code != 200:
+                raise HTTPException(status_code=500, detail="Fallo al obtener la imagen de la IA")
+            
+            image_bytes = img_res.content
+            
+        file_ext = "png"
+        file_name = f"{business.id}/ai-{uuid.uuid4()}.{file_ext}"
+        
+        # Upload to Supabase Storage
+        supabase.storage.from_('menupro').upload(
+            path=file_name,
+            file=image_bytes,
+            file_options={"content-type": f"image/{file_ext}"}
+        )
+        
+        # Get public URL
+        public_url = supabase.storage.from_('menupro').get_public_url(file_name)
+        
+        return {"url": public_url}
+        
+    except Exception as e:
+        logger.error(f"Error generating AI image: {str(e)}")
+        # If Gemini pro fails, try a quick fallback with flash or just return error
+        raise HTTPException(status_code=500, detail=f"Error en la generación de imagen: {str(e)}")
+
 
 
 # --- GEMINI CHAT ENDPOINT ---

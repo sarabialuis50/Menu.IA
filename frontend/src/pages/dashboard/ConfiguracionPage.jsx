@@ -217,6 +217,7 @@ const ConfiguracionPage = () => {
 
     const [showTwilioToken, setShowTwilioToken] = useState(false);
     const [analyzingNutrition, setAnalyzingNutrition] = useState(false);
+    const [generatingAIImage, setGeneratingAIImage] = useState(false);
 
     // Modal states
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
@@ -633,6 +634,30 @@ const ConfiguracionPage = () => {
             toast.error('Error al generar información nutricional');
         } finally {
             setAnalyzingNutrition(false);
+        }
+    };
+
+    const handleGenerateAIImage = async () => {
+        if (!productForm.nombre) {
+            toast.error('Asigna un nombre al producto para generar su imagen');
+            return;
+        }
+        setGeneratingAIImage(true);
+        try {
+            const res = await api().post('/ai/generate-product-image', {
+                nombre: productForm.nombre,
+                descripcion: productForm.descripcion || ''
+            });
+
+            if (res.data.url) {
+                setProductForm(prev => ({ ...prev, imagen: res.data.url }));
+                toast.success('¡Imagen generada por IA con éxito!');
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error('Error al generar imagen con IA. Verifica tus créditos o configuración.');
+        } finally {
+            setGeneratingAIImage(false);
         }
     };
 
@@ -2464,6 +2489,22 @@ const ConfiguracionPage = () => {
                                                     onChange={handleImageUpload}
                                                     disabled={uploadingProductImage}
                                                 />
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="h-8 rounded-xl border-[#6366F1]/30 text-[#6366F1] hover:bg-[#6366F1]/5 font-bold gap-2 text-[10px]"
+                                                    onClick={handleGenerateAIImage}
+                                                    disabled={generatingAIImage || uploadingProductImage}
+                                                >
+                                                    {generatingAIImage ? (
+                                                        <Loader2 className="w-3 h-3 animate-spin" />
+                                                    ) : (
+                                                        <Sparkles className="w-3 h-3" />
+                                                    )}
+                                                    {generatingAIImage ? 'GENERANDO...' : '🔮 GENERAR CON IA'}
+                                                </Button>
+
                                                 <Button
                                                     type="button"
                                                     variant="outline"
