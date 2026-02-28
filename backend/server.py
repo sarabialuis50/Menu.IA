@@ -2720,19 +2720,24 @@ async def generate_product_description_endpoint(req: ProductDescriptionRequest, 
         model = genai.GenerativeModel('models/gemini-flash-latest')
         
         prompt = f"""
-        Actúa como un experto redactor de menús gastronómicos. 
-        Crea una descripción detallada y apetitosa para el siguiente producto: "{req.nombre}" del restaurante "{business.nombre}".
-        
-        Sigue estas reglas estrictas:
-        1. Enfócate EN LOS INGREDIENTES Y LA PREPARACIÓN (ej: carne 100% de res, pan fresco, vegetales crujientes, salsas de la casa).
-        2. Describe texturas y sabores reales (jugoso, sazonado, fresco, crujiente).
-        3. Evita frases vacías de marketing como "explosión de sabor" o "calmar el antojo" si no van acompañadas de una descripción real.
-        4. No uses lenguaje excesivamente coloquial o regional a menos que sea necesario para describir un ingrediente.
-        5. Longitud ideal: 2 a 3 frases (aprox 200 caracteres).
-        6. Responde ÚNICAMENTE con la descripción terminada.
-        
-        EJEMPLO DE ESTILO DESEADO:
-        "Hamburguesa con dos porciones de carne 100% de res, jugosas y bien sazonadas, servidas en pan fresco con queso fundido, vegetales frescos y salsas de la casa, ideal para quien busca gran sabor en un tamaño compacto."
+        Actúa como redactor de menús para un restaurante.
+        Voy a darte solo el nombre de un producto y tú debes inventar una descripción corta y sencilla que explique claramente qué es el producto y qué incluye.
+
+        Requisitos de la descripción:
+        - En español.
+        - 1 sola frase, máximo 1 renglón.
+        - Tono simple y descriptivo, sin palabras rebuscadas.
+        - Menciona tipo de preparación y los ingredientes o componentes más probables según el nombre.
+        - No inventes características exageradas (no digas “el mejor”, “increíble”, etc.).
+        - No repitas el nombre del producto más de una vez.
+
+        Ejemplo de estilo de salida:
+        Entrada: “Hamburguesa de carne doble Pequeña”
+        Salida: “Hamburguesa con dos porciones pequeñas de carne 100% de res, jugosas y bien sazonadas, servidas en pan fresco con queso, vegetales frescos y salsas de la casa, ideal para quien busca gran sabor en un tamaño compacto.”
+
+        Ahora responde SOLO con la descripción, sin explicaciones ni texto adicional.
+
+        Nombre del producto: {req.nombre}
         """
         
         response = model.generate_content(prompt)
