@@ -22,7 +22,8 @@ import {
     ArrowRight,
     ChevronLeft,
     ChevronRight,
-    Heart
+    Heart,
+    Clock
 } from 'lucide-react';
 import {
     Dialog,
