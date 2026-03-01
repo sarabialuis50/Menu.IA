@@ -573,8 +573,8 @@ const MenuContent = () => {
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
 
-          {/* Badge Etiqueta - Fixed position */}
-          <div className="absolute top-2 right-2 md:top-3 md:right-3 z-20">
+          {/* Badge Etiqueta - Fixed position (Left) */}
+          <div className="absolute top-2 left-2 md:top-3 md:left-3 z-20">
             {product.etiqueta && (
               <div className="bg-[#4ADE80] text-[#111814] text-[7px] md:text-[8px] font-black uppercase tracking-widest px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg shadow-md border border-white/10 flex items-center gap-1 ring-1 ring-white/20">
                 <div className="size-1 rounded-full bg-white animate-pulse" />

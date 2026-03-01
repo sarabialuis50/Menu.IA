@@ -522,6 +522,7 @@ class MenuItemBase(BaseModel):
     currency: str = "COP"
     category: Optional[str] = None
     image_url: Optional[str] = None
+    etiqueta: Optional[str] = None
     is_recommended: bool = False
     precio_original: Optional[float] = None
     oferta_porcentaje: Optional[int] = None

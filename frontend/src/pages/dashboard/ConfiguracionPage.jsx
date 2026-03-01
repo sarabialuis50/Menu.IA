@@ -719,6 +719,7 @@ const ConfiguracionPage = () => {
                 image_url: productForm.imagen,
                 available: productForm.disponible,
                 is_recommended: productForm.destacado,
+                etiqueta: productForm.etiqueta,
             };
 
             // If the backend expects the exact MenuItem model
@@ -733,6 +734,7 @@ const ConfiguracionPage = () => {
                 image_url: payload.image_url,
                 available: payload.available,
                 is_recommended: payload.is_recommended,
+                etiqueta: payload.etiqueta,
                 currency: 'COP',
                 is_vegan: productForm.is_vegan,
                 is_vegetarian: productForm.is_vegetarian,
