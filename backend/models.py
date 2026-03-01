@@ -158,6 +158,11 @@ class Business(BusinessBase):
     wa_messages_count: int = 0
     wa_messages_limit: int = 0
     wa_credits: int = 0
+    # IA Credits Usage
+    ai_credits_desc_used: int = 0
+    ai_credits_img_used: int = 0
+    ai_credits_nutri_used: int = 0
+    ai_credits_last_reset: Optional[datetime] = None
     plan_expires_at: Optional[datetime] = None
 
 class BusinessPublic(BusinessBase):
@@ -167,6 +172,11 @@ class BusinessPublic(BusinessBase):
     wa_messages_count: int = 0
     wa_messages_limit: int = 0
     wa_credits: int = 0
+    # IA Credits Usage
+    ai_credits_desc_used: int = 0
+    ai_credits_img_used: int = 0
+    ai_credits_nutri_used: int = 0
+    ai_credits_last_reset: Optional[datetime] = None
     plan_expires_at: Optional[datetime] = None
 
 

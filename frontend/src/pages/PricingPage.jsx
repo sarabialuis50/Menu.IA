@@ -67,20 +67,20 @@ export default function PricingPage() {
                         <PricingCard
                             name="Básico"
                             price="$39.900/mes"
-                            features={['100 pedidos/mes', '500 mensajes de WhatsApp', 'Menú QR interactivo', 'Soporte por email']}
+                            features={['100 pedidos/mes', '500 mensajes de WhatsApp', 'Menú QR interactivo', 'Sistema Fidelización (Puntos)', '50 Créditos Menu IA / tipo', 'Agente IA básico', 'Soporte por email']}
                             onSelect={() => navigate('/register')}
                         />
                         <PricingCard
                             name="Pro"
                             price="$111.900/mes"
                             popular
-                            features={['400 pedidos/mes', '1.500 mensajes de WhatsApp', 'Sistema Fidelización (Puntos)', 'Agente IA avanzado', 'Soporte prioritario']}
+                            features={['400 pedidos/mes', '1.500 mensajes de WhatsApp', 'Sistema Fidelización (Puntos)', '120 Créditos Menu IA / tipo', 'Agente IA avanzado', 'Soporte prioritario']}
                             onSelect={() => navigate('/register')}
                         />
                         <PricingCard
                             name="Premium"
                             price="$209.900/mes"
-                            features={['Pedidos ilimitados', '3.000 mensajes de WhatsApp', 'Fidelización COMPLETA', 'Agente IA Personalizado', 'Gerente de cuenta VIP']}
+                            features={['Pedidos ilimitados', '3.000 mensajes de WhatsApp', 'Sistema Fidelización (Puntos)', '300 Créditos Menu IA / tipo', 'Agente IA Personalizado', 'Gerente de cuenta VIP']}
                             onSelect={() => navigate('/register')}
                         />
                     </div>

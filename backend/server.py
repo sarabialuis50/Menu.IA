@@ -12,6 +12,7 @@ from datetime import datetime, timezone, timedelta
 import jwt
 import bcrypt
 import json
+import time
 import asyncio
 import uuid
 from pathlib import Path
@@ -59,6 +60,15 @@ SECRET_KEY = os.environ.get("JWT_SECRET", "secret-key")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 30 # 30 days
 ACCESS_TOKEN_EXPIRE_HOURS = 24 * 30
+
+# --- AI CREDIT CONFIG ---
+AI_CREDITS_LIMITS_PER_TYPE = {
+    "basic": 50,
+    "pro": 120,
+    "premium": 300,
+    "free": 5,
+    "trial": 10
+}
 
 # Initialize MercadoPago SDK
 mp_access_token = os.environ.get("MERCADOPAGO_ACCESS_TOKEN")
@@ -221,6 +231,35 @@ def create_token(data: dict, expires_delta: timedelta = None) -> str:
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
+def deduct_ai_credit(business_id: str, credit_type: str, current_business: Business):
+    """
+    credit_type: 'desc', 'img', 'nutri'
+    """
+    plan = current_business.plan or "free"
+    # Basic protection against case sensitivity or unexpected plan names
+    plan_key = plan.lower()
+    if plan_key not in AI_CREDITS_LIMITS_PER_TYPE:
+        plan_key = "free"
+        
+    limit = AI_CREDITS_LIMITS_PER_TYPE.get(plan_key, 5)
+    
+    field_name = f"ai_credits_{credit_type}_used"
+    used = getattr(current_business, field_name)
+    
+    if used >= limit:
+        raise HTTPException(
+            status_code=403, 
+            detail=f"Has agotado tus créditos de IA para {credit_type}. Límite del plan ({plan}): {limit}."
+        )
+    
+    # Deduct (increment used count)
+    new_used = used + 1
+    try:
+        supabase.table('negocios').update({field_name: new_used}).eq('id', business_id).execute()
+    except Exception as e:
+        logger.error(f"Error deducting AI credit ({credit_type}) for {business_id}: {e}")
+
+
 async def get_current_business(credentials: HTTPAuthorizationCredentials = Depends(security)) -> Business:
     try:
         payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
@@ -257,6 +296,44 @@ async def get_current_business(credentials: HTTPAuthorizationCredentials = Depen
                     business_doc['plan_expires_at'] = None
             except Exception as exp_err:
                 logger.error(f"Error checking plan expiration: {exp_err}")
+
+        # AI CREDITS RESET CHECK (30 DAYS)
+        from datetime import datetime, timezone
+        last_reset = business_doc.get('ai_credits_last_reset')
+        needs_reset = False
+        now = datetime.now(timezone.utc)
+        
+        if not last_reset:
+            needs_reset = True
+        else:
+            try:
+                # Handle possible string or already datetime types
+                if isinstance(last_reset, str):
+                    last_reset_dt = datetime.fromisoformat(last_reset.replace('Z', '+00:00'))
+                else:
+                    last_reset_dt = last_reset
+                    
+                if (now - last_reset_dt).days >= 30:
+                    needs_reset = True
+            except Exception as e:
+                logger.warning(f"Error parsing last_reset date: {e}")
+                needs_reset = True
+                
+        if needs_reset:
+            logger.info(f"Resetting AI credits for business {business_id}")
+            update_data = {
+                'ai_credits_desc_used': 0,
+                'ai_credits_img_used': 0,
+                'ai_credits_nutri_used': 0,
+                'ai_credits_last_reset': now.isoformat()
+            }
+            try:
+                supabase.table('negocios').update(update_data).eq('id', business_id).execute()
+            except Exception as e:
+                logger.error(f"Fallo al actualizar créditos de IA en DB: {e}")
+                
+            # Update local doc for the current request
+            business_doc.update(update_data)
 
         if 'password_hash' in business_doc:
             del business_doc['password_hash']
@@ -459,15 +536,22 @@ async def register_business(data: BusinessCreate):
         business_dict['password_hash'] = hash_password(data.password)
         
         # Remove fields not in DB schema to prevent errors
-        cols_res = supabase.table('negocios').select('*').limit(0).execute()
-        db_cols = []
+        try:
+             cols_res = supabase.table('negocios').select('*').limit(1).execute()
+             db_cols = cols_res.data[0].keys() if cols_res.data else []
+        except:
+             db_cols = []
+             
         # Fallback if we can't get columns easily - but we know the core ones
         core_cols = ['id', 'nombre', 'slug', 'slogan', 'descripcion', 'direccion', 'telefono', 'whatsapp', 'horarios', 'logo_url', 'banner_url', 'email', 'password_hash']
         
-        filtered_dict = {k: v for k, v in business_dict.items() if v is not None}
+        target_cols = set(list(db_cols) + core_cols)
+        
+        filtered_dict = {k: v for k, v in business_dict.items() if (k in target_cols or not target_cols) and v is not None}
+        
         # Explicitly remove known problematic fields if they leak
-        for field in ['is_active', 'plan', 'subscription_plan']:
-            if field in filtered_dict:
+        for field in ['is_active', 'plan', 'subscription_plan', 'ai_use_modal']:
+            if field in filtered_dict and field not in db_cols:
                 del filtered_dict[field]
 
         # Insert into Supabase
@@ -816,12 +900,18 @@ async def create_product(slug: str, data: ProductCreate, business: Business = De
 
     # Estimate nutrition if not provided
     if not any([product.nutri_kcal, product.nutri_proteina, product.nutri_carbohidratos, product.nutri_grasa]):
-        nutrition = await estimate_nutrition(product.nombre, product.descripcion or "")
-        if nutrition:
-            product.nutri_kcal = nutrition.get('kcal')
-            product.nutri_proteina = nutrition.get('proteina')
-            product.nutri_carbohidratos = nutrition.get('carbohidratos')
-            product.nutri_grasa = nutrition.get('grasa')
+        try:
+            deduct_ai_credit(business.id, 'nutri', business)
+            nutrition = await estimate_nutrition(product.nombre, product.descripcion or "")
+            if nutrition:
+                product.nutri_kcal = nutrition.get('kcal')
+                product.nutri_proteina = nutrition.get('proteina')
+                product.nutri_carbohidratos = nutrition.get('carbohidratos')
+                product.nutri_grasa = nutrition.get('grasa')
+        except HTTPException:
+            logger.info(f"Skipping auto-nutrition for {slug} due to no credits or limit reached")
+        except Exception as e:
+            logger.error(f"Error in auto-nutrition: {e}")
     
     try:
         data_dict = serialize_doc(product.model_dump())
@@ -900,13 +990,19 @@ async def update_product(slug: str, product_id: str, data: ProductUpdate, busine
             new_name = update_data.get('nombre', current.get('nombre'))
             new_desc = update_data.get('descripcion', current.get('descripcion'))
             
-            nutrition = await estimate_nutrition(new_name, new_desc or "")
-            if nutrition:
-                update_data['nutri_kcal'] = nutrition.get('kcal')
-                update_data['nutri_proteina'] = nutrition.get('proteina')
-                update_data['nutri_carbohidratos'] = nutrition.get('carbohidratos')
-                update_data['nutri_grasa'] = nutrition.get('grasa')
-                logger.info(f"Re-estimated nutrition for updated product {product_id}")
+            try:
+                deduct_ai_credit(business.id, 'nutri', business)
+                nutrition = await estimate_nutrition(new_name, new_desc or "")
+                if nutrition:
+                    update_data['nutri_kcal'] = nutrition.get('kcal')
+                    update_data['nutri_proteina'] = nutrition.get('proteina')
+                    update_data['nutri_carbohidratos'] = nutrition.get('carbohidratos')
+                    update_data['nutri_grasa'] = nutrition.get('grasa')
+                    logger.info(f"Re-estimated nutrition for updated product {product_id}")
+            except HTTPException:
+                logger.info(f"Skipping re-estimation for {product_id} due to no credits")
+            except Exception as e:
+                logger.error(f"Error in re-estimation: {e}")
     
     try:
         response = supabase.table('productos').update(update_data).match({
@@ -2642,6 +2738,8 @@ class ProductImageRequest(BaseModel):
 
 @api_router.post("/ai/generate-product-image")
 async def generate_product_image_endpoint(req: ProductImageRequest, business: Business = Depends(get_current_business)):
+    # Deduct credit
+    deduct_ai_credit(business.id, 'img', business)
     try:
         # Prompt enhancement with Gemini Flash (most stable in this environment)
         genai.configure(api_key=os.environ.get("GOOGLE_GEMINI_API_KEY"))
@@ -2667,27 +2765,37 @@ async def generate_product_image_endpoint(req: ProductImageRequest, business: Bu
         if not enhanced_prompt:
              enhanced_prompt = f"Professional food photography of {req.nombre}, studio lighting, highly detailed."
              
-        # Generate image with OpenAI's DALL-E 3
+        # Generate image with OpenAI's GPT Image 1 Mini (Much more cost-efficient)
         openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
         img_gen_res = openai_client.images.generate(
-            model="dall-e-3",
+            model="gpt-image-1-mini",
             prompt=enhanced_prompt,
             size="1024x1024",
-            quality="standard",
+            quality="low",
             n=1,
         )
         
         dalle_url = img_gen_res.data[0].url
+        b64_data = img_gen_res.data[0].b64_json
         
-        # Download and save to Supabase
-        import httpx
-        async with httpx.AsyncClient() as http_client:
-            img_res = await http_client.get(dalle_url, timeout=30.0)
-            if img_res.status_code != 200:
-                raise HTTPException(status_code=500, detail="Fallo al obtener la imagen de la IA")
-            
-            image_bytes = img_res.content
-            
+        image_bytes = None
+        
+        if b64_data:
+            import base64
+            image_bytes = base64.b64decode(b64_data)
+        elif dalle_url:
+            # Download and save to Supabase
+            import httpx
+            async with httpx.AsyncClient() as http_client:
+                img_res = await http_client.get(dalle_url, timeout=30.0)
+                if img_res.status_code != 200:
+                    raise HTTPException(status_code=500, detail="Fallo al obtener la imagen de la IA")
+                
+                image_bytes = img_res.content
+        
+        if not image_bytes:
+             raise HTTPException(status_code=500, detail="No se pudo obtener el contenido de la imagen de la IA")
+             
         file_ext = "png"
         file_name = f"{business.id}/ai-{uuid.uuid4()}.{file_ext}"
         
@@ -2715,6 +2823,8 @@ class ProductDescriptionRequest(BaseModel):
 
 @api_router.post("/ai/generate-product-description")
 async def generate_product_description_endpoint(req: ProductDescriptionRequest, business: Business = Depends(get_current_business)):
+    # Deduct credit
+    deduct_ai_credit(business.id, 'desc', business)
     try:
         genai.configure(api_key=os.environ.get("GOOGLE_GEMINI_API_KEY"))
         model = genai.GenerativeModel('models/gemini-flash-latest')
@@ -2943,7 +3053,9 @@ class NutritionRequest(BaseModel):
     description: Optional[str] = ""
 
 @api_router.post("/gemini/nutrition")
-async def analyze_nutrition(request: NutritionRequest):
+async def analyze_nutrition(request: NutritionRequest, business: Business = Depends(get_current_business)):
+    # Deduct credit
+    deduct_ai_credit(business.id, 'nutri', business)
     prompt = f"""
     Como experto nutricionista, analiza el siguiente plato y estima sus valores nutricionales aproximados para una porción estándar.
     Plato: {request.name}

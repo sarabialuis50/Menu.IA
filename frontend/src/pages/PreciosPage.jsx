@@ -38,8 +38,9 @@ export default function PreciosPage() {
                 { name: "Pedidos en Mesa y Domicilio", included: true },
                 { name: "Seguimiento de pedidos", included: true },
                 { name: "Agente IA WhatsApp (Básico)", included: true },
-                { name: "Sistema Fidelización (Puntos)", included: false },
-                { name: "Agente IA Gemini (Avanzado)", included: false },
+                { name: "Sistema Fidelización (Puntos)", included: true },
+                { name: "50 Créditos Menu IA / tipo", included: true },
+                { name: "Agente IA Gemini (Básico)", included: true },
                 { name: "Soporte", value: "Por Email" }
             ]
         },
@@ -60,6 +61,7 @@ export default function PreciosPage() {
                 { name: "Seguimiento de pedidos", included: true },
                 { name: "Agente IA WhatsApp (Avanzado)", included: true },
                 { name: "Sistema Fidelización (Puntos)", included: true },
+                { name: "120 Créditos Menu IA / tipo", included: true },
                 { name: "Agente IA Gemini (Avanzado)", included: true },
                 { name: "Soporte", value: "Prioritario WhatsApp" }
             ]
@@ -80,7 +82,8 @@ export default function PreciosPage() {
                 { name: "Pedidos en Mesa y Domicilio", included: true },
                 { name: "Seguimiento de pedidos", included: true },
                 { name: "Agente IA WhatsApp (Personalizado)", included: true },
-                { name: "Sistema Fidelización COMPLETO", included: true },
+                { name: "Sistema Fidelización (Puntos)", included: true },
+                { name: "300 Créditos Menu IA / tipo", included: true },
                 { name: "Agente IA Gemini (Experto)", included: true },
                 { name: "Soporte", value: "Gerente de Cuenta VIP" }
             ]
@@ -234,8 +237,10 @@ export default function PreciosPage() {
                                 <div className="space-y-3 mb-8 flex-1">
                                     {plan.features.map((f, i) => (
                                         <div key={i} className="flex gap-2 text-sm">
-                                            {f.included ? <Check className="w-4 h-4 text-[#22C55E]" /> : <X className="w-4 h-4 text-gray-300" />}
-                                            <span className={f.included ? 'text-gray-700' : 'text-gray-400 line-through'}>{f.name}</span>
+                                            {f.included !== false ? <Check className="w-4 h-4 text-[#22C55E]" /> : <X className="w-4 h-4 text-gray-300" />}
+                                            <span className={f.included !== false ? 'text-gray-700' : 'text-gray-400 line-through'}>
+                                                {f.name}{f.value ? `: ${f.value}` : ''}
+                                            </span>
                                         </div>
                                     ))}
                                 </div>

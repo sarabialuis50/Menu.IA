@@ -611,6 +611,25 @@ const ConfiguracionPage = () => {
         setIsProductModalOpen(true);
     };
 
+    const getAICredits = (type) => {
+        const plan = businessData?.plan?.toLowerCase() || 'free';
+        const limits = {
+            'basic': 50,
+            'pro': 120,
+            'premium': 300,
+            'free': 5,
+            'trial': 10
+        };
+        const limit = limits[plan] || 5;
+        const usedField = `ai_credits_${type === 'desc' ? 'desc' : type === 'img' ? 'img' : 'nutri'}_used`;
+        const used = businessData[usedField] || 0;
+        return {
+            remaining: Math.max(0, limit - used),
+            limit,
+            used
+        };
+    };
+
     const handleAnalyzeNutrition = async () => {
         if (!productForm.nombre) {
             toast.error('Ingresa al menos el nombre del plato');
@@ -635,6 +654,9 @@ const ConfiguracionPage = () => {
             toast.error('Error al generar información nutricional');
         } finally {
             setAnalyzingNutrition(false);
+            // Refresh business data to update credits
+            const updatedBiz = await api().get(`/business/${slug}`);
+            setBusinessData(prev => ({ ...prev, ...updatedBiz.data }));
         }
     };
 
@@ -659,6 +681,9 @@ const ConfiguracionPage = () => {
             toast.error('Error al generar imagen con IA. Verifica tus créditos o configuración.');
         } finally {
             setGeneratingAIImage(false);
+            // Refresh business data to update credits
+            const updatedBiz = await api().get(`/business/${slug}`);
+            setBusinessData(prev => ({ ...prev, ...updatedBiz.data }));
         }
     };
 
@@ -682,6 +707,9 @@ const ConfiguracionPage = () => {
             toast.error('Error al generar descripción con IA.');
         } finally {
             setGeneratingAIDescription(false);
+            // Refresh business data to update credits
+            const updatedBiz = await api().get(`/business/${slug}`);
+            setBusinessData(prev => ({ ...prev, ...updatedBiz.data }));
         }
     };
 
@@ -2500,21 +2528,33 @@ const ConfiguracionPage = () => {
                                     <div className="space-y-2">
                                         <div className="flex items-center justify-between">
                                             <Label className="font-bold text-[#111814]">Descripción / Ingredientes</Label>
-                                            <Button
-                                                type="button"
-                                                variant="link"
-                                                size="sm"
-                                                onClick={handleGenerateAIDescription}
-                                                disabled={generatingAIDescription || !productForm.nombre}
-                                                className="h-auto p-0 text-[#22C55E] hover:text-[#4ADE80] font-bold text-[10px] gap-1.5"
-                                            >
-                                                {generatingAIDescription ? (
-                                                    <Loader2 className="w-3 h-3 animate-spin" />
-                                                ) : (
-                                                    <Sparkles className="w-3 h-3" />
-                                                )}
-                                                {generatingAIDescription ? 'GENERANDO...' : 'DESCRIBIR CON IA'}
-                                            </Button>
+                                            <div className="flex items-center gap-2">
+                                                {(() => {
+                                                    const credits = getAICredits('desc');
+                                                    return (
+                                                        <>
+                                                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md ${credits.remaining > 0 ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                                                                {credits.remaining}/{credits.limit} créditos
+                                                            </span>
+                                                            <Button
+                                                                type="button"
+                                                                variant="link"
+                                                                size="sm"
+                                                                onClick={handleGenerateAIDescription}
+                                                                disabled={generatingAIDescription || !productForm.nombre || credits.remaining <= 0}
+                                                                className={`h-auto p-0 text-[#22C55E] hover:text-[#4ADE80] font-bold text-[10px] gap-1.5 ${credits.remaining <= 0 ? 'opacity-30' : ''}`}
+                                                            >
+                                                                {generatingAIDescription ? (
+                                                                    <Loader2 className="w-3 h-3 animate-spin" />
+                                                                ) : (
+                                                                    <Sparkles className="w-3 h-3" />
+                                                                )}
+                                                                {generatingAIDescription ? 'GENERANDO...' : 'DESCRIBIR CON IA'}
+                                                            </Button>
+                                                        </>
+                                                    );
+                                                })()}
+                                            </div>
                                         </div>
                                         <Textarea
                                             value={productForm.descripcion}
@@ -2536,21 +2576,31 @@ const ConfiguracionPage = () => {
                                                     onChange={handleImageUpload}
                                                     disabled={uploadingProductImage}
                                                 />
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    size="sm"
-                                                    className="h-8 rounded-xl border-[#6366F1]/30 text-[#6366F1] hover:bg-[#6366F1]/5 font-bold gap-2 text-[10px]"
-                                                    onClick={handleGenerateAIImage}
-                                                    disabled={generatingAIImage || uploadingProductImage}
-                                                >
-                                                    {generatingAIImage ? (
-                                                        <Loader2 className="w-3 h-3 animate-spin" />
-                                                    ) : (
-                                                        <Sparkles className="w-3 h-3" />
-                                                    )}
-                                                    {generatingAIImage ? 'GENERANDO...' : '🔮 GENERAR CON IA'}
-                                                </Button>
+                                                {(() => {
+                                                    const credits = getAICredits('img');
+                                                    return (
+                                                        <div className="flex items-center gap-2">
+                                                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md ${credits.remaining > 0 ? 'bg-purple-50 text-purple-600' : 'bg-red-50 text-red-600'}`}>
+                                                                {credits.remaining}/{credits.limit}
+                                                            </span>
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                size="sm"
+                                                                className={`h-8 rounded-xl border-[#6366F1]/30 text-[#6366F1] hover:bg-[#6366F1]/5 font-bold gap-2 text-[10px] ${credits.remaining <= 0 ? 'opacity-30 hover:bg-transparent' : ''}`}
+                                                                onClick={handleGenerateAIImage}
+                                                                disabled={generatingAIImage || uploadingProductImage || credits.remaining <= 0}
+                                                            >
+                                                                {generatingAIImage ? (
+                                                                    <Loader2 className="w-3 h-3 animate-spin" />
+                                                                ) : (
+                                                                    <Sparkles className="w-3 h-3" />
+                                                                )}
+                                                                {generatingAIImage ? 'GENERANDO...' : '🔮 GENERAR CON IA'}
+                                                            </Button>
+                                                        </div>
+                                                    );
+                                                })()}
 
                                                 <Button
                                                     type="button"
@@ -2709,16 +2759,28 @@ const ConfiguracionPage = () => {
                                                     <Label className="font-bold text-[#111814]">Valores Nutricionales</Label>
                                                     <p className="text-[10px] text-gray-400">Información calculada o aproximada (Opcional)</p>
                                                 </div>
-                                                <Button
-                                                    type="button"
-                                                    onClick={handleAnalyzeNutrition}
-                                                    disabled={analyzingNutrition}
-                                                    variant="outline"
-                                                    className="h-8 rounded-xl border-[#22C55E]/20 bg-[#22C55E]/5 text-[#22C55E] hover:bg-[#22C55E] hover:text-white transition-all text-[10px] font-black gap-2 px-3"
-                                                >
-                                                    {analyzingNutrition ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                                                    {analyzingNutrition ? 'ANALIZANDO...' : '🔮 GENERAR CON IA'}
-                                                </Button>
+                                                <div className="flex items-center gap-2">
+                                                    {(() => {
+                                                        const credits = getAICredits('nutri');
+                                                        return (
+                                                            <>
+                                                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md ${credits.remaining > 0 ? 'bg-blue-50 text-blue-600' : 'bg-red-50 text-red-600'}`}>
+                                                                    {credits.remaining}/{credits.limit}
+                                                                </span>
+                                                                <Button
+                                                                    type="button"
+                                                                    onClick={handleAnalyzeNutrition}
+                                                                    disabled={analyzingNutrition || credits.remaining <= 0}
+                                                                    variant="outline"
+                                                                    className={`h-8 rounded-xl border-[#22C55E]/20 bg-[#22C55E]/5 text-[#22C55E] hover:bg-[#22C55E] hover:text-white transition-all text-[10px] font-black gap-2 px-3 ${credits.remaining <= 0 ? 'opacity-30' : ''}`}
+                                                                >
+                                                                    {analyzingNutrition ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                                                                    {analyzingNutrition ? 'ANALIZANDO...' : '🔮 GENERAR CON IA'}
+                                                                </Button>
+                                                            </>
+                                                        );
+                                                    })()}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -2830,7 +2892,7 @@ const ConfiguracionPage = () => {
 
                                             <div className="space-y-6">
                                                 {(productForm[section.id] || []).map((group, gIdx) => (
-                                                    <div key={group.id || gIdx} className="bg-white border-2 border-[#4ADE80]/10 rounded-[2rem] p-6 shadow-sm relative group/card hover:border-[#4ADE80]/30 transition-all">
+                                                    <div key={group.id || gIdx} className="bg-white border border-[#22C55E]/15 rounded-[2rem] p-6 shadow-sm relative group/card hover:border-[#22C55E]/30 transition-all">
                                                         <button
                                                             type="button"
                                                             onClick={() => {
@@ -2843,9 +2905,9 @@ const ConfiguracionPage = () => {
                                                             <X className="w-4 h-4" />
                                                         </button>
 
-                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                                            <div className="space-y-2">
-                                                                <Label className="text-[10px] font-black uppercase text-gray-400">Nombre del Grupo (Ej: {section.id === 'tamanos' ? 'Escoge Tamaño' : 'Adiciones'})</Label>
+                                                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4 items-start">
+                                                            <div className="md:col-span-2 lg:col-span-1 space-y-2">
+                                                                <Label className="text-[10px] font-black uppercase text-gray-400">Nombre del Grupo</Label>
                                                                 <Input
                                                                     value={group.nombre}
                                                                     onChange={e => {
@@ -2853,12 +2915,12 @@ const ConfiguracionPage = () => {
                                                                         newList[gIdx].nombre = e.target.value;
                                                                         setProductForm({ ...productForm, [section.id]: newList });
                                                                     }}
-                                                                    className="h-10 rounded-xl bg-gray-50 border-[#4ADE80]/40 focus:bg-white"
-                                                                    placeholder={`Ej: ${section.id === 'tamanos' ? 'Tamaño P' : 'Ingredientes'}`}
+                                                                    className="h-10 rounded-xl bg-gray-50 border-[#22C55E]/10 focus:bg-white"
+                                                                    placeholder={`Ej: ${section.id === 'tamanos' ? 'Tamaño' : 'Ingredientes'}`}
                                                                 />
                                                             </div>
-                                                            <div className="flex flex-wrap items-center gap-x-6 gap-y-4 pt-4">
-                                                                <div className="flex items-center gap-2">
+                                                            <div className="flex flex-wrap items-center gap-x-4 gap-y-4 pt-4 lg:pt-6 md:col-span-3 lg:col-span-3 lg:justify-end">
+                                                                <div className="flex items-center gap-2 bg-[#F0FCF4] px-3 py-1.5 rounded-xl border border-[#22C55E]/10">
                                                                     <Switch
                                                                         checked={group.obligatorio}
                                                                         onCheckedChange={val => {
@@ -2867,12 +2929,12 @@ const ConfiguracionPage = () => {
                                                                             newList[gIdx].seleccion_minima = val ? 1 : 0;
                                                                             setProductForm({ ...productForm, [section.id]: newList });
                                                                         }}
-                                                                        className="data-[state=checked]:bg-[#4ADE80] scale-75"
+                                                                        className="data-[state=checked]:bg-[#22C55E] scale-75"
                                                                     />
-                                                                    <Label className="text-[10px] font-black uppercase text-gray-600">Obligatorio</Label>
+                                                                    <Label className="text-[9px] font-black uppercase text-[#22C55E] cursor-pointer">Obligatorio</Label>
                                                                 </div>
-                                                                <div className="flex items-center gap-2">
-                                                                    <Label className="text-[10px] font-black uppercase text-gray-400">Max</Label>
+                                                                <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-gray-100 shadow-sm">
+                                                                    <Label className="text-[9px] font-black uppercase text-gray-400">Máx. Items</Label>
                                                                     <Input
                                                                         type="number"
                                                                         min="1"
@@ -2882,11 +2944,11 @@ const ConfiguracionPage = () => {
                                                                             newList[gIdx].seleccion_maxima = parseInt(e.target.value) || 1;
                                                                             setProductForm({ ...productForm, [section.id]: newList });
                                                                         }}
-                                                                        className="h-10 w-16 rounded-xl bg-gray-50 border-[#4ADE80]/40 text-center font-bold"
+                                                                        className="h-7 w-12 rounded-lg bg-gray-50 border-gray-100 text-center font-bold text-xs p-0 px-1"
                                                                     />
                                                                 </div>
-                                                                <div className="flex items-center gap-2">
-                                                                    <Label className="text-[10px] font-black uppercase text-gray-400" title="Cantidad máxima por cada opción individual. 0 = ilimitado">Cant. x Opción</Label>
+                                                                <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-gray-100 shadow-sm">
+                                                                    <Label className="text-[9px] font-black uppercase text-gray-400" title="Cantidad máxima por cada opción individual. 0 = ilimitado">Cant. x Opción</Label>
                                                                     <Input
                                                                         type="number"
                                                                         min="0"
@@ -2896,7 +2958,7 @@ const ConfiguracionPage = () => {
                                                                             newList[gIdx].max_qty_per_option = parseInt(e.target.value) || 0;
                                                                             setProductForm({ ...productForm, [section.id]: newList });
                                                                         }}
-                                                                        className="h-10 w-16 rounded-xl bg-gray-50 border-[#4ADE80]/40 text-center font-bold"
+                                                                        className="h-7 w-12 rounded-lg bg-gray-50 border-gray-100 text-center font-bold text-xs p-0 px-1"
                                                                         placeholder="1"
                                                                     />
                                                                 </div>
