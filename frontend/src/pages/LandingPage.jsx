@@ -58,7 +58,7 @@ export default function LandingPage() {
                 className="bg-[#4ADE80] hover:bg-transparent text-[#111814] hover:text-[#22C55E] border-2 border-[#4ADE80] hidden sm:flex transition-colors"
                 data-testid="register-nav-btn"
               >
-                Prueba gratis x 7 Dias
+                Registrarse
               </Button>
             </div>
           </div>

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, User, Bot, Sparkles, SendHorizontal, Mic, Square, Play, Volume2 } from 'lucide-react';
 import axios from 'axios';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+const API = (import.meta.env && (import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL)) || '/api';
 
 export const ChatModal = ({ isOpen, onClose, businessName, slug, aiSaludo }) => {
     const [messages, setMessages] = useState([]);
