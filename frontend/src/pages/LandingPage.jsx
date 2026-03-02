@@ -58,7 +58,7 @@ export default function LandingPage() {
                 className="bg-[#4ADE80] hover:bg-transparent text-[#111814] hover:text-[#22C55E] border-2 border-[#4ADE80] hidden sm:flex transition-colors"
                 data-testid="register-nav-btn"
               >
-                Comenzar gratis
+                Prueba gratis x 7 Dias
               </Button>
             </div>
           </div>
@@ -79,10 +79,10 @@ export default function LandingPage() {
               <span className="inline-block px-4 py-1.5 rounded-full bg-[#4ADE80]/10 text-[#22C55E] text-xs font-black uppercase tracking-wider mt-6 sm:mt-0 mb-6 transition-all">
                 Gestión Inteligente para tu Negocio
               </span>
-              <h1 className="font-heading text-4xl sm:text-5xl lg:text-[56px] font-extrabold text-[#0F172A] tracking-tight mb-6 lg:mb-8 leading-[1.05]">
+              <h1 className="font-heading text-4xl sm:text-5xl lg:text-[56px] font-extrabold text-[#0F172A] tracking-tight mb-8 lg:mb-8 leading-[1.05]">
                 La forma más inteligente de <span className="bg-gradient-to-r from-[#22C55E] to-[#06B6D4] bg-clip-text text-transparent">gestionar tu negocio</span>
               </h1>
-              <p className="text-base sm:text-lg text-slate-600 mb-8 lg:mb-10 max-w-lg font-medium leading-snug">
+              <p className="text-base sm:text-lg text-slate-600 mb-12 lg:mb-10 max-w-xl font-medium leading-relaxed">
                 Optimiza tus pedidos, fideliza clientes con IA y automatiza tu comunicación por WhatsApp en un solo lugar.
               </p>
               <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 lg:gap-4 w-full sm:w-auto">
@@ -92,7 +92,7 @@ export default function LandingPage() {
                   className="bg-[#4ADE80] hover:bg-transparent text-[#111814] hover:text-[#22C55E] border-2 border-[#4ADE80] text-lg px-8 h-14 rounded-xl shadow-lg shadow-green-500/20 transition-all w-full sm:w-auto"
                   data-testid="hero-cta-btn"
                 >
-                  Comenzar gratis
+                  Prueba gratis x 7 Dias
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
                 <Button
@@ -102,7 +102,7 @@ export default function LandingPage() {
                   className="text-lg px-8 h-14 rounded-xl border-2 text-[#0F172A] border-[#22C55E] w-full sm:w-auto"
                   data-testid="demo-btn"
                 >
-                  Ver demo
+                  Ver menú demo
                 </Button>
               </div>
 
@@ -314,7 +314,7 @@ export default function LandingPage() {
             onClick={() => navigate('/register')}
             className="bg-[#4ADE80] hover:bg-transparent text-[#111814] hover:text-[#22C55E] border-2 border-[#4ADE80] text-lg px-10 h-16 rounded-2xl shadow-[0_20px_40px_rgba(34,197,94,0.2)] transition-all hover:scale-105 active:scale-95"
           >
-            Comenzar gratis ahora
+            Prueba gratis x 7 Dias
             <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
         </div>

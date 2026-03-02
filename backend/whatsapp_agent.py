@@ -8,6 +8,7 @@ from twilio.rest import Client
 from supabase import create_client, Client as SupabaseClient
 from ai_base import get_shared_instructions, get_fallback_message
 from dotenv import load_dotenv
+from whatsapp_templates import get_template_data  # Nueva importación
 
 load_dotenv()
 
@@ -878,5 +879,42 @@ def send_whatsapp_response(to_number: str, body: str, custom_config: Dict[str, A
         logger.error(f"Error enviando respuesta WA a {to_number}: {e}")
         return None
 
+def send_whatsapp_template(to_number: str, template_key: str, custom_config: Dict[str, Any] = None, **kwargs):
+    """
+    Envía un mensaje usando las nuevas plantillas de Twilio aprobadas.
+    Si la plantilla no tiene un SID configurado, intenta enviar un fallback de texto.
+    """
+    try:
+        content_sid, content_variables = get_template_data(template_key, **kwargs)
+        
+        if not content_sid:
+            logger.warning(f"Template {template_key} sin SID configurado. Usando fallback de texto.")
+            # Aquí podrías generar un cuerpo de texto como fallback si quisieras
+            return None
+
+        sid = custom_config.get('sid') if custom_config else None
+        token = custom_config.get('token') if custom_config else None
+        from_number = custom_config.get('number') if custom_config else GLOBAL_TWILIO_NUMBER
+        
+        client = get_twilio_client(sid, token)
+        
+        # Formatear número
+        clean_number = to_number.replace(' ', '').replace('+', '').replace('-', '').replace('whatsapp:', '')
+        formatted_to = f"whatsapp:+{clean_number}" if not clean_number.startswith('57') else f"whatsapp:+{clean_number}"
+        if not formatted_to.startswith('whatsapp:+'): formatted_to = f"whatsapp:+{clean_number}"
+
+        message = client.messages.create(
+            from_=from_number if from_number.startswith('whatsapp:') else f"whatsapp:{from_number}",
+            to=formatted_to,
+            content_sid=content_sid,
+            content_variables=content_variables
+        )
+        
+        logger.info(f"Plantilla {template_key} enviada a {to_number}. SID: {message.sid}")
+        return message.sid
+    except Exception as e:
+        logger.error(f"Error enviando plantilla {template_key} a {to_number}: {e}")
+        return None
+
 # Export for external use
-__all__ = ['send_whatsapp_response', 'send_whatsapp_message', 'process_whatsapp_message', 'get_or_create_conversation']
+__all__ = ['send_whatsapp_response', 'send_whatsapp_message', 'process_whatsapp_message', 'get_or_create_conversation', 'send_whatsapp_template']

@@ -2483,6 +2483,140 @@ async def award_loyalty_points(negocio_id: str, telefono: str, nombre: str, tota
     }
 
 
+# ============ MARKETING & CAMPAIGNS ============
+
+class CampaignRequest(BaseModel):
+    segment_id: str  # 'all', 'oro', 'plata', 'bronce', 'new', 'inactive'
+    message: str
+
+@app.post("/api/marketing/send-campaign")
+async def send_marketing_campaign(request: CampaignRequest, background_tasks: BackgroundTasks, business: Business = Depends(get_current_business)):
+    """
+    Sends a bulk WhatsApp campaign to a specific segment of customers.
+    Deducts wa_credits from the business account.
+    """
+    # 1. Fetch Customers
+    try:
+        res = supabase.table('clientes_puntos').select('*').eq('negocio_id', business.id).execute()
+        all_customers = res.data if res.data else []
+    except Exception as e:
+        logger.error(f"Error fetching customers for campaign: {e}")
+        raise HTTPException(status_code=500, detail="Error al recuperar la base de datos de clientes.")
+    
+    # 2. Filter by Segment
+    filtered_customers = []
+    now = datetime.now(timezone.utc)
+    
+    if request.segment_id == 'all':
+        filtered_customers = all_customers
+    elif request.segment_id == 'oro':
+        filtered_customers = [c for c in all_customers if c.get('puntos_totales', 0) > 1000]
+    elif request.segment_id == 'plata':
+        filtered_customers = [c for c in all_customers if 300 <= c.get('puntos_totales', 0) <= 1000]
+    elif request.segment_id == 'bronce':
+        filtered_customers = [c for c in all_customers if c.get('puntos_totales', 0) < 300]
+    elif request.segment_id == 'new':
+        # Joined in last 30 days
+        thirty_days_ago = now - timedelta(days=30)
+        filtered_customers = [c for c in all_customers if datetime.fromisoformat(c.get('created_at').replace('Z', '+00:00')) > thirty_days_ago]
+    elif request.segment_id == 'inactive':
+        # Not updated in last 30 days
+        thirty_days_ago = now - timedelta(days=30)
+        filtered_customers = [c for c in all_customers if datetime.fromisoformat(c.get('updated_at').replace('Z', '+00:00')) < thirty_days_ago]
+        
+    count = len(filtered_customers)
+    if count == 0:
+        return {"success": False, "message": "No hay clientes en este segmento para enviar la campaña."}
+
+    # 3. Check Credits
+    if (business.wa_credits or 0) < count:
+        raise HTTPException(
+            status_code=403, 
+            detail=f"Créditos insuficientes. Tu saldo es de {business.wa_credits or 0} créditos y la campaña requiere {count}."
+        )
+    
+    # 4. Deduct Credits
+    new_credits = (business.wa_credits or 0) - count
+    try:
+        supabase.table('negocios').update({"wa_credits": new_credits}).eq('id', business.id).execute()
+    except Exception as e:
+        logger.error(f"Error updating wa_credits for {business.id}: {e}")
+        raise HTTPException(status_code=500, detail="Error al procesar el descuento de créditos.")
+    
+    # 5. Send (Background)
+    background_tasks.add_task(process_campaign_execution, business, filtered_customers, request.message)
+    
+    return {
+        "success": True, 
+        "message": f"Campaña iniciada para {count} clientes.",
+        "count": count,
+        "remaining_credits": new_credits
+    }
+
+async def process_campaign_execution(business: Business, customers: List[Dict], message_template: str):
+    """
+    Simulates or executes the sending of WhatsApp messages in a background task.
+    """
+    logger.info(f"Iniciando ejecución de campaña para {business.nombre} ({len(customers)} clientes)")
+    
+    for customer in customers:
+        # Replace tags
+        msg = message_template.replace("[Nombre]", customer.get('nombre', 'Cliente'))
+        msg = msg.replace("[Puntos]", str(customer.get('puntos_actuales', 0)))
+        msg = msg.replace("[Saldo]", str(customer.get('puntos_actuales', 0)))
+        msg = msg.replace("[Negocio]", business.nombre)
+        
+        # In a real scenario, call Twilio or WhatsApp API here
+        # For now, we simulate and log
+        await asyncio.sleep(0.5) # Simulate slight delay between messages
+        logger.info(f"Simulación WhatsApp - Para: {customer.get('telefono')} - Mensaje: {msg[:50]}...")
+
+    logger.info(f"Campaña finalizada para {business.nombre}")
+
+
+@app.get("/api/marketing/audience-counts")
+async def get_audience_counts(business: Business = Depends(get_current_business)):
+    """
+    Returns the count of customers in each marketing segment for the hub.
+    """
+    try:
+        res = supabase.table('clientes_puntos').select('*').eq('negocio_id', business.id).execute()
+        customers = res.data if res.data else []
+        
+        # Birthday today logic (Assuming format YYYY-MM-DD)
+        # Using simple string match for MM-DD
+        now_local = datetime.now() 
+        today_str = now_local.strftime("%m-%d")
+        
+        birthdays_today = []
+        for c in customers:
+            bday = c.get('fecha_nacimiento')
+            if bday and len(bday) >= 10:
+                # Format could be YYYY-MM-DD or DD/MM/YYYY
+                if '-' in bday:
+                    if bday[5:10] == today_str:
+                        birthdays_today.append(c)
+                elif '/' in bday:
+                    # DD/MM/YYYY -> MM-DD
+                    parts = bday.split('/')
+                    if len(parts) >= 2:
+                        if f"{parts[1]}-{parts[0]}" == today_str:
+                            birthdays_today.append(c)
+
+        return {
+            "all": len(customers),
+            "oro": len([c for c in customers if (c.get('puntos_totales') or 0) > 1000]),
+            "plata": len([c for c in customers if 300 <= (c.get('puntos_totales') or 0) <= 1000]),
+            "bronce": len([c for c in customers if (c.get('puntos_totales') or 0) < 300]),
+            "new": len([c for c in customers if (datetime.now(timezone.utc) - datetime.fromisoformat(c.get('created_at').replace('Z', '+00:00'))).days <= 30]),
+            "inactive": len([c for c in customers if (datetime.now(timezone.utc) - datetime.fromisoformat(c.get('updated_at', c.get('created_at')).replace('Z', '+00:00'))).days > 30]),
+            "birthdays": len(birthdays_today)
+        }
+    except Exception as e:
+        logger.error(f"Error getting audience counts: {e}")
+        return {"all": 0, "oro": 0, "plata": 0, "bronce": 0, "new": 0, "inactive": 0, "birthdays": 0}
+
+
 # ============ WHATSAPP WEBHOOK (Prepared) ============
 @api_router.get("/whatsapp/webhook")
 async def verify_whatsapp_webhook(hub_mode: str = Query(None, alias="hub.mode"),

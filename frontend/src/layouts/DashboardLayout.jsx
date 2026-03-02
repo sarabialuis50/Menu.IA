@@ -51,7 +51,7 @@ export const DashboardLayout = ({ children }) => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/', { replace: true });
   };
 
   const basePath = `/dashboard/${user?.slug}`;
@@ -91,7 +91,7 @@ export const DashboardLayout = ({ children }) => {
 
       {/* Sidebar */}
       <aside className={`
-        fixed top-0 left-0 h-full w-72 bg-[#0F172A] border-r border-slate-800 z-50 shadow-2xl lg:shadow-none
+        fixed top-0 left-0 h-full lg:h-screen w-72 bg-[#0F172A] border-r border-slate-800 z-50 shadow-2xl lg:shadow-none
         transform transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1)
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0
@@ -117,8 +117,8 @@ export const DashboardLayout = ({ children }) => {
           </div>
 
           {/* Business Info */}
-          <div className="px-4 mb-2 mt-4">
-            <div className="p-3 rounded-2xl bg-slate-800/50 border border-slate-700 flex items-center gap-3">
+          <div className="px-4 mb-2 mt-2 lg:mt-4">
+            <div className="p-2.5 lg:p-3 rounded-2xl bg-slate-800/50 border border-slate-700 flex items-center gap-3">
               <div className="size-8 rounded-xl bg-slate-800 shadow-sm flex items-center justify-center font-bold text-[#22C55E] overflow-hidden">
                 {user?.logo_url ? (
                   <img src={user.logo_url} alt="Logo" className="w-full h-full object-cover" />
@@ -146,7 +146,7 @@ export const DashboardLayout = ({ children }) => {
                   to={fullPath}
                   onClick={() => setSidebarOpen(false)}
                   className={`
-                    flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs transition-all duration-300 group
+                    flex items-center gap-3 px-3 py-1.5 lg:py-2 rounded-xl font-bold text-xs transition-all duration-300 group
                     ${isActive
                       ? 'bg-[#4ADE80] text-[#111814] shadow-lg shadow-green-500/20 scale-[1.01]'
                       : 'text-slate-400 hover:bg-slate-800 hover:text-white'
@@ -160,13 +160,13 @@ export const DashboardLayout = ({ children }) => {
               );
             })}
 
-            <div className="pt-4 mt-4 border-t border-slate-800">
-              <p className="px-3 mb-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Acceso Público</p>
+            <div className="pt-2 mt-2 lg:pt-4 lg:mt-4 border-t border-slate-800">
+              <p className="px-3 mb-1 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Acceso Público</p>
               <a
                 href={`/${user?.slug}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs text-slate-400 hover:bg-slate-800 hover:text-white transition-all group"
+                className="flex items-center gap-3 px-3 py-1.5 lg:py-2 rounded-xl font-bold text-xs text-slate-400 hover:bg-slate-800 hover:text-white transition-all group"
               >
                 <Smartphone className="w-4 h-4 group-hover:scale-110 transition-transform" />
                 <span className="flex-1 truncate">Vista del Cliente</span>
@@ -175,13 +175,12 @@ export const DashboardLayout = ({ children }) => {
             </div>
           </nav>
 
-          {/* Logout */}
-          <div className="p-4 border-t border-slate-800">
+          <div className="p-3 lg:p-4 border-t border-slate-800 bg-[#0F172A] sticky bottom-0">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs text-red-400 hover:bg-red-500/10 transition-all hover:scale-[1.02]"
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs text-red-400 hover:bg-red-500/10 transition-all active:scale-95 group"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               Cerrar sesión
             </button>
           </div>

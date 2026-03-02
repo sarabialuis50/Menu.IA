@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dialog";
 
 export default function WhatsappHubPage() {
-    const { user } = useAuth();
+    const { user, setUser } = useAuth();
     const [searchParams] = useSearchParams();
     const [activeTab, setActiveTab] = useState('templates'); // 'templates' | 'campaigns'
     const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -29,36 +29,55 @@ export default function WhatsappHubPage() {
     // Campañas state
     const [selectedSegment, setSelectedSegment] = useState(null);
     const [campaignMessage, setCampaignMessage] = useState('');
-    const [isSendingCampaign, setIsSendingCampaign] = useState(false);
 
     // Purchase Modals state
     const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
     const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
     const [isCreatingLink, setIsCreatingLink] = useState(false);
 
-    const tags = ['[Nombre]', '[Puntos]', '[Saldo]', '[Premio]', '[Codigo]', '[Nivel]'];
+    // Campaign Wizard state
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+    const [campaignStatus, setCampaignStatus] = useState('idle'); // 'idle' | 'sending' | 'success' | 'error'
+    const [sendingProgress, setSendingProgress] = useState(0);
 
-    const segments = [
+    // Dynamic segments state
+    const [segments, setSegments] = useState([
         {
             id: 'all',
-            name: 'Todos los Miembros',
-            count: 204,
+            name: 'Todos los Clientes',
+            count: 0,
             desc: 'Envía un mensaje general a toda tu base de datos de clientes registrados.',
             icon: <Users className="w-5 h-5" />,
             defaultMessage: '¡Hola [Nombre]! 👋 Tenemos nuevas sorpresas para ti en [Negocio]. ¡Ven a visitarnos y descubre lo que hemos preparado! ✨'
         },
         {
-            id: 'vip',
-            name: 'Clientes VIP',
-            count: 51,
-            desc: 'Dirígete exclusivamente a tus clientes más leales y frecuentes para premiar su fidelidad.',
+            id: 'oro',
+            name: 'Clientes Oro',
+            count: 0,
+            desc: 'Dirígete exclusivamente a tus clientes más leales (Nivel Oro) para premiar su fidelidad.',
             icon: <Award className="w-5 h-5" />,
-            defaultMessage: '¡Hola [Nombre]! 🌟 Como uno de nuestros clientes VIP, tienes un beneficio exclusivo esperando por ti. ¡Gracias por tu lealtad! 🏆'
+            defaultMessage: '¡Hola [Nombre]! 🌟 Como uno de nuestros Clientes Oro, tienes un beneficio exclusivo esperando por ti. ¡Gracias por tu lealtad! 🏆'
+        },
+        {
+            id: 'plata',
+            name: 'Clientes Plata',
+            count: 0,
+            desc: 'Clientes constantes (Nivel Plata) que están cerca de alcanzar el máximo nivel.',
+            icon: <Sparkles className="w-5 h-5" />,
+            defaultMessage: '¡Hola [Nombre]! ✨ Sigues sumando en [Negocio]. Tenemos algo especial para que sigas creciendo como Cliente Plata. 🥈'
+        },
+        {
+            id: 'bronce',
+            name: 'Clientes Bronce',
+            count: 0,
+            desc: 'Tus clientes (Nivel Bronce) que están iniciando su camino de fidelización.',
+            icon: <LayoutGrid className="w-5 h-5" />,
+            defaultMessage: '¡Hola [Nombre]! 🥉 Gracias por elegirnos como tu Cliente Bronce. Queremos verte más seguido, ¡disfruta esto! 🎁'
         },
         {
             id: 'new',
             name: 'Nuevos (Mes)',
-            count: 42,
+            count: 0,
             desc: 'Saluda a los clientes que se unieron en los últimos 30 días para fidelizarlos desde el inicio.',
             icon: <Plus className="w-5 h-5" />,
             defaultMessage: '¡Bienvenido a la familia, [Nombre]! 🚀 Queremos que tu primer mes sea inolvidable. ¡Usa este código en tu próxima visita! 🎁'
@@ -66,14 +85,37 @@ export default function WhatsappHubPage() {
         {
             id: 'inactive',
             name: 'Inactivos',
-            count: 87,
+            count: 0,
             desc: 'Recupera a los clientes que no han visitado tu negocio en más de 30 días con una oferta especial.',
             icon: <AlertCircle className="w-5 h-5" />,
             defaultMessage: '¡Te extrañamos, [Nombre]! 🔥 Hace tiempo que no nos vemos en [Negocio]. Te regalamos un beneficio especial para motivar tu regreso. ¡Te esperamos! 🥘'
         }
-    ];
+    ]);
+
+    const tags = ['[Nombre]', '[Puntos]', '[Saldo]', '[Premio]', '[Codigo]', '[Nivel]'];
 
     useEffect(() => {
+        const fetchCounts = async () => {
+            try {
+                const response = await api().get('/marketing/audience-counts');
+                const counts = response.data;
+
+                setSegments(prev => prev.map(s => ({
+                    ...s,
+                    count: counts[s.id] || 0
+                })));
+
+                setTemplates(prev => prev.map(t => {
+                    if (t.id === 'birthday') {
+                        return { ...t, stats: { ...t.stats, alcance: counts.birthdays || 0 } };
+                    }
+                    return t;
+                }));
+            } catch (error) {
+                console.error("Error fetching audience counts:", error);
+            }
+        };
+
         const initialTemplates = [
             {
                 id: 'welcome',
@@ -94,13 +136,13 @@ export default function WhatsappHubPage() {
                 stats: { alcance: 512, apertura: '84%', conversion: '18%', tip: 'Notificar puntos acumulados aumenta la recurrencia un 18%.' }
             },
             {
-                id: 'reward',
-                name: 'Premio',
-                trigger_type: 'PREMIO DESBLOQUEADO',
-                trigger: 'Se envía cuando un cliente alcanza los puntos necesarios para un premio.',
-                message: '¡Felicidades [Nombre]! 🎉 Has desbloqueado el premio: [Premio]. Reclámalo en tu próxima visita con el código [Codigo].',
+                id: 'birthday',
+                name: 'Cumpleaños Hoy',
+                trigger_type: 'DÍA CUMPLEAÑOS',
+                trigger: 'Se envía automáticamente a los clientes que cumplen años el día de hoy.',
+                message: '¡Feliz cumpleaños [Nombre]! 🎂 En [Negocio] queremos celebrar contigo. Pide hoy y recibe una sorpresa especial. 🎁✨',
                 status: true,
-                stats: { alcance: 128, apertura: '92%', conversion: '64%', tip: '¡Impresionante! El canje de premios desbloqueados tiene una conversión del 64%.' }
+                stats: { alcance: 5, apertura: '98%', conversion: '45%', tip: 'Los mensajes de cumpleaños generan la conexión emocional más fuerte con el cliente.' }
             },
             {
                 id: 'redemption',
@@ -112,16 +154,28 @@ export default function WhatsappHubPage() {
                 stats: { alcance: 89, apertura: '95%', conversion: '100%', tip: 'La confirmación inmediata genera confianza y fidelidad extrema.' }
             }
         ];
+        initialTemplates.forEach(t => {
+            if (t.id === 'birthday') {
+                t.stats.alcance = 0; // Will be updated by fetchCounts
+            }
+        });
+
         setTemplates(initialTemplates);
         setSelectedTemplate(initialTemplates[0]);
-        setSelectedSegment(segments[0]);
-        setCampaignMessage(segments[0].defaultMessage);
+        fetchCounts();
 
         // Auto-open purchase modal if requested via URL
         if (searchParams.get('purchase') === 'true') {
             setIsSupportModalOpen(true);
         }
     }, [searchParams]);
+
+    useEffect(() => {
+        if (!selectedSegment && segments && segments.length > 0) {
+            setSelectedSegment(segments[0]);
+            setCampaignMessage(segments[0].defaultMessage);
+        }
+    }, [segments, selectedSegment]);
 
     const handleSaveTemplate = async () => {
         setIsSavingTemplate(true);
@@ -132,10 +186,54 @@ export default function WhatsappHubPage() {
     };
 
     const handleSendCampaign = async () => {
-        setIsSendingCampaign(true);
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        setIsSendingCampaign(false);
-        toast.success('Campaña enviada con éxito');
+        try {
+            setCampaignStatus('sending');
+            setSendingProgress(10);
+
+            // Simulation of progress for UI feedback while backend starts
+            const interval = setInterval(() => {
+                setSendingProgress(prev => {
+                    if (prev >= 90) {
+                        clearInterval(interval);
+                        return 90;
+                    }
+                    return prev + 10;
+                });
+            }, 300);
+
+            const response = await api().post('/marketing/send-campaign', {
+                segment_id: selectedSegment.id,
+                message: campaignMessage
+            });
+
+            clearInterval(interval);
+            setSendingProgress(100);
+
+            if (response.data.success) {
+                setCampaignStatus('success');
+                toast.success(response.data.message);
+
+                // Update credits in context
+                if (response.data.remaining_credits !== undefined) {
+                    setUser({ ...user, wa_credits: response.data.remaining_credits });
+                }
+            } else {
+                setCampaignStatus('error');
+                toast.error(response.data.message || 'Error al iniciar campaña');
+            }
+        } catch (error) {
+            setCampaignStatus('error');
+            const errorMsg = error.response?.data?.detail || 'Error al procesar la campaña';
+            toast.error(errorMsg);
+        }
+    };
+
+    const handleConfirmCampaign = () => {
+        if (!campaignMessage.trim()) {
+            toast.error("El mensaje de la campaña no puede estar vacío");
+            return;
+        }
+        setIsConfirmModalOpen(true);
     };
 
     const handleSegmentChange = (segment) => {
@@ -184,6 +282,49 @@ export default function WhatsappHubPage() {
     return (
         <DashboardLayout>
             <div className="max-w-7xl mx-auto space-y-8 pb-10">
+                {/* Global Marketing Metrics */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <Card className="rounded-[1.5rem] border-2 border-gray-100 shadow-sm bg-white overflow-hidden group hover:border-[#4ADE80] transition-all">
+                        <CardContent className="p-6">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-green-50 flex items-center justify-center text-[#22C55E] group-hover:bg-[#4ADE80] group-hover:text-white transition-colors">
+                                    <Send className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Mensajes Enviados</p>
+                                    <h3 className="text-2xl font-black text-gray-900">1,248</h3>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card className="rounded-[1.5rem] border-2 border-gray-100 shadow-sm bg-white overflow-hidden group hover:border-[#22B8CF] transition-all">
+                        <CardContent className="p-6">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-[#22B8CF] group-hover:bg-[#22B8CF] group-hover:text-white transition-colors">
+                                    <CheckCircle className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Tasa de Apertura</p>
+                                    <h3 className="text-2xl font-black text-gray-900">96.4%</h3>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card className="rounded-[1.5rem] border-2 border-gray-100 shadow-sm bg-white overflow-hidden group hover:border-amber-400 transition-all">
+                        <CardContent className="p-6">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500 group-hover:bg-amber-400 group-hover:text-white transition-colors">
+                                    <Sparkles className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Retorno de Pedidos</p>
+                                    <h3 className="text-2xl font-black text-gray-900">12.8%</h3>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
                 <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8">
                     {/* Phone Preview - TOP on mobile */}
                     <div className="lg:col-span-4 order-1 lg:order-2">
@@ -476,7 +617,7 @@ export default function WhatsappHubPage() {
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-4 gap-3 border-2 border-gray-200 p-2 rounded-[1.5rem] bg-gray-50/30">
+                                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 border-2 border-gray-200 p-2 rounded-[1.5rem] bg-gray-50/30">
                                             {segments.map((segment) => (
                                                 <button
                                                     key={segment.id}
@@ -548,11 +689,11 @@ export default function WhatsappHubPage() {
 
                                                     <div className="md:pl-6 md:border-l-2 border-gray-100 flex flex-col items-center md:items-end gap-3 shrink-0">
                                                         <Button
-                                                            onClick={handleSendCampaign}
-                                                            disabled={isSendingCampaign || !campaignMessage.trim()}
+                                                            onClick={handleConfirmCampaign}
+                                                            disabled={campaignStatus === 'sending' || !campaignMessage.trim()}
                                                             className="h-11 px-6 rounded-xl bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black flex items-center gap-2 transition-all shadow-lg shadow-green-100 disabled:opacity-50 text-[11px] tracking-widest"
                                                         >
-                                                            {isSendingCampaign ? (
+                                                            {campaignStatus === 'sending' ? (
                                                                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                                             ) : (
                                                                 <Send className="w-4 h-4" />
@@ -617,6 +758,136 @@ export default function WhatsappHubPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Modal de Confirmación de Campaña */}
+            <Dialog open={isConfirmModalOpen} onOpenChange={setIsConfirmModalOpen}>
+                <DialogContent className="sm:max-w-[500px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden">
+                    <div className="bg-[#111814] p-8 text-white relative">
+                        <div className="absolute top-0 right-0 p-8 opacity-10">
+                            <Megaphone className="w-24 h-24" />
+                        </div>
+                        <DialogHeader>
+                            <DialogTitle className="text-2xl font-black uppercase tracking-tight">Confirmar Envío</DialogTitle>
+                            <DialogDescription className="text-gray-400 font-bold text-xs uppercase tracking-widest mt-2">
+                                Estás a un paso de iniciar tu campaña masiva.
+                            </DialogDescription>
+                        </DialogHeader>
+                    </div>
+
+                    <div className="p-8 space-y-6 bg-white">
+                        {campaignStatus === 'idle' ? (
+                            <>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-gray-50 p-4 rounded-2xl border-2 border-gray-100">
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2 mb-2">Segmento</p>
+                                        <p className="font-black text-gray-900 uppercase text-xs">{selectedSegment?.name}</p>
+                                    </div>
+                                    <div className="bg-gray-50 p-4 rounded-2xl border-2 border-gray-100">
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2 mb-2">Destinatarios</p>
+                                        <p className="font-black text-[#22C55E] text-lg">{selectedSegment?.count} <span className="text-[10px] text-gray-400 italic">Clientes</span></p>
+                                    </div>
+                                </div>
+
+                                <div className="bg-amber-50 p-5 rounded-2xl border-2 border-amber-100 flex items-start gap-4">
+                                    <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                                    <div>
+                                        <p className="text-xs font-black text-amber-600 uppercase tracking-tight mb-1">Costo de la Campaña</p>
+                                        <p className="text-sm text-amber-900 font-bold leading-relaxed">
+                                            Se descontarán <span className="font-black">{selectedSegment?.count} créditos</span> de tu saldo de WhatsApp Hub.
+                                        </p>
+                                        <p className="text-[10px] text-amber-500 mt-2 font-bold italic">Saldo actual: {user?.wa_credits || 0} créditos</p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4 pt-4">
+                                    <Button
+                                        onClick={handleSendCampaign}
+                                        disabled={user?.wa_credits < selectedSegment?.count}
+                                        className="w-full h-14 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black rounded-2xl uppercase tracking-widest text-[11px] shadow-lg shadow-green-100 transition-all flex items-center justify-center gap-3"
+                                    >
+                                        <Zap className="w-4 h-4 fill-current" />
+                                        INICIAR ENVÍO AHORA
+                                    </Button>
+                                    {user?.wa_credits < selectedSegment?.count && (
+                                        <p className="text-[9px] text-red-500 font-black text-center uppercase tracking-widest bg-red-50 py-2 rounded-lg">
+                                            ⚠️ No tienes créditos suficientes para este segmento.
+                                        </p>
+                                    )}
+                                    <Button
+                                        variant="ghost"
+                                        onClick={() => setIsConfirmModalOpen(false)}
+                                        className="w-full text-gray-400 font-black text-[10px] uppercase tracking-widest hover:bg-gray-50"
+                                    >
+                                        CANCELAR Y REVISAR
+                                    </Button>
+                                </div>
+                            </>
+                        ) : campaignStatus === 'sending' ? (
+                            <div className="py-10 flex flex-col items-center text-center space-y-6">
+                                <div className="relative w-24 h-24 flex items-center justify-center">
+                                    <div className="absolute inset-0 border-4 border-gray-100 rounded-full" />
+                                    <motion.div
+                                        className="absolute inset-0 border-4 border-[#4ADE80] rounded-full"
+                                        style={{ clipPath: `inset(0 0 0 ${100 - sendingProgress}%)`, transform: 'rotate(-90deg)' }}
+                                    />
+                                    <Zap className="w-8 h-8 text-[#4ADE80] animate-pulse" />
+                                </div>
+                                <div className="space-y-2">
+                                    <h4 className="text-xl font-black text-gray-900 uppercase tracking-tighter">Procesando Envío</h4>
+                                    <p className="text-sm text-gray-500 font-medium">Iniciando conexión con la red de WhatsApp...</p>
+                                </div>
+                                <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                                    <motion.div
+                                        className="h-full bg-[#4ADE80]"
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${sendingProgress}%` }}
+                                    />
+                                </div>
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{sendingProgress}% COMPLETADO</p>
+                            </div>
+                        ) : campaignStatus === 'success' ? (
+                            <div className="py-10 flex flex-col items-center text-center space-y-6">
+                                <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center">
+                                    <Check className="w-10 h-10 text-[#22C55E]" />
+                                </div>
+                                <div className="space-y-2">
+                                    <h4 className="text-2xl font-black text-gray-900 uppercase tracking-tighter">¡Campaña Iniciada!</h4>
+                                    <p className="text-sm text-gray-500 font-medium leading-relaxed px-4">
+                                        Tus mensajes están siendo procesados en segundo plano. Los clientes empezarán a recibirlos en instantes.
+                                    </p>
+                                </div>
+                                <Button
+                                    onClick={() => {
+                                        setIsConfirmModalOpen(false);
+                                        setCampaignStatus('idle');
+                                    }}
+                                    className="w-full h-12 bg-gray-900 hover:bg-black text-white font-black rounded-xl uppercase tracking-widest text-[10px]"
+                                >
+                                    VOLVER AL HUB
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="py-10 flex flex-col items-center text-center space-y-6">
+                                <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center">
+                                    <AlertCircle className="w-10 h-10 text-red-500" />
+                                </div>
+                                <div className="space-y-2">
+                                    <h4 className="text-xl font-black text-gray-900 uppercase tracking-tighter">Error en el Envío</h4>
+                                    <p className="text-sm text-gray-500 font-medium px-4">
+                                        No pudimos procesar la campaña en este momento. Por favor verifica tus créditos e intenta de nuevo.
+                                    </p>
+                                </div>
+                                <Button
+                                    onClick={() => setCampaignStatus('idle')}
+                                    className="w-full h-12 bg-red-500 hover:bg-red-600 text-white font-black rounded-xl uppercase tracking-widest text-[10px]"
+                                >
+                                    REINTENTAR
+                                </Button>
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
 
             {/* Modal de Packs VENTAS/SOPORTE */}
             <Dialog open={isSupportModalOpen} onOpenChange={setIsSupportModalOpen}>
