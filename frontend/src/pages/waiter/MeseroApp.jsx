@@ -17,6 +17,7 @@ import {
   User,
   ScanLine
 } from 'lucide-react';
+import PublicTrialLocked from '@/components/PublicTrialLocked';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -159,6 +160,7 @@ const WaiterAppContent = ({ employee, slug, onLogout }) => {
   const [cartOpen, setCartOpen] = useState(false);
   const [tableSelectOpen, setTableSelectOpen] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [lockedMessage, setLockedMessage] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -181,7 +183,11 @@ const WaiterAppContent = ({ employee, slug, onLogout }) => {
       if (cats.length > 0) setActiveCategory(cats[0]);
     } catch (error) {
       console.error('Error fetching data:', error);
-      toast.error('Error al cargar datos');
+      if (error.response && error.response.status === 403) {
+        setLockedMessage(error.response.data?.detail || "Servicio no disponible.");
+      } else {
+        toast.error('Error al cargar datos');
+      }
     } finally {
       setLoading(false);
     }
@@ -252,6 +258,10 @@ const WaiterAppContent = ({ employee, slug, onLogout }) => {
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#22C55E]" />
       </div>
     );
+  }
+
+  if (lockedMessage) {
+    return <PublicTrialLocked message={lockedMessage} />;
   }
 
   return (

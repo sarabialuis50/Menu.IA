@@ -62,12 +62,48 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 30 # 30 days
 ACCESS_TOKEN_EXPIRE_HOURS = 24 * 30
 
 # --- AI CREDIT CONFIG ---
-AI_CREDITS_LIMITS_PER_TYPE = {
-    "basic": 50,
-    "pro": 120,
-    "premium": 300,
-    "free": 5,
-    "trial": 10
+# --- PLAN CONFIG ---
+PLAN_CONFIG = {
+    "trial": {
+        "img": 10,
+        "nutri": 10,
+        "desc": 10,
+        "wa": 10,
+        "campaign": 0,
+        "hub": 0
+    },
+    "basic": {
+        "img": 50,
+        "nutri": 50,
+        "desc": 50,
+        "wa": 500,
+        "campaign": 0,
+        "hub": 0
+    },
+    "pro": {
+        "img": 120,
+        "nutri": 120,
+        "desc": 120,
+        "wa": 1500,
+        "campaign": 0,
+        "hub": 0
+    },
+    "premium": {
+        "img": 300,
+        "nutri": 300,
+        "desc": 300,
+        "wa": 3000,
+        "campaign": 50,
+        "hub": 10
+    },
+    "free": {
+        "img": 5,
+        "nutri": 5,
+        "desc": 5,
+        "wa": 5,
+        "campaign": 0,
+        "hub": 0
+    }
 }
 
 # Initialize MercadoPago SDK
@@ -235,13 +271,12 @@ def deduct_ai_credit(business_id: str, credit_type: str, current_business: Busin
     """
     credit_type: 'desc', 'img', 'nutri'
     """
-    plan = current_business.plan or "free"
-    # Basic protection against case sensitivity or unexpected plan names
-    plan_key = plan.lower()
-    if plan_key not in AI_CREDITS_LIMITS_PER_TYPE:
-        plan_key = "free"
+    plan = (current_business.plan or "free").lower()
+    if plan not in PLAN_CONFIG:
+        plan = "free"
         
-    limit = AI_CREDITS_LIMITS_PER_TYPE.get(plan_key, 5)
+    plan_limits = PLAN_CONFIG[plan]
+    limit = plan_limits.get(credit_type, 5)
     
     field_name = f"ai_credits_{credit_type}_used"
     used = getattr(current_business, field_name)
@@ -274,12 +309,47 @@ async def get_current_business(credentials: HTTPAuthorizationCredentials = Depen
             raise HTTPException(status_code=401, detail="Negocio no encontrado")
         
         business_doc = response.data[0]
-        
-        # PLAN EXPIRATION CHECK
+        current_plan = business_doc.get('plan', 'trial')
         plan_expires_at = business_doc.get('plan_expires_at')
-        current_plan = business_doc.get('plan', 'free')
         
-        if plan_expires_at and current_plan != 'trial': # Trial might be handled separately
+        # TRIAL LOCKOUT ENFORCEMENT
+        if current_plan == 'trial':
+            from datetime import datetime, timezone
+            now = datetime.now(timezone.utc)
+            
+            # 1. Date Check
+            if plan_expires_at:
+                try:
+                    expires_dt = datetime.fromisoformat(plan_expires_at.replace('Z', '+00:00'))
+                    if expires_dt < now:
+                        logger.warning(f"Trial expired for {business_id}: {plan_expires_at}")
+                        raise HTTPException(
+                            status_code=403, 
+                            detail="Tu periodo de prueba de 7 días ha terminado. Por favor, comunícate con soporte o adquiere un plan para continuar."
+                        )
+                except (ValueError, TypeError) as e:
+                    logger.error(f"Error parsing plan_expires_at: {e}")
+
+            # 2. Credits Check (Hard stop if ANY limit reached in trial)
+            trial_limits = PLAN_CONFIG['trial']
+            used_img = business_doc.get('ai_credits_img_used', 0)
+            used_nutri = business_doc.get('ai_credits_nutri_used', 0)
+            used_desc = business_doc.get('ai_credits_desc_used', 0)
+            used_wa = business_doc.get('ai_credits_wa_used', 0)
+            
+            if (used_img >= trial_limits['img'] or 
+                used_nutri >= trial_limits['nutri'] or 
+                used_desc >= trial_limits['desc'] or 
+                used_wa >= trial_limits['wa']):
+                
+                logger.warning(f"Trial limits reached for {business_id}")
+                raise HTTPException(
+                    status_code=403, 
+                    detail="Has agotado tus créditos de prueba gratuitos. Todas las funciones están inhabilitadas hasta que adquieras un plan."
+                )
+
+        # PLAN EXPIRATION CHECK (Non-trial)
+        elif plan_expires_at:
             from datetime import datetime, timezone
             try:
                 # Handle ISO format strings from Supabase
@@ -287,13 +357,14 @@ async def get_current_business(credentials: HTTPAuthorizationCredentials = Depen
                 if expires_dt < datetime.now(timezone.utc):
                     logger.info(f"Plan for business {business_id} has expired ({plan_expires_at}). Downgrading to trial.")
                     # Update DB
+                    seven_days_later = datetime.now(timezone.utc) + timedelta(days=7)
                     supabase.table('negocios').update({
                         'plan': 'trial',
-                        'plan_expires_at': None
+                        'plan_expires_at': seven_days_later.isoformat()
                     }).eq('id', business_id).execute()
                     # Update local object
                     business_doc['plan'] = 'trial'
-                    business_doc['plan_expires_at'] = None
+                    business_doc['plan_expires_at'] = seven_days_later.isoformat()
             except Exception as exp_err:
                 logger.error(f"Error checking plan expiration: {exp_err}")
 
@@ -528,7 +599,9 @@ async def register_business(data: BusinessCreate):
             horarios=data.horarios,
             logo_url=data.logo_url,
             banner_url=data.banner_url,
-            email=data.email
+            email=data.email,
+            plan="trial",
+            plan_expires_at=datetime.now(timezone.utc) + timedelta(days=7)
         )
         
         # Store with password hash
@@ -722,6 +795,30 @@ async def get_business_by_slug(slug: str):
         raise HTTPException(status_code=404, detail="Negocio no encontrado")
     
     business_doc = response.data[0]
+    
+    # TRIAL LOCKOUT CHECK
+    current_plan = business_doc.get('plan', 'trial')
+    if current_plan == 'trial':
+        from datetime import datetime, timezone
+        plan_expires_at = business_doc.get('plan_expires_at')
+        now = datetime.now(timezone.utc)
+        
+        # 1. Date Check
+        if plan_expires_at:
+            try:
+                expires_dt = datetime.fromisoformat(plan_expires_at.replace('Z', '+00:00'))
+                if expires_dt < now:
+                    raise HTTPException(status_code=403, detail="Este menú no está disponible por el momento (periodo de prueba finalizado).")
+            except: pass
+
+        # 2. Credits Check
+        trial_limits = PLAN_CONFIG['trial']
+        if (business_doc.get('ai_credits_img_used', 0) >= trial_limits['img'] or 
+            business_doc.get('ai_credits_nutri_used', 0) >= trial_limits['nutri'] or 
+            business_doc.get('ai_credits_desc_used', 0) >= trial_limits['desc'] or 
+            business_doc.get('ai_credits_wa_used', 0) >= trial_limits['wa']):
+            raise HTTPException(status_code=403, detail="Este menú no está disponible por el momento (limite de prueba alcanzado).")
+
     if 'password_hash' in business_doc:
         del business_doc['password_hash']
         
@@ -2485,9 +2582,14 @@ async def handle_whatsapp_webhook(request: Request):
             wa_limit = business_data.get('wa_messages_limit', 0)
             wa_credits = business_data.get('wa_credits', 0)
 
-            # PLAN CHECK: WhatsApp disabled for 'trial', 'free'
-            if biz_plan in ['trial', 'free']:
-                 return {"status": "blocked", "reason": "trial_plan_no_whatsapp"}
+            # PLAN CHECK: WhatsApp disabled for 'free'
+            if biz_plan == 'free':
+                 return {"status": "blocked", "reason": "free_plan_no_whatsapp"}
+            
+            if biz_plan == 'trial':
+                used_wa = business_data.get('ai_credits_wa_used', 0)
+                if used_wa >= 10: # Trial Limit
+                    return {"status": "limit_reached", "reason": "trial_wa_limit_reached"}
             
             # 2. Verificar límites de mensajes operativos
             use_credits = False
@@ -2564,9 +2666,10 @@ async def handle_whatsapp_webhook(request: Request):
                         "wa_credits": wa_credits - 1
                     }).eq('id', negocio_id).execute()
                 else:
-                    supabase.table('negocios').update({
-                        "wa_messages_count": wa_count + 1
-                    }).eq('id', negocio_id).execute()
+                    update_data = {"wa_messages_count": wa_count + 1}
+                    if biz_plan == 'trial':
+                        update_data["ai_credits_wa_used"] = business_data.get('ai_credits_wa_used', 0) + 1
+                    supabase.table('negocios').update(update_data).eq('id', negocio_id).execute()
             
         return {"status": "processed", "response": response_text}
 
@@ -3333,8 +3436,8 @@ async def create_subscription_link(data: SubscriptionRequest, business: Business
             },
             'pro': {
                 'reason': 'Plan Pro (Suscripción) - Menu.IA',
-                'price_monthly': 111900,
-                'price_annual': 1119000,
+                'price_monthly': 119900,
+                'price_annual': 1199000,
                 'back_url': f"{os.environ.get('FRONTEND_URL')}/dashboard/{business.slug}/configuracion?status=success"
             },
             'elite': {
@@ -3404,8 +3507,8 @@ async def create_payment_link(data: SubscriptionRequest, business: Business = De
             },
             'pro': {
                 'reason': 'Plan Pro (Mes Prepago) - Menu.IA',
-                'price_monthly': 111900,
-                'price_annual': 1119000
+                'price_monthly': 119900,
+                'price_annual': 1199000
             },
             'elite': {
                 'reason': 'Plan Premium (Mes Prepago) - Menu.IA',
@@ -4081,7 +4184,10 @@ async def web_chat_agent(slug: str, data: WebChatRequest):
             if wa_credits > 0:
                 supabase.table('negocios').update({"wa_credits": wa_credits - 1}).eq("id", business_id).execute()
             else:
-                supabase.table('negocios').update({"wa_messages_count": wa_count + 1}).eq("id", business_id).execute()
+                update_data = {"wa_messages_count": wa_count + 1}
+                if business_data.get('plan') == 'trial':
+                    update_data["ai_credits_wa_used"] = business_data.get('ai_credits_wa_used', 0) + 1
+                supabase.table('negocios').update(update_data).eq("id", business_id).execute()
             
             # If we are creating it now, bill it as part of creation logic later? 
             # Better to ensure the flag is set.
@@ -4172,7 +4278,10 @@ async def web_chat_audio_agent(slug: str, audio: UploadFile = File(...), phone: 
                 supabase.table('negocios').update({"wa_credits": wa_credits - 1}).eq("id", business_id).execute()
             else:
                 wa_count = business_data.get('wa_messages_count', 0)
-                supabase.table('negocios').update({"wa_messages_count": wa_count + 1}).eq("id", business_id).execute()
+                update_data = {"wa_messages_count": wa_count + 1}
+                if business_data.get('plan') == 'trial':
+                    update_data["ai_credits_wa_used"] = business_data.get('ai_credits_wa_used', 0) + 1
+                supabase.table('negocios').update(update_data).eq("id", business_id).execute()
             
             if conversation:
                 supabase.table('agent_conversations').update({"is_billed": True}).eq("id", conversation['id']).execute()

@@ -49,8 +49,8 @@ export default function PreciosPage() {
             name: "Pro",
             badge: "Más Popular",
             description: "Potencia tu negocio con fidelización",
-            price: 111900,
-            priceAnnual: 111900 * 10,
+            price: 119900,
+            priceAnnual: 119900 * 10,
             popular: true,
             features: [
                 { name: "400 Pedidos / mes", included: true },

@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import PublicTrialLocked from '@/components/PublicTrialLocked';
 
 export default function DespachoPage() {
     const { slug, orderId } = useParams();
@@ -28,6 +29,7 @@ export default function DespachoPage() {
     const [updating, setUpdating] = useState(false);
     const [isTracking, setIsTracking] = useState(false);
     const [business, setBusiness] = useState(null);
+    const [lockedMessage, setLockedMessage] = useState(null);
 
     useEffect(() => {
         fetchData();
@@ -44,7 +46,11 @@ export default function DespachoPage() {
             setBusiness(businessRes.data);
         } catch (error) {
             console.error("Error fetching data:", error);
-            toast.error("Error al cargar el pedido");
+            if (error.response && error.response.status === 403) {
+                setLockedMessage(error.response.data?.detail || "Logística temporalmente inhabilitada.");
+            } else {
+                toast.error("Error al cargar el pedido");
+            }
         } finally {
             setLoading(false);
         }
@@ -104,6 +110,10 @@ export default function DespachoPage() {
                 <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Cargando logística...</p>
             </div>
         );
+    }
+
+    if (lockedMessage) {
+        return <PublicTrialLocked message={lockedMessage} />;
     }
 
     if (!order) {

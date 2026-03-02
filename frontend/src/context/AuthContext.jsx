@@ -18,12 +18,29 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('menu.ia_token'));
   const [loading, setLoading] = useState(true);
+  const [trialLocked, setTrialLocked] = useState(null);
 
   const api = useCallback(() => {
-    return axios.create({
+    const instance = axios.create({
       baseURL: API,
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
+
+    // Add interceptor to catch trial lockout globally
+    instance.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response && error.response.status === 403) {
+          const detail = error.response.data?.detail || '';
+          if (detail.includes('prueba') || detail.includes('créditos')) {
+            setTrialLocked(detail);
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return instance;
   }, [token]);
 
   useEffect(() => {
@@ -31,20 +48,31 @@ export const AuthProvider = ({ children }) => {
     const verifyToken = async () => {
       if (token) {
         try {
-          // Use a new instance directly if needed, but api() is memoized
           const response = await api().get('/auth/me');
           if (isMounted) {
             setUser(response.data);
+            setTrialLocked(null);
           }
         } catch (error) {
           console.error('Token verification failed:', error);
           if (isMounted) {
+            if (error.response && error.response.status === 403) {
+              const detail = error.response.data?.detail || '';
+              if (detail.includes('prueba') || detail.includes('créditos')) {
+                // If it's a trial lockout, we keep the user data (from token if possible or just the state)
+                // but we set the lock message
+                setTrialLocked(detail);
+                setLoading(false);
+                return;
+              }
+            }
             logout();
           }
         }
       } else {
         if (isMounted) {
           setUser(null);
+          setTrialLocked(null);
         }
       }
       if (isMounted) {
@@ -61,6 +89,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('menu.ia_token', access_token);
     setToken(access_token);
     setUser(business);
+    setTrialLocked(null);
     return business;
   };
 
@@ -70,6 +99,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('menu.ia_token', access_token);
     setToken(access_token);
     setUser(business);
+    setTrialLocked(null);
     return business;
   };
 
@@ -77,10 +107,11 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('menu.ia_token');
     setToken(null);
     setUser(null);
+    setTrialLocked(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, api }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout, api, trialLocked }}>
       {children}
     </AuthContext.Provider>
   );

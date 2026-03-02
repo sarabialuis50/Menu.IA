@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import PublicTrialLocked from '@/components/PublicTrialLocked';
 
 // Backend API URL
 // Consistent with AuthContext prefixing
@@ -35,6 +36,7 @@ const BusinessHomePageContent = () => {
     const [business, setBusiness] = useState(null);
     const [featuredProducts, setFeaturedProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [lockedMessage, setLockedMessage] = useState(null);
     const [products, setProducts] = useState([]); // Added new state for all products
 
     useEffect(() => {
@@ -84,6 +86,9 @@ const BusinessHomePageContent = () => {
             }
         } catch (error) {
             console.error('Error fetching business data:', error);
+            if (error.response && error.response.status === 403) {
+                setLockedMessage(error.response.data?.detail || "Este restaurante no está disponible temporalmente.");
+            }
         } finally {
             setLoading(false);
         }
@@ -143,6 +148,10 @@ const BusinessHomePageContent = () => {
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#22C55E]" />
             </div>
         );
+    }
+
+    if (lockedMessage) {
+        return <PublicTrialLocked message={lockedMessage} />;
     }
 
     if (!business) {

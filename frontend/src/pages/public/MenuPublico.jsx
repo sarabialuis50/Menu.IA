@@ -64,6 +64,7 @@ import { useAuth } from '@/context/AuthContext';
 import { MapPicker } from '@/components/MapPicker';
 import { PlacesAutocomplete } from '@/components/PlacesAutocomplete';
 import { FloatingWA } from '@/components/FloatingWA';
+import PublicTrialLocked from '@/components/PublicTrialLocked';
 
 const AvailableIcons = {
   UtensilsCrossed,
@@ -132,6 +133,7 @@ const MenuContent = () => {
   const [categories, setCategories] = useState([]);
   const [activeCategory, setActiveCategory] = useState('Todas');
   const [loading, setLoading] = useState(true);
+  const [lockedMessage, setLockedMessage] = useState(null);
   const [tableInfo, setTableInfo] = useState(null);
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState(0);
@@ -309,7 +311,11 @@ const MenuContent = () => {
       }
     } catch (error) {
       console.error('Error fetching data:', error);
-      toast.error('Error al cargar el menú');
+      if (error.response && error.response.status === 403) {
+        setLockedMessage(error.response.data?.detail || "Este servicio no está disponible temporalmente.");
+      } else {
+        toast.error('Error al cargar el menú');
+      }
     } finally {
       setLoading(false);
     }
@@ -710,6 +716,10 @@ const MenuContent = () => {
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#22C55E]" />
       </div>
     );
+  }
+
+  if (lockedMessage) {
+    return <PublicTrialLocked message={lockedMessage} />;
   }
 
   if (!business) {

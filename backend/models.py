@@ -162,6 +162,9 @@ class Business(BusinessBase):
     ai_credits_desc_used: int = 0
     ai_credits_img_used: int = 0
     ai_credits_nutri_used: int = 0
+    ai_credits_wa_used: int = 0
+    ai_credits_campaign_used: int = 0
+    ai_credits_hub_used: int = 0
     ai_credits_last_reset: Optional[datetime] = None
     plan_expires_at: Optional[datetime] = None
 
@@ -176,6 +179,9 @@ class BusinessPublic(BusinessBase):
     ai_credits_desc_used: int = 0
     ai_credits_img_used: int = 0
     ai_credits_nutri_used: int = 0
+    ai_credits_wa_used: int = 0
+    ai_credits_campaign_used: int = 0
+    ai_credits_hub_used: int = 0
     ai_credits_last_reset: Optional[datetime] = None
     plan_expires_at: Optional[datetime] = None
 
