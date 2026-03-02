@@ -5,7 +5,8 @@ import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, ArrowLeft, Package, Clock, Hash, MapPin, DollarSign, Calendar } from 'lucide-react';
+import { Loader2, ArrowLeft, Package, Clock, Hash, MapPin, DollarSign, Calendar, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function ClientOrdersPage() {
     const { slug } = useParams();
@@ -13,6 +14,19 @@ export default function ClientOrdersPage() {
     const [token] = useState(localStorage.getItem('client_token'));
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    // Hidden orders state (frontend hide only)
+    const [hiddenOrderIds, setHiddenOrderIds] = useState(() => {
+        const saved = localStorage.getItem('client_hidden_orders');
+        return saved ? JSON.parse(saved) : [];
+    });
+
+    const handleHideOrder = (orderId) => {
+        const newHidden = [...hiddenOrderIds, orderId];
+        setHiddenOrderIds(newHidden);
+        localStorage.setItem('client_hidden_orders', JSON.stringify(newHidden));
+        toast.success("Pedido eliminado de tu vista");
+    };
 
     useEffect(() => {
         if (!token) {
@@ -63,7 +77,7 @@ export default function ClientOrdersPage() {
             </header>
 
             <main className="max-w-3xl mx-auto p-4 space-y-6">
-                {orders.length === 0 ? (
+                {orders.filter(o => !hiddenOrderIds.includes(o.id)).length === 0 ? (
                     <div className="text-center py-20">
                         <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-400">
                             <Package className="w-10 h-10" />
@@ -79,7 +93,7 @@ export default function ClientOrdersPage() {
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        {orders.map((order) => (
+                        {orders.filter(o => !hiddenOrderIds.includes(o.id)).map((order) => (
                             <Card key={order.id} className="border-none shadow-sm hover:shadow-md transition-shadow rounded-[1.5rem] overflow-hidden group">
                                 <CardContent className="p-6">
                                     <div className="flex flex-col gap-4">
@@ -147,6 +161,16 @@ export default function ClientOrdersPage() {
                                                     onClick={() => navigate(`/${slug}/menu`)}
                                                 >
                                                     Volver a pedir
+                                                </Button>
+                                            )}
+                                            {order.estado === 'entregado' && (
+                                                <Button
+                                                    variant="ghost"
+                                                    className="text-red-500 hover:text-red-700 hover:bg-red-50 font-bold rounded-xl h-10 px-4 flex items-center gap-2"
+                                                    onClick={() => handleHideOrder(order.id)}
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                    Eliminar del historial
                                                 </Button>
                                             )}
                                         </div>

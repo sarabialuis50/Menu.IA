@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { PublicLayout } from '@/layouts/PublicLayout';
 import axios from 'axios';
-import { Clock, Check, ChefHat, Truck, Package, RefreshCw, Phone, ArrowLeft, Smartphone, Search } from 'lucide-react';
+import { Clock, Check, ChefHat, Truck, Package, RefreshCw, Phone, ArrowLeft, Smartphone, Search, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -113,6 +114,15 @@ export default function MisPedidos() {
     }
   };
 
+  const handleHideOrder = (orderId) => {
+    const saved = localStorage.getItem('client_hidden_orders');
+    const hidden = saved ? JSON.parse(saved) : [];
+    const newHidden = [...hidden, orderId];
+    localStorage.setItem('client_hidden_orders', JSON.stringify(newHidden));
+    toast.success("Pedido eliminado de tu vista");
+    navigate(localStorage.getItem('client_token') ? `/${slug}/mi-cuenta` : `/${slug}`);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAFAF9]">
@@ -156,7 +166,12 @@ export default function MisPedidos() {
               animate={{ opacity: 1, scale: 1 }}
               key="timeline"
             >
-              <OrderTimeline order={selectedOrder} onRefresh={refreshOrder} onReset={() => { setSelectedOrder(null); setOrders([]); setHasSearched(false); }} />
+              <OrderTimeline
+                order={selectedOrder}
+                onRefresh={refreshOrder}
+                onReset={() => { setSelectedOrder(null); setOrders([]); setHasSearched(false); }}
+                onHide={handleHideOrder}
+              />
             </motion.div>
           ) : (
             <motion.div
@@ -230,7 +245,7 @@ function EmptyState() {
   );
 }
 
-function OrderTimeline({ order, onRefresh, onReset }) {
+function OrderTimeline({ order, onRefresh, onReset, onHide }) {
   const formatCurrency = (v) => {
     if (v === undefined || v === null || isNaN(v) || Number(v) === 0) return '';
     return new Intl.NumberFormat('es-CO', {
@@ -349,6 +364,22 @@ function OrderTimeline({ order, onRefresh, onReset }) {
             <span className="font-black text-lg text-[#111814] tracking-tighter">Total pagado</span>
             <span className="text-3xl font-black text-[#22C55E] tracking-tighter">{formatCurrency(order.total)}</span>
           </div>
+
+          {order.estado === 'entregado' && (
+            <div className="mt-8 flex flex-col gap-3">
+              <Button
+                variant="outline"
+                className="w-full h-14 rounded-2xl border-2 border-red-100 text-red-500 font-black uppercase text-[10px] tracking-widest hover:bg-red-50 transition-all flex items-center justify-center gap-2"
+                onClick={() => onHide(order.id)}
+              >
+                <Trash2 className="w-4 h-4" />
+                Eliminar de mis pedidos recientes
+              </Button>
+              <p className="text-[9px] text-gray-400 font-bold text-center uppercase tracking-widest">
+                Esta acción solo ocultará el pedido de tu vista personal.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

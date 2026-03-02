@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import {
     User, Edit, MapPin, Package, Heart, Ticket, LogOut, ArrowLeft,
     Truck, Star, Plus, Briefcase, Home, CheckCircle2, Loader2, Phone, ShieldCheck,
-    Lock, Shield, Navigation
+    Lock, Shield, Navigation, Trash2
 } from 'lucide-react';
 import {
     Dialog,
@@ -58,6 +58,12 @@ export default function ClientProfilePage() {
     });
     const [savingAddress, setSavingAddress] = useState(false);
     const [detectingLocation, setDetectingLocation] = useState(false);
+
+    // Hidden orders state (frontend hide only)
+    const [hiddenOrderIds, setHiddenOrderIds] = useState(() => {
+        const saved = localStorage.getItem('client_hidden_orders');
+        return saved ? JSON.parse(saved) : [];
+    });
 
     useEffect(() => {
         if (token) {
@@ -106,6 +112,15 @@ export default function ClientProfilePage() {
         setUser(null);
         setAuthStep('phone');
     }
+
+    const handleHideOrder = (orderId) => {
+        const newHidden = [...hiddenOrderIds, orderId];
+        setHiddenOrderIds(newHidden);
+        localStorage.setItem('client_hidden_orders', JSON.stringify(newHidden));
+        toast.success("Pedido eliminado de tu vista", {
+            description: "El registro permanece en la base de datos del restaurante."
+        });
+    };
 
     async function handleRequestOtp(e) {
         e.preventDefault();
@@ -417,14 +432,14 @@ export default function ClientProfilePage() {
                                 </Button>
                             </div>
                             <div className="space-y-4">
-                                {orders.length === 0 ? (
+                                {orders.filter(o => !hiddenOrderIds.includes(o.id)).length === 0 ? (
                                     <Card className="border-none shadow-sm rounded-[1.5rem] bg-gray-50/50">
                                         <CardContent className="p-8 text-center text-gray-500 font-medium">
                                             No tienes pedidos recientes
                                         </CardContent>
                                     </Card>
                                 ) : (
-                                    orders.map((order) => (
+                                    orders.filter(o => !hiddenOrderIds.includes(o.id)).map((order) => (
                                         <Card key={order.id} className="border-none shadow-sm hover:shadow-md transition-shadow rounded-[1.5rem] overflow-hidden group cursor-pointer" onClick={() => navigate(`/${order.negocio_slug || slug}/mis-pedidos?order=${order.id}`)}>
                                             <CardContent className="p-6">
                                                 <div className="flex gap-4">
@@ -483,6 +498,15 @@ export default function ClientProfilePage() {
                                                                     onClick={(e) => { e.stopPropagation(); navigate(`/${order.negocio_slug || slug}/menu`); }}
                                                                 >
                                                                     Volver a pedir
+                                                                </button>
+                                                            )}
+                                                            {order.estado === 'entregado' && (
+                                                                <button
+                                                                    className="text-xs font-bold text-red-500 hover:text-red-600 transition-colors flex items-center gap-1.5 ml-auto border border-red-100 px-2.5 py-1 rounded-lg hover:bg-red-50"
+                                                                    onClick={(e) => { e.stopPropagation(); handleHideOrder(order.id); }}
+                                                                >
+                                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                                    Eliminar
                                                                 </button>
                                                             )}
                                                         </div>

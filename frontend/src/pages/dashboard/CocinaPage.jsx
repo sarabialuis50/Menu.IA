@@ -133,21 +133,47 @@ function OrderCard({ order, onUpdateStatus }) {
   const getTimeSince = (d) => { const diff = Math.floor((new Date() - new Date(d)) / 60000); return diff < 1 ? 'Ahora' : diff < 60 ? diff + ' min' : Math.floor(diff / 60) + 'h'; };
 
   let config;
-  if (order.estado === 'pendiente') config = { label: 'Nuevo', color: 'border-blue-400 bg-blue-50', headerColor: 'bg-blue-500', nextAction: 'Aceptar', nextStatus: 'aceptado', btnColor: 'bg-blue-500 hover:bg-blue-600' };
-  else if (order.estado === 'aceptado') config = { label: 'Aceptado', color: 'border-teal-400 bg-teal-50', headerColor: 'bg-teal-500', nextAction: 'Preparar', nextStatus: 'preparando', btnColor: 'bg-teal-500 hover:bg-teal-600' };
+  if (order.estado === 'pendiente') {
+    config = {
+      label: 'Nuevo',
+      color: 'border-blue-400 bg-blue-50',
+      headerColor: 'bg-blue-500',
+      nextAction: 'ACEPTAR',
+      nextStatus: 'preparando',
+      btnColor: 'bg-blue-500 hover:bg-blue-600 font-black'
+    };
+  }
   else if (order.estado === 'preparando') {
-    const isDelivery = order.tipo === 'delivery';
     config = {
       label: 'Preparando',
       color: 'border-yellow-400 bg-yellow-50',
       headerColor: 'bg-yellow-500',
-      nextAction: isDelivery ? 'Listo' : 'Finalizar',
-      nextStatus: isDelivery ? 'listo' : 'entregado',
-      btnColor: 'bg-green-500 hover:bg-green-600'
+      nextAction: 'LISTO',
+      nextStatus: 'listo',
+      btnColor: 'bg-green-500 hover:bg-green-600 font-black'
     };
   }
-  else if (order.estado === 'listo') config = { label: 'Listo', color: 'border-green-400 bg-green-50', headerColor: 'bg-green-500', nextAction: 'Enviado', nextStatus: 'enviado', btnColor: 'bg-purple-500 hover:bg-purple-600' };
-  else if (order.estado === 'enviado') config = { label: 'Enviado', color: 'border-purple-400 bg-purple-50', headerColor: 'bg-purple-500', nextAction: 'Entregado', nextStatus: 'entregado', btnColor: 'bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814]' };
+  else if (order.estado === 'listo') {
+    const isDelivery = order.tipo === 'delivery';
+    config = {
+      label: 'Listo',
+      color: 'border-emerald-400 bg-emerald-50',
+      headerColor: 'bg-emerald-500',
+      nextAction: isDelivery ? 'ENVIADO' : 'ENTREGADO', // Changed from 'EN CAMINO' to 'ENVIADO'
+      nextStatus: isDelivery ? 'enviado' : 'entregado',
+      btnColor: 'bg-indigo-600 hover:bg-indigo-700 shadow-lg text-white font-black'
+    };
+  }
+  else if (order.estado === 'enviado') { // Added new state for 'enviado'
+    config = {
+      label: 'Enviado',
+      color: 'border-purple-400 bg-purple-50',
+      headerColor: 'bg-purple-500',
+      nextAction: 'ENTREGADO',
+      nextStatus: 'entregado',
+      btnColor: 'bg-indigo-600 hover:bg-indigo-700 shadow-lg text-white font-black'
+    };
+  }
   else config = { label: 'Entregado', color: 'border-gray-400 bg-gray-50', headerColor: 'bg-gray-500', nextAction: null, nextStatus: null, btnColor: '' };
 
   return (
@@ -160,8 +186,13 @@ function OrderCard({ order, onUpdateStatus }) {
         </div>
       </div>
       <div className="p-4">
-        <h3 className="font-heading font-bold text-xl text-gray-900 mb-2">{order.mesa_numero ? `Mesa ${order.mesa_numero}` : 'Para llevar'}</h3>
-        <div className="space-y-4 mb-4">
+        <h3 className="font-heading font-bold text-xl text-gray-900 mb-1">{order.mesa_numero ? `Mesa ${order.mesa_numero}` : 'Para llevar'}</h3>
+        {order.notas && (
+          <div className="mb-4 text-[11px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-100">
+            📌 Notas: {order.notas}
+          </div>
+        )}
+        <div className="space-y-4 overflow-visible">
           {order.items.map((item, idx) => (
             <div key={idx} className="flex flex-col gap-1 border-b border-gray-100 last:border-0 pb-2 mb-2 italic">
               <div className="flex gap-2">
@@ -169,15 +200,13 @@ function OrderCard({ order, onUpdateStatus }) {
                 <span className="font-medium text-gray-900">{item.nombre}</span>
               </div>
               {item.descripcion && (
-                <div className="ml-8 text-xs text-gray-400 line-clamp-2 leading-tight italic">
+                <div className="ml-8 text-sm font-black text-gray-800 leading-tight mb-1">
                   {item.descripcion}
                 </div>
               )}
               {item.modificadores && item.modificadores.length > 0 && (
-                <div className="ml-8 flex flex-wrap gap-1">
-                  {item.modificadores.map((mod, i) => (
-                    <span key={i} className="text-[10px] font-black text-orange-600 uppercase tracking-tighter">+ {mod}</span>
-                  ))}
+                <div className="ml-8 text-[11px] font-black text-blue-600 uppercase tracking-tight mt-0.5">
+                  {item.modificadores.map(mod => mod.startsWith('(') ? mod : `(1) ${mod}`).join(' - ')}
                 </div>
               )}
               {item.notas && (

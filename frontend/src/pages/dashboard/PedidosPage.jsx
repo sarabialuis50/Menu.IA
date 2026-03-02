@@ -71,7 +71,7 @@ import { es } from 'date-fns/locale';
 
 export default function PedidosPage() {
     const { slug } = useParams();
-    const { api } = useAuth();
+    const { api, user } = useAuth();
 
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -207,7 +207,7 @@ export default function PedidosPage() {
 
     return (
         <DashboardLayout>
-            <div className="max-w-7xl mx-auto space-y-8 pb-10">
+            <div className="max-w-[98%] mx-auto space-y-8 pb-10">
                 {/* Header with History Link */}
                 <div className="flex items-center justify-between">
                     <div>
@@ -403,13 +403,13 @@ export default function PedidosPage() {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-gray-50/50 border-b border-gray-100">
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">ID Pedido</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Fecha/Hora</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Cliente / Mesa</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Estado</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Items</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Total</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Acciones</th>
+                                    <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">ID Pedido</th>
+                                    <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">Fecha/Hora</th>
+                                    <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">Cliente / Mesa</th>
+                                    <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">Estado</th>
+                                    <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">Items</th>
+                                    <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest text-right">Total</th>
+                                    <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest text-center">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
@@ -432,10 +432,10 @@ export default function PedidosPage() {
 
                                         return (
                                             <tr key={order.id} className="hover:bg-gray-50/50 transition-colors group">
-                                                <td className="px-6 py-4">
-                                                    <span className="font-mono text-xs text-gray-500">#{order.id.slice(0, 8)}</span>
+                                                <td className="px-3 py-4">
+                                                    <span className="font-mono text-[10px] text-gray-500">#{order.id.slice(0, 8)}</span>
                                                 </td>
-                                                <td className="px-6 py-4">
+                                                <td className="px-3 py-4">
                                                     <div className="flex flex-col">
                                                         <span className="text-sm font-bold text-gray-900">
                                                             {format(new Date(order.created_at), 'HH:mm', { locale: es })}
@@ -445,7 +445,7 @@ export default function PedidosPage() {
                                                         </span>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4">
+                                                <td className="px-3 py-4">
                                                     <div className="flex flex-col">
                                                         <span className="text-sm font-bold text-gray-900">
                                                             {order.mesa_numero ? `Mesa ${order.mesa_numero}` : 'Para Llevar'}
@@ -457,13 +457,13 @@ export default function PedidosPage() {
                                                         )}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4">
+                                                <td className="px-3 py-4">
                                                     <Badge className={`rounded-lg px-2.5 py-1 text-[10px] font-black border uppercase tracking-wide gap-1.5 shadow-sm ${statusConfig.color}`}>
                                                         <StatusIcon className="w-3 h-3" />
                                                         {statusConfig.label}
                                                     </Badge>
                                                 </td>
-                                                <td className="px-6 py-4">
+                                                <td className="px-3 py-4">
                                                     <div className="text-xs text-gray-600 max-w-[200px] truncate">
                                                         {order.items.map(i => `${i.cantidad}x ${i.nombre}`).join(', ')}
                                                     </div>
@@ -471,12 +471,12 @@ export default function PedidosPage() {
                                                         {order.items.length} {order.items.length === 1 ? 'item' : 'items'}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 text-right">
+                                                <td className="px-3 py-4 text-right">
                                                     <span className="font-heading font-black text-gray-900">
                                                         {formatCurrency(order.total)}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 text-center">
+                                                <td className="px-3 py-4 text-center">
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
                                                             <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-900 transition-all">
@@ -600,7 +600,7 @@ export default function PedidosPage() {
                     <div className="p-8 space-y-8 overflow-y-auto max-h-[80vh] no-scrollbar">
                         {/* Header Info */}
                         <div className="text-center space-y-1">
-                            <h2 className="text-2xl font-black text-[#FF6B00]">GoFood</h2>
+                            <h2 className="text-2xl font-black text-[#FF6B00]">{user?.nombre || 'Mi Negocio'}</h2>
                             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">ID del Pedido: #{selectedOrder?.id?.slice(0, 8).toUpperCase()}</p>
                             <p className="text-[11px] font-bold text-gray-400">Realizado: {selectedOrder ? format(new Date(selectedOrder.created_at), 'dd/MM/yyyy, HH:mm:ss') : ''}</p>
                         </div>
@@ -617,12 +617,8 @@ export default function PedidosPage() {
                                     <span className="text-gray-900 font-black">{selectedOrder?.cliente_nombre || 'No registrado'}</span>
                                 </div>
                                 <div className="flex justify-between items-center text-sm">
-                                    <span className="text-gray-400 font-bold">Correo:</span>
-                                    <span className="text-gray-900 font-black">user@gofood.com</span>
-                                </div>
-                                <div className="flex justify-between items-center text-sm">
                                     <span className="text-gray-400 font-bold">Teléfono:</span>
-                                    <span className="text-gray-900 font-black">123456789</span>
+                                    <span className="text-gray-900 font-black">{selectedOrder?.cliente_telefono || 'No registrado'}</span>
                                 </div>
                             </div>
                         </div>
@@ -636,11 +632,11 @@ export default function PedidosPage() {
                             <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-50 space-y-3">
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-gray-400 font-bold">Dirección:</span>
-                                    <span className="text-gray-900 font-black">{selectedOrder?.direccion || 'Calle Falsa 123'}</span>
+                                    <span className="text-gray-900 font-black">{selectedOrder?.direccion || 'No registrada'}</span>
                                 </div>
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-gray-400 font-bold">Costo de envío:</span>
-                                    <span className="text-gray-900 font-black">{formatCurrency(28562)}</span>
+                                    <span className="text-gray-900 font-black">{formatCurrency(selectedOrder?.costo_envio || 0)}</span>
                                 </div>
                             </div>
                         </div>

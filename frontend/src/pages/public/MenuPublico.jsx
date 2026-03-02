@@ -1177,11 +1177,11 @@ const MenuContent = () => {
               </div>
             </SheetHeader>
 
-            <div className="flex-1 overflow-y-auto no-scrollbar pb-6">
+            <div className="flex-1 overflow-y-auto no-scrollbar pb-6 px-4 md:px-10">
               {/* Combined Checkout View */}
               {/* Combined Checkout View */}
               {checkoutStep === 1 && (
-                <div className="space-y-8">
+                <div className="space-y-8 pb-12">
 
                   {/* Section 1: Detalle del Pedido (Moved to Top) */}
                   <div className="space-y-4">
@@ -1269,7 +1269,7 @@ const MenuContent = () => {
                           value={customerInfo.nombre}
                           onChange={(e) => setCustomerInfo({ ...customerInfo, nombre: e.target.value })}
                           placeholder="Tu nombre"
-                          className="h-12 bg-white border-gray-200 rounded-2xl focus:ring-[#22C55E]/20"
+                          className="h-12 bg-white border-2 border-gray-100 rounded-2xl focus:ring-4 focus:ring-[#4ADE80]/10 focus:border-[#4ADE80]/20 transition-all shadow-sm"
                         />
                       </div>
                       <div className="space-y-1">
@@ -1280,7 +1280,7 @@ const MenuContent = () => {
                           value={customerInfo.telefono}
                           onChange={(e) => setCustomerInfo({ ...customerInfo, telefono: e.target.value })}
                           placeholder="300 000 0000"
-                          className="h-12 bg-white border-gray-200 rounded-2xl focus:ring-[#22C55E]/20"
+                          className="h-12 bg-white border-2 border-gray-100 rounded-2xl focus:ring-4 focus:ring-[#4ADE80]/10 focus:border-[#4ADE80]/20 transition-all shadow-sm"
                         />
                       </div>
                     </div>
@@ -1301,7 +1301,7 @@ const MenuContent = () => {
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
-                      className="space-y-4 overflow-hidden"
+                      className="space-y-4 overflow-visible"
                     >
                       <div className="space-y-4">
                         <div className="relative group">
@@ -1323,7 +1323,7 @@ const MenuContent = () => {
                               }
                               toast.success("Dirección validada");
                             }}
-                            className="h-14 pl-12 bg-gray-50 border-gray-100 rounded-2xl text-base font-medium focus:ring-2 focus:ring-[#22C55E]/20 transition-all"
+                            className="h-14 pl-12 bg-white border-2 border-gray-100 rounded-2xl text-base font-medium focus:ring-4 focus:ring-[#4ADE80]/10 focus:border-[#4ADE80]/20 transition-all shadow-sm"
                           />
                         </div>
 

@@ -369,75 +369,75 @@ export default function AllCustomersPage() {
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-gray-50/50 border-b border-gray-100">
-                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Cliente</th>
-                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">WhatsApp</th>
-                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Email</th>
-                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Nivel</th>
-                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Puntos</th>
-                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Estado</th>
-                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.15em] text-center">Acciones</th>
+                                <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">Cliente</th>
+                                <th className="px-2 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">WhatsApp</th>
+                                <th className="px-2 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">Email</th>
+                                <th className="px-2 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">Nivel</th>
+                                <th className="px-2 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">Puntos</th>
+                                <th className="px-2 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">Estado</th>
+                                <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {filteredCustomers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((customer) => (
                                 <tr key={customer.id} className="hover:bg-gray-50/50 transition-colors group">
-                                    <td className="px-8 py-5">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 border-2 border-white shadow-sm flex items-center justify-center text-gray-600 font-black text-xs">
+                                    <td className="px-3 py-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 border-2 border-white shadow-sm flex items-center justify-center text-gray-600 font-black text-xs">
                                                 {customer.avatar}
                                             </div>
                                             <div>
-                                                <p className="font-black text-sm text-gray-900 leading-none mb-1 group-hover:text-[#22C55E] transition-colors">{customer.name}</p>
-                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Cliente Registrado</p>
+                                                <p className="font-black text-xs text-gray-900 leading-none mb-1 group-hover:text-[#22C55E] transition-colors">{customer.name}</p>
+                                                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">Cliente Registrado</p>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-5">
+                                    <td className="px-2 py-4">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-sm font-bold text-gray-700">{customer.phone}</span>
+                                            <span className="text-xs font-bold text-gray-700">{customer.phone}</span>
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={() => window.open(`https://wa.me/${customer.phone.replace(/\s+/g, '')}`, '_blank')}
-                                                className="h-7 w-7 rounded-full text-[#22C55E] hover:bg-green-50 transition-all"
+                                                className="h-6 w-6 rounded-full text-[#22C55E] hover:bg-green-50 transition-all"
                                             >
-                                                <MessageSquareMore className="w-4 h-4" />
+                                                <MessageSquareMore className="w-3.5 h-3.5" />
                                             </Button>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-5">
+                                    <td className="px-2 py-4">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-xs font-semibold text-gray-600">{customer.email}</span>
+                                            <span className="text-[11px] font-semibold text-gray-600">{customer.email}</span>
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={() => window.location.href = `mailto:${customer.email}`}
-                                                className="h-7 w-7 rounded-full text-blue-500 hover:bg-blue-50 transition-all"
+                                                className="h-6 w-6 rounded-full text-blue-500 hover:bg-blue-50 transition-all"
                                             >
-                                                <Mail className="w-4 h-4" />
+                                                <Mail className="w-3.5 h-3.5" />
                                             </Button>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-5">
-                                        <Badge variant="outline" className={`rounded-xl px-3 py-1 text-[9px] font-black border-2 flex items-center gap-2 w-fit ${getLevelStyles(customer.level)}`}>
+                                    <td className="px-2 py-4">
+                                        <Badge variant="outline" className={`rounded-xl px-2 py-0.5 text-[8px] font-black border-2 flex items-center gap-2 w-fit ${getLevelStyles(customer.level)}`}>
                                             <div className={`w-1.5 h-1.5 rounded-full ${customer.level === 'ORO' ? 'bg-yellow-600' :
                                                 customer.level === 'PLATA' ? 'bg-gray-500' : 'bg-orange-800'
                                                 }`} />
                                             {customer.level}
                                         </Badge>
                                     </td>
-                                    <td className="px-6 py-5">
-                                        <p className="text-sm font-black text-gray-900 tracking-tight">{customer.points.toLocaleString()}</p>
+                                    <td className="px-2 py-4">
+                                        <p className="text-xs font-black text-gray-900 tracking-tight">{customer.points.toLocaleString()}</p>
                                     </td>
-                                    <td className="px-6 py-5">
-                                        <Badge variant="outline" className={`rounded-xl px-3 py-1 text-[9px] font-black border-2 ${getStatusStyles(customer.status)}`}>
+                                    <td className="px-2 py-4">
+                                        <Badge variant="outline" className={`rounded-xl px-2 py-0.5 text-[8px] font-black border-2 ${getStatusStyles(customer.status)}`}>
                                             {customer.status}
                                         </Badge>
                                     </td>
-                                    <td className="px-8 py-5 text-center">
+                                    <td className="px-3 py-4 text-center">
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" className="h-9 w-9 p-0 hover:bg-white hover:shadow-md rounded-full transition-all">
+                                                <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-white hover:shadow-md rounded-full transition-all">
                                                     <MoreHorizontal className="w-4 h-4 text-gray-400" />
                                                 </Button>
                                             </DropdownMenuTrigger>

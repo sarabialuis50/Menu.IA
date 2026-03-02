@@ -345,7 +345,7 @@ export default function LandingPage() {
               </a>
               <a href="https://wa.me/573017810256" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-bold hover:text-white transition-colors text-slate-500">
                 <MessageCircle className="w-4 h-4 text-[#22C55E]" />
-                WhatsApp
+                Contacto
               </a>
             </div>
           </div>

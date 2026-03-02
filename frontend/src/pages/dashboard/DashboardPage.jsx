@@ -280,7 +280,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="h-[300px] w-full" style={{ minHeight: '300px' }}>
-                <ResponsiveContainer width="99%" height="100%">
+                <ResponsiveContainer width="99%" height="100%" minWidth={0} minHeight={0}>
                   <AreaChart data={chartData}>
                     <defs>
                       <linearGradient id="colorVentas" x1="0" y1="0" x2="0" y2="1">
@@ -358,7 +358,7 @@ export default function DashboardPage() {
             <CardContent className="p-8 pt-0 flex flex-col">
               <div className="flex flex-col sm:flex-row items-center gap-10">
                 <div className="relative w-48 h-48 shrink-0">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                     <PieChart>
                       <Pie
                         data={segmentationData}

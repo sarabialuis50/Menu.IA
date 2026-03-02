@@ -1592,7 +1592,7 @@ async def get_active_orders(slug: str):
         raise HTTPException(status_code=404, detail="Negocio no encontrado")
     business_id = response.data[0]['id']
     
-    response = supabase.table('pedidos').select('*').match({"negocio_id": business_id}).in_('estado', ["pendiente", "preparando", "listo"]).order('created_at').execute()
+    response = supabase.table('pedidos').select('*').match({"negocio_id": business_id}).in_('estado', ["pendiente", "aceptado", "preparando", "listo"]).order('created_at').execute()
     orders = response.data
     return [Order(**o) for o in orders]
 

@@ -46,13 +46,14 @@ export const CartProvider = ({ children }) => {
       return [...prev, {
         producto_id: product.id,
         nombre: product.nombre,
+        descripcion: product.descripcion,
         cantidad: quantity,
         precio_unitario: finalUnitPrice,
         notas: notas || null,
         imagen: product.imagen,
         modificadores: selectedModifiers?.map(m => {
           if (typeof m === 'string') return m;
-          return (m.cantidad && m.cantidad > 1) ? `${m.cantidad}x ${m.nombre}` : m.nombre;
+          return `(${m.cantidad || 1}) ${m.nombre}`;
         }) || []
       }];
     });
