@@ -41,6 +41,7 @@ import DespachoPage from "@/pages/delivery/DespachoPage";
 import ClientProfilePage from "@/pages/public/ClientProfilePage";
 import ClientEditProfilePage from "@/pages/public/ClientEditProfilePage";
 import ClientOrdersPage from "@/pages/public/ClientOrdersPage";
+import LegalPage from "@/pages/public/LegalPage";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -131,6 +132,9 @@ function AppRoutes() {
       <Route path="/demo" element={<Navigate to="/demo-restaurante" replace />} />
       <Route path="/demo-restaurante" element={<DemoRestaurante />} />
       <Route path="/demo-negocio" element={<DemoRestaurante />} />
+
+      {/* Legal Routes */}
+      <Route path="/legal/autorizacion-datos" element={<LegalPage />} />
 
       {/* Catch all */}
       <Route path="*" element={<Navigate to="/" replace />} />

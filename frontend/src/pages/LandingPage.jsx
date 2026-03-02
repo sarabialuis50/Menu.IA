@@ -321,9 +321,9 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-4 bg-[#0F172A] text-slate-400">
+      <footer className="py-16 px-4 bg-[#0F172A] text-slate-400 border-t border-slate-800">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 rounded-xl bg-transparent flex items-center justify-center overflow-hidden">
                 <img src="/logos/logo-icon-white.png" alt="Menu.IA" className="w-full h-full object-cover" />
@@ -333,8 +333,17 @@ export default function LandingPage() {
                 <span className="text-[#22B8CF]">.IA</span>
               </span>
             </div>
-            <p className="text-sm max-w-xs md:max-w-none">
-              © 2026 Menu.IA. Hecho con amor para negocios apasionados.
+
+            <div className="flex flex-wrap justify-center gap-6 md:gap-10">
+              <Link to="/legal/autorizacion-datos" className="text-sm font-bold hover:text-white transition-colors">Legal & Privacidad</Link>
+              <Link to="/legal/autorizacion-datos" className="text-sm font-bold hover:text-white transition-colors text-slate-500">Términos de Uso</Link>
+              <Link to="/legal/autorizacion-datos" className="text-sm font-bold hover:text-white transition-colors text-slate-500">Cookies</Link>
+            </div>
+          </div>
+
+          <div className="pt-8 border-t border-slate-800/50 text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">
+              © 2026 Menu.IA - Todos los derechos reservados
             </p>
           </div>
         </div>
