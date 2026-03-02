@@ -3589,7 +3589,7 @@ async def create_subscription_link(data: SubscriptionRequest, business: Business
         amount = selected_plan['price_annual'] if data.frequency == 'annual' else selected_plan['price_monthly']
         
         # Create Preapproval Data
-        payer_email = business.email if business.email else "soporte@menuia.co"
+        payer_email = business.email if business.email else "info@menuia.co"
         
         subscription_data = {
             "reason": selected_plan['reason'],
@@ -3801,7 +3801,7 @@ async def create_support_pack_link(data: WhatsAppPackRequest, business: Business
         if not price:
              raise HTTPException(status_code=400, detail="Cantidad de mensajes de soporte no válida")
              
-        payer_email = business.email if business.email else "soporte@menuia.co"
+        payer_email = business.email if business.email else "info@menuia.co"
         frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
         
         preference_data = {

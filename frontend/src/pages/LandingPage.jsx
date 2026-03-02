@@ -19,7 +19,8 @@ import {
   ArrowUpRight,
   ExternalLink,
   Monitor,
-  Heart
+  Heart,
+  Mail
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import LandingAgent from '@/components/LandingAgent';
@@ -80,7 +81,7 @@ export default function LandingPage() {
                 Gestión Inteligente para tu Negocio
               </span>
               <h1 className="font-heading text-4xl sm:text-5xl lg:text-[56px] font-extrabold text-[#0F172A] tracking-tight mb-8 lg:mb-8 leading-[1.05]">
-                La forma más inteligente de <span className="bg-gradient-to-r from-[#22C55E] to-[#06B6D4] bg-clip-text text-transparent">gestionar tu negocio</span>
+                La forma más inteligente de <span className="bg-gradient-to-r from-[#22C55E] to-[#06B6D4] bg-clip-text text-transparent">gestionar tu Menú</span>
               </h1>
               <p className="text-base sm:text-lg text-slate-600 mb-12 lg:mb-10 max-w-xl font-medium leading-relaxed">
                 Optimiza tus pedidos, fideliza clientes con IA y automatiza tu comunicación por WhatsApp en un solo lugar.
@@ -338,6 +339,14 @@ export default function LandingPage() {
               <Link to="/legal/autorizacion-datos" className="text-sm font-bold hover:text-white transition-colors">Legal & Privacidad</Link>
               <Link to="/legal/autorizacion-datos" className="text-sm font-bold hover:text-white transition-colors text-slate-500">Términos de Uso</Link>
               <Link to="/legal/autorizacion-datos" className="text-sm font-bold hover:text-white transition-colors text-slate-500">Cookies</Link>
+              <a href="mailto:info@menuia.co" className="flex items-center gap-2 text-sm font-bold hover:text-white transition-colors text-slate-500">
+                <Mail className="w-4 h-4 text-[#22B8CF]" />
+                info@menuia.co
+              </a>
+              <a href="https://wa.me/573017810256" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-bold hover:text-white transition-colors text-slate-500">
+                <MessageCircle className="w-4 h-4 text-[#22C55E]" />
+                WhatsApp
+              </a>
             </div>
           </div>
 

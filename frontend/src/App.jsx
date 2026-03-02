@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { Toaster } from "sonner";
 import TrialLockedOverlay from "@/components/TrialLockedOverlay";
+import CookieBanner from "@/components/CookieBanner";
 
 // Pages
 import DemoRestaurante from './pages/public/DemoRestaurante';
@@ -148,8 +149,9 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <AppRoutes />
+          <TrialLockedOverlay />
+          <CookieBanner />
         </BrowserRouter>
-        <TrialLockedOverlay />
         <Toaster
           position="top-center"
           richColors
