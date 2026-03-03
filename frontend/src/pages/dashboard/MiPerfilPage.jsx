@@ -315,7 +315,7 @@ export default function MiPerfilPage() {
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:flex gap-3 w-full md:w-auto">
                         <Button variant="outline" asChild className="rounded-2xl h-12 px-6 border-gray-200 hover:bg-gray-50 text-[#111814] font-bold gap-2 w-full md:w-auto flex justify-center">
-                            <Link to={`/${slug}`}>
+                            <Link to={`/${slug}`} target="_blank" rel="noopener noreferrer">
                                 <Eye className="w-4 h-4" />
                                 Ver Perfil
                                 <ArrowUpRight className="w-4 h-4 opacity-50" />

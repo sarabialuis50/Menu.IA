@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { MessageSquareMore, Megaphone, Zap, BarChart, Plus, Copy, Smartphone, Users, Award, AlertCircle, Check, Sparkles, Send, Save, Trash2, LayoutGrid, Calendar, MessageSquare, CheckCircle, ExternalLink, Lock } from 'lucide-react';
+import { MessageSquareMore, Megaphone, Zap, BarChart, Plus, Copy, Smartphone, Users, Award, AlertCircle, Check, Sparkles, Send, Save, Trash2, LayoutGrid, Calendar, MessageSquare, CheckCircle, ExternalLink, Lock, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -21,6 +21,8 @@ import {
 export default function WhatsappHubPage() {
     const { user, setUser } = useAuth();
     const [searchParams] = useSearchParams();
+
+
     const [activeTab, setActiveTab] = useState('templates'); // 'templates' | 'campaigns'
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [templates, setTemplates] = useState([]);
@@ -34,6 +36,59 @@ export default function WhatsappHubPage() {
     const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
     const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
     const [isCreatingLink, setIsCreatingLink] = useState(false);
+
+    // AI Marketing Assistant state
+    const [isAILoading, setIsAILoading] = useState(false);
+    const [aiSuggestions, setAiSuggestions] = useState(null);
+    const [isAIModalOpen, setIsAIModalOpen] = useState(false);
+    const [aiType, setAiType] = useState('template'); // 'template' | 'campaign'
+
+    const getAISuggestion = async (type = 'template') => {
+        setAiType(type);
+        setIsAILoading(true);
+        try {
+            const reqData = {
+                current_message: type === 'template' ? selectedTemplate?.message : campaignMessage,
+                segment_id: type === 'template' ? (selectedTemplate?.trigger_type || selectedTemplate?.id) : selectedSegment?.id,
+                segment_name: type === 'template' ? selectedTemplate?.name : selectedSegment?.name,
+                segment_desc: type === 'template' ? selectedTemplate?.trigger : selectedSegment?.desc,
+                tone: "amigable y persuasivo"
+            };
+            const response = await api().post('/marketing/ai-suggestion', reqData);
+            setAiSuggestions(response.data);
+            setIsAIModalOpen(true);
+        } catch (error) {
+            toast.error(error.response?.data?.detail || "Error al conectar con el asistente de IA");
+        } finally {
+            setIsAILoading(false);
+        }
+    };
+
+    const applyAISuggestion = (msg) => {
+        if (aiType === 'template') {
+            setSelectedTemplate({ ...selectedTemplate, message: msg });
+        } else {
+            setCampaignMessage(msg);
+        }
+        setIsAIModalOpen(false);
+    };
+
+    const AISuggestButton = ({ type }) => (
+        <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => getAISuggestion(type)}
+            disabled={isAILoading}
+            className="h-8 gap-2 bg-[#4ADE80]/10 hover:bg-[#4ADE80] hover:text-white text-[#22C55E] rounded-full px-4 border border-[#4ADE80]/20 transition-all font-black text-[9px] uppercase tracking-widest"
+        >
+            {isAILoading ? (
+                <div className="w-3 h-3 border-2 border-[#22C55E] border-t-white rounded-full animate-spin" />
+            ) : (
+                <Sparkles className="w-3 h-3" />
+            )}
+            {isAILoading ? 'IA Pensando...' : 'Asistente de IA'}
+        </Button>
+    );
 
     // Campaign Wizard state
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -214,9 +269,11 @@ export default function WhatsappHubPage() {
                 toast.success(response.data.message);
 
                 // Update credits in context
+                const updatedUser = { ...user };
                 if (response.data.remaining_credits !== undefined) {
-                    setUser({ ...user, wa_credits: response.data.remaining_credits });
+                    updatedUser.wa_credits = response.data.remaining_credits;
                 }
+                setUser(updatedUser);
             } else {
                 setCampaignStatus('error');
                 toast.error(response.data.message || 'Error al iniciar campaña');
@@ -350,23 +407,25 @@ export default function WhatsappHubPage() {
                                 <div className="space-y-4 py-2">
                                     <div className="flex items-start justify-between gap-4">
                                         <h3 className="text-4xl font-black leading-none tracking-tight">
-                                            {user?.wa_messages_limit > 0 ? (user?.wa_messages_count || 0) : 0}/{user?.wa_messages_limit || 0}
+                                            {`${user?.wa_credits || 0}/${user?.wa_messages_limit || 0}`}
                                         </h3>
                                         <Badge className="bg-white/20 text-white text-[7px] md:text-[8px] font-black tracking-widest border-white border-2 px-2 py-0.5 shrink-0 mt-1 uppercase">
                                             PLAN {user?.plan?.toUpperCase() || 'GRATUITO'}
                                         </Badge>
                                     </div>
                                     <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest px-1 whitespace-nowrap mt-1">
-                                        Pack Mensaje/Campañas
+                                        Créditos Campañas Masivas
                                     </p>
                                     <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden">
                                         <div
                                             className="h-full bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-1000"
-                                            style={{ width: `${Math.min(100, user?.wa_messages_limit > 0 ? ((user?.wa_messages_count || 0) / user.wa_messages_limit) * 100 : 0)}%` }}
+                                            style={{
+                                                width: `${Math.min(100, (user?.wa_messages_limit > 0 ? ((user?.wa_credits || 0) / user.wa_messages_limit * 100) : 0))}%`
+                                            }}
                                         />
                                     </div>
                                     <p className="text-[9px] font-bold text-white/80 italic text-center">
-                                        ✨ Has usado el {user?.wa_messages_limit > 0 ? (((user?.wa_messages_count || 0) / user.wa_messages_limit) * 100).toFixed(1) : '0.0'}% de tu cupo incluido.
+                                        ✨ Dispones de {user?.wa_credits || 0} mensajes para campañas.
                                     </p>
                                 </div>
 
@@ -532,6 +591,10 @@ export default function WhatsappHubPage() {
                                                     <p className="text-xs text-gray-500 font-bold uppercase tracking-tight leading-relaxed">{selectedTemplate.trigger}</p>
                                                 </div>
 
+                                                <div className="flex justify-end -my-4 relative z-10 px-4">
+                                                    <AISuggestButton type="template" />
+                                                </div>
+
                                                 <div className="flex-1 border-2 border-gray-50 rounded-2xl p-4 bg-gray-50/10">
                                                     <textarea
                                                         value={selectedTemplate.message}
@@ -598,10 +661,10 @@ export default function WhatsappHubPage() {
                                                 </p>
                                             </div>
                                             <Button
-                                                onClick={() => setIsPurchaseModalOpen(true)}
+                                                onClick={() => setIsCampaignModalOpen(true)}
                                                 className="w-full h-12 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl uppercase tracking-widest text-[10px]"
                                             >
-                                                Adquirir Pack de Marketing
+                                                Adquirir pack campaña masiva
                                             </Button>
                                         </div>
                                     </div>
@@ -650,13 +713,17 @@ export default function WhatsappHubPage() {
 
                                         <Card className="border-2 border-gray-200 shadow-xl shadow-gray-200/50 overflow-hidden bg-white flex flex-col flex-1 min-h-[500px] rounded-[1.5rem]">
                                             <div className="p-7 flex-1 flex flex-col space-y-6">
-                                                <div className="bg-gray-50/80 rounded-2xl p-5 border-2 border-dashed border-gray-200 flex flex-col gap-3">
+                                                <div className="bg-gray-50/80 rounded-2xl p-5 border-2 border-dashed border-gray-200 flex flex-col justify-center">
                                                     <div className="flex items-center gap-3">
                                                         <AlertCircle className="w-5 h-5 text-[#22C55E] shrink-0" />
                                                         <p className="text-xs text-gray-500 font-bold uppercase tracking-tight leading-relaxed">
                                                             {selectedSegment?.desc}
                                                         </p>
                                                     </div>
+                                                </div>
+
+                                                <div className="flex justify-end -my-4 relative z-10 px-4">
+                                                    <AISuggestButton type="campaign" />
                                                 </div>
 
                                                 <div className="flex-1 border-2 border-gray-50 rounded-2xl p-4 bg-gray-50/10">
@@ -793,24 +860,26 @@ export default function WhatsappHubPage() {
                                     <div>
                                         <p className="text-xs font-black text-amber-600 uppercase tracking-tight mb-1">Costo de la Campaña</p>
                                         <p className="text-sm text-amber-900 font-bold leading-relaxed">
-                                            Se descontarán <span className="font-black">{selectedSegment?.count} créditos</span> de tu saldo de WhatsApp Hub.
+                                            Se descontarán <span className="font-black">{selectedSegment?.count} créditos</span> de tu saldo de Campañas Masivas.
                                         </p>
-                                        <p className="text-[10px] text-amber-500 mt-2 font-bold italic">Saldo actual: {user?.wa_credits || 0} créditos</p>
+                                        <p className="text-[10px] text-amber-500 mt-2 font-bold italic uppercase tracking-widest">
+                                            Saldo disponible: {user?.wa_credits || 0}/{user?.wa_messages_limit || 0} mensajes
+                                        </p>
                                     </div>
                                 </div>
 
                                 <div className="space-y-4 pt-4">
                                     <Button
                                         onClick={handleSendCampaign}
-                                        disabled={user?.wa_credits < selectedSegment?.count}
+                                        disabled={(user?.wa_credits || 0) < (selectedSegment?.count || 0)}
                                         className="w-full h-14 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black rounded-2xl uppercase tracking-widest text-[11px] shadow-lg shadow-green-100 transition-all flex items-center justify-center gap-3"
                                     >
                                         <Zap className="w-4 h-4 fill-current" />
                                         INICIAR ENVÍO AHORA
                                     </Button>
-                                    {user?.wa_credits < selectedSegment?.count && (
+                                    {(user?.wa_credits || 0) < (selectedSegment?.count || 0) && (
                                         <p className="text-[9px] text-red-500 font-black text-center uppercase tracking-widest bg-red-50 py-2 rounded-lg">
-                                            ⚠️ No tienes créditos suficientes para este segmento.
+                                            ⚠️ No tienes créditos de campaña suficientes.
                                         </p>
                                     )}
                                     <Button
@@ -897,9 +966,9 @@ export default function WhatsappHubPage() {
                             <MessageSquare className="w-24 h-24" />
                         </div>
                         <DialogHeader>
-                            <DialogTitle className="text-2xl font-black uppercase tracking-tight">Pack Mensaje/Campañas</DialogTitle>
+                            <DialogTitle className="text-2xl font-black uppercase tracking-tight">Pack Soporte/Ventas</DialogTitle>
                             <DialogDescription id="support-pack-description" className="text-white/80 font-bold text-xs uppercase tracking-widest mt-2">
-                                Recarga créditos para tus envíos masivos. Elige el pack que mejor se adapte a tu próxima gran campaña.
+                                Recarga mensajes para tu agente de IA (Soporte y Ventas).
                             </DialogDescription>
                         </DialogHeader>
                     </div>
@@ -947,6 +1016,12 @@ export default function WhatsappHubPage() {
             <Dialog open={isCampaignModalOpen} onOpenChange={setIsCampaignModalOpen}>
                 <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden" aria-describedby="campaign-pack-description">
                     <div className="bg-[#4ADE80] p-8 text-[#111814] relative">
+                        <button
+                            onClick={() => setIsCampaignModalOpen(false)}
+                            className="absolute top-4 right-4 text-[#111814]/40 hover:text-[#111814] transition-colors z-10"
+                        >
+                            <X className="w-6 h-6" />
+                        </button>
                         <div className="absolute top-0 right-0 p-8 opacity-10">
                             <MessageSquareMore className="w-24 h-24" />
                         </div>
@@ -993,6 +1068,58 @@ export default function WhatsappHubPage() {
                             🔒 Pago seguro vía MercadoPago. <br />
                             Los mensajes se añaden inmediatamente a tu cuenta.
                         </p>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* AI Suggestion Dialog */}
+            <Dialog open={isAIModalOpen} onOpenChange={setIsAIModalOpen}>
+                <DialogContent className="sm:max-w-[600px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden">
+                    <div className="bg-[#111814] p-8 text-white relative">
+                        <div className="absolute top-0 right-0 p-8 opacity-10">
+                            <Sparkles className="w-24 h-24" />
+                        </div>
+                        <DialogHeader>
+                            <DialogTitle className="text-2xl font-black uppercase tracking-tight flex items-center gap-3">
+                                <span className="p-2 bg-[#4ADE80] rounded-xl text-[#111814]">
+                                    <Sparkles className="w-5 h-5" />
+                                </span>
+                                Sugerencias de IA
+                            </DialogTitle>
+                            <DialogDescription className="text-gray-400 font-bold text-xs uppercase tracking-widest mt-2">
+                                Gemini ha analizado tu audiencia para redactar estos mensajes efectivos.
+                            </DialogDescription>
+                        </DialogHeader>
+                    </div>
+
+                    <div className="p-8 space-y-6 bg-white overflow-y-auto max-h-[70vh]">
+                        {aiSuggestions?.opciones?.map((opcion, idx) => (
+                            <div key={idx} className="bg-gray-50 rounded-2xl border-2 border-gray-100 p-6 space-y-4 hover:border-[#4ADE80] transition-all group">
+                                <div className="flex items-center justify-between">
+                                    <Badge className="bg-[#4ADE80]/20 text-[#22C55E] font-black text-[10px] uppercase tracking-widest">{opcion.tipo}</Badge>
+                                    <Button
+                                        size="sm"
+                                        className="rounded-xl bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black text-[9px] uppercase tracking-widest h-8"
+                                        onClick={() => applyAISuggestion(opcion.mensaje)}
+                                    >
+                                        Usar este
+                                    </Button>
+                                </div>
+                                <p className="text-sm text-gray-800 font-medium leading-relaxed italic">{opcion.mensaje}</p>
+                            </div>
+                        ))}
+
+                        {aiSuggestions?.recomendacion_marketing && (
+                            <div className="bg-blue-50 p-5 rounded-2xl border-2 border-blue-100 flex items-start gap-4">
+                                <div className="p-2 bg-blue-500 rounded-lg text-white">
+                                    <Award className="w-4 h-4" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black text-blue-600 uppercase tracking-tight mb-1">Tip de Marketing</p>
+                                    <p className="text-xs text-blue-900 font-bold leading-relaxed">{aiSuggestions.recomendacion_marketing}</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </DialogContent>
             </Dialog>

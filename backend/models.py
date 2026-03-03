@@ -604,3 +604,10 @@ class MenuItemTag(MenuItemTagBase):
     model_config = ConfigDict(from_attributes=True, extra="ignore")
     id: str = Field(default_factory=generate_id)
     created_at: datetime = Field(default_factory=get_utc_now)
+
+class MarketingAISuggestionRequest(BaseModel):
+    current_message: Optional[str] = ""
+    segment_id: str
+    segment_name: str
+    segment_desc: str
+    tone: Optional[str] = "amigable y profesional"

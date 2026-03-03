@@ -57,6 +57,8 @@ class Address(AddressBase):
 # Auth Request Models
 class OTPRequest(BaseModel):
     telefono: str
+    negocio_slug: Optional[str] = None
+    negocio_nombre: Optional[str] = None
 
 class OTPVerify(BaseModel):
     telefono: str

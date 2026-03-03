@@ -31,7 +31,7 @@ import traceback
 logger = logging.getLogger(__name__)
 
 # Import WhatsApp Agent Functions (now env vars are loaded)
-from whatsapp_agent import process_whatsapp_message, send_whatsapp_response, send_whatsapp_message, get_or_create_conversation
+from whatsapp_agent import process_whatsapp_message, send_whatsapp_response, send_whatsapp_message, get_or_create_conversation, send_whatsapp_template
 
 from models import Business, BusinessCreate, BusinessLogin, BusinessPublic, BusinessAnalytics, DailyStats
 from models import ForgotPasswordRequest, ResetPasswordRequest, ChangePasswordRequest
@@ -43,7 +43,7 @@ from models import TokenResponse, EmployeeTokenResponse, WhatsAppConfig
 from models import LoyaltyConfig, LoyaltyConfigCreate, LoyaltyConfigUpdate
 from models import CustomerPoints, CustomerPointsPublic, CustomerCreate, PointsTransaction
 from models import RedeemPointsRequest, RedeemPointsResponse, AwardPointsRequest
-from models import MenuItem, MenuItemCreate, MenuItemOption, MenuItemOptionCreate, MenuItemTag, MenuItemTagCreate
+from models import MenuItem, MenuItemCreate, MenuItemOption, MenuItemOptionCreate, MenuItemTag, MenuItemTagCreate, MarketingAISuggestionRequest
 from models_client import Cliente, ClienteCreate, ClienteUpdate
 from models_client import Address, AddressCreate, AddressUpdate
 from models_client import OTPRequest, OTPVerify, ClientTokenResponse
@@ -2529,19 +2529,24 @@ async def send_marketing_campaign(request: CampaignRequest, background_tasks: Ba
     if count == 0:
         return {"success": False, "message": "No hay clientes en este segmento para enviar la campaña."}
 
-    # 3. Check Credits
-    if (business.wa_credits or 0) < count:
+    # 3. Check Credits (Marketing Campaigns only use wa_credits)
+    wa_credits = business.wa_credits or 0
+    
+    if wa_credits < count:
         raise HTTPException(
             status_code=403, 
-            detail=f"Créditos insuficientes. Tu saldo es de {business.wa_credits or 0} créditos y la campaña requiere {count}."
+            detail=f"Créditos de campaña insuficientes. Tienes {wa_credits} y requieres {count}."
         )
     
-    # 4. Deduct Credits
-    new_credits = (business.wa_credits or 0) - count
+    # 4. Deduct Marketing Credits
+    new_wa_credits = wa_credits - count
+    
     try:
-        supabase.table('negocios').update({"wa_credits": new_credits}).eq('id', business.id).execute()
+        supabase.table('negocios').update({
+            "wa_credits": new_wa_credits
+        }).eq('id', business.id).execute()
     except Exception as e:
-        logger.error(f"Error updating wa_credits for {business.id}: {e}")
+        logger.error(f"Error updating campaign credits for {business.id}: {e}")
         raise HTTPException(status_code=500, detail="Error al procesar el descuento de créditos.")
     
     # 5. Send (Background)
@@ -2551,7 +2556,7 @@ async def send_marketing_campaign(request: CampaignRequest, background_tasks: Ba
         "success": True, 
         "message": f"Campaña iniciada para {count} clientes.",
         "count": count,
-        "remaining_credits": new_credits
+        "remaining_credits": new_wa_credits
     }
 
 async def process_campaign_execution(business: Business, customers: List[Dict], message_template: str):
@@ -2616,6 +2621,79 @@ async def get_audience_counts(business: Business = Depends(get_current_business)
     except Exception as e:
         logger.error(f"Error getting audience counts: {e}")
         return {"all": 0, "oro": 0, "plata": 0, "bronce": 0, "new": 0, "inactive": 0, "birthdays": 0}
+
+@api_router.post("/marketing/ai-suggestion")
+async def generate_marketing_suggestion(req: MarketingAISuggestionRequest, business: Business = Depends(get_current_business)):
+    """
+    Generates a marketing message suggestion using Gemini AI based on business and segment context.
+    """
+    if business.plan in ['trial', 'free'] and not os.environ.get("BYPASS_PLAN_CHECK"):
+         raise HTTPException(status_code=403, detail="El asistente de marketing con IA requiere un plan Impulso o superior.")
+
+    try:
+        # Get extra business context
+        # 1. Recent popular products
+        # 2. Total customers
+        res_counts = await get_audience_counts(business)
+        
+        # Build prompt
+        prompt = f"""Actúa como un experto en Marketing Digital y Copywriting para WhatsApp. 
+Tu objetivo es redactar un mensaje persuasivo para una campaña de un negocio llamado "{business.nombre}".
+
+INFORMACIÓN DEL NEGOCIO:
+- Nombre: {business.nombre}
+- Slogan: {business.slogan or 'No definido'}
+- Descripción: {business.descripcion or 'Negocio local de calidad'}
+
+SEGMENTO DE AUDIENCIA:
+- Nombre del segmento: {req.segment_name}
+- Descripción del segmento: {req.segment_desc}
+- Tamaño del segmento: {res_counts.get(req.segment_id, 'varios')} clientes
+
+CONTEXTO ADICIONAL:
+- Tono deseado: {req.tone}
+- Mensaje actual (opcional): {req.current_message or 'Ninguno'}
+
+REGLAS DEL MENSAJE:
+1. Sé breve y directo (máximo 400 caracteres).
+2. Usa emojis de forma moderada pero efectiva.
+3. Incluye un llamado a la acción (CTA) claro.
+4. Usa las etiquetas [Nombre] para personalizarlo.
+5. NO incluyas enlaces genéricos, el negocio los añadirá después.
+6. Enfócate en el beneficio para el cliente según su segmento (ej: premio a leales, invitación a inactivos).
+
+RESPUESTA:
+Genera 3 opciones de mensajes, una corta, una creativa y una enfocada en oferta.
+Devuelve el resultado en formato JSON con la siguiente estructura:
+{{
+  "opciones": [
+    {{ "tipo": "Corta", "mensaje": "..." }},
+    {{ "tipo": "Creativa", "mensaje": "..." }},
+    {{ "tipo": "Oferta", "mensaje": "..." }}
+  ],
+  "recomendacion_marketing": "Breve consejo de por qué estos mensajes funcionan para este segmento."
+}}
+"""
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(prompt)
+        
+        # Clear potential markdown from AI response
+        text = response.text.strip()
+        if text.startswith('```json'): text = text[7:]
+        if text.endswith('```'): text = text[:-3]
+        
+        suggestion_data = json.loads(text.strip())
+        
+        # Increment usage counter (using background task or immediate update)
+        supabase.table('negocios').update({
+            "ai_credits_campaign_used": (business.ai_credits_campaign_used or 0) + 1
+        }).eq('id', business.id).execute()
+        
+        return suggestion_data
+
+    except Exception as e:
+        logger.error(f"Error generating marketing AI suggestion: {e}")
+        raise HTTPException(status_code=500, detail=f"Error al generar sugerencia: {str(e)}")
 
 
 # ============ WHATSAPP WEBHOOK (Prepared) ============
@@ -2726,14 +2804,10 @@ async def handle_whatsapp_webhook(request: Request):
                 if used_wa >= 10: # Trial Limit
                     return {"status": "limit_reached", "reason": "trial_wa_limit_reached"}
             
-            # 2. Verificar límites de mensajes operativos
-            use_credits = False
+            # 2. Verificar límites de mensajes operativos (Soporte/Ventas)
             if wa_count >= wa_limit:
-                if wa_credits > 0:
-                    use_credits = True
-                else:
-                    # Notify Owner if they confirm the service is stopped
-                    # SERVICE STOPPED WARNING
+                # Notify Owner if they confirm the service is stopped
+                # SERVICE STOPPED WARNING
                     # Only send once when they try to exceed
                     try:
                         # Get owner phone
@@ -2757,8 +2831,7 @@ async def handle_whatsapp_webhook(request: Request):
                     return {"status": "limit_reached", "reason": "operational_limit_exceeded"}
         
             # 2.1 Check for Low Balance (50 messages left)
-            remaining_plan = max(0, wa_limit - wa_count)
-            total_remaining = remaining_plan + wa_credits
+            total_remaining = max(0, wa_limit - wa_count)
             
             if total_remaining == 50:
                  try:
@@ -3992,10 +4065,37 @@ async def request_otp(data: OTPRequest):
             "expires_at": expires.isoformat()
         }).execute()
         
-        # Send via WhatsApp
-        msg = f"Tu código de verificación para Menu.IA es: *{otp}*. No lo compartas con nadie."
-        await send_whatsapp_message(phone, msg)
+        # Determine the link and business name
+        link_to_use = "https://menuia.co"
+        business_name_to_use = data.negocio_nombre if data.negocio_nombre else "Menu.IA"
         
+        if data.negocio_slug:
+            link_to_use = f"https://menuia.co/{data.negocio_slug}/menu"
+            try:
+                biz_res = supabase.table('business').select('id, nombre, wa_messages_count').eq('slug', data.negocio_slug).execute()
+                if biz_res.data:
+                    biz_data = biz_res.data[0]
+                    if not data.negocio_nombre:
+                        business_name_to_use = biz_data.get('nombre', "Menu.IA")
+                    
+                    # Deduct from Ventas/Soporte (by incrementing usage counter)
+                    wa_count = biz_data.get('wa_messages_count') or 0
+                    supabase.table('business').update({'wa_messages_count': wa_count + 1}).eq('slug', data.negocio_slug).execute()
+            except HTTPException:
+                raise
+            except Exception as e:
+                logger.error(f"Error checking/deducting credits for slug {data.negocio_slug}: {e}")
+        # Send via WhatsApp using the approved template so it bypasses the 24h window
+        # Format the message to make the OTP easy to copy:
+        msg = f"Tu código de verificación seguro es:\\n\\n*{otp}*\\n\\nIngrésalo en la aplicación para continuar. No lo compartas con nadie."
+        send_whatsapp_template(
+            to_number=phone,
+            template_key="campana_marketing",
+            cliente_nombre="Usuario",
+            negocio_nombre=business_name_to_use,
+            mensaje_personalizado=msg,
+            link=link_to_use
+        )
         return {"message": "OTP enviado"}
     except Exception as e:
         logger.error(f"Error sending OTP: {e}")
@@ -4315,14 +4415,11 @@ async def web_chat_agent(slug: str, data: WebChatRequest):
         
         # If no active conversation or it wasn't billed yet, we bill it now
         if not conversation or not conversation.get('is_billed', False):
-            # Bill 1 credit for starting the IA session
-            if wa_credits > 0:
-                supabase.table('negocios').update({"wa_credits": wa_credits - 1}).eq("id", business_id).execute()
-            else:
-                update_data = {"wa_messages_count": wa_count + 1}
-                if business_data.get('plan') == 'trial':
-                    update_data["ai_credits_wa_used"] = business_data.get('ai_credits_wa_used', 0) + 1
-                supabase.table('negocios').update(update_data).eq("id", business_id).execute()
+            # Bill 1 credit from wa_messages_count (Soporte/Ventas)
+            update_data = {"wa_messages_count": wa_count + 1}
+            if business_data.get('plan') == 'trial':
+                update_data["ai_credits_wa_used"] = business_data.get('ai_credits_wa_used', 0) + 1
+            supabase.table('negocios').update(update_data).eq("id", business_id).execute()
             
             # If we are creating it now, bill it as part of creation logic later? 
             # Better to ensure the flag is set.

@@ -130,7 +130,7 @@ export default function ClientProfilePage() {
         }
         setSubmitting(true);
         try {
-            await axios.post('/api/auth/client/request-otp', { telefono: phone });
+            await axios.post('/api/auth/client/request-otp', { telefono: phone, negocio_slug: slug });
             setAuthStep('otp');
             toast.success("Código enviado por WhatsApp");
         } catch (error) {
