@@ -65,7 +65,7 @@ export default function CookieBanner() {
                                 <Button
                                     variant="ghost"
                                     onClick={handleDecline}
-                                    className="flex-1 md:flex-none text-slate-700 font-bold hover:bg-white/20 rounded-xl border-2 border-white shadow-[0_0_0_1px_rgba(255,255,255,0.4)]"
+                                    className="flex-1 md:flex-none text-slate-700 font-bold hover:bg-emerald-50 rounded-xl border-2 border-[#22C55E]/30 hover:border-[#22C55E] transition-all"
                                 >
                                     Rechazar
                                 </Button>

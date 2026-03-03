@@ -82,6 +82,10 @@ class BusinessBase(BaseModel):
     twilio_number: Optional[str] = None
     ai_use_modal: Optional[bool] = True
     abierto: Optional[bool] = True
+    # Social Media
+    instagram_url: Optional[str] = None
+    facebook_url: Optional[str] = None
+    tiktok_url: Optional[str] = None
 
     @field_validator('metodos_entrega', mode='before')
     @classmethod
