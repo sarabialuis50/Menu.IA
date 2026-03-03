@@ -43,6 +43,9 @@ export default function WhatsappHubPage() {
     const [isAIModalOpen, setIsAIModalOpen] = useState(false);
     const [aiType, setAiType] = useState('template'); // 'template' | 'campaign'
 
+    // Lock overlay state
+    const [dismissedLockOverlay, setDismissedLockOverlay] = useState(false);
+
     const getAISuggestion = async (type = 'template') => {
         setAiType(type);
         setIsAILoading(true);
@@ -648,10 +651,16 @@ export default function WhatsappHubPage() {
                             </>
                         ) : (
                             <div className="relative">
-                                {(!user?.wa_credits || user.wa_credits <= 0) && (
+                                {(!user?.wa_credits || user.wa_credits <= 0) && !dismissedLockOverlay && (
                                     <div className="absolute inset-x-0 -top-4 -bottom-4 z-50 backdrop-blur-[2px] bg-white/40 flex items-center justify-center p-6 rounded-[2.5rem]">
-                                        <div className="max-w-sm w-full bg-white border-2 border-amber-100 shadow-2xl rounded-[2rem] p-8 text-center flex flex-col items-center gap-4">
-                                            <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center">
+                                        <div className="relative max-w-sm w-full bg-white border-2 border-amber-100 shadow-2xl rounded-[2rem] p-8 text-center flex flex-col items-center gap-4">
+                                            <button
+                                                onClick={() => setDismissedLockOverlay(true)}
+                                                className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center shadow-sm hover:scale-110 transition-transform hover:border-gray-300"
+                                            >
+                                                <X className="w-4 h-4 text-gray-500" />
+                                            </button>
+                                            <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center mt-2">
                                                 <Lock className="w-8 h-8 text-amber-500" />
                                             </div>
                                             <div>
