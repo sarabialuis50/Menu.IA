@@ -1079,6 +1079,12 @@ export default function WhatsappHubPage() {
                         <div className="absolute top-0 right-0 p-8 opacity-10">
                             <Sparkles className="w-24 h-24" />
                         </div>
+                        <button
+                            onClick={() => setIsAIModalOpen(false)}
+                            className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-white border-2 border-[#22C55E] flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
+                        >
+                            <X className="w-4 h-4 text-black" />
+                        </button>
                         <DialogHeader>
                             <DialogTitle className="text-2xl font-black uppercase tracking-tight flex items-center gap-3">
                                 <span className="p-2 bg-[#4ADE80] rounded-xl text-[#111814]">

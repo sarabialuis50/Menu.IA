@@ -2614,8 +2614,8 @@ async def get_audience_counts(business: Business = Depends(get_current_business)
             "oro": len([c for c in customers if (c.get('puntos_totales') or 0) > 1000]),
             "plata": len([c for c in customers if 300 <= (c.get('puntos_totales') or 0) <= 1000]),
             "bronce": len([c for c in customers if (c.get('puntos_totales') or 0) < 300]),
-            "new": len([c for c in customers if (datetime.now(timezone.utc) - datetime.fromisoformat(c.get('created_at').replace('Z', '+00:00'))).days <= 30]),
-            "inactive": len([c for c in customers if (datetime.now(timezone.utc) - datetime.fromisoformat(c.get('updated_at', c.get('created_at')).replace('Z', '+00:00'))).days > 30]),
+            "new": len([c for c in customers if c.get('created_at') and (datetime.now(timezone.utc) - datetime.fromisoformat(c.get('created_at').replace('Z', '+00:00'))).days <= 30]),
+            "inactive": len([c for c in customers if (c.get('updated_at') or c.get('created_at')) and (datetime.now(timezone.utc) - datetime.fromisoformat((c.get('updated_at') or c.get('created_at')).replace('Z', '+00:00'))).days > 30]),
             "birthdays": len(birthdays_today)
         }
     except Exception as e:
@@ -2631,10 +2631,12 @@ async def generate_marketing_suggestion(req: MarketingAISuggestionRequest, busin
          raise HTTPException(status_code=403, detail="El asistente de marketing con IA requiere un plan Impulso o superior.")
 
     try:
-        # Get extra business context
-        # 1. Recent popular products
-        # 2. Total customers
-        res_counts = await get_audience_counts(business)
+        # Get extra business context (protected - if it fails, use defaults)
+        try:
+            res_counts = await get_audience_counts(business)
+        except Exception as count_err:
+            logger.warning(f"Marketing AI: Error getting audience counts: {count_err}")
+            res_counts = {"all": 0, "oro": 0, "plata": 0, "bronce": 0, "new": 0, "inactive": 0, "birthdays": 0}
         
         # Build prompt
         prompt = f"""Actúa como un experto en Marketing Digital y Copywriting para WhatsApp. 
@@ -2664,7 +2666,7 @@ REGLAS DEL MENSAJE:
 
 RESPUESTA:
 Genera 3 opciones de mensajes, una corta, una creativa y una enfocada en oferta.
-Devuelve el resultado en formato JSON con la siguiente estructura:
+Devuelve el resultado ÚNICAMENTE en formato JSON válido (sin markdown, sin backticks) con esta estructura:
 {{
   "opciones": [
     {{ "tipo": "Corta", "mensaje": "..." }},
@@ -2674,25 +2676,63 @@ Devuelve el resultado en formato JSON con la siguiente estructura:
   "recomendacion_marketing": "Breve consejo de por qué estos mensajes funcionan para este segmento."
 }}
 """
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        response = model.generate_content(prompt)
+        import re
+        text = None
         
-        # Clear potential markdown from AI response
-        text = response.text.strip()
-        if text.startswith('```json'): text = text[7:]
-        if text.endswith('```'): text = text[:-3]
+        # --- TRY GEMINI FIRST (same pattern as Consultor Gemini) ---
+        models_to_try = [
+            'models/gemini-2.5-flash',
+            'models/gemini-2.0-flash',
+            'models/gemini-2.0-flash-lite',
+            'models/gemini-flash-latest',
+        ]
         
-        suggestion_data = json.loads(text.strip())
+        for model_name in models_to_try:
+            try:
+                genai.configure(api_key=os.environ.get("GOOGLE_GEMINI_API_KEY"))
+                model = genai.GenerativeModel(model_name)
+                response = model.generate_content(prompt)
+                text = response.text.strip()
+                logger.info(f"Marketing AI: {model_name} respondió correctamente")
+                break
+            except Exception as e:
+                logger.warning(f"Marketing AI: {model_name} falló: {e}")
+                continue
         
-        # Increment usage counter (using background task or immediate update)
+        # --- FALLBACK TO OPENAI if all Gemini models failed ---
+        if not text:
+            logger.warning("Marketing AI: Todos los modelos Gemini fallaron. Usando OpenAI como respaldo...")
+            try:
+                client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+                res = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[{"role": "user", "content": prompt}]
+                )
+                text = res.choices[0].message.content.strip()
+                logger.info("Marketing AI: OpenAI respondió correctamente")
+            except Exception as openai_err:
+                logger.error(f"Marketing AI: OpenAI también falló: {openai_err}")
+                raise HTTPException(status_code=500, detail="No se pudo conectar con ningún proveedor de IA.")
+        
+        # Parse JSON reliably from AI response
+        match = re.search(r'\{.*\}', text, re.DOTALL)
+        if match:
+            text = match.group(0)
+        
+        suggestion_data = json.loads(text)
+        
+        # Increment usage counter
         supabase.table('negocios').update({
             "ai_credits_campaign_used": (business.ai_credits_campaign_used or 0) + 1
         }).eq('id', business.id).execute()
         
         return suggestion_data
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error generating marketing AI suggestion: {e}")
+        logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=f"Error al generar sugerencia: {str(e)}")
 
 

@@ -32,16 +32,10 @@ export default function GeminiConsultantPage() {
     }, [user]);
 
     useEffect(() => {
-        let isMounted = true;
-        if (slug) {
-            api().get(`/business/${slug}`)
-                .then(res => {
-                    if (isMounted) setBusinessId(res.data.id);
-                })
-                .catch(console.error);
+        if (user?.id) {
+            setBusinessId(user.id);
         }
-        return () => { isMounted = false; };
-    }, [slug, api]);
+    }, [user]);
 
     // Auto-scroll to bottom
     useEffect(() => {
