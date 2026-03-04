@@ -29,10 +29,20 @@ def get_template_data(template_key, **kwargs):
         variables = {
             "1": kwargs.get("negocio_nombre", "Nuestro Negocio"),
             "2": kwargs.get("pedido_id", "N/A"),
-            "3": f"Nombre: {kwargs.get('cliente_nombre')} | Teléfono: {kwargs.get('cliente_telefono')}",
-            "4": str(kwargs.get("detalle_carrito", "Detalle no disponible")).replace('\n', ', '),
-            "5": f"Dirección: {kwargs.get('direccion')} | Distancia: {kwargs.get('distancia', 'N/A')}",
-            "6": f"Subtotal: ${kwargs.get('subtotal', '0')} | Envío: ${kwargs.get('costo_envio', '0')} | TOTAL: ${kwargs.get('total', '0')}",
+            "3": "\nNombre: {}\nTeléfono: {}".format(
+                kwargs.get('cliente_nombre', 'Cliente'),
+                kwargs.get('cliente_telefono', 'N/A')
+            ),
+            "4": "\n" + str(kwargs.get("detalle_carrito", "Detalle no disponible")),
+            "5": "\n📍 Dirección: {}\n📏 Distancia: {}".format(
+                kwargs.get('direccion', 'No especificada'),
+                kwargs.get('distancia', 'N/A')
+            ),
+            "6": "\nSubtotal: ${}\nEnvío: ${}\nTOTAL: ${}".format(
+                kwargs.get('subtotal', '0'),
+                kwargs.get('costo_envio', '0'),
+                kwargs.get('total', '0')
+            ),
             "7": kwargs.get("metodo_pago", "Efectivo"),
             "8": kwargs.get("metodo_entrega", "Domicilio"),
             "9": kwargs.get("fecha", ""),

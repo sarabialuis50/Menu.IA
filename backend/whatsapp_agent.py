@@ -715,16 +715,20 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
 
         # 4. Send Notifications using approved template
         fecha = datetime.now(timezone.utc).strftime("%d/%m/%Y, %H:%M")
+        biz_slug = biz_data.get('slug', '')
         
+        # Build cart detail - VERTICAL FORMAT
         detalle_items = []
         for item in items:
-            line = f"{item.get('cantidad', 1)}x {item.get('nombre', '?')}"
+            line = f"• {item.get('nombre', '?')} = {item.get('cantidad', 1)}"
             if item.get('modificadores'):
-                line += f" ({', '.join(item['modificadores'])})"
+                line += f"\n  {', '.join(item['modificadores'])}"
+            line += f"\n  Precio: ${item.get('precio', 0):,.0f}"
             detalle_items.append(line)
-        detalle_carrito = ", ".join(detalle_items)
+        detalle_carrito = "\n".join(detalle_items)
         
-        frontend_url = os.environ.get("FRONTEND_URL", "https://menuia.co")
+        # Build business-specific link
+        link_negocio = f"https://menuia.co/{biz_slug}/menu" if biz_slug else "https://menuia.co"
         
         template_kwargs = {
             "negocio_nombre": business_name,
@@ -740,7 +744,7 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
             "metodo_pago": args.get('metodo_pago', 'Efectivo'),
             "metodo_entrega": args.get('tipo', 'llevar'),
             "fecha": fecha,
-            "link_seguimiento": frontend_url
+            "link_seguimiento": link_negocio
         }
         
         client_phone = args.get('cliente_telefono')

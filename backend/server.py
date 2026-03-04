@@ -1698,7 +1698,7 @@ async def create_order(slug: str, data: OrderCreate, background_tasks: Backgroun
             supabase.table('negocios').update({"wa_messages_count": wa_count + credits_to_deduct}).eq("id", business_id).execute()
 
         # Send WhatsApp notifications (Client + Business)
-        background_tasks.add_task(send_order_wa_background, business_name, order, business_phone, twilio_config)
+        background_tasks.add_task(send_order_wa_background, business_name, order, business_phone, twilio_config, slug)
         
         return order
     except Exception as e:
@@ -1753,16 +1753,57 @@ def format_order_notification_business(order: Order, business_name: str) -> str:
     
     return msg
 
-def send_order_wa_background(business_name: str, order: Order, business_phone: str = None, twilio_config: Dict[str, Any] = None):
+def reverse_geocode_address(direccion: str) -> str:
+    """Convert GPS coordinates to a human-readable address using Google Maps API"""
+    import re
+    import requests as http_requests
+    
+    if not direccion:
+        return "No especificada"
+    
+    # Detect GPS coordinate patterns
+    gps_patterns = [
+        r'Ubicación GPS\s*\(?\s*([+-]?\d+\.?\d*)[,\s]+([+-]?\d+\.?\d*)\s*\)?',
+        r'^\s*([+-]?\d+\.\d{3,})[,\s]+([+-]?\d+\.\d{3,})\s*$',
+    ]
+    
+    lat, lng = None, None
+    for pattern in gps_patterns:
+        match = re.search(pattern, direccion)
+        if match:
+            lat, lng = float(match.group(1)), float(match.group(2))
+            break
+    
+    if lat is None or lng is None:
+        return direccion  # Already a text address
+    
+    try:
+        api_key = os.environ.get("GOOGLE_MAPS_API_KEY")
+        if not api_key:
+            return direccion
+        
+        url = f"https://maps.googleapis.com/maps/api/geocode/json?latlng={lat},{lng}&key={api_key}&language=es"
+        response = http_requests.get(url, timeout=5)
+        data = response.json()
+        
+        if data.get('results'):
+            return data['results'][0]['formatted_address']
+    except Exception as e:
+        logger.error(f"Error reverse geocoding: {e}")
+    
+    return direccion
+
+def send_order_wa_background(business_name: str, order: Order, business_phone: str = None, twilio_config: Dict[str, Any] = None, slug: str = None):
     """Send order notifications to Client and Business using approved templates"""
     
     # Prepare common data for the template
     fecha = datetime.now().strftime("%d/%m/%Y, %H:%M")
     
-    # Build cart detail string
+    # Build cart detail string - VERTICAL FORMAT with bullet points
     detalle_items = []
     for item in order.items:
-        line = f"{item.cantidad}x {item.nombre}"
+        line = f"• {item.nombre} = {item.cantidad}"
+        # Add modifiers/extras on next line
         if item.modificadores:
             mods = []
             for m in item.modificadores:
@@ -1775,12 +1816,22 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
                         mods.append(name)
                 else:
                     mods.append(str(m))
-            line += f" ({', '.join(mods)})"
+            line += f"\n  {', '.join(mods)}"
+        # Add notes if any
+        if hasattr(item, 'notas') and item.notas and item.notas != "No aplica":
+            line += f"\n  Nota: {item.notas}"
+        # Add price
+        line += f"\n  Precio: ${item.precio_unitario:,.0f}"
         detalle_items.append(line)
-    detalle_carrito = ", ".join(detalle_items)
+    detalle_carrito = "\n".join(detalle_items)
     
     subtotal = sum((item.cantidad or 0) * (item.precio_unitario or 0) for item in order.items)
-    frontend_url = os.environ.get("FRONTEND_URL", "https://menuia.co")
+    
+    # Reverse geocode GPS coordinates to readable address
+    direccion_legible = reverse_geocode_address(order.direccion) if order.direccion else "Recoge en local"
+    
+    # Build business-specific link
+    link_negocio = f"https://menuia.co/{slug}/menu" if slug else "https://menuia.co"
     
     template_kwargs = {
         "negocio_nombre": business_name,
@@ -1788,7 +1839,7 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
         "cliente_nombre": order.cliente_nombre or "Cliente",
         "cliente_telefono": order.cliente_telefono or "N/A",
         "detalle_carrito": detalle_carrito,
-        "direccion": order.direccion or "Recoge en local",
+        "direccion": direccion_legible,
         "distancia": f"{order.distancia:.1f} km" if order.distancia else "N/A",
         "subtotal": f"{subtotal:,.0f}",
         "costo_envio": f"{order.costo_envio or 0:,.0f}",
@@ -1796,7 +1847,7 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
         "metodo_pago": order.metodo_pago or "Efectivo",
         "metodo_entrega": order.metodo_entrega or order.tipo or "Domicilio",
         "fecha": fecha,
-        "link_seguimiento": f"{frontend_url}"
+        "link_seguimiento": link_negocio
     }
 
     # 1. Send to Client (using approved template)
