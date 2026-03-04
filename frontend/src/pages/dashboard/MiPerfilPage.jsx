@@ -25,6 +25,7 @@ import {
     Store,
     Shield,
     Lock,
+    EyeOff,
     Instagram,
     Facebook
 } from 'lucide-react';
@@ -72,6 +73,9 @@ export default function MiPerfilPage() {
         confirm_password: ''
     });
     const [changingPassword, setChangingPassword] = useState(false);
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const isPasswordDirty = passwordData.old_password || passwordData.new_password || passwordData.confirm_password;
 
@@ -758,12 +762,19 @@ export default function MiPerfilPage() {
                                             <div className="relative">
                                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                                 <Input
-                                                    type="password"
+                                                    type={showOldPassword ? "text" : "password"}
                                                     value={passwordData.old_password}
                                                     onChange={e => setPasswordData({ ...passwordData, old_password: e.target.value })}
-                                                    className="pl-11 h-11 rounded-xl border-gray-100 bg-gray-50 focus:bg-white transition-all text-sm"
+                                                    className="pl-11 pr-11 h-11 rounded-xl border-gray-100 bg-gray-50 focus:bg-white transition-all text-sm"
                                                     placeholder="••••••••"
                                                 />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowOldPassword(!showOldPassword)}
+                                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
+                                                >
+                                                    {showOldPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                                </button>
                                             </div>
                                         </div>
                                         <div className="space-y-2">
@@ -771,12 +782,19 @@ export default function MiPerfilPage() {
                                             <div className="relative">
                                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                                 <Input
-                                                    type="password"
+                                                    type={showNewPassword ? "text" : "password"}
                                                     value={passwordData.new_password}
                                                     onChange={e => setPasswordData({ ...passwordData, new_password: e.target.value })}
-                                                    className="pl-11 h-11 rounded-xl border-gray-100 bg-gray-50 focus:bg-white transition-all text-sm"
+                                                    className="pl-11 pr-11 h-11 rounded-xl border-gray-100 bg-gray-50 focus:bg-white transition-all text-sm"
                                                     placeholder="••••••••"
                                                 />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowNewPassword(!showNewPassword)}
+                                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
+                                                >
+                                                    {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                                </button>
                                             </div>
                                         </div>
                                         <div className="space-y-2">
@@ -784,12 +802,19 @@ export default function MiPerfilPage() {
                                             <div className="relative">
                                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                                 <Input
-                                                    type="password"
+                                                    type={showConfirmPassword ? "text" : "password"}
                                                     value={passwordData.confirm_password}
                                                     onChange={e => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
-                                                    className="pl-11 h-11 rounded-xl border-gray-100 bg-gray-50 focus:bg-white transition-all text-sm"
+                                                    className="pl-11 pr-11 h-11 rounded-xl border-gray-100 bg-gray-50 focus:bg-white transition-all text-sm"
                                                     placeholder="••••••••"
                                                 />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
+                                                >
+                                                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
