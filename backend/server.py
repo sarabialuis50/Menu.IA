@@ -1799,31 +1799,52 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
     # Prepare common data for the template
     fecha = datetime.now().strftime("%d/%m/%Y, %H:%M")
     
-    # Build cart detail string - VERTICAL FORMAT with bullet points
+    # Build cart detail and capture product-level notes
     detalle_items = []
+    product_notes = []
+    
     for item in order.items:
-        line = f"• {item.nombre} = {item.cantidad}"
-        # Add modifiers/extras on next line
+        line = f"* {item.nombre}={item.cantidad}"
+        
+        # Process modifiers by category
         if item.modificadores:
-            mods = []
+            tamanos = []
+            adicionales = []
+            opciones = []
+            
             for m in item.modificadores:
-                if isinstance(m, dict):
-                    name = m.get('nombre', '')
-                    price = m.get('precio', 0)
-                    if price and price > 0:
-                        mods.append(f"{name} (+${price:,.0f})")
-                    else:
-                        mods.append(name)
+                # Modifiers can be strings or dicts depending on where they come from
+                m_name = m.get('nombre', str(m)) if isinstance(m, dict) else str(m)
+                m_price = m.get('precio', 0) if isinstance(m, dict) else 0
+                m_label = f"{m_name}" + (f" (+${m_price:,.0f})" if m_price > 0 else "")
+                
+                # Logic to categorize (heuristic based on common names)
+                m_lower = m_name.lower()
+                if any(x in m_lower for x in ['pequeñ', 'median', 'grand', 'small', 'large', 'cm', 'oz']):
+                    tamanos.append(m_label)
+                elif any(x in m_lower for x in ['extra', 'borde', 'adicion']):
+                    adicionales.append(m_label)
                 else:
-                    mods.append(str(m))
-            line += f"\n  {', '.join(mods)}"
-        # Add notes if any
-        if hasattr(item, 'notas') and item.notas and item.notas != "No aplica":
-            line += f"\n  Nota: {item.notas}"
-        # Add price
-        line += f"\n  Precio: ${item.precio_unitario:,.0f}"
+                    opciones.append(m_label)
+            
+            if tamanos:
+                line += f"\n* Tamaños={', '.join(tamanos)}"
+            if adicionales:
+                line += f"\n* Adicionales={', '.join(adicionales)}"
+            if opciones:
+                line += f"\n* Opciones={', '.join(opciones)}"
+        
+        # Capture specific item notes for the "❓ OBSERVACIONES DEL PEDIDO" section
+        if hasattr(item, 'notas') and item.notas and item.notas.lower() not in ["no aplica", "ninguna", ""]:
+            product_notes.append(f"{item.nombre}: {item.notas}")
+            
         detalle_items.append(line)
+        
     detalle_carrito = "\n".join(detalle_items)
+    
+    # Consolidate notes
+    obs_pedido_text = "Observaciones=" + (", ".join(product_notes) if product_notes else "Sin notas")
+    obs_entrega_text = "Observaciones de entrega: " + (order.notas if order.notas and order.notas.lower() not in ["sin observaciones", ""] else "Sin notas")
     
     subtotal = sum((item.cantidad or 0) * (item.precio_unitario or 0) for item in order.items)
     
@@ -1831,7 +1852,8 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
     direccion_legible = reverse_geocode_address(order.direccion) if order.direccion else "Recoge en local"
     
     # Build business-specific link
-    link_negocio = f"https://menuia.co/{slug}/menu" if slug else "https://menuia.co"
+    link_negocio = f"https://menuia.co/{slug}" if slug else "https://menuia.co"
+    if slug: link_negocio += "/menu" # Ensure it goes to the menu
     
     template_kwargs = {
         "negocio_nombre": business_name,
@@ -1839,8 +1861,10 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
         "cliente_nombre": order.cliente_nombre or "Cliente",
         "cliente_telefono": order.cliente_telefono or "N/A",
         "detalle_carrito": detalle_carrito,
+        "obs_pedido": obs_pedido_text,
         "direccion": direccion_legible,
         "distancia": f"{order.distancia:.1f} km" if order.distancia else "N/A",
+        "obs_entrega": obs_entrega_text,
         "subtotal": f"{subtotal:,.0f}",
         "costo_envio": f"{order.costo_envio or 0:,.0f}",
         "total": f"{order.total:,.0f}",

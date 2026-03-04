@@ -25,26 +25,27 @@ def get_template_data(template_key, **kwargs):
     variables = {}
 
     if template_key == "resumen_pedido":
-        # variables: {{1}} Negocio, {{2}} ID, {{3}} Cliente Info, {{4}} Detalle, {{5}} Entrega, {{6}} Pago, {{7}} Met_Pago, {{8}} Met_Entrega, {{9}} Fecha, {{10}} Link
+        # variables: {{1}} Negocio, {{2}} ID, {{3}} Cliente Info, {{4}} Detalle, {{5}} Pago Summary, {{6}} Met_Pago, {{7}} Met_Entrega + Info, {{8}} Obs_Pedido, {{9}} Fecha, {{10}} Link
         variables = {
             "1": kwargs.get("negocio_nombre", "Nuestro Negocio"),
             "2": kwargs.get("pedido_id", "N/A"),
-            "3": "\nNombre: {}\nTeléfono: {}".format(
+            "3": "\n* Nombre: {}\n* Teléfono: {}".format(
                 kwargs.get('cliente_nombre', 'Cliente'),
                 kwargs.get('cliente_telefono', 'N/A')
             ),
             "4": "\n" + str(kwargs.get("detalle_carrito", "Detalle no disponible")),
-            "5": "\n📍 Dirección: {}\n📏 Distancia: {}".format(
-                kwargs.get('direccion', 'No especificada'),
-                kwargs.get('distancia', 'N/A')
-            ),
-            "6": "\nSubtotal: ${}\nEnvío: ${}\nTOTAL: ${}".format(
+            "5": "\n* Subtotal: ${}\n* Envío: ${}\n* TOTAL: ${}".format(
                 kwargs.get('subtotal', '0'),
                 kwargs.get('costo_envio', '0'),
                 kwargs.get('total', '0')
             ),
-            "7": kwargs.get("metodo_pago", "Efectivo"),
-            "8": kwargs.get("metodo_entrega", "Domicilio"),
+            "6": "\n* {}".format(kwargs.get("metodo_pago", "Efectivo")),
+            "7": "\n* {}\n* Dirección: {}\n* {}".format(
+                kwargs.get("metodo_entrega", "Domicilio"),
+                kwargs.get('direccion', 'No especificada'),
+                kwargs.get('obs_entrega', 'Observaciones de entrega: Sin notas')
+            ),
+            "8": "\n* {}".format(kwargs.get("obs_pedido", "Observaciones: Sin notas")),
             "9": kwargs.get("fecha", ""),
             "10": kwargs.get("link_seguimiento", "https://menuia.co")
         }

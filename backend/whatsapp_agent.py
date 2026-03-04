@@ -717,18 +717,43 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
         fecha = datetime.now(timezone.utc).strftime("%d/%m/%Y, %H:%M")
         biz_slug = biz_data.get('slug', '')
         
-        # Build cart detail - VERTICAL FORMAT
+        # Build cart detail - VERTICAL FORMAT with Labels
         detalle_items = []
+        product_notes = []
         for item in items:
-            line = f"• {item.get('nombre', '?')} = {item.get('cantidad', 1)}"
-            if item.get('modificadores'):
-                line += f"\n  {', '.join(item['modificadores'])}"
-            line += f"\n  Precio: ${item.get('precio', 0):,.0f}"
+            p_name = item.get('nombre', '?')
+            line = f"* {p_name}={item.get('cantidad', 1)}"
+            
+            # Process modifiers
+            mods = item.get('modificadores', [])
+            if mods:
+                tamanos = []
+                adicionales = []
+                opciones = []
+                for m in mods:
+                    m_lower = str(m).lower()
+                    if any(x in m_lower for x in ['pequeñ', 'median', 'grand', 'small', 'large', 'cm', 'oz']):
+                        tamanos.append(str(m))
+                    elif any(x in m_lower for x in ['extra', 'borde', 'adicion']):
+                        adicionales.append(str(m))
+                    else:
+                        opciones.append(str(m))
+                
+                if tamanos: line += f"\n* Tamaños={', '.join(tamanos)}"
+                if adicionales: line += f"\n* Adicionales={', '.join(adicionales)}"
+                if opciones: line += f"\n* Opciones={', '.join(opciones)}"
+            
+            p_notes = item.get('notas')
+            if p_notes and p_notes.lower() not in ["no aplica", "ninguna", ""]:
+                product_notes.append(f"{p_name}: {p_notes}")
+            
             detalle_items.append(line)
+            
         detalle_carrito = "\n".join(detalle_items)
         
         # Build business-specific link
-        link_negocio = f"https://menuia.co/{biz_slug}/menu" if biz_slug else "https://menuia.co"
+        link_negocio = f"https://menuia.co/{biz_slug}" if biz_slug else "https://menuia.co"
+        if biz_slug: link_negocio += "/menu"
         
         template_kwargs = {
             "negocio_nombre": business_name,
@@ -736,8 +761,10 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
             "cliente_nombre": args.get('cliente_nombre', 'Cliente'),
             "cliente_telefono": args.get('cliente_telefono', 'N/A'),
             "detalle_carrito": detalle_carrito,
+            "obs_pedido": "Observaciones=" + (", ".join(product_notes) if product_notes else "Sin notas"),
             "direccion": args.get('direccion', 'Recoge en local'),
             "distancia": "N/A",
+            "obs_entrega": "Observaciones de entrega: " + (args.get('notas_entrega', 'Sin notas')),
             "subtotal": f"{total:,.0f}",
             "costo_envio": "0",
             "total": f"{total:,.0f}",
