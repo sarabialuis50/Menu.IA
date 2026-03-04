@@ -713,23 +713,52 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
         else:
             supabase.table('negocios').update({"wa_messages_count": wa_count + credits_to_deduct}).eq("id", negocio_id).execute()
 
-        # 4. Send Notifications (Async/Background simplified)
-        summary = f"💰 *Total: ${total:,.0f}*\n"
+        # 4. Send Notifications using approved template
+        fecha = datetime.now(timezone.utc).strftime("%d/%m/%Y, %H:%M")
+        
+        detalle_items = []
         for item in items:
-            item_text = f"- {item['cantidad']}x {item['nombre']}"
+            line = f"{item.get('cantidad', 1)}x {item.get('nombre', '?')}"
             if item.get('modificadores'):
-                item_text += f" ({', '.join(item['modificadores'])})"
-            item_text += f" (${item['precio']:,.0f})"
-            summary += item_text + "\n"
+                line += f" ({', '.join(item['modificadores'])})"
+            detalle_items.append(line)
+        detalle_carrito = ", ".join(detalle_items)
+        
+        frontend_url = os.environ.get("FRONTEND_URL", "https://menuia.co")
+        
+        template_kwargs = {
+            "negocio_nombre": business_name,
+            "pedido_id": order_id[:8].upper(),
+            "cliente_nombre": args.get('cliente_nombre', 'Cliente'),
+            "cliente_telefono": args.get('cliente_telefono', 'N/A'),
+            "detalle_carrito": detalle_carrito,
+            "direccion": args.get('direccion', 'Recoge en local'),
+            "distancia": "N/A",
+            "subtotal": f"{total:,.0f}",
+            "costo_envio": "0",
+            "total": f"{total:,.0f}",
+            "metodo_pago": args.get('metodo_pago', 'Efectivo'),
+            "metodo_entrega": args.get('tipo', 'llevar'),
+            "fecha": fecha,
+            "link_seguimiento": frontend_url
+        }
         
         client_phone = args.get('cliente_telefono')
         if client_phone:
-            client_msg = f"✅ *¡Pedido Confirmado en {business_name}!*\n\nHola {args.get('cliente_nombre', 'cliente')}, hemos recibido tu pedido #{order_id[:8].upper()}.\n\n{summary}\n📌 *Método:* {args.get('tipo', 'llevar')}\n💳 *Pago:* {args.get('metodo_pago')}\n\nPuedes rastrear tu pedido aquí: https://menuia.co/{biz_data.get('slug')}/mis-pedidos?order={order_id}"
-            send_whatsapp_response(client_phone, client_msg, twilio_config)
+            send_whatsapp_template(
+                to_number=client_phone,
+                template_key="resumen_pedido",
+                custom_config=twilio_config,
+                **template_kwargs
+            )
             
         if business_phone:
-            biz_msg = f"🔔 *NUEVO PEDIDO IA* en {business_name}\n\nCliente: {args.get('cliente_nombre')}\nTel: {client_phone}\n\n{summary}\n📍 *Tipo:* {args.get('tipo')}\n🏠 *Dirección:* {args.get('direccion', 'N/A')}\n\nRevisa el dashboard: https://menuia.co/dashboard/{biz_data.get('slug')}/pedidos"
-            send_whatsapp_response(business_phone, biz_msg, twilio_config)
+            send_whatsapp_template(
+                to_number=business_phone,
+                template_key="resumen_pedido",
+                custom_config=twilio_config,
+                **template_kwargs
+            )
 
         return json.dumps({
             "status": "success", 
@@ -898,10 +927,16 @@ def send_whatsapp_template(to_number: str, template_key: str, custom_config: Dic
         
         client = get_twilio_client(sid, token)
         
-        # Formatear número
+        # Formatear número (misma lógica que send_whatsapp_response)
         clean_number = to_number.replace(' ', '').replace('+', '').replace('-', '').replace('whatsapp:', '')
-        formatted_to = f"whatsapp:+{clean_number}" if not clean_number.startswith('57') else f"whatsapp:+{clean_number}"
-        if not formatted_to.startswith('whatsapp:+'): formatted_to = f"whatsapp:+{clean_number}"
+        
+        # Default to Colombia (+57) if 10 digits starting with 3
+        if len(clean_number) == 10 and clean_number.startswith('3'):
+            formatted_to = f"whatsapp:+57{clean_number}"
+        elif len(clean_number) == 12 and clean_number.startswith('57'):
+            formatted_to = f"whatsapp:+{clean_number}"
+        else:
+            formatted_to = f"whatsapp:+{clean_number}"
 
         message = client.messages.create(
             from_=from_number if from_number.startswith('whatsapp:') else f"whatsapp:{from_number}",

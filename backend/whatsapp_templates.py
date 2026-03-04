@@ -11,7 +11,7 @@ TWILIO_SIDS = {
     "cumpleanos": "HX1f5542e7ab4c3a77f396a6a70fef1658",          # Plantilla: felicitacion_cumple_negocio
     "campana_marketing": "HX4e4cf9232106524f8a3f412c1baecc96",   # Plantilla: campana_masiva_custom
     "pedido_en_camino": "HX89eb01626bffa51988179da38eef6f79",    # Plantilla: pedido_en_camino
-    "codigo_verificacion": "PENDIENTE_APROBACION"                # Plantilla: verificacion_otp
+    "codigo_verificacion": "HX42003eb243fd020dbeaa9d9b983e7ea4"                # Plantilla: verificacion_otp
 }
 
 def get_template_data(template_key, **kwargs):
@@ -65,12 +65,10 @@ def get_template_data(template_key, **kwargs):
         }
 
     elif template_key == "codigo_verificacion":
-        # variables: {{1}} Cliente, {{2}} Negocio, {{3}} OTP Code, {{4}} Link
+        # variables: {{1}} OTP Code, {{2}} Negocio
         variables = {
-            "1": kwargs.get("cliente_nombre", "Usuario"),
-            "2": kwargs.get("negocio_nombre", "Menu.IA"),
-            "3": kwargs.get("otp_code", ""),
-            "4": kwargs.get("link", "https://menuia.co")
+            "1": kwargs.get("otp_code", ""),
+            "2": kwargs.get("negocio_nombre", "Menu.IA")
         }
 
     elif template_key == "pedido_en_camino":

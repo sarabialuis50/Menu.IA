@@ -1754,23 +1754,89 @@ def format_order_notification_business(order: Order, business_name: str) -> str:
     return msg
 
 def send_order_wa_background(business_name: str, order: Order, business_phone: str = None, twilio_config: Dict[str, Any] = None):
-    """Send order notifications to Client and Business"""
-    # 1. Send to Client
+    """Send order notifications to Client and Business using approved templates"""
+    
+    # Prepare common data for the template
+    fecha = datetime.now().strftime("%d/%m/%Y, %H:%M")
+    
+    # Build cart detail string
+    detalle_items = []
+    for item in order.items:
+        line = f"{item.cantidad}x {item.nombre}"
+        if item.modificadores:
+            mods = []
+            for m in item.modificadores:
+                if isinstance(m, dict):
+                    name = m.get('nombre', '')
+                    price = m.get('precio', 0)
+                    if price and price > 0:
+                        mods.append(f"{name} (+${price:,.0f})")
+                    else:
+                        mods.append(name)
+                else:
+                    mods.append(str(m))
+            line += f" ({', '.join(mods)})"
+        detalle_items.append(line)
+    detalle_carrito = ", ".join(detalle_items)
+    
+    subtotal = sum((item.cantidad or 0) * (item.precio_unitario or 0) for item in order.items)
+    frontend_url = os.environ.get("FRONTEND_URL", "https://menuia.co")
+    
+    template_kwargs = {
+        "negocio_nombre": business_name,
+        "pedido_id": order.id[:8].upper(),
+        "cliente_nombre": order.cliente_nombre or "Cliente",
+        "cliente_telefono": order.cliente_telefono or "N/A",
+        "detalle_carrito": detalle_carrito,
+        "direccion": order.direccion or "Recoge en local",
+        "distancia": f"{order.distancia:.1f} km" if order.distancia else "N/A",
+        "subtotal": f"{subtotal:,.0f}",
+        "costo_envio": f"{order.costo_envio or 0:,.0f}",
+        "total": f"{order.total:,.0f}",
+        "metodo_pago": order.metodo_pago or "Efectivo",
+        "metodo_entrega": order.metodo_entrega or order.tipo or "Domicilio",
+        "fecha": fecha,
+        "link_seguimiento": f"{frontend_url}"
+    }
+
+    # 1. Send to Client (using approved template)
     if order.cliente_telefono:
         try:
-            wa_message = format_order_summary_wa(business_name, order)
-            send_whatsapp_response(order.cliente_telefono, wa_message, twilio_config)
-            logger.info(f"WhatsApp summary sent to client {order.cliente_telefono}")
+            result = send_whatsapp_template(
+                to_number=order.cliente_telefono,
+                template_key="resumen_pedido",
+                custom_config=twilio_config,
+                **template_kwargs
+            )
+            if result:
+                logger.info(f"WhatsApp template 'resumen_pedido' sent to client {order.cliente_telefono}: {result}")
+            else:
+                # Fallback to freeform text (only works within 24h window)
+                logger.warning(f"Template failed for client, trying freeform fallback...")
+                wa_message = format_order_summary_wa(business_name, order)
+                send_whatsapp_response(order.cliente_telefono, wa_message, twilio_config)
+                logger.info(f"WhatsApp freeform summary sent to client {order.cliente_telefono}")
         except Exception as wa_err:
             logger.error(f"Error sending WhatsApp to client: {wa_err}")
             logger.error(traceback.format_exc())
 
-    # 2. Send to Business
+    # 2. Send to Business (using approved template)
     if business_phone:
         try:
-            biz_message = format_order_notification_business(order, business_name)
-            send_whatsapp_response(business_phone, biz_message, twilio_config)
-            logger.info(f"WhatsApp notification sent to business {business_phone}")
+            result = send_whatsapp_template(
+                to_number=business_phone,
+                template_key="resumen_pedido",
+                custom_config=twilio_config,
+                **template_kwargs
+            )
+            if result:
+                logger.info(f"WhatsApp template 'resumen_pedido' sent to business {business_phone}: {result}")
+            else:
+                # Fallback to freeform text
+                logger.warning(f"Template failed for business, trying freeform fallback...")
+                biz_message = format_order_notification_business(order, business_name)
+                send_whatsapp_response(business_phone, biz_message, twilio_config)
+                logger.info(f"WhatsApp freeform notification sent to business {business_phone}")
         except Exception as wa_err:
             logger.error(f"Error sending WhatsApp to business: {wa_err}")
             logger.error(traceback.format_exc())
@@ -4125,16 +4191,12 @@ async def request_otp(data: OTPRequest):
                 raise
             except Exception as e:
                 logger.error(f"Error checking/deducting credits for slug {data.negocio_slug}: {e}")
-        # Send via WhatsApp using the approved template so it bypasses the 24h window
-        # Format the message to make the OTP easy to copy:
-        msg = f"Tu código de verificación seguro es:\\n\\n*{otp}*\\n\\nIngrésalo en la aplicación para continuar. No lo compartas con nadie."
+        # Send via WhatsApp using the approved Authentication template
         send_whatsapp_template(
             to_number=phone,
-            template_key="campana_marketing",
-            cliente_nombre="Usuario",
-            negocio_nombre=business_name_to_use,
-            mensaje_personalizado=msg,
-            link=link_to_use
+            template_key="codigo_verificacion",
+            otp_code=otp,
+            negocio_nombre=business_name_to_use
         )
         return {"message": "OTP enviado"}
     except Exception as e:
