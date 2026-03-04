@@ -17,6 +17,7 @@ import asyncio
 import uuid
 from pathlib import Path
 import secrets
+import requests
 
 # Force deploy trigger
 ROOT_DIR = Path(__file__).parent
@@ -125,6 +126,21 @@ app = FastAPI(title="Menu.IA API", version="1.0.0")
 @app.get("/")
 async def health_check():
     return {"status": "ok", "message": "Menu.IA API is running"}
+
+@app.get("/api/geocoding/reverse")
+async def reverse_geocode_api(lat: float, lng: float):
+    api_key = os.environ.get("GOOGLE_MAPS_API_KEY")
+    if not api_key:
+        return {"error": "config_error", "message": "Google Maps API Key not found"}
+    
+    url = f"https://maps.googleapis.com/maps/api/geocode/json?latlng={lat},{lng}&key={api_key}"
+    try:
+        res = requests.get(url).json()
+        if res.get("status") == "OK":
+            return {"address": res["results"][0]["formatted_address"]}
+        return {"error": res.get("status"), "message": res.get("error_message")}
+    except Exception as e:
+        return {"error": "request_error", "message": str(e)}
 
 # Configure CORS based on environment variables
 cors_origins_str = os.environ.get("CORS_ORIGINS", "")
@@ -1842,10 +1858,14 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
         
     detalle_carrito = "\n".join(detalle_items)
     
-    # Consolidate notes
+    # Consolidate notes for WhatsApp
     obs_pedido_text = "Observaciones=" + (", ".join(product_notes) if product_notes else "Sin notas")
-    obs_entrega_text = "Observaciones de entrega: " + (order.notas if order.notas and order.notas.lower() not in ["sin observaciones", ""] else "Sin notas")
     
+    # Use only the customer notes if available, or the whole notas field if it doesn't look like system info
+    # In MenuPublico.jsx, we join customerInfo.notas with other info using '. '
+    raw_notes = order.notas or ""
+    customer_notes = raw_notes.split('. ')[0] if '. ' in raw_notes else raw_notes
+    obs_entrega_text = "Observaciones de entrega: " + (customer_notes if customer_notes and customer_notes.lower() not in ["sin observaciones", ""] else "Sin notas")
     subtotal = sum((item.cantidad or 0) * (item.precio_unitario or 0) for item in order.items)
     
     # Reverse geocode GPS coordinates to readable address

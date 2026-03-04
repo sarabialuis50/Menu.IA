@@ -11,6 +11,10 @@ export const MapPicker = ({ lat, lng, onChange, address }) => {
     const isLoaded = useGoogleMaps(API_KEY);
     const [mapInstance, setMapInstance] = useState(null);
 
+    useEffect(() => {
+        if (!API_KEY) console.error("MapPicker: Google Maps API Key is missing!");
+    }, []);
+
     // Initial map setup
     useEffect(() => {
         if (isLoaded && mapRef.current && !mapInstance && window.google && window.google.maps) {

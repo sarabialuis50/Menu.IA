@@ -96,7 +96,18 @@ const AvailableIcons = {
   Citrus,
   Martini,
   CupSoda,
-  Popcorn
+  Popcorn,
+  Sparkles,
+  ChefHat,
+  CookingPot,
+  Navigation: NavigationIcon,
+  Truck,
+  MapPin,
+  Clock,
+  User,
+  Star,
+  Gift,
+  Award
 };
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -396,6 +407,9 @@ const MenuContent = () => {
         const { latitude, longitude } = position.coords;
         setCustomerInfo(prev => ({ ...prev, lat: latitude, lng: longitude }));
 
+        // Mostrar un texto temporal más limpio
+        setDireccion("Obteniendo dirección...");
+
         if (business?.lat && business?.lng) {
           const dist = calculateDistance(
             business.lat,
@@ -405,24 +419,46 @@ const MenuContent = () => {
           );
           setDistancia(dist);
 
-          // Calcular costo: (distancia * precio_km) o costo_minimo
           const precioKm = business.precio_km || 0;
           const costoMin = business.costo_minimo_domicilio || 0;
           const calculado = dist * precioKm;
           setCostoEnvio(Math.max(calculado, costoMin));
 
-          // Intentar obtener dirección legible usando Google Geocoding
+          // Intentar obtener dirección legible
           try {
-            const geocoder = new window.google.maps.Geocoder();
-            const response = await geocoder.geocode({ location: { lat: latitude, lng: longitude } });
-            if (response.results && response.results[0]) {
-              setDireccion(response.results[0].formatted_address);
+            let addressFound = null;
+
+            // 1. Intentar con Geocoder de Google en el Frontend (si está cargado)
+            if (window.google && window.google.maps && window.google.maps.Geocoder) {
+              try {
+                const geocoder = new window.google.maps.Geocoder();
+                const response = await geocoder.geocode({ location: { lat: latitude, lng: longitude } });
+                if (response.results && response.results[0]) {
+                  addressFound = response.results[0].formatted_address;
+                }
+              } catch (e) {
+                console.warn("Frontend geocoding failed, trying backend...");
+              }
+            }
+
+            // 2. Si falló o no está cargado, intentar por el Backend (que ya tiene la API Key)
+            if (!addressFound) {
+              const res = await axios.get(`${API}/geocoding/reverse?lat=${latitude}&lng=${longitude}`);
+              if (res.data && res.data.address) {
+                addressFound = res.data.address;
+              } else if (res.data.error) {
+                console.error("Backend geocoding error:", res.data.message);
+              }
+            }
+
+            if (addressFound) {
+              setDireccion(addressFound);
             } else {
-              setDireccion(`Ubicación GPS (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`);
+              setDireccion("Ubicación actual detectada");
             }
           } catch (e) {
-            console.error("Geocoding failed:", e);
-            setDireccion(`Ubicación GPS (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`);
+            console.error("Geocoding failed entirely:", e);
+            setDireccion("Ubicación actual detectada");
           }
         }
         setCalculatingDistance(false);
@@ -1285,12 +1321,12 @@ const MenuContent = () => {
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="notas" className="text-xs font-black uppercase tracking-widest text-[#618972] ml-2">Observaciones del pedido</Label>
+                      <Label htmlFor="notas" className="text-xs font-black uppercase tracking-widest text-[#618972] ml-2">Observaciones de Entrega</Label>
                       <textarea
                         id="notas"
                         value={customerInfo.notas || ''}
                         onChange={(e) => setCustomerInfo({ ...customerInfo, notas: e.target.value })}
-                        placeholder="Ej: Sin cebolla, extra salsa..."
+                        placeholder="Ej: Código del edificio, dejar en portería..."
                         className="w-full min-h-[80px] p-4 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#22C55E]/20 resize-y"
                       />
                     </div>
@@ -1618,9 +1654,9 @@ const MenuContent = () => {
           </DialogHeader>
 
           {selectedProduct && (
-            <div className="flex flex-col md:flex-row h-full max-h-[90vh] md:max-h-[85vh]">
+            <div className="flex flex-col md:flex-row h-full max-h-[95vh] md:max-h-[85vh]">
               {/* Left Side: Product Image (Sticky or fixed on Desktop) */}
-              <div className="relative w-full md:w-[45%] h-64 md:h-auto overflow-hidden bg-gray-50 flex-shrink-0">
+              <div className="relative w-full md:w-[45%] h-48 sm:h-64 md:h-auto overflow-hidden bg-gray-50 flex-shrink-0">
                 <img
                   src={selectedProduct.imagen || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80"}
                   alt={selectedProduct.nombre}
@@ -1655,7 +1691,7 @@ const MenuContent = () => {
                 </div>
 
                 {/* Content Scrollable */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-10 pb-48 md:pb-56">
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-10 pb-40 md:pb-56">
                   <div className="max-w-2xl mx-auto space-y-8">
                     {/* Basic Info */}
                     <div className="space-y-4">
@@ -1905,7 +1941,7 @@ const MenuContent = () => {
                       {/* Notes Section */}
                       <div className="space-y-4">
                         <div className="flex items-center gap-2">
-                          <h3 className="text-lg font-black text-[#111814] tracking-tight">Observaciones</h3>
+                          <h3 className="text-lg font-black text-[#111814] tracking-tight">Observaciones del pedido</h3>
                           <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">(Opcional)</span>
                         </div>
                         <textarea
@@ -1920,7 +1956,7 @@ const MenuContent = () => {
                 </div>
 
                 {/* Sticky Footer */}
-                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 bg-white/90 backdrop-blur-xl border-t border-gray-100 z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 bg-white/90 backdrop-blur-xl border-t border-gray-100 z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
                   <div className="max-w-2xl mx-auto flex flex-col sm:flex-row items-center gap-4 md:gap-6">
                     {/* Quantity Control */}
                     <div className="flex items-center gap-4 bg-gray-100 rounded-2xl p-2 border border-gray-200 w-full sm:w-auto justify-between">

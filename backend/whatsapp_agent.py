@@ -744,7 +744,7 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
                 if opciones: line += f"\n* Opciones={', '.join(opciones)}"
             
             p_notes = item.get('notas')
-            if p_notes and p_notes.lower() not in ["no aplica", "ninguna", ""]:
+            if p_notes and str(p_notes).lower() not in ["no aplica", "ninguna", "", "null", "none"]:
                 product_notes.append(f"{p_name}: {p_notes}")
             
             detalle_items.append(line)
@@ -761,10 +761,10 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
             "cliente_nombre": args.get('cliente_nombre', 'Cliente'),
             "cliente_telefono": args.get('cliente_telefono', 'N/A'),
             "detalle_carrito": detalle_carrito,
-            "obs_pedido": "Observaciones=" + (", ".join(product_notes) if product_notes else "Sin notas"),
+            "obs_pedido": "Observaciones=" + (", ".join(product_notes) if product_notes else "Ninguna"),
             "direccion": args.get('direccion', 'Recoge en local'),
             "distancia": "N/A",
-            "obs_entrega": "Observaciones de entrega: " + (args.get('notas_entrega', 'Sin notas')),
+            "obs_entrega": "Observaciones de entrega: " + (args.get('notas_entrega') or args.get('notas') or "Ninguna"),
             "subtotal": f"{total:,.0f}",
             "costo_envio": "0",
             "total": f"{total:,.0f}",

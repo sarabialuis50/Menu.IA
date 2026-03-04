@@ -187,16 +187,20 @@ function OrderCard({ order, onUpdateStatus }) {
       </div>
       <div className="p-4">
         <div className="flex justify-between items-start mb-0.5">
-          <h3 className="font-heading font-bold text-xl text-gray-900">{order.mesa_numero ? `Mesa ${order.mesa_numero}` : 'Para llevar'}</h3>
+          <h3 className="font-heading font-bold text-xl text-gray-900">
+            {order.mesa_numero ? `Mesa ${order.mesa_numero}` : (order.tipo === 'delivery' ? '🛵 Domicilio' : 'Para llevar')}
+          </h3>
           <span className="text-xs font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">#{order.id?.slice(0, 8).toUpperCase()}</span>
         </div>
         <p className="text-xs font-bold text-gray-500 mb-3">Cliente: {order.cliente_nombre || 'N/A'}</p>
 
-        {order.notas && (
+        {/* Hacemos que NO aparezcan las notas globales (de entrega) según el requerimiento del usuario */}
+        {/* {order.notas && (
           <div className="mb-4 text-[11px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-100">
             Observaciones del pedido: {order.notas}
           </div>
-        )}
+        )} */}
+
         <div className="space-y-4 overflow-visible">
           {order.items.map((item, idx) => (
             <div key={idx} className="flex flex-col gap-1 border-b border-gray-100 last:border-0 pb-2 mb-2 italic">
@@ -204,11 +208,14 @@ function OrderCard({ order, onUpdateStatus }) {
                 <span className="bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-sm font-bold">{item.cantidad}x</span>
                 <span className="font-medium text-gray-900">{item.nombre}</span>
               </div>
-              {item.descripcion && (
-                <div className="ml-8 text-sm font-black text-gray-800 leading-tight mb-1">
-                  {item.descripcion}
+
+              {/* Notas específicas del producto (lo que el usuario pidió en el modal de producto) */}
+              {item.notas && (
+                <div className="ml-8 text-sm font-black text-amber-600 leading-tight mb-1 bg-amber-50 px-2 py-1 rounded border-l-2 border-amber-400">
+                  Nota: {item.notas}
                 </div>
               )}
+
               {item.modificadores && item.modificadores.length > 0 && (
                 <div className="ml-8 text-[11px] font-black text-blue-600 uppercase tracking-tight mt-0.5">
                   {item.modificadores.map(mod => mod.startsWith('(') ? mod : `(1) ${mod}`).join(' - ')}

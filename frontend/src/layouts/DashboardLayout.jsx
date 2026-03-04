@@ -134,7 +134,8 @@ export const DashboardLayout = ({ children }) => {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto no-scrollbar">
+          {/* Navigation */}
+          <nav className="flex-1 px-3 py-6 flex flex-col justify-between overflow-y-auto no-scrollbar min-h-0">
             {navItems.map((item) => {
               const fullPath = `${basePath}${item.path}`;
               const isActive = location.pathname === fullPath ||
@@ -146,7 +147,7 @@ export const DashboardLayout = ({ children }) => {
                   to={fullPath}
                   onClick={() => setSidebarOpen(false)}
                   className={`
-                    flex items-center gap-3 px-3 py-1.5 lg:py-2 rounded-xl font-bold text-xs transition-all duration-300 group
+                    flex items-center gap-3 px-3 py-2 lg:py-2.5 rounded-xl font-bold text-xs transition-all duration-300 group
                     ${isActive
                       ? 'bg-[#4ADE80] text-[#111814] shadow-lg shadow-green-500/20 scale-[1.01]'
                       : 'text-slate-400 hover:bg-slate-800 hover:text-white'
@@ -160,13 +161,13 @@ export const DashboardLayout = ({ children }) => {
               );
             })}
 
-            <div className="pt-2 mt-2 lg:pt-4 lg:mt-4 border-t border-slate-800">
+            <div className="pt-4 mt-4 border-t border-slate-800">
               <p className="px-3 mb-1 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Acceso Público</p>
               <a
                 href={`/${user?.slug}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 px-3 py-1.5 lg:py-2 rounded-xl font-bold text-xs text-slate-400 hover:bg-slate-800 hover:text-white transition-all group"
+                className="flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs text-slate-400 hover:bg-slate-800 hover:text-white transition-all group"
               >
                 <Smartphone className="w-4 h-4 group-hover:scale-110 transition-transform" />
                 <span className="flex-1 truncate">Vista del Cliente</span>
