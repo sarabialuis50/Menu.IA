@@ -186,10 +186,15 @@ function OrderCard({ order, onUpdateStatus }) {
         </div>
       </div>
       <div className="p-4">
-        <h3 className="font-heading font-bold text-xl text-gray-900 mb-1">{order.mesa_numero ? `Mesa ${order.mesa_numero}` : 'Para llevar'}</h3>
+        <div className="flex justify-between items-start mb-0.5">
+          <h3 className="font-heading font-bold text-xl text-gray-900">{order.mesa_numero ? `Mesa ${order.mesa_numero}` : 'Para llevar'}</h3>
+          <span className="text-xs font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">#{order.id?.slice(0, 8).toUpperCase()}</span>
+        </div>
+        <p className="text-xs font-bold text-gray-500 mb-3">Cliente: {order.cliente_nombre || 'N/A'}</p>
+
         {order.notas && (
           <div className="mb-4 text-[11px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-100">
-            📌 Notas: {order.notas}
+            Observaciones del pedido: {order.notas}
           </div>
         )}
         <div className="space-y-4 overflow-visible">
@@ -207,11 +212,6 @@ function OrderCard({ order, onUpdateStatus }) {
               {item.modificadores && item.modificadores.length > 0 && (
                 <div className="ml-8 text-[11px] font-black text-blue-600 uppercase tracking-tight mt-0.5">
                   {item.modificadores.map(mod => mod.startsWith('(') ? mod : `(1) ${mod}`).join(' - ')}
-                </div>
-              )}
-              {item.notas && (
-                <div className="ml-8 text-[10px] font-bold text-indigo-500">
-                  📌 {item.notas}
                 </div>
               )}
             </div>
