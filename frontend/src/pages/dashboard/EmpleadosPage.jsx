@@ -13,7 +13,10 @@ import {
   User,
   Edit2,
   Smartphone,
-  Truck
+  Truck,
+  Copy,
+  MessageCircle,
+  Share2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -156,6 +159,23 @@ export default function EmpleadosPage() {
     }
   };
 
+  const getWaiterUrl = () => {
+    const publicUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+    return `${publicUrl}/mesero/${slug}`;
+  };
+
+  const handleCopyLink = () => {
+    const waiterUrl = getWaiterUrl();
+    navigator.clipboard.writeText(waiterUrl);
+    toast.success('Enlace de meseros copiado al portapapeles');
+  };
+
+  const handleShareWhatsApp = () => {
+    const waiterUrl = getWaiterUrl();
+    const text = encodeURIComponent(`¡Hola! Este es el enlace para acceder a la App de Meseros de nuestro restaurante: ${waiterUrl}\n\nIngresa con tu PIN de 4 dígitos asignado.`);
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+  };
+
   const handleDelete = async (employeeId) => {
     if (!window.confirm('¿Estás seguro de eliminar este empleado?')) return;
 
@@ -187,14 +207,34 @@ export default function EmpleadosPage() {
             <h1 className="font-heading text-2xl font-bold text-gray-900">Empleados</h1>
             <p className="text-gray-500">{employees.length} empleados registrados</p>
           </div>
-          <Button
-            onClick={openCreateModal}
-            className="bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814]"
-            data-testid="add-employee-btn"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Agregar empleado
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={handleCopyLink}
+              className="border-[#4ADE80] text-[#111814] hover:bg-[#4ADE80] hover:text-[#111814] bg-transparent transition-all"
+              data-testid="copy-link-btn"
+            >
+              <Copy className="w-4 h-4 mr-2" />
+              Copiar link
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleShareWhatsApp}
+              className="border-[#4ADE80] text-[#111814] hover:bg-[#4ADE80] hover:text-[#111814] bg-transparent transition-all"
+              data-testid="share-whatsapp-btn"
+            >
+              <MessageCircle className="w-4 h-4 mr-2" />
+              Compartir
+            </Button>
+            <Button
+              onClick={openCreateModal}
+              className="bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814]"
+              data-testid="add-employee-btn"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Agregar empleado
+            </Button>
+          </div>
         </div>
 
         {/* Info Card */}
@@ -202,7 +242,14 @@ export default function EmpleadosPage() {
           <h3 className="font-semibold text-blue-900 mb-2">¿Cómo funciona el acceso por PIN?</h3>
           <p className="text-sm text-blue-700">
             Los meseros pueden acceder a la app de meseros usando su PIN de 4 dígitos.
-            Visita <span className="font-mono bg-blue-100 px-1 rounded">/mesero/{slug}</span> para usar la app.
+            Visita <a
+              href={getWaiterUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono bg-blue-100 px-1 rounded hover:bg-blue-200 text-blue-800 underline decoration-blue-300 transition-colors"
+            >
+              /mesero/{slug}
+            </a> para usar la app.
           </p>
         </div>
 

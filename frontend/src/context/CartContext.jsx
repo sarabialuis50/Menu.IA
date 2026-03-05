@@ -63,6 +63,30 @@ export const CartProvider = ({ children }) => {
     setItems(prev => prev.filter((_, i) => i !== index));
   }, []);
 
+  const updateItem = useCallback((index, product, quantity = 1, notas = '', selectedModifiers = []) => {
+    setItems(prev => {
+      const updated = [...prev];
+      const modifiersPrice = selectedModifiers ? selectedModifiers.reduce((acc, m) => acc + ((m.precio || 0) * (m.cantidad || 1)), 0) : 0;
+      const finalUnitPrice = product.precio + modifiersPrice;
+
+      updated[index] = {
+        ...updated[index],
+        producto_id: product.id,
+        nombre: product.nombre,
+        descripcion: product.descripcion,
+        cantidad: quantity,
+        precio_unitario: finalUnitPrice,
+        notas: notas || null,
+        imagen: product.imagen,
+        modificadores: selectedModifiers?.map(m => {
+          if (typeof m === 'string') return m;
+          return `${m.cantidad ? `(${m.cantidad}) ` : ''}${m.nombre}`;
+        }) || []
+      };
+      return updated;
+    });
+  }, []);
+
   const updateQuantity = useCallback((index, quantity) => {
     if (quantity <= 0) {
       removeItem(index);
@@ -91,6 +115,7 @@ export const CartProvider = ({ children }) => {
       addItem,
       removeItem,
       updateQuantity,
+      updateItem,
       clearCart,
       total,
       itemCount,

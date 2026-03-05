@@ -696,21 +696,25 @@ async def get_current_business_info(business: Business = Depends(get_current_bus
 # ============ EMPLOYEE AUTH ============
 @api_router.post("/employee/login/{slug}", response_model=EmployeeTokenResponse)
 async def login_employee(slug: str, data: EmployeeLogin):
-    # Find business by slug
-    response = supabase.table('negocios').select('*').eq('slug', slug).execute()
+    # Find business by slug (lowercase comparison)
+    business_slug = slug.lower().strip()
+    response = supabase.table('negocios').select('*').eq('slug', business_slug).execute()
     if not response.data:
+        logger.warning(f"Login mesero fallido: Negocio no encontrado para slug '{business_slug}'")
         raise HTTPException(status_code=404, detail="Negocio no encontrado")
     business_doc = response.data[0]
     
-    # Find employee by PIN
+    # Find employee by PIN (trimmed)
+    clean_pin = data.pin.strip()
     response = supabase.table('empleados').select('*').match({
         "negocio_id": business_doc['id'],
-        "pin": data.pin,
+        "pin": clean_pin,
         "activo": True
     }).execute()
     
     if not response.data:
-        raise HTTPException(status_code=401, detail="PIN inválido")
+        logger.warning(f"Login mesero fallido: PIN '{clean_pin}' no coincide para negocio '{business_slug}'")
+        raise HTTPException(status_code=401, detail="PIN incorrecto")
     
     employee_doc = response.data[0]
     employee = Employee(**employee_doc)
