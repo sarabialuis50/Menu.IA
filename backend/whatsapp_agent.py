@@ -699,6 +699,14 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         
+        
+        # Generar número secuencial diario
+        today_start_sec = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+        cq_res = supabase.table('pedidos').select('id', count='exact')\
+            .eq('negocio_id', negocio_id)\
+            .gte('created_at', today_start_sec.isoformat()).execute()
+        
+        order_data["numero_secuencial"] = (cq_res.count or 0) + 1
         print(f"DEBUG order_data: {order_data}")
         res = supabase.table('pedidos').insert(order_data).execute()
         order_id = res.data[0]['id'] if res.data else "new_order"

@@ -184,9 +184,9 @@ export default function HistorialPedidosPage() {
             'FECHA': format(new Date(order.created_at), 'dd/MM/yyyy'),
             'HORA': format(new Date(order.created_at), 'HH:mm:ss'),
             'CLIENTE': order.cliente_nombre || (order.mesa_numero ? `Mesa ${order.mesa_numero}` : 'N/A'),
-            'TIPO': order.tipo === 'mesa' ? 'Mesa' : 'Domicilio/Local',
+            'TIPO': order.mesa_numero ? 'Mesa' : (order.tipo === 'delivery' ? 'Domicilio' : 'Para Recoger'),
             'ESTADO': order.estado.toUpperCase(),
-            'ITEMS': order.items.map(i => `${i.cantidad}x ${i.nombre}`).join('; '),
+            'ITEMS': order.items?.map(i => `${i.cantidad}x ${i.nombre}`).join('; ') || 'Sin items',
             'TOTAL': order.total,
             'METODO PAGO': order.metodo_pago || 'N/A',
             'NOTAS': order.notas || ''
@@ -370,7 +370,7 @@ export default function HistorialPedidosPage() {
                                                 <td className="px-6 py-4">
                                                     <div className="flex flex-col">
                                                         <span className="text-sm font-black text-gray-900">{order.cliente_nombre || (order.mesa_numero ? `Mesa ${order.mesa_numero}` : 'Cliente')}</span>
-                                                        <span className="text-[10px] font-bold text-gray-400 tracking-wider uppercase">{order.tipo === 'mesa' ? 'Consumo Local' : 'Domicilio / Pick-up'}</span>
+                                                        <span className="text-[10px] font-bold text-gray-400 tracking-wider uppercase">{order.mesa_numero ? `Mesa ${order.mesa_numero}` : (order.tipo === 'delivery' ? 'Domicilio' : 'Para Recoger')}</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
@@ -382,9 +382,9 @@ export default function HistorialPedidosPage() {
                                                 <td className="px-6 py-4">
                                                     <div className="flex flex-col">
                                                         <span className="text-sm font-black text-gray-900">
-                                                            {order.items.length > 1 ? `${order.items[0].cantidad}x ${order.items[0].nombre}, ...` : `${order.items[0].cantidad}x ${order.items[0].nombre}`}
+                                                            {order.items?.length > 1 ? `${order.items[0].cantidad}x ${order.items[0].nombre}, ...` : (order.items?.length === 1 ? `${order.items[0].cantidad}x ${order.items[0].nombre}` : 'Sin items')}
                                                         </span>
-                                                        <span className="text-[10px] font-bold text-gray-400 lowercase">{order.items.length} items</span>
+                                                        <span className="text-[10px] font-bold text-gray-400 lowercase">{order.items?.length || 0} items</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">

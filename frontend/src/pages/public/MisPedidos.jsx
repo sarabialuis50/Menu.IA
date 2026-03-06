@@ -120,7 +120,7 @@ export default function MisPedidos() {
     const newHidden = [...hidden, orderId];
     localStorage.setItem('client_hidden_orders', JSON.stringify(newHidden));
     toast.success("Pedido eliminado de tu vista");
-    navigate(localStorage.getItem('client_token') ? `/${slug}/mi-cuenta` : `/${slug}`);
+    navigate(localStorage.getItem('client_token') ? `/${slug}/mi-cuenta` : `/${slug}/menu`);
   };
 
   if (loading) {
@@ -140,14 +140,14 @@ export default function MisPedidos() {
       aiEnabled={business?.ai_habilitado}
       aiSaludo={business?.ai_saludo}
       aiUseModal={business?.ai_use_modal}
-      backPath={localStorage.getItem('client_token') ? `/${slug}/mi-cuenta` : `/${slug}`}
+      backPath={localStorage.getItem('client_token') ? `/${slug}/mi-cuenta` : `/${slug}/menu`}
     >
       <div className="max-w-lg mx-auto px-6 py-10 min-h-[80vh]">
         <div className="flex items-center justify-between mb-10">
           <div>
             <Button
               variant="ghost"
-              onClick={() => navigate(localStorage.getItem('client_token') ? `/${slug}/mi-cuenta` : `/${slug}`)}
+              onClick={() => navigate(localStorage.getItem('client_token') ? `/${slug}/mi-cuenta` : `/${slug}/menu`)}
               className="inline-flex items-center gap-2 p-0 h-auto text-[10px] font-black uppercase tracking-widest text-[#618972] mb-4 hover:text-[#22C55E] hover:bg-transparent transition-colors"
             >
               <ArrowLeft className="w-3 h-3" /> {localStorage.getItem('client_token') ? 'Volver a Mi Cuenta' : 'Volver al Menú'}

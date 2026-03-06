@@ -1,11 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import useWebSocket from '@/hooks/useWebSocket';
 import { ChefHat, Clock, Volume2, VolumeX, RefreshCw, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { playOrderSound } from '@/utils/sound';
+import { playOrderSound, notifyNewOrder } from '@/utils/sound';
 
 export default function CocinaPage() {
   const { slug } = useParams();
@@ -16,16 +16,44 @@ export default function CocinaPage() {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const { lastMessage, isConnected } = useWebSocket(user?.id);
 
+  const previousOrdersRef = useRef(new Set());
+  const isFirstLoadRef = useRef(true);
+
   const fetchOrders = useCallback(async () => {
     try {
+      if (isFirstLoadRef.current) setLoading(true);
       const response = await api().get(`/orders/${slug}/active`);
-      setOrders(response.data);
+      const incomingOrders = response.data || [];
+      const incomingIds = new Set(incomingOrders.map(o => o.id));
+
+      if (!isFirstLoadRef.current) {
+        const newPendingOrders = incomingOrders.filter(o =>
+          !previousOrdersRef.current.has(o.id) && o.estado === 'pendiente'
+        );
+
+        if (newPendingOrders.length > 0) {
+          toast.success(`¡Tienes ${newPendingOrders.length} pedido(s) nuevo(s)!`, {
+            duration: 5000,
+            position: 'top-center',
+          });
+          if (soundEnabled) playOrderSound();
+          notifyNewOrder(
+            '¡Nuevo Pedido!',
+            `Tienes ${newPendingOrders.length} pedido(s) nuevo(s) en la cocina por preparar.`
+          );
+        }
+      }
+
+      previousOrdersRef.current = incomingIds;
+      isFirstLoadRef.current = false;
+
+      setOrders(incomingOrders);
     } catch (error) {
       console.error('Error fetching orders:', error);
     } finally {
       setLoading(false);
     }
-  }, [slug, api]);
+  }, [slug, api, soundEnabled]);
 
   useEffect(() => {
     fetchOrders();
@@ -34,14 +62,11 @@ export default function CocinaPage() {
   }, [fetchOrders]);
 
   useEffect(() => {
+    // The websocket triggers a fetch immediately to handle state sync
     if (lastMessage && (lastMessage.type === 'new_order' || lastMessage.type === 'order_updated')) {
-      if (lastMessage.type === 'new_order') {
-        toast.success('¡Nuevo pedido!');
-        if (soundEnabled) playOrderSound();
-      }
       fetchOrders();
     }
-  }, [lastMessage, fetchOrders, soundEnabled]);
+  }, [lastMessage, fetchOrders]);
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
@@ -188,9 +213,11 @@ function OrderCard({ order, onUpdateStatus }) {
       <div className="p-4">
         <div className="flex justify-between items-start mb-0.5">
           <h3 className="font-heading font-bold text-xl text-gray-900">
-            {order.mesa_numero ? `Mesa ${order.mesa_numero}` : (order.tipo === 'delivery' ? '🛵 Domicilio' : 'Para llevar')}
+            {order.mesa_numero ? `Mesa ${order.mesa_numero}` : (order.tipo === 'delivery' || order.tipo_pedido === 'delivery' ? '🛵 Domicilio' : '🛍️ Para Recoger')}
           </h3>
-          <span className="text-xs font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">#{order.id?.slice(0, 8).toUpperCase()}</span>
+          <span className="text-xs font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+            {order.numero_secuencial ? `Pedido #${order.numero_secuencial}` : `#${order.id?.slice(0, 8).toUpperCase()}`}
+          </span>
         </div>
         <p className="text-xs font-bold text-gray-500 mb-3">Cliente: {order.cliente_nombre || 'N/A'}</p>
 
@@ -205,7 +232,7 @@ function OrderCard({ order, onUpdateStatus }) {
           {order.items.map((item, idx) => (
             <div key={idx} className="flex flex-col gap-1 border-b border-gray-100 last:border-0 pb-2 mb-2 italic">
               <div className="flex gap-2">
-                <span className="bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-sm font-bold">{item.cantidad}x</span>
+                <span className="bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-sm font-bold">{item.cantidad}</span>
                 <span className="font-medium text-gray-900">{item.nombre}</span>
               </div>
 

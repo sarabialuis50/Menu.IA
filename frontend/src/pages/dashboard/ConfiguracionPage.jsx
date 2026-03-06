@@ -2066,7 +2066,7 @@ const ConfiguracionPage = () => {
                                             }}
                                         >
                                             <Download className="w-4 h-4" />
-                                            DESCARGAR QR PNG
+                                            DESCARGAR QR
                                         </Button>
                                     </div>
                                 </CardContent>
@@ -2127,7 +2127,7 @@ const ConfiguracionPage = () => {
                                         </div>
                                         <div className="text-center space-y-2">
                                             <p className="font-black text-sm uppercase tracking-widest">QR de Seguimiento</p>
-                                            <p className="text-[10px] text-[#618972]">Útil para que el cliente escanee y vea sus últimos pedidos.</p>
+                                            <p className="text-[10px] text-[#618972]">Útil para que el cliente vea sus últimos pedidos.</p>
                                         </div>
                                         <Button
                                             variant="outline"
@@ -2152,7 +2152,7 @@ const ConfiguracionPage = () => {
                                             }}
                                         >
                                             <Download className="w-4 h-4" />
-                                            DESCARGAR QR PNG
+                                            DESCARGAR QR
                                         </Button>
                                     </div>
                                 </CardContent>

@@ -329,7 +329,7 @@ export default function DashboardPage() {
                     <div key={order.id} className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
                       <div>
                         <p className="font-bold text-xs text-gray-900">
-                          {order.mesa_numero ? `Mesa ${order.mesa_numero}` : order.cliente_nombre || 'Para llevar'}
+                          {order.mesa_numero ? `Mesa ${order.mesa_numero}` : order.cliente_nombre || 'Para Recoger'}
                         </p>
                         <p className="text-[10px] text-gray-500 font-medium">
                           {order.items?.length} items · {formatCurrency(order.total)}

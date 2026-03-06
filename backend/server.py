@@ -1690,7 +1690,15 @@ async def create_order(slug: str, data: OrderCreate, background_tasks: Backgroun
         if 'tipo' in order_dict and 'tipo_pedido' not in order_dict:
             order_dict['tipo_pedido'] = order_dict['tipo']
             
-        logger.info(f"Inserting into DB: {order_dict.get('id')}")
+        # Generar número secuencial diario
+        today_start_sec = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+        cq_res = supabase.table('pedidos').select('id', count='exact')\
+            .eq('negocio_id', business_id)\
+            .gte('created_at', today_start_sec.isoformat()).execute()
+        
+        order_dict['numero_secuencial'] = (cq_res.count or 0) + 1
+
+        logger.info(f"Inserting into DB: {order_dict.get('id')} with seq: {order_dict['numero_secuencial']}")
         
         supabase.table('pedidos').insert(order_dict).execute()
         

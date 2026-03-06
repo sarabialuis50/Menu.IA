@@ -427,8 +427,14 @@ const MenuContent = () => {
               try {
                 const geocoder = new window.google.maps.Geocoder();
                 const response = await geocoder.geocode({ location: { lat: latitude, lng: longitude } });
-                if (response.results && response.results[0]) {
-                  addressFound = response.results[0].formatted_address;
+                if (response.results && response.results.length > 0) {
+                  // Filtrar los plus codes que son molestos e ilegibles para el usuario normal
+                  const validResults = response.results.filter(r => !r.types.includes('plus_code'));
+                  if (validResults.length > 0) {
+                    addressFound = validResults[0].formatted_address;
+                  } else {
+                    addressFound = response.results[0].formatted_address;
+                  }
                 }
               } catch (e) {
                 console.warn("Frontend geocoding failed, trying backend...");
@@ -1395,11 +1401,11 @@ const MenuContent = () => {
                             </div>
                             <div>
                               <p className="text-xs font-black text-[#111814] uppercase tracking-tighter">Costo Envío ({distancia.toFixed(1)} km)</p>
-                              <p className="text-lg font-black text-[#22C55E]">{formatCurrency(costoEnvio)}</p>
+                              <p className="text-[10px] font-bold text-[#618972] italic">Calculado automáticamente</p>
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="text-[10px] font-bold text-[#618972] italic">Calculado automáticamente</p>
+                            <p className="text-xl font-black text-[#22C55E]">{formatCurrency(costoEnvio)}</p>
                           </div>
                         </div>
                       )}
@@ -1641,7 +1647,7 @@ const MenuContent = () => {
       </Sheet>
       {/* Product Detail Modal */}
       <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
-        <DialogContent className="max-w-[95vw] lg:max-w-6xl xl:max-w-[1300px] w-full p-0 overflow-hidden rounded-[2.5rem] md:rounded-[3rem] bg-white border-none shadow-2xl [&>button]:hidden outline-none" aria-describedby="product-description">
+        <DialogContent className="max-w-[100vw] sm:max-w-[95vw] lg:max-w-6xl xl:max-w-[1300px] w-full p-0 overflow-hidden rounded-t-[2.5rem] rounded-b-none sm:rounded-[3rem] bg-white border-none shadow-2xl [&>button]:hidden outline-none !top-auto !bottom-0 !translate-y-0 sm:!top-[50%] sm:!bottom-auto sm:!translate-y-[-50%]" aria-describedby="product-description">
           <DialogHeader className="sr-only">
             <DialogTitle>Detalles del Producto</DialogTitle>
             <DialogDescription id="product-description">Vista detallada del producto seleccionado con opciones de personalización.</DialogDescription>
@@ -1685,7 +1691,7 @@ const MenuContent = () => {
                 </div>
 
                 {/* Content Scrollable */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-10 pb-40 md:pb-56">
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-10 pb-40 md:pb-56">
                   <div className="max-w-2xl mx-auto space-y-8">
                     {/* Basic Info */}
                     <div className="space-y-4">
@@ -1694,6 +1700,16 @@ const MenuContent = () => {
                           <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#4ADE80]/10 text-[10px] font-black text-[#22C55E] uppercase tracking-wider">
                             {selectedProduct.categoria}
                           </div>
+                          {selectedProduct.oferta_porcentaje && (
+                            <div className="bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-wider">
+                              -{selectedProduct.oferta_porcentaje}%
+                            </div>
+                          )}
+                          {selectedProduct.prep_time_minutes > 0 && (
+                            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-black border border-blue-100 uppercase tracking-widest">
+                              ⏱️ {selectedProduct.prep_time_minutes} min
+                            </div>
+                          )}
                         </div>
                         <h2 className="text-3xl md:text-4xl font-black text-[#111814] tracking-tighter leading-tight">
                           {selectedProduct.nombre}
@@ -1710,16 +1726,6 @@ const MenuContent = () => {
                           <span className="text-lg font-bold text-gray-300 line-through decoration-2">
                             {formatCurrency(selectedProduct.precio_original)}
                           </span>
-                        )}
-                        {selectedProduct.oferta_porcentaje && (
-                          <div className="bg-red-500 text-white text-xs font-black px-2 py-1 rounded-lg">
-                            -{selectedProduct.oferta_porcentaje}%
-                          </div>
-                        )}
-                        {selectedProduct.prep_time_minutes > 0 && (
-                          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-blue-50 text-blue-600 text-[11px] font-black border border-blue-100 uppercase tracking-widest">
-                            ⏱️ {selectedProduct.prep_time_minutes} min
-                          </div>
                         )}
                       </div>
 
@@ -1769,11 +1775,11 @@ const MenuContent = () => {
                           </p>
 
                           {/* Dietary Info (🌱 Vegano, etc.) - Reposicionado debajo de nutrición */}
-                          <div className="flex flex-wrap gap-2 pt-2">
-                            {selectedProduct.is_vegan && <div title="Vegano" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-green-50 text-green-600 text-[10px] font-black border border-green-100 uppercase tracking-widest">🌱 Vegano</div>}
-                            {selectedProduct.is_vegetarian && <div title="Vegetariano" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-yellow-50 text-yellow-600 text-[10px] font-black border border-yellow-100 uppercase tracking-widest">🥗 Vegetariano</div>}
-                            {selectedProduct.is_gluten_free && <div title="Sin Gluten" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 text-orange-600 text-[10px] font-black border border-orange-100 uppercase tracking-widest">🌾 Sin Gluten</div>}
-                            {selectedProduct.is_spicy && <div title="Picante" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-[10px] font-black border border-red-100 uppercase tracking-widest">🌶️ Picante</div>}
+                          <div className="flex flex-wrap items-center gap-1.5 pt-2">
+                            {selectedProduct.is_vegan && <div title="Vegano" className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-green-50 text-green-600 text-[8px] font-black border border-green-100 uppercase tracking-widest whitespace-nowrap">🌱 Vegano</div>}
+                            {selectedProduct.is_vegetarian && <div title="Vegetariano" className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-yellow-50 text-yellow-600 text-[8px] font-black border border-yellow-100 uppercase tracking-widest whitespace-nowrap">🥗 Vegetariano</div>}
+                            {selectedProduct.is_gluten_free && <div title="Sin Gluten" className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-orange-50 text-orange-600 text-[8px] font-black border border-orange-100 uppercase tracking-widest whitespace-nowrap">🌾 Sin Gluten</div>}
+                            {selectedProduct.is_spicy && <div title="Picante" className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-red-50 text-red-600 text-[8px] font-black border border-red-100 uppercase tracking-widest whitespace-nowrap">🌶️ Picante</div>}
                           </div>
                         </div>
                       )}
@@ -1950,7 +1956,7 @@ const MenuContent = () => {
                 </div>
 
                 {/* Sticky Footer */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 bg-white/90 backdrop-blur-xl border-t border-gray-100 z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 bg-white/90 backdrop-blur-xl border-t border-gray-100 z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
                   <div className="max-w-2xl mx-auto flex flex-col sm:flex-row items-center gap-4 md:gap-6">
                     {/* Quantity Control */}
                     <div className="flex items-center gap-4 bg-gray-100 rounded-2xl p-2 border border-gray-200 w-full sm:w-auto justify-between">

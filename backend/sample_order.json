@@ -30,5 +30,12 @@
   "direccion": null,
   "distancia": null,
   "costo_envio": 0,
-  "metodo_entrega": null
+  "metodo_entrega": null,
+  "repartidor_id": null,
+  "repartidor_lat": null,
+  "repartidor_lng": null,
+  "business_lat": null,
+  "business_lng": null,
+  "cliente_lat": null,
+  "cliente_lng": null
 }

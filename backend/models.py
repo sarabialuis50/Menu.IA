@@ -390,6 +390,7 @@ class Order(OrderBase):
     negocio_nombre: Optional[str] = None
     negocio_logo: Optional[str] = None
     mesero_nombre: Optional[str] = None
+    numero_secuencial: Optional[int] = None
 
 
 # Analytics Models

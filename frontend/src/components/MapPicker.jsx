@@ -29,14 +29,13 @@ export const MapPicker = ({ lat, lng, onChange, address }) => {
                 mapTypeControl: false,
                 streetViewControl: false,
                 fullscreenControl: false,
-                styles: [
-                    {
-                        "featureType": "all",
-                        "elementType": "labels.text.fill",
-                        "stylers": [{ "color": "#7c93a3" }, { "lightness": "-10" }]
-                    }
-                ]
             });
+
+            // Trigger a resize slightly after init in case the container animated from 0 height
+            setTimeout(() => {
+                window.google.maps.event.trigger(map, 'resize');
+                map.setCenter(center);
+            }, 500);
 
             const marker = new window.google.maps.Marker({
                 position: center,

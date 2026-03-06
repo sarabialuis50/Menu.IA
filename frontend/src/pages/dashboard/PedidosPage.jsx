@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { DashboardLayout } from '@/layouts/DashboardLayout';
 import { Card } from '@/components/ui/card';
@@ -68,6 +68,7 @@ import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { playOrderSound, notifyNewOrder } from '@/utils/sound';
 
 export default function PedidosPage() {
     const { slug } = useParams();
@@ -87,14 +88,42 @@ export default function PedidosPage() {
     const [repartidores, setRepartidores] = useState([]);
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [assigning, setAssigning] = useState(false);
+    const previousOrdersRef = useRef(new Set());
+    const isFirstLoadRef = useRef(true);
 
     // Fetch Orders
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                setLoading(true);
+                if (isFirstLoadRef.current) setLoading(true);
                 const res = await api().get(`/orders/${slug}?limit=100`);
-                setOrders(res.data);
+
+                // Diff incoming orders to find new ones
+                const incomingOrders = res.data || [];
+                const incomingIds = new Set(incomingOrders.map(o => o.id));
+
+                if (!isFirstLoadRef.current) {
+                    const newPendingOrders = incomingOrders.filter(o =>
+                        !previousOrdersRef.current.has(o.id) && o.estado === 'pendiente'
+                    );
+
+                    if (newPendingOrders.length > 0) {
+                        toast.success(`¡Tienes ${newPendingOrders.length} pedido(s) nuevo(s)!`, {
+                            duration: 5000,
+                            position: 'top-center',
+                        });
+                        playOrderSound();
+                        notifyNewOrder(
+                            '¡Nuevo Pedido!',
+                            `Tienes ${newPendingOrders.length} pedido(s) nuevo(s) por revisar.`
+                        );
+                    }
+                }
+
+                previousOrdersRef.current = incomingIds;
+                isFirstLoadRef.current = false;
+
+                setOrders(incomingOrders);
             } catch (error) {
                 console.error("Error fetching orders:", error);
                 toast.error("Error al cargar pedidos");
@@ -202,7 +231,14 @@ export default function PedidosPage() {
         currentPage * itemsPerPage
     );
 
-    const totalOrdersToday = orders.length;
+    const isToday = (dateString) => {
+        if (!dateString) return false;
+        const offsetDate = new Date(new Date(dateString).getTime() - (5 * 60 * 60 * 1000));
+        const todayDate = new Date(new Date().getTime() - (5 * 60 * 60 * 1000));
+        return offsetDate.toDateString() === todayDate.toDateString();
+    };
+
+    const totalOrdersToday = orders.filter(o => isToday(o.created_at)).length;
     const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
 
     return (
@@ -218,123 +254,28 @@ export default function PedidosPage() {
 
                 {/* Stats Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {/* Total del Día */}
-                    <Card className="p-5 border-2 border-gray-100 rounded-3xl bg-white shadow-sm hover:shadow-md transition-all">
-                        <div className="flex items-center gap-4">
-                            <div className="size-12 rounded-2xl bg-indigo-50 flex items-center justify-center">
-                                <ClipboardList className="w-6 h-6 text-indigo-600" />
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Pedidos Totales</p>
-                                <h3 className="text-2xl font-black text-gray-900 leading-none">{totalOrdersToday}</h3>
-                            </div>
-                        </div>
-                    </Card>
-
-                    {/* Pendientes */}
-                    <Card className="p-5 border-2 border-gray-100 rounded-3xl bg-white shadow-sm hover:shadow-md transition-all">
-                        <div className="flex items-center gap-4">
-                            <div className="size-12 rounded-2xl bg-blue-50 flex items-center justify-center">
-                                <Clock className="w-6 h-6 text-blue-600" />
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Pendientes</p>
-                                <h3 className="text-2xl font-black text-gray-900 leading-none">
-                                    {orders.filter(o => o.estado === 'pendiente').length}
-                                </h3>
-                            </div>
-                        </div>
-                    </Card>
-
-                    {/* Aceptados */}
-                    <Card className="p-5 border-2 border-gray-100 rounded-3xl bg-white shadow-sm hover:shadow-md transition-all">
-                        <div className="flex items-center gap-4">
-                            <div className="size-12 rounded-2xl bg-teal-50 flex items-center justify-center">
-                                <CheckCircle2 className="w-6 h-6 text-teal-600" />
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Aceptados</p>
-                                <h3 className="text-2xl font-black text-gray-900 leading-none">
-                                    {orders.filter(o => o.estado === 'aceptado').length}
-                                </h3>
-                            </div>
-                        </div>
-                    </Card>
-
-                    {/* Preparando */}
-                    <Card className="p-5 border-2 border-gray-100 rounded-3xl bg-white shadow-sm hover:shadow-md transition-all">
-                        <div className="flex items-center gap-4">
-                            <div className="size-12 rounded-2xl bg-yellow-50 flex items-center justify-center">
-                                <ChefHat className="w-6 h-6 text-yellow-600" />
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Preparando</p>
-                                <h3 className="text-2xl font-black text-gray-900 leading-none">
-                                    {orders.filter(o => o.estado === 'preparando').length}
-                                </h3>
-                            </div>
-                        </div>
-                    </Card>
-
-                    {/* Listos */}
-                    <Card className="p-5 border-2 border-gray-100 rounded-3xl bg-white shadow-sm hover:shadow-md transition-all">
-                        <div className="flex items-center gap-4">
-                            <div className="size-12 rounded-2xl bg-green-50 flex items-center justify-center">
-                                <CheckCircle2 className="w-6 h-6 text-green-600" />
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Listo</p>
-                                <h3 className="text-2xl font-black text-gray-900 leading-none">
-                                    {orders.filter(o => o.estado === 'listo').length}
-                                </h3>
-                            </div>
-                        </div>
-                    </Card>
-
-                    {/* Enviados */}
-                    <Card className="p-5 border-2 border-gray-100 rounded-3xl bg-white shadow-sm hover:shadow-md transition-all">
-                        <div className="flex items-center gap-4">
-                            <div className="size-12 rounded-2xl bg-purple-50 flex items-center justify-center">
-                                <Truck className="w-6 h-6 text-purple-600" />
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Enviados</p>
-                                <h3 className="text-2xl font-black text-gray-900 leading-none">
-                                    {orders.filter(o => o.estado === 'enviado').length}
-                                </h3>
-                            </div>
-                        </div>
-                    </Card>
-
-                    {/* Entregados */}
-                    <Card className="p-5 border-2 border-gray-100 rounded-3xl bg-white shadow-sm hover:shadow-md transition-all">
-                        <div className="flex items-center gap-4">
-                            <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center">
-                                <Utensils className="w-6 h-6 text-slate-600" />
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Entregados</p>
-                                <h3 className="text-2xl font-black text-gray-900 leading-none">
-                                    {orders.filter(o => o.estado === 'entregado').length}
-                                </h3>
-                            </div>
-                        </div>
-                    </Card>
-
-                    {/* Cancelados */}
-                    <Card className="p-5 border-2 border-gray-100 rounded-3xl bg-white shadow-sm hover:shadow-md transition-all">
-                        <div className="flex items-center gap-4">
-                            <div className="size-12 rounded-2xl bg-red-50 flex items-center justify-center">
-                                <XCircle className="w-6 h-6 text-red-600" />
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Cancelados</p>
-                                <h3 className="text-2xl font-black text-gray-900 leading-none">
-                                    {orders.filter(o => o.estado === 'cancelado').length}
-                                </h3>
-                            </div>
-                        </div>
-                    </Card>
+                    {
+                        [
+                            { title: 'Totales del Día', count: totalOrdersToday, colorClasses: 'bg-indigo-50 text-indigo-600', Icon: ClipboardList },
+                            { title: 'Pendientes', count: orders.filter(o => o.estado === 'pendiente').length, colorClasses: 'bg-blue-50 text-blue-600', Icon: Clock },
+                            { title: 'Aceptados', count: orders.filter(o => o.estado === 'aceptado').length, colorClasses: 'bg-teal-50 text-teal-600', Icon: CheckCircle2 },
+                            { title: 'Preparando', count: orders.filter(o => o.estado === 'preparando').length, colorClasses: 'bg-yellow-50 text-yellow-600', Icon: ChefHat },
+                            { title: 'Listos', count: orders.filter(o => o.estado === 'listo').length, colorClasses: 'bg-green-50 text-green-600', Icon: CheckCircle2 },
+                            { title: 'Enviados', count: orders.filter(o => o.estado === 'enviado').length, colorClasses: 'bg-purple-50 text-purple-600', Icon: Truck },
+                            { title: 'Entregados', count: orders.filter(o => o.estado === 'entregado').length, colorClasses: 'bg-slate-100 text-slate-600', Icon: Utensils },
+                            { title: 'Cancelados', count: orders.filter(o => o.estado === 'cancelado').length, colorClasses: 'bg-red-50 text-red-600', Icon: XCircle }
+                        ].map((stat, idx) => (
+                            <Card key={idx} className="p-4 sm:p-5 border-2 border-gray-100 rounded-3xl bg-white shadow-sm hover:shadow-md transition-all flex flex-col items-center justify-center text-center gap-3">
+                                <div className={`size-12 rounded-2xl flex items-center justify-center shrink-0 ${stat.colorClasses.split(' ')[0]}`}>
+                                    <stat.Icon className={`w-6 h-6 ${stat.colorClasses.split(' ')[1]}`} />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl sm:text-3xl font-black text-gray-900 leading-none mb-1.5">{stat.count}</h3>
+                                    <p className="text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest leading-tight line-clamp-1">{stat.title}</p>
+                                </div>
+                            </Card>
+                        ))
+                    }
                 </div>
 
                 {/* Main Content */}
@@ -355,12 +296,12 @@ export default function PedidosPage() {
                             <div className="flex-1 md:flex-none">
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" className="w-full h-12 px-4 rounded-2xl border-2 font-black text-[9px] md:text-[10px] tracking-widest gap-2 bg-white hover:bg-gray-50 transition-all border-gray-100 md:min-w-[180px] justify-between group">
-                                            <div className="flex items-center gap-2 text-gray-500 uppercase overflow-hidden">
-                                                <Filter className="w-4 h-4 text-emerald-500 group-hover:scale-110 transition-transform" />
+                                        <Button variant="outline" className="w-full h-12 px-3 sm:px-4 rounded-2xl border-2 font-black text-[9px] md:text-[10px] tracking-widest gap-1.5 sm:gap-2 bg-white hover:bg-gray-50 transition-all border-gray-100 md:min-w-[180px] justify-between group">
+                                            <div className="flex items-center gap-1.5 sm:gap-2 text-gray-500 uppercase overflow-hidden">
+                                                <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 group-hover:scale-110 transition-transform shrink-0" />
                                                 <span className="truncate">Filtrar: {filterStatus}</span>
                                             </div>
-                                            <ChevronDown className="w-4 h-4 text-gray-300 shrink-0" />
+                                            <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-300 shrink-0 ml-1" />
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end" className="rounded-2xl border-2 border-gray-100 shadow-xl p-2 min-w-[200px] animate-in slide-in-from-top-2 duration-200">
@@ -383,16 +324,16 @@ export default function PedidosPage() {
                                 </DropdownMenu>
                             </div>
 
-                            <div className="flex-1 md:flex-none">
+                            <div className="flex-1 md:flex-none overflow-hidden">
                                 <Link
                                     to={`/dashboard/${slug}/pedidos/historial`}
-                                    className="w-full h-12 px-4 rounded-2xl border-2 border-gray-100 bg-white hover:bg-gray-50 flex items-center justify-between gap-2 transition-all shadow-sm group md:min-w-[180px]"
+                                    className="w-full h-12 px-3 sm:px-4 rounded-2xl border-2 border-gray-100 bg-white hover:bg-gray-50 flex items-center justify-between gap-1.5 sm:gap-2 transition-all shadow-sm group md:min-w-[180px]"
                                 >
-                                    <div className="flex items-center gap-2 text-gray-500 uppercase overflow-hidden">
-                                        <History className="w-4 h-4 text-indigo-500 group-hover:rotate-12 transition-transform" />
+                                    <div className="flex items-center gap-1.5 sm:gap-2 text-gray-500 uppercase overflow-hidden">
+                                        <History className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-500 group-hover:rotate-12 transition-transform shrink-0" />
                                         <span className="text-[9px] md:text-[10px] font-black tracking-widest truncate">Ver Historial</span>
                                     </div>
-                                    <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
+                                    <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0 ml-1" />
                                 </Link>
                             </div>
                         </div>
@@ -433,7 +374,9 @@ export default function PedidosPage() {
                                         return (
                                             <tr key={order.id} className="hover:bg-gray-50/50 transition-colors group">
                                                 <td className="px-3 py-4">
-                                                    <span className="font-mono text-[10px] text-gray-500">#{order.id.slice(0, 8)}</span>
+                                                    <span className="font-mono text-[11px] font-bold text-gray-900 border px-1.5 py-0.5 rounded-md bg-gray-50 border-gray-200 shadow-sm">
+                                                        {order.numero_secuencial ? `PED-${order.numero_secuencial}` : `#${order.id.slice(0, 8)}`}
+                                                    </span>
                                                 </td>
                                                 <td className="px-3 py-4">
                                                     <div className="flex flex-col">
@@ -448,7 +391,7 @@ export default function PedidosPage() {
                                                 <td className="px-3 py-4">
                                                     <div className="flex flex-col">
                                                         <span className="text-sm font-bold text-gray-900">
-                                                            {order.mesa_numero ? `Mesa ${order.mesa_numero}` : 'Para Llevar'}
+                                                            {order.mesa_numero ? `Mesa ${order.mesa_numero}` : (order.tipo === 'delivery' || order.tipo_pedido === 'delivery' ? 'Domicilio' : 'Para Recoger')}
                                                         </span>
                                                         {order.cliente_nombre && (
                                                             <span className="text-[10px] font-medium text-gray-500">
@@ -601,7 +544,7 @@ export default function PedidosPage() {
                         {/* Header Info */}
                         <div className="text-center space-y-1">
                             <h2 className="text-2xl font-black text-[#FF6B00]">{user?.nombre || 'Mi Negocio'}</h2>
-                            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">ID del Pedido: #{selectedOrder?.id?.slice(0, 8).toUpperCase()}</p>
+                            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">{selectedOrder?.numero_secuencial ? `ID del Pedido: PED-${selectedOrder.numero_secuencial}` : `ID del Pedido: #${selectedOrder?.id?.slice(0, 8).toUpperCase()}`}</p>
                             <p className="text-[11px] font-bold text-gray-400">Realizado: {selectedOrder ? format(new Date(selectedOrder.created_at), 'dd/MM/yyyy, HH:mm:ss') : ''}</p>
                         </div>
 
