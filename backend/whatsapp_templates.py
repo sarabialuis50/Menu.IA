@@ -27,25 +27,14 @@ def get_template_data(template_key, **kwargs):
     if template_key == "resumen_pedido":
         # variables: {{1}} Negocio, {{2}} ID, {{3}} Cliente Info, {{4}} Detalle, {{5}} Pago Summary, {{6}} Met_Pago, {{7}} Met_Entrega + Info, {{8}} Obs_Pedido, {{9}} Fecha, {{10}} Link
         variables = {
-            "1": kwargs.get("negocio_nombre", "Nuestro Negocio"),
-            "2": kwargs.get("pedido_id", "N/A"),
-            "3": "\n* Nombre: {}\n* Teléfono: {}".format(
-                kwargs.get('cliente_nombre', 'Cliente'),
-                kwargs.get('cliente_telefono', 'N/A')
-            ),
-            "4": "\n" + str(kwargs.get("detalle_carrito", "Detalle no disponible")),
-            "5": "\n* Subtotal: ${}\n* Envío: ${}\n* TOTAL: ${}".format(
-                kwargs.get('subtotal', '0'),
-                kwargs.get('costo_envio', '0'),
-                kwargs.get('total', '0')
-            ),
-            "6": "\n* {}".format(kwargs.get("metodo_pago", "Efectivo")),
-            "7": "\n* {}\n* Dirección: {}\n* {}".format(
-                kwargs.get("metodo_entrega", "Domicilio"),
-                kwargs.get('direccion', 'No especificada'),
-                kwargs.get('obs_entrega', 'Observaciones de entrega: Sin notas')
-            ),
-            "8": "\n* {}".format(kwargs.get("obs_pedido", "Observaciones: Sin notas")),
+            "1": str(kwargs.get("negocio_nombre", "Nuestro Negocio"))[:50],
+            "2": str(kwargs.get("pedido_id", "N/A")),
+            "3": "{} - {}".format(str(kwargs.get('cliente_nombre', 'Cliente'))[:30], str(kwargs.get('cliente_telefono', 'N/A'))),
+            "4": str(kwargs.get("detalle_carrito", "Detalle no disponible")).replace('\n', ' | ')[:500],
+            "5": "Subtot: ${} - Env: ${} - TOTAL: ${}".format(kwargs.get('subtotal', '0'), kwargs.get('costo_envio', '0'), kwargs.get('total', '0')),
+            "6": str(kwargs.get("metodo_pago", "Efectivo")),
+            "7": "{} - Dir: {} - {}".format(str(kwargs.get("metodo_entrega", "Domicilio")), str(kwargs.get('direccion', 'Local'))[:60], str(kwargs.get('obs_entrega', ''))[:50]),
+            "8": str(kwargs.get("obs_pedido", "Sin notas"))[:100],
             "9": kwargs.get("fecha", ""),
             "10": kwargs.get("link_seguimiento", "https://menuia.co")
         }
@@ -90,4 +79,4 @@ def get_template_data(template_key, **kwargs):
             "3": kwargs.get("link_seguimiento", "https://menuia.co/pedidos")
         }
 
-    return sid, json.dumps(variables)
+    return sid, variables

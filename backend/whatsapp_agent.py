@@ -957,7 +957,6 @@ def send_whatsapp_template(to_number: str, template_key: str, custom_config: Dic
         
         if not content_sid:
             logger.warning(f"Template {template_key} sin SID configurado. Usando fallback de texto.")
-            # Aquí podrías generar un cuerpo de texto como fallback si quisieras
             return None
 
         sid = custom_config.get('sid') if custom_config else None
@@ -981,7 +980,7 @@ def send_whatsapp_template(to_number: str, template_key: str, custom_config: Dic
             from_=from_number if from_number.startswith('whatsapp:') else f"whatsapp:{from_number}",
             to=formatted_to,
             content_sid=content_sid,
-            content_variables=content_variables
+            content_variables=json.dumps(content_variables) if isinstance(content_variables, dict) else content_variables
         )
         
         logger.info(f"Plantilla {template_key} enviada a {to_number}. SID: {message.sid}")

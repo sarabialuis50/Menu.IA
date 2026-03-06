@@ -1755,7 +1755,7 @@ def format_order_notification_business(order: Order, business_name: str) -> str:
     elif order.tipo == "mesa":
          msg += f"🍽️ *Mesa:* {order.mesa_numero or 'Sin numero'}\n"
     elif order.tipo == "takeaway":
-         msg += f"🛍️ *Para Llevar*\n"
+         msg += f"🛍️ *Para Recoger*\n"
          
     msg += "\n*--- DETALLE DEL PEDIDO ---*\n"
     for item in order.items:
