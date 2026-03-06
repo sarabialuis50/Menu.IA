@@ -322,10 +322,10 @@ export default function FidelidadPage() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-7xl mx-auto space-y-8 pb-20">
+      <div className="max-w-7xl mx-auto flex flex-col gap-8 pb-20">
 
         {/* Superior Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2 order-1">
           <div className="space-y-1">
             <h1 className="text-3xl font-black text-gray-900 tracking-tight">CONFIGURACIÓN DE PUNTOS</h1>
             <p className="text-gray-500 font-medium text-sm">Diseña la estrategia de rentabilidad y fidelización de tu negocio</p>
@@ -347,7 +347,7 @@ export default function FidelidadPage() {
         </div>
 
         {/* SECTION: SIMULADOR DE PUNTOS (IMAGE DESIGN) */}
-        <Card className="border-none shadow-2xl rounded-[2rem] md:rounded-[2.5rem] overflow-hidden bg-white">
+        <Card className="border-none shadow-2xl rounded-[2rem] md:rounded-[2.5rem] overflow-hidden bg-white order-3 lg:order-2">
           <CardHeader className="bg-[#f8faf9] border-b border-gray-100 px-6 py-6 md:px-10 md:py-8">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl bg-[#4ADE80] flex items-center justify-center shadow-lg shadow-[#4ADE80]/20">
@@ -493,7 +493,7 @@ export default function FidelidadPage() {
         </Card>
 
         {/* SECTION: BUSCADOR Y ACREDITACIÓN (REPLACING OLD RULE CARDS) */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 px-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 px-2 order-2 lg:order-3">
 
           {/* Card Buscar Cliente */}
           <Card className="rounded-[2rem] md:rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden group order-1 lg:order-none">
@@ -774,7 +774,7 @@ export default function FidelidadPage() {
         </div>
 
         {/* SECTION: ACREDITACIONES RECIENTES */}
-        <div className="space-y-6 px-2">
+        <div className="space-y-6 px-2 order-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl bg-white border border-gray-100 shadow-sm flex items-center justify-center">

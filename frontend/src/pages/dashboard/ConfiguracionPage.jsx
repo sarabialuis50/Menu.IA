@@ -995,7 +995,7 @@ const ConfiguracionPage = () => {
 
     return (
         <DashboardLayout>
-            <div className="max-w-7xl mx-auto space-y-8 pb-20 px-4 md:px-6">
+            <div className="max-w-7xl mx-auto space-y-6 md:space-y-8 pb-20 px-2 md:px-6">
                 {/* Header Contextual */}
                 <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="space-y-1 text-center md:text-left">
@@ -1091,7 +1091,7 @@ const ConfiguracionPage = () => {
                     {/* DISEÑO TAB */}
                     <TabsContent value="diseno" className="space-y-6 outline-none">
                         <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                            <CardHeader className="pt-8 md:pt-10 px-6 md:px-10 pb-4 flex flex-col md:flex-row items-center md:items-center justify-between gap-6">
+                            <CardHeader className="pt-8 md:pt-10 px-4 md:px-10 pb-4 flex flex-col md:flex-row items-center md:items-center justify-between gap-6">
                                 <div className="text-center md:text-left space-y-1">
                                     <CardTitle className="text-2xl md:text-3xl font-black">Identidad Visual</CardTitle>
                                     <CardDescription className="text-sm md:text-base">Configura los elementos gráficos que verán los clientes en el catálogo.</CardDescription>
@@ -1105,9 +1105,9 @@ const ConfiguracionPage = () => {
                                     GUARDAR IDENTIDAD
                                 </Button>
                             </CardHeader>
-                            <CardContent className="px-10 pb-10 space-y-10">
+                            <CardContent className="px-4 md:px-10 pb-10 space-y-10">
                                 {/* Banner Personalization Section */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-gray-50/50 p-8 rounded-[2rem] border border-gray-100">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-gray-50/50 p-4 md:p-8 rounded-[2rem] border border-gray-100">
                                     <div className="space-y-4">
                                         <div className="space-y-2">
                                             <Label className="text-xs font-black uppercase tracking-tight text-[#111814]">Etiqueta del banner (Ej: Nuevo, Recomendado)</Label>
@@ -1239,7 +1239,7 @@ const ConfiguracionPage = () => {
                                 </div>
 
                                 {/* Logo Section */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-gray-50/50 p-8 rounded-[2rem] border border-gray-100">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-gray-50/50 p-4 md:p-8 rounded-[2rem] border border-gray-100">
                                     <div className="space-y-4">
                                         <div>
                                             <Label className="text-base font-black uppercase tracking-tight">Logo del Negocio</Label>
@@ -1299,7 +1299,7 @@ const ConfiguracionPage = () => {
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {/* Categories Manager */}
                             <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                                <CardHeader className="pt-8 px-8 flex flex-row items-center justify-between">
+                                <CardHeader className="pt-8 px-4 md:px-8 flex flex-row items-center justify-between">
                                     <div>
                                         <CardTitle className="text-xl">Categorías</CardTitle>
                                         <CardDescription className="text-xs">Estructura de tu menú.</CardDescription>
@@ -1319,8 +1319,8 @@ const ConfiguracionPage = () => {
                                         NUEVA
                                     </Button>
                                 </CardHeader>
-                                <CardContent className="px-8 pb-8">
-                                    <div className="flex flex-wrap gap-3">
+                                <CardContent className="px-4 md:px-8 pb-8">
+                                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
                                         {categories.map((cat, idx) => {
                                             const catName = typeof cat === 'object' ? cat.nombre : cat;
                                             const catIcon = typeof cat === 'object' ? cat.icono : 'Utensils';
@@ -1333,7 +1333,7 @@ const ConfiguracionPage = () => {
                                                     initial={{ opacity: 0, scale: 0.9 }}
                                                     animate={{ opacity: 1, scale: 1 }}
                                                     key={`${catName}-${idx}`}
-                                                    className="group flex items-center gap-2 bg-white border border-gray-100 pl-3 pr-1 py-2 rounded-2xl hover:border-[#4ADE80] hover:shadow-xl hover:shadow-[#4ADE80]/5 transition-all cursor-default w-[calc(50%-0.375rem)]"
+                                                    className="group flex items-center gap-2 bg-white border border-gray-100 pl-2 pr-1 py-2 rounded-2xl hover:border-[#4ADE80] hover:shadow-xl hover:shadow-[#4ADE80]/5 transition-all cursor-default"
                                                 >
                                                     <div className="size-7 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-[#4ADE80]/10 group-hover:text-[#22C55E] transition-colors shrink-0 overflow-hidden">
                                                         {isUrl ? (
@@ -1345,7 +1345,7 @@ const ConfiguracionPage = () => {
                                                         )}
                                                     </div>
                                                     <div className="flex flex-col min-w-0 pr-0.5 flex-1">
-                                                        <span className="font-black text-[9px] text-[#111814] truncate leading-tight -mb-px">{catName}</span>
+                                                        <span className="font-black text-[10px] text-[#111814] truncate leading-tight -mb-px">{catName}</span>
                                                         <span className="text-[7px] text-[#618972] font-bold uppercase tracking-tight truncate">
                                                             {products.filter(p => p.categoria === catName).length} Productos
                                                         </span>
@@ -1396,7 +1396,7 @@ const ConfiguracionPage = () => {
 
                             {/* Tags Manager */}
                             <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                                <CardHeader className="pt-8 px-8 flex flex-row items-center justify-between">
+                                <CardHeader className="pt-8 px-4 md:px-8 flex flex-row items-center justify-between">
                                     <div>
                                         <CardTitle className="text-xl">Etiquetas</CardTitle>
                                         <CardDescription className="text-xs">Promociones y estados.</CardDescription>
@@ -1415,7 +1415,7 @@ const ConfiguracionPage = () => {
                                         NUEVA
                                     </Button>
                                 </CardHeader>
-                                <CardContent className="px-8 pb-8">
+                                <CardContent className="px-4 md:px-8 pb-8">
                                     <div className="flex flex-wrap gap-2">
                                         {tags.map((tag, idx) => (
                                             <div key={`${tag}-${idx}`} className="group flex items-center gap-1 bg-[#4ADE80]/5 border border-[#4ADE80]/20 pl-3 pr-1 py-1.5 rounded-xl hover:border-[#4ADE80] transition-all">
@@ -1459,36 +1459,36 @@ const ConfiguracionPage = () => {
                         </div>
 
                         {/* Products Table */}
-                        <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                            <div className="p-6 md:px-8 border-b border-gray-50">
-                                <div className="flex items-center justify-between gap-4">
-                                    <div>
-                                        <h2 className="text-xl font-black text-[#111814] tracking-tight whitespace-nowrap">Gestión de Catálogo</h2>
+                        <Card className="rounded-[2rem] md:rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
+                            <div className="p-4 md:p-8 border-b border-gray-50">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                    <div className="text-center sm:text-left">
+                                        <h2 className="text-xl md:text-2xl font-black text-[#111814] tracking-tight whitespace-nowrap">Gestión de Catálogo</h2>
                                         <p className="text-[11px] text-[#618972] font-medium mt-0.5 hidden sm:block">Administra tus productos y existencias.</p>
                                     </div>
-                                    <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+                                    <div className="flex items-center gap-2 md:gap-3 flex-wrap justify-center sm:justify-end">
                                         <Button
                                             onClick={() => navigate(`/dashboard/${slug}/catalogo/todos`)}
                                             variant="outline"
-                                            className="rounded-2xl h-10 md:h-11 px-4 md:px-6 border-gray-200 text-[#618972] font-black gap-2 hover:bg-gray-50 transition-all active:scale-95 text-xs md:text-sm"
+                                            className="rounded-2xl h-10 md:h-11 px-3 md:px-6 border-gray-200 text-[#618972] font-black gap-2 hover:bg-gray-50 transition-all active:scale-95 text-[10px] md:text-sm"
                                         >
-                                            <LayoutGrid className="w-4 h-4" />
-                                            <span className="hidden sm:inline whitespace-nowrap">Ver lista completa</span>
+                                            <LayoutGrid className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                            <span className="whitespace-nowrap">Historial</span>
                                         </Button>
                                         <Button
                                             onClick={() => window.open(`/${slug}/menu`, '_blank')}
                                             variant="outline"
-                                            className="rounded-2xl h-10 md:h-11 px-4 md:px-6 border-gray-200 text-[#618972] font-black gap-2 hover:bg-gray-50 transition-all active:scale-95 text-xs md:text-sm"
+                                            className="rounded-2xl h-10 md:h-11 px-3 md:px-6 border-gray-200 text-[#618972] font-black gap-2 hover:bg-gray-50 transition-all active:scale-95 text-[10px] md:text-sm"
                                         >
-                                            <ExternalLink className="w-4 h-4" />
-                                            <span className="hidden sm:inline whitespace-nowrap">Ver catálogo</span>
+                                            <ExternalLink className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                            <span className="whitespace-nowrap">Ver Menú</span>
                                         </Button>
                                         <Button
                                             onClick={openAddProduct}
                                             className="rounded-2xl h-10 md:h-11 px-4 md:px-6 bg-[#4ADE80] hover:bg-[#4ADE80] text-[#111814] font-black gap-2 shadow-lg shadow-[#4ADE80]/10 transition-all active:scale-95 text-xs md:text-sm"
                                         >
                                             <Plus className="w-4 h-4" />
-                                            <span className="whitespace-nowrap">Nuevo Producto</span>
+                                            <span className="whitespace-nowrap">+ Nuevo Producto</span>
                                         </Button>
                                     </div>
                                 </div>
@@ -1667,11 +1667,11 @@ const ConfiguracionPage = () => {
                     {/* DOMICILIOS TAB */}
                     <TabsContent value="domicilios" className="space-y-6 outline-none">
                         <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                            <CardHeader className="pt-10 px-10 pb-4">
+                            <CardHeader className="pt-8 md:pt-10 px-4 md:px-10 pb-4">
                                 <CardTitle>Configuración de Envíos</CardTitle>
                                 <CardDescription>Establece las reglas para el cálculo automático de domicilios por distancia.</CardDescription>
                             </CardHeader>
-                            <CardContent className="px-10 pb-10 space-y-10">
+                            <CardContent className="px-4 md:px-10 pb-10 space-y-10">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                     {/* Precio por KM */}
                                     <div className="space-y-4">
@@ -1824,7 +1824,7 @@ const ConfiguracionPage = () => {
                     {/* MÉTODOS DE ENTREGA TAB */}
                     <TabsContent value="entrega" className="space-y-6 outline-none">
                         <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                            <CardHeader className="pt-10 px-10 pb-4">
+                            <CardHeader className="pt-8 md:pt-10 px-4 md:px-10 pb-4">
                                 <CardTitle className="text-2xl flex items-center gap-3 font-black tracking-tighter">
                                     <div className="size-10 rounded-2xl bg-[#4ADE80]/10 flex items-center justify-center text-[#22C55E]">
                                         <Package className="w-6 h-6" />
@@ -1833,10 +1833,10 @@ const ConfiguracionPage = () => {
                                 </CardTitle>
                                 <CardDescription>Habilita o deshabilita los canales de venta según tu modelo de negocio.</CardDescription>
                             </CardHeader>
-                            <CardContent className="px-10 pb-10 space-y-8">
+                            <CardContent className="px-4 md:px-10 pb-10 space-y-8">
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     {/* Domicilio Switch */}
-                                    <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.domicilio ? 'border-[#4ADE80] bg-[#4ADE80]/5' : 'border-gray-100 bg-gray-50'}`}
+                                    <div className={`p-5 md:p-8 rounded-[2.5rem] md:rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.domicilio ? 'border-[#4ADE80] bg-[#4ADE80]/5' : 'border-gray-100 bg-gray-50'}`}
                                         onClick={() => setBusinessData({
                                             ...businessData,
                                             metodos_entrega: { ...businessData.metodos_entrega, domicilio: !businessData.metodos_entrega?.domicilio }
@@ -1859,7 +1859,7 @@ const ConfiguracionPage = () => {
                                     </div>
 
                                     {/* Recoger Switch */}
-                                    <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.recoger ? 'border-[#4ADE80] bg-[#4ADE80]/5' : 'border-gray-100 bg-gray-50'}`}
+                                    <div className={`p-5 md:p-8 rounded-[2.5rem] md:rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.recoger ? 'border-[#4ADE80] bg-[#4ADE80]/5' : 'border-gray-100 bg-gray-50'}`}
                                         onClick={() => setBusinessData({
                                             ...businessData,
                                             metodos_entrega: { ...businessData.metodos_entrega, recoger: !businessData.metodos_entrega?.recoger }
@@ -1882,7 +1882,7 @@ const ConfiguracionPage = () => {
                                     </div>
 
                                     {/* Mesa Switch */}
-                                    <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.mesa ? 'border-[#4ADE80] bg-[#4ADE80]/5' : 'border-gray-100 bg-gray-50'}`}
+                                    <div className={`p-5 md:p-8 rounded-[2.5rem] md:rounded-[2rem] border-2 transition-all cursor-pointer flex flex-col items-center text-center gap-4 ${businessData.metodos_entrega?.mesa ? 'border-[#4ADE80] bg-[#4ADE80]/5' : 'border-gray-100 bg-gray-50'}`}
                                         onClick={() => setBusinessData({
                                             ...businessData,
                                             metodos_entrega: { ...businessData.metodos_entrega, mesa: !businessData.metodos_entrega?.mesa }
@@ -1922,7 +1922,7 @@ const ConfiguracionPage = () => {
                     {/* MÉTODOS DE PAGO TAB */}
                     <TabsContent value="pagos" className="space-y-6 outline-none">
                         <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                            <CardHeader className="pt-10 px-10 pb-4">
+                            <CardHeader className="pt-8 md:pt-10 px-4 md:px-10 pb-4">
                                 <CardTitle className="text-2xl flex items-center gap-3 font-black tracking-tighter">
                                     <div className="size-10 rounded-2xl bg-[#4ADE80]/10 flex items-center justify-center text-[#22C55E]">
                                         <CreditCardIcon className="w-6 h-6" />
@@ -1931,7 +1931,7 @@ const ConfiguracionPage = () => {
                                 </CardTitle>
                                 <CardDescription>Habilita los medios de pago que tus clientes podrán usar.</CardDescription>
                             </CardHeader>
-                            <CardContent className="px-10 pb-10 space-y-8">
+                            <CardContent className="px-4 md:px-10 pb-10 space-y-8">
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {/* Predefined Payment Methods */}
                                     {[
@@ -1988,7 +1988,7 @@ const ConfiguracionPage = () => {
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             {/* Canal 1: Menú Digital */}
                             <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                                <CardHeader className="pt-10 px-10 pb-4">
+                                <CardHeader className="pt-8 md:pt-10 px-4 md:px-10 pb-4">
                                     <div className="flex items-center gap-4 mb-2">
                                         <div className="size-12 rounded-2xl bg-[#4ADE80]/10 flex items-center justify-center text-[#22C55E]">
                                             <Globe className="w-6 h-6" />
@@ -1999,7 +1999,7 @@ const ConfiguracionPage = () => {
                                         </div>
                                     </div>
                                 </CardHeader>
-                                <CardContent className="px-10 pb-10 space-y-8">
+                                <CardContent className="px-4 md:px-10 pb-10 space-y-8">
                                     <div className="space-y-4">
                                         <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#618972]">Enlace Público de tu Menú</Label>
                                         <div className="flex gap-2">
@@ -2074,7 +2074,7 @@ const ConfiguracionPage = () => {
 
                             {/* Canal 2: Seguimiento de Pedidos */}
                             <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                                <CardHeader className="pt-10 px-10 pb-4">
+                                <CardHeader className="pt-8 md:pt-10 px-4 md:px-10 pb-4">
                                     <div className="flex items-center gap-4 mb-2">
                                         <div className="size-12 rounded-2xl bg-[#4ADE80]/10 flex items-center justify-center text-[#22C55E]">
                                             <Clock className="w-6 h-6" />
@@ -2085,7 +2085,7 @@ const ConfiguracionPage = () => {
                                         </div>
                                     </div>
                                 </CardHeader>
-                                <CardContent className="px-10 pb-10 space-y-8">
+                                <CardContent className="px-4 md:px-10 pb-10 space-y-8">
                                     <div className="space-y-4">
                                         <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#618972]">Enlace de Seguimiento (Mis Pedidos)</Label>
                                         <div className="flex gap-2">
@@ -2161,7 +2161,7 @@ const ConfiguracionPage = () => {
 
                         {/* Preview Section */}
                         <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-[#111814] text-white">
-                            <div className="p-10 flex flex-col md:flex-row items-center gap-10">
+                            <div className="p-4 md:p-10 flex flex-col md:flex-row items-center gap-10">
                                 <div className="space-y-6 flex-1">
                                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#4ADE80]/10 border border-[#4ADE80]/20 text-[#22C55E] text-[10px] font-black uppercase tracking-widest">
                                         <Sparkles className="w-3 h-3" /> Tip Pro

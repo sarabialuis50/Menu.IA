@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { UtensilsCrossed, ArrowLeft } from 'lucide-react';
+import { UtensilsCrossed, ArrowLeft, User } from 'lucide-react';
 import { FloatingWA } from '@/components/FloatingWA';
 import { useAuth } from '@/context/AuthContext';
 
@@ -32,7 +32,7 @@ export const PublicLayout = ({
     if (location.pathname === `/${slug}` || location.pathname === `/${slug}/`) {
       // Si soy el dueño, vuelvo al dashboard
       if (user && user.slug === slug) {
-        navigate(`/dashboard/${slug}/perfil`);
+        navigate(`/dashboard/${slug}/configuracion`);
       } else {
         // Si soy cliente, salgo a la landing
         // Usamos replace para no ensuciar el historial y evitar bucles con el botón físico del móvil
@@ -87,9 +87,14 @@ export const PublicLayout = ({
             </Link>
           </div>
 
-          <div className="flex items-center">
-            {/* Optional: User Profile or Cart could go here, but for now we keep it empty and clean as requested */}
-            <div className="size-10 rounded-full bg-slate-800 border border-slate-700 hidden sm:block" />
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate(`/${slug}/mi-cuenta`)}
+              className="relative size-10 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-[#4ADE80]/10 hover:border-[#4ADE80] transition-all active:scale-95 group shadow-sm"
+              aria-label="Perfil"
+            >
+              <User className="w-5 h-5 text-[#111814] group-hover:text-[#22C55E]" />
+            </button>
           </div>
         </div>
       </header>

@@ -161,30 +161,16 @@ export const DashboardLayout = ({ children }) => {
               );
             })}
 
-            <div className="pt-4 mt-4 border-t border-slate-800">
-              <p className="px-3 mb-1 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Acceso Público</p>
-              <a
-                href={`/${user?.slug}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs text-slate-400 hover:bg-slate-800 hover:text-white transition-all group"
+            <div className="pt-4 mt-auto border-t border-slate-800">
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-bold text-xs text-red-400 hover:bg-red-500/10 transition-all active:scale-95 group"
               >
-                <Smartphone className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                <span className="flex-1 truncate">Vista del Cliente</span>
-                <ExternalLink className="w-3 h-3 opacity-30" />
-              </a>
+                <LogOut className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                Cerrar sesión
+              </button>
             </div>
           </nav>
-
-          <div className="p-3 lg:p-4 border-t border-slate-800 bg-[#0F172A] sticky bottom-0">
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs text-red-400 hover:bg-red-500/10 transition-all active:scale-95 group"
-            >
-              <LogOut className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              Cerrar sesión
-            </button>
-          </div>
         </div>
       </aside>
 

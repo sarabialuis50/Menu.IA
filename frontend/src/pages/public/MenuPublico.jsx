@@ -190,13 +190,7 @@ const MenuContent = () => {
   const [metodoEntregaNombre, setMetodoEntregaNombre] = useState('');
 
   const handleBack = () => {
-    // 1. Si soy el dueño viendo mi propio menú, vuelvo al dashboard
-    if (user && user.slug === slug) {
-      navigate(`/dashboard/${slug}/configuracion`);
-      return;
-    }
-
-    // 2. Si soy cliente, el botón de atrás del menú SIEMPRE me lleva al Perfil del negocio
+    // El botón de atrás del menú SIEMPRE me lleva al Perfil del negocio primero
     if (slug) {
       navigate(`/${slug}`, { replace: true });
     } else {
