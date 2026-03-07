@@ -1835,71 +1835,82 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
     for idx, item in enumerate(order.items, 1):
         item_subtotal = (item.cantidad or 0) * (item.precio_unitario or 0)
         subtotal += item_subtotal
-        line = f"{idx}. {item.nombre} x{item.cantidad} (${item.precio_unitario:,.0f})"
         
-        # Process modifiers (compact format for template)
+        line = f"\n* {idx}. {item.nombre} x{item.cantidad} (${item.precio_unitario:,.0f})"
+        
+        # Process modifiers
         if item.modificadores:
             mods_list = []
             for m in item.modificadores:
                 m_name = m.get('nombre', str(m)) if isinstance(m, dict) else str(m)
                 m_price = m.get('precio', 0) if isinstance(m, dict) else 0
-                m_label = m_name + (f" +${m_price:,.0f}" if m_price and m_price > 0 else "")
-                mods_list.append(m_label)
+                mods_list.append(m_name)
             if mods_list:
-                line += f" [{', '.join(mods_list)}]"
+                line += f"\n* {', '.join(mods_list)}"
         
-        # Capture specific item notes
+        # Specific item notes
         if hasattr(item, 'notas') and item.notas and item.notas.lower() not in ["no aplica", "ninguna", ""]:
-            product_notes.append(f"{item.nombre}: {item.notas}")
+            line += f"\n* Observación: {item.notas}"
             
         detalle_items.append(line)
         
-    detalle_carrito = "\n".join(detalle_items)
+    detalle_carrito = "".join(detalle_items)
     
-    # Consolidate notes for WhatsApp
-    obs_text = ", ".join(product_notes) if product_notes else "Sin notas"
-    
-    # Customer notes
+    # Consolidate notes 
     raw_notes = order.notas or ""
-    customer_notes = raw_notes.split('. ')[0] if '. ' in raw_notes else raw_notes
-    obs_entrega = customer_notes if customer_notes and customer_notes.lower() not in ["sin observaciones", ""] else "Sin notas"
+    # Assume first part is delivery notes if there's no period delimiter or if order notes are raw text
+    # Actually, front-end saves: "{notas_pedido}. Observaciones de entrega: {notas_entrega}"
+    # Wait, earlier code had split on '. ' but to be safer let's just use raw notes string logic
+    obs_pedido = "Sin notas"
+    obs_entrega = "Sin notas"
+    
+    if ". Observaciones de entrega: " in raw_notes:
+        parts = raw_notes.split(". Observaciones de entrega: ")
+        obs_pedido = parts[0]
+        obs_entrega = parts[1]
+    else:
+        # Default fallback
+        obs_entrega = raw_notes if raw_notes and raw_notes.lower() not in ["sin observaciones", ""] else ""
+        obs_pedido = ""
+    
+    # If we have general order observation (obs_pedido), append to cart detail
+    if obs_pedido and obs_pedido.lower() not in ["sin notas", "none", ""]:
+        detalle_carrito += f"\n\n* Observación global de pedido: {obs_pedido}"
     
     # Reverse geocode GPS coordinates to readable address
-    direccion_legible = reverse_geocode_address(order.direccion) if order.direccion else "Recoge en local"
+    direccion_legible = reverse_geocode_address(order.direccion) if order.direccion else ""
     
     # Determine delivery method display name
     metodo_entrega = order.metodo_entrega or ("Domicilio" if order.tipo == "delivery" else ("Mesa" if order.tipo == "mesa" else "Para Recoger"))
     
+    # Delivery Info Formatted
+    if order.tipo == "delivery":
+        entrega_info = f"{metodo_entrega}"
+        if direccion_legible: entrega_info += f"\n* Dirección: {direccion_legible}"
+        if order.distancia: entrega_info += f"\n* Distancia: {order.distancia:.1f} km"
+        if obs_entrega: entrega_info += f"\n* Observación de entrega: {obs_entrega}"
+    else:
+        entrega_info = f"\n* Retiro en: {metodo_entrega}"
+    
+    # Payment summary formatted
+    resumen_pago = f"\n* Subtotal: ${subtotal:,.0f}\n* Envío: ${order.costo_envio or 0:,.0f}\n* TOTAL: ${order.total:,.0f}\n"
+
     # Build business-specific link
     link_negocio = f"https://menuia.co/{slug}" if slug else "https://menuia.co"
     if slug: link_negocio += "/menu"
     
     # ──── TEMPLATE VARIABLE MAPPING ────
-    # Template labels in Twilio:
-    #   {{1}} → 🔔 Nuevo Pedido - {{1}}
-    #   {{2}} → 🆔 ID del Pedido: {{2}}
-    #   {{3}} → 👤 DATOS DEL CLIENTE {{3}}
-    #   {{4}} → 🛒 DETALLE DEL PEDIDO {{4}}
-    #   {{5}} → 🛵 ENTREGA {{5}}
-    #   {{6}} → 💳 RESUMEN DE PAGO {{6}}
-    #   {{7}} → 🏧 Método de Pago: {{7}}
-    #   {{8}} → 🚚 Método de Entrega: {{8}}
-    #   {{9}} → 🌐 Realizado: {{9}}
-    #   {{10}} → 🔗 Ver mi pedido: {{10}}
     template_kwargs = {
         "negocio_nombre": business_name,
         "pedido_id": order.id[:8].upper(),
         "cliente_nombre": order.cliente_nombre or "Cliente",
         "cliente_telefono": order.cliente_telefono or "N/A",
+        "obs_pedido": obs_pedido,
         "detalle_carrito": detalle_carrito,
-        # {{5}} → ENTREGA: delivery info (address, distance, delivery notes)
-        "entrega_info": f"{metodo_entrega} | Dir: {direccion_legible}" + (f" | Dist: {order.distancia:.1f} km" if order.distancia else "") + (f" | Obs: {obs_entrega}" if obs_entrega != "Sin notas" else ""),
-        # {{6}} → RESUMEN DE PAGO: subtotals and total
-        "resumen_pago": f"Subtotal: ${subtotal:,.0f} | Envio: ${order.costo_envio or 0:,.0f} | TOTAL: ${order.total:,.0f}",
-        # {{7}} → Método de Pago: payment method only
+        "entrega_info": entrega_info,
+        "resumen_pago": resumen_pago,
         "metodo_pago": order.metodo_pago or "Efectivo",
-        # {{8}} → Método de Entrega: delivery method + observations
-        "metodo_entrega": f"{metodo_entrega}" + (f" | Obs: {obs_text}" if obs_text != "Sin notas" else ""),
+        "metodo_entrega": f"{metodo_entrega}" + (f"\n* Observaciones de entrega: {obs_entrega}" if obs_entrega else ""),
         "fecha": fecha,
         "link_seguimiento": link_negocio
     }

@@ -39,15 +39,16 @@ def get_template_data(template_key, **kwargs):
         variables = {
             "1": str(kwargs.get("negocio_nombre", "Nuestro Negocio"))[:50],
             "2": str(kwargs.get("pedido_id", "N/A")),
-            "3": "Nombre: {} | Tel: {}".format(
+            "3": "\n* Nombre: {}\n* Tel: {}{}".format(
                 str(kwargs.get('cliente_nombre', 'Cliente'))[:30],
-                str(kwargs.get('cliente_telefono', 'N/A'))
+                str(kwargs.get('cliente_telefono', 'N/A')),
+                f"\n* Observación de pedido: {kwargs.get('obs_pedido')}" if kwargs.get('obs_pedido') and kwargs.get('obs_pedido') != "Sin notas" else ""
             ),
-            "4": str(kwargs.get("detalle_carrito", "Detalle no disponible")).replace('\n', ' | ')[:500],
-            "5": str(kwargs.get("entrega_info", "Recoge en local")).replace('\n', ' ')[:200],
-            "6": str(kwargs.get("resumen_pago", "TOTAL: $0")).replace('\n', ' ')[:150],
-            "7": str(kwargs.get("metodo_pago", "Efectivo"))[:30],
-            "8": str(kwargs.get("metodo_entrega", "Domicilio")).replace('\n', ' ')[:100],
+            "4": str(kwargs.get("detalle_carrito", "Detalle no disponible"))[:900],
+            "5": str(kwargs.get("entrega_info", "Recoge en local"))[:400],
+            "6": str(kwargs.get("resumen_pago", "TOTAL: $0"))[:400],
+            "7": "\n* " + str(kwargs.get("metodo_pago", "Efectivo"))[:30],
+            "8": str(kwargs.get("metodo_entrega", "Domicilio"))[:200],
             "9": str(kwargs.get("fecha", "")),
             "10": str(kwargs.get("link_seguimiento", "https://menuia.co"))
         }
