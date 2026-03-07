@@ -1,12 +1,19 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-const getWsBase = () => {
-  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  return `${protocol}//${window.location.host}`;
+const getBackendWsUrl = (negocioId) => {
+  const envUrl = (import.meta.env && (import.meta.env.VITE_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL));
+
+  let baseUrl = '';
+  if (envUrl && envUrl.startsWith('http')) {
+    baseUrl = envUrl.replace(/^http/, 'ws');
+  } else {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    baseUrl = `${protocol}//${window.location.host}${envUrl || '/api'}`;
+  }
+
+  baseUrl = baseUrl.replace(/\/$/, '');
+  return `${baseUrl}/ws/${negocioId}`;
 };
-
-const WS_BASE = getWsBase();
-
 
 export const useWebSocket = (negocioId) => {
   const [isConnected, setIsConnected] = useState(false);
@@ -18,7 +25,7 @@ export const useWebSocket = (negocioId) => {
     if (!negocioId || wsRef.current?.readyState === WebSocket.OPEN) return;
 
     try {
-      const ws = new WebSocket(`${WS_BASE}/ws/${negocioId}`);
+      const ws = new WebSocket(getBackendWsUrl(negocioId));
 
       ws.onopen = () => {
         setIsConnected(true);
