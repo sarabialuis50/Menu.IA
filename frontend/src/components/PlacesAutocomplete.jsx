@@ -11,26 +11,41 @@ export const PlacesAutocomplete = ({ value, onChange, onPlaceSelected, placehold
     const autocompleteRef = useRef(null);
 
     useEffect(() => {
-        if (isLoaded && inputRef.current && !autocompleteRef.current && window.google && window.google.maps) {
-            const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
-                fields: ["address_components", "geometry", "name", "formatted_address"],
-                componentRestrictions: { country: "CO" } // Restrict to Colombia by default
-            });
+        const checkError = () => {
+            if (inputRef.current && (inputRef.current.value.includes("Se ha producido un error") || inputRef.current.value.includes("This page can't load Google Maps correctly"))) {
+                inputRef.current.value = "";
+                onChange("");
+            }
+        };
+        const timer = setInterval(checkError, 2000);
+        return () => clearInterval(timer);
+    }, []);
 
-            autocomplete.addListener("place_changed", () => {
-                const place = autocomplete.getPlace();
-                if (place.geometry) {
-                    onPlaceSelected({
-                        address: place.formatted_address,
-                        lat: place.geometry.location.lat(),
-                        lng: place.geometry.location.lng()
-                    });
-                } else {
-                    onChange(place.name || "");
-                }
-            });
+    useEffect(() => {
+        if (isLoaded && inputRef.current && !autocompleteRef.current && window.google && window.google.maps && window.google.maps.places) {
+            try {
+                const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
+                    fields: ["address_components", "geometry", "name", "formatted_address"],
+                    componentRestrictions: { country: "CO" } // Restrict to Colombia by default
+                });
 
-            autocompleteRef.current = autocomplete;
+                autocomplete.addListener("place_changed", () => {
+                    const place = autocomplete.getPlace();
+                    if (place && place.geometry) {
+                        onPlaceSelected({
+                            address: place.formatted_address,
+                            lat: place.geometry.location.lat(),
+                            lng: place.geometry.location.lng()
+                        });
+                    } else if (place) {
+                        onChange(place.name || "");
+                    }
+                });
+
+                autocompleteRef.current = autocomplete;
+            } catch (error) {
+                console.error("Error initializing Google Autocomplete:", error);
+            }
         }
     }, [isLoaded]);
 

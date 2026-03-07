@@ -1867,9 +1867,6 @@ async def create_order(slug: str, data: OrderCreate, background_tasks: Backgroun
         order_dict.pop('negocio_nombre', None)
         order_dict.pop('negocio_logo', None)
         
-        if 'tipo' in order_dict and 'tipo_pedido' not in order_dict:
-            order_dict['tipo_pedido'] = order_dict['tipo']
-            
         # Generar número secuencial diario
         today_start_sec = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
         cq_res = supabase.table('pedidos').select('id', count='exact')\

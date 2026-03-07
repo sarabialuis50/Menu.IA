@@ -320,9 +320,9 @@ export default function DemoRestaurante() {
                     {product.descripcion}
                 </p>
 
-                {/* Nutritional Info (IA) - Compact row below description */}
-                {(product.nutri_kcal || product.nutri_proteina) && (
-                    <div className="flex flex-nowrap items-center gap-1 md:gap-1.5 mb-2 pb-0.5 w-full overflow-hidden">
+                {/* Nutritional & Dietary Info (IA) - Compact row below description */}
+                {(product.nutri_kcal || product.nutri_proteina || product.is_vegan || product.is_vegetarian || product.is_gluten_free || product.is_spicy) && (
+                    <div className="flex flex-nowrap items-center gap-1 md:gap-1.5 mb-2 pb-0.5 w-full overflow-x-auto no-scrollbar">
                         {product.nutri_kcal && (
                             <div title="Calorías" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#4ADE80]/10 text-[#22C55E] text-[7px] md:text-[8px] font-black border border-[#4ADE80]/20 whitespace-nowrap">
                                 🔥 {product.nutri_kcal} <span className="md:inline hidden">kcal</span>
@@ -331,6 +331,37 @@ export default function DemoRestaurante() {
                         {product.nutri_proteina && (
                             <div title="Proteína" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#4ADE80]/10 text-[#22C55E] text-[7px] md:text-[8px] font-black border border-[#4ADE80]/20 whitespace-nowrap">
                                 🥩 {product.nutri_proteina} <span className="md:inline hidden">prot</span>
+                            </div>
+                        )}
+                        {product.nutri_carbohidratos && (
+                            <div title="Carbohidratos" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#4ADE80]/10 text-[#22C55E] text-[7px] md:text-[8px] font-black border border-[#4ADE80]/20 whitespace-nowrap">
+                                🍝 {product.nutri_carbohidratos} <span className="md:inline hidden">carb</span>
+                            </div>
+                        )}
+                        {product.nutri_grasa && (
+                            <div title="Grasa" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#4ADE80]/10 text-[#22C55E] text-[7px] md:text-[8px] font-black border border-[#4ADE80]/20 whitespace-nowrap">
+                                🥑 {product.nutri_grasa} <span className="md:inline hidden">grasa</span>
+                            </div>
+                        )}
+                        {/* Dietary Labels */}
+                        {product.is_vegan && (
+                            <div title="Vegano" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#edfdf2] text-[#00a854] text-[7px] md:text-[8px] font-black border border-[#d3f9d8] whitespace-nowrap">
+                                <span>🌱</span> <span className="md:inline hidden">VEGANO</span>
+                            </div>
+                        )}
+                        {product.is_vegetarian && (
+                            <div title="Vegetariano" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#fffbe6] text-[#c49c00] text-[7px] md:text-[8px] font-black border border-[#fff1b8] whitespace-nowrap">
+                                <span>🥗</span> <span className="md:inline hidden">VEGGIE</span>
+                            </div>
+                        )}
+                        {product.is_gluten_free && (
+                            <div title="Sin Gluten" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#fff2e8] text-[#d46b08] text-[7px] md:text-[8px] font-black border border-[#ffd8bf] whitespace-nowrap">
+                                <span>🌾</span> <span className="md:inline hidden">G-FREE</span>
+                            </div>
+                        )}
+                        {product.is_spicy && (
+                            <div title="Picante" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#fff1f0] text-[#cf1322] text-[7px] md:text-[8px] font-black border border-[#ffa39e] whitespace-nowrap">
+                                <span>🌶️</span> <span className="md:inline hidden">SPICY</span>
                             </div>
                         )}
                     </div>
@@ -738,7 +769,7 @@ export default function DemoRestaurante() {
 
                                                     {/* Dietary Labels - Relocated below grid */}
                                                     {(selectedProduct.is_vegan || selectedProduct.is_vegetarian || selectedProduct.is_gluten_free || selectedProduct.is_spicy) && (
-                                                        <div className="flex flex-wrap gap-2 pt-2">
+                                                        <div className="flex flex-nowrap gap-2 pt-2 overflow-x-auto no-scrollbar">
                                                             {selectedProduct.is_vegan && (
                                                                 <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#edfdf2] border border-[#d3f9d8] text-[#00a854] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm">
                                                                     <span>🌱</span> VEGANO

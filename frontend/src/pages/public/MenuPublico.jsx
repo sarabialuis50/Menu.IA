@@ -183,6 +183,7 @@ const MenuContent = () => {
   // Delivery states
   const [tipoPedido, setTipoPedido] = useState(mesa ? 'mesa' : 'takeaway');
   const [direccion, setDireccion] = useState('');
+  const [isManualAddress, setIsManualAddress] = useState(false);
   const [distancia, setDistancia] = useState(0);
   const [costoEnvio, setCostoEnvio] = useState(0);
   const [calculatingDistance, setCalculatingDistance] = useState(false);
@@ -276,7 +277,11 @@ const MenuContent = () => {
           nutri_kcal: p.nutri_kcal || (lowerName.includes('hamburguesa') ? 850 : lowerName.includes('paisa') ? 1150 : lowerName.includes('salada') ? 320 : lowerName.includes('salmón') ? 540 : null),
           nutri_proteina: p.nutri_proteina || (lowerName.includes('hamburguesa') ? '32g' : lowerName.includes('paisa') ? '45g' : lowerName.includes('salada') ? '12g' : lowerName.includes('salmón') ? '38g' : null),
           nutri_carbohidratos: p.nutri_carbohidratos || (lowerName.includes('hamburguesa') ? '48g' : lowerName.includes('paisa') ? '110g' : lowerName.includes('salada') ? '15g' : lowerName.includes('salmón') ? '12g' : null),
-          nutri_grasa: p.nutri_grasa || (lowerName.includes('hamburguesa') ? '38g' : lowerName.includes('paisa') ? '58g' : lowerName.includes('salada') ? '18g' : lowerName.includes('salmón') ? '22g' : null)
+          nutri_grasa: p.nutri_grasa || (lowerName.includes('hamburguesa') ? '38g' : lowerName.includes('paisa') ? '58g' : lowerName.includes('salada') ? '18g' : lowerName.includes('salmón') ? '22g' : null),
+          is_vegan: p.is_vegan || lowerName.includes('vegano') || lowerName.includes('vegan'),
+          is_vegetarian: p.is_vegetarian || lowerName.includes('vegetariano') || lowerName.includes('veggie'),
+          is_gluten_free: p.is_gluten_free || lowerName.includes('sin gluten') || lowerName.includes('gluten free'),
+          is_spicy: p.is_spicy || lowerName.includes('picante') || lowerName.includes('chili')
         };
       });
 
@@ -396,6 +401,7 @@ const MenuContent = () => {
     }
 
     setCalculatingDistance(true);
+    setIsManualAddress(false);
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
@@ -674,9 +680,9 @@ const MenuContent = () => {
           {product.descripcion || "Plato especial preparado con ingredientes seleccionados."}
         </p>
 
-        {/* Nutritional Info (IA) - Compact row below description */}
-        {(product.nutri_kcal || product.nutri_proteina) && (
-          <div className="flex flex-nowrap items-center gap-1 md:gap-1.5 mb-2 pb-0.5 w-full overflow-hidden">
+        {/* Nutritional & Dietary Info (IA) - Compact row below description */}
+        {(product.nutri_kcal || product.nutri_proteina || product.is_vegan || product.is_vegetarian || product.is_gluten_free || product.is_spicy) && (
+          <div className="flex flex-nowrap items-center gap-1 md:gap-1.5 mb-2 pb-0.5 w-full overflow-x-auto no-scrollbar">
             {product.nutri_kcal && (
               <div title="Calorías" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#4ADE80]/10 text-[#22C55E] text-[7px] md:text-[8px] font-black border border-[#4ADE80]/20 whitespace-nowrap">
                 🔥 {product.nutri_kcal} <span className="md:inline hidden">kcal</span>
@@ -695,6 +701,27 @@ const MenuContent = () => {
             {product.nutri_grasa && (
               <div title="Grasa" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#4ADE80]/10 text-[#22C55E] text-[7px] md:text-[8px] font-black border border-[#4ADE80]/20 whitespace-nowrap">
                 🥑 {product.nutri_grasa} <span className="md:inline hidden">grasa</span>
+              </div>
+            )}
+            {/* Dietary Labels */}
+            {product.is_vegan && (
+              <div title="Vegano" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#edfdf2] text-[#00a854] text-[7px] md:text-[8px] font-black border border-[#d3f9d8] whitespace-nowrap">
+                <span>🌱</span> <span className="md:inline hidden">VEGANO</span>
+              </div>
+            )}
+            {product.is_vegetarian && (
+              <div title="Vegetariano" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#fffbe6] text-[#c49c00] text-[7px] md:text-[8px] font-black border border-[#fff1b8] whitespace-nowrap">
+                <span>🥗</span> <span className="md:inline hidden">VEGGIE</span>
+              </div>
+            )}
+            {product.is_gluten_free && (
+              <div title="Sin Gluten" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#fff2e8] text-[#d46b08] text-[7px] md:text-[8px] font-black border border-[#ffd8bf] whitespace-nowrap">
+                <span>🌾</span> <span className="md:inline hidden">G-FREE</span>
+              </div>
+            )}
+            {product.is_spicy && (
+              <div title="Picante" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#fff1f0] text-[#cf1322] text-[7px] md:text-[8px] font-black border border-[#ffa39e] whitespace-nowrap">
+                <span>🌶️</span> <span className="md:inline hidden">SPICY</span>
               </div>
             )}
           </div>
@@ -1337,11 +1364,26 @@ const MenuContent = () => {
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
-                      className="space-y-4 overflow-visible"
+                      className="space-y-6 overflow-visible"
                     >
                       <div className="space-y-4">
-                        <div className="relative group">
-                          <Label htmlFor="direccion" className="text-xs font-black uppercase tracking-widest text-[#618972] ml-2 mb-2 block">Dirección de Entrega</Label>
+                        <div className="flex justify-between items-center mb-2 px-2">
+                          <Label htmlFor="direccion" className="text-xs font-black uppercase tracking-widest text-[#618972] block">Dirección de Entrega</Label>
+                          <button
+                            onClick={() => {
+                              setIsManualAddress(!isManualAddress);
+                              if (!isManualAddress) {
+                                setDistancia(0);
+                                setCostoEnvio(business?.costo_minimo_domicilio || 0);
+                              }
+                            }}
+                            className="text-[10px] font-black underline text-[#22C55E] uppercase tracking-wider"
+                          >
+                            {isManualAddress ? "Usar buscador (Google)" : "Escribir manualmente (Falla GPS?)"}
+                          </button>
+                        </div>
+
+                        {!isManualAddress ? (
                           <PlacesAutocomplete
                             value={direccion}
                             placeholder="Calle, Carrera, Edificio, Apto..."
@@ -1361,7 +1403,24 @@ const MenuContent = () => {
                             }}
                             className="h-14 pl-12 bg-white border-2 border-gray-100 rounded-2xl text-base font-medium focus:ring-4 focus:ring-[#4ADE80]/10 focus:border-[#4ADE80]/20 transition-all shadow-sm"
                           />
-                        </div>
+                        ) : (
+                          <div className="relative group">
+                            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+                            <Input
+                              id="direccion"
+                              value={direccion}
+                              onChange={(e) => setDireccion(e.target.value)}
+                              placeholder="Escribe tu dirección completa (calle, apto, barrio...)"
+                              className="h-14 pl-12 bg-white border-2 border-gray-100 rounded-2xl text-base font-medium focus:ring-4 focus:ring-[#4ADE80]/10 focus:border-[#4ADE80]/20 transition-all shadow-sm"
+                            />
+                          </div>
+                        )}
+
+                        {isManualAddress && (
+                          <p className="text-[10px] font-bold text-amber-600 bg-amber-50 p-3 rounded-xl border-l-4 border-amber-400 flex items-start gap-2">
+                            Asegúrate de incluir barrio y cualquier indicación extra. El costo de envío se confirmará al recibir tu pedido.
+                          </p>
+                        )}
 
                         <Button
                           variant="outline"
@@ -1744,7 +1803,7 @@ const MenuContent = () => {
                             <div className="size-1 rounded-full bg-[#4ADE80] animate-pulse" />
                           </div>
 
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                          <div className="grid grid-cols-4 gap-2 md:gap-3">
                             {selectedProduct.nutri_kcal && (
                               <div className="bg-[#4ADE80]/5 border border-[#4ADE80]/10 p-4 rounded-3xl text-center">
                                 <p className="text-xl font-black text-[#22C55E] tracking-tighter">{selectedProduct.nutri_kcal}</p>
@@ -1775,11 +1834,27 @@ const MenuContent = () => {
                           </p>
 
                           {/* Dietary Info (🌱 Vegano, etc.) - Reposicionado debajo de nutrición */}
-                          <div className="flex flex-wrap items-center gap-1.5 pt-2">
-                            {selectedProduct.is_vegan && <div title="Vegano" className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-green-50 text-green-600 text-[8px] font-black border border-green-100 uppercase tracking-widest whitespace-nowrap">🌱 Vegano</div>}
-                            {selectedProduct.is_vegetarian && <div title="Vegetariano" className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-yellow-50 text-yellow-600 text-[8px] font-black border border-yellow-100 uppercase tracking-widest whitespace-nowrap">🥗 Vegetariano</div>}
-                            {selectedProduct.is_gluten_free && <div title="Sin Gluten" className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-orange-50 text-orange-600 text-[8px] font-black border border-orange-100 uppercase tracking-widest whitespace-nowrap">🌾 Sin Gluten</div>}
-                            {selectedProduct.is_spicy && <div title="Picante" className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-red-50 text-red-600 text-[8px] font-black border border-red-100 uppercase tracking-widest whitespace-nowrap">🌶️ Picante</div>}
+                          <div className="flex flex-nowrap items-center gap-2 pt-2 overflow-x-auto no-scrollbar">
+                            {selectedProduct.is_vegan && (
+                              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#edfdf2] border border-[#d3f9d8] text-[#00a854] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap">
+                                <span>🌱</span> VEGANO
+                              </div>
+                            )}
+                            {selectedProduct.is_vegetarian && (
+                              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fffbe6] border border-[#fff1b8] text-[#c49c00] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap">
+                                <span>🥗</span> VEGETARIANO
+                              </div>
+                            )}
+                            {selectedProduct.is_gluten_free && (
+                              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fff2e8] border border-[#ffd8bf] text-[#d46b08] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap">
+                                <span>🌾</span> SIN GLUTEN
+                              </div>
+                            )}
+                            {selectedProduct.is_spicy && (
+                              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fff1f0] border border-[#ffa39e] text-[#cf1322] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap">
+                                <span>🌶️</span> PICANTE
+                              </div>
+                            )}
                           </div>
                         </div>
                       )}
@@ -2055,7 +2130,7 @@ const MenuContent = () => {
         isClosed={!business?.abierto}
         hidden={!!selectedProduct || cartOpen || showSuccessModal}
       />
-    </div>
+    </div >
   );
 };
 
