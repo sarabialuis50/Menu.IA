@@ -68,7 +68,7 @@ import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { playOrderSound, notifyNewOrder } from '@/utils/sound';
+import { playOrderSound, notifyNewOrder, unlockAudioAndNotifications } from '@/utils/sound';
 
 export default function PedidosPage() {
     const { slug } = useParams();
@@ -243,7 +243,7 @@ export default function PedidosPage() {
 
     return (
         <DashboardLayout>
-            <div className="max-w-[98%] mx-auto space-y-8 pb-10">
+            <div className="max-w-[98%] mx-auto space-y-8 pb-10" onClick={unlockAudioAndNotifications}>
                 {/* Header with History Link */}
                 <div className="flex items-center justify-between">
                     <div>

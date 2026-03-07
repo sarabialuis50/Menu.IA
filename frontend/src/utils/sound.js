@@ -1,6 +1,46 @@
+let audioCtx = null;
+let audioUnlocked = false;
+
+// Call this on any first click/interaction on the page to unlock policies
+export const unlockAudioAndNotifications = async () => {
+    if (!audioUnlocked) {
+        try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            gainNode.gain.value = 0; // completely silent interaction
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + 0.01);
+            if (audioCtx.state === 'suspended') {
+                await audioCtx.resume();
+            }
+            audioUnlocked = true;
+            console.log("AudioContext and sound capabilities unlocked successfully.");
+        } catch (err) {
+            console.error("Failed to unlock audio:", err);
+        }
+    }
+
+    if ("Notification" in window && Notification.permission === "default") {
+        try {
+            await Notification.requestPermission();
+        } catch (e) {
+            console.error("Error requesting notification permissions:", e);
+        }
+    }
+};
+
 export const playOrderSound = () => {
     try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+
         const oscillator = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
 
@@ -18,7 +58,7 @@ export const playOrderSound = () => {
         oscillator.start(audioCtx.currentTime);
         oscillator.stop(audioCtx.currentTime + 0.5);
     } catch (error) {
-        console.error('Audio API error', error);
+        console.error('Audio API error. Ensure user has interacted with document:', error);
     }
 };
 
@@ -29,11 +69,11 @@ export const notifyNewOrder = (title = '¡Nuevo Pedido!', body = 'Tienes un nuev
     }
 
     if (Notification.permission === "granted") {
-        new Notification(title, { body, icon: '/logos/logo-icon-transparent.png' });
+        new Notification(title, { body, icon: '/logos/logo-bg.png' });
     } else if (Notification.permission !== "denied") {
         Notification.requestPermission().then(permission => {
             if (permission === "granted") {
-                new Notification(title, { body, icon: '/logos/logo-icon-transparent.png' });
+                new Notification(title, { body, icon: '/logos/logo-bg.png' });
             }
         });
     }

@@ -5,7 +5,7 @@ import useWebSocket from '@/hooks/useWebSocket';
 import { ChefHat, Clock, Volume2, VolumeX, RefreshCw, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { playOrderSound, notifyNewOrder } from '@/utils/sound';
+import { playOrderSound, notifyNewOrder, unlockAudioAndNotifications } from '@/utils/sound';
 
 export default function CocinaPage() {
   const { slug } = useParams();
@@ -87,7 +87,7 @@ export default function CocinaPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white" data-testid="cocina-container">
+    <div className="min-h-screen bg-gray-900 text-white" data-testid="cocina-container" onClick={unlockAudioAndNotifications}>
       <header className="sticky top-0 z-50 bg-gray-800 border-b border-gray-700">
         <div className="max-w-full mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -202,41 +202,36 @@ function OrderCard({ order, onUpdateStatus }) {
   else config = { label: 'Entregado', color: 'border-gray-400 bg-gray-50', headerColor: 'bg-gray-500', nextAction: null, nextStatus: null, btnColor: '' };
 
   return (
-    <div className={`rounded-xl border-2 overflow-hidden ${config.color}`} data-testid={`order-ticket-${order.id}`}>
+    <div className={`rounded-xl border-2 overflow-hidden flex flex-col h-full ${config.color}`} data-testid={`order-ticket-${order.id}`}>
       <div className={`${config.headerColor} text-white px-4 py-2 flex items-center justify-between`}>
-        <span className="font-bold">{config.label}</span>
-        <div className="flex items-center gap-2 text-sm">
-          <Clock className="w-4 h-4" />
-          <span>{getTimeSince(order.created_at)}</span>
+        <span className="font-bold shrink-0">{config.label}</span>
+        <div className="flex items-center gap-3 text-sm shrink-0">
+          {order.numero_secuencial && <span className="font-black bg-white/20 px-2 py-0.5 rounded-md">#{order.numero_secuencial}</span>}
+          <div className="flex items-center gap-1">
+            <Clock className="w-4 h-4 shrink-0" />
+            <span className="shrink-0">{getTimeSince(order.created_at)}</span>
+          </div>
         </div>
       </div>
-      <div className="p-4">
+      <div className="p-4 flex-1 flex flex-col">
         <div className="flex justify-between items-start mb-0.5">
-          <h3 className="font-heading font-bold text-xl text-gray-900">
+          <h3 className="font-heading font-bold text-xl text-gray-900 leading-tight">
             {order.mesa_numero ? `Mesa ${order.mesa_numero}` : (order.tipo === 'delivery' || order.tipo_pedido === 'delivery' ? '🛵 Domicilio' : '🛍️ Para Recoger')}
           </h3>
-          <span className="text-xs font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
-            {order.numero_secuencial ? `Pedido #${order.numero_secuencial}` : `#${order.id?.slice(0, 8).toUpperCase()}`}
+          <span className="text-xs font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100 shrink-0 ml-2">
+            #{order.id?.slice(0, 8).toUpperCase()}
           </span>
         </div>
-        <p className="text-xs font-bold text-gray-500 mb-3">Cliente: {order.cliente_nombre || 'N/A'}</p>
+        <p className="text-xs font-bold text-gray-500 mb-3 line-clamp-1">Cliente: {order.cliente_nombre || 'N/A'}</p>
 
-        {/* Hacemos que NO aparezcan las notas globales (de entrega) según el requerimiento del usuario */}
-        {/* {order.notas && (
-          <div className="mb-4 text-[11px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-100">
-            Observaciones del pedido: {order.notas}
-          </div>
-        )} */}
-
-        <div className="space-y-4 overflow-visible">
+        <div className="space-y-4 overflow-visible flex-1">
           {order.items.map((item, idx) => (
             <div key={idx} className="flex flex-col gap-1 border-b border-gray-100 last:border-0 pb-2 mb-2 italic">
               <div className="flex gap-2">
-                <span className="bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-sm font-bold">{item.cantidad}</span>
+                <span className="bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-sm font-bold h-fit shrink-0">{item.cantidad}</span>
                 <span className="font-medium text-gray-900">{item.nombre}</span>
               </div>
 
-              {/* Notas específicas del producto (lo que el usuario pidió en el modal de producto) */}
               {item.notas && (
                 <div className="ml-8 text-sm font-black text-amber-600 leading-tight mb-1 bg-amber-50 px-2 py-1 rounded border-l-2 border-amber-400">
                   Nota: {item.notas}
@@ -251,12 +246,12 @@ function OrderCard({ order, onUpdateStatus }) {
             </div>
           ))}
         </div>
-        <div className="flex justify-between items-center pt-3 border-t border-gray-200">
+        <div className="flex justify-between items-center pt-3 mt-3 border-t border-gray-200 shrink-0">
           <span className="text-sm text-gray-500">Total</span>
           <span className="font-bold text-lg text-gray-900">{formatCurrency(order.total)}</span>
         </div>
         {config.nextStatus && (
-          <Button onClick={() => onUpdateStatus(order.id, config.nextStatus)} className={`w-full mt-4 h-12 text-base font-bold ${config.btnColor} text-white`} data-testid={`action-btn-${order.id}`}>
+          <Button onClick={() => onUpdateStatus(order.id, config.nextStatus)} className={`w-full mt-4 h-12 text-base font-bold shrink-0 ${config.btnColor} text-white`} data-testid={`action-btn-${order.id}`}>
             {config.nextAction}
           </Button>
         )}
