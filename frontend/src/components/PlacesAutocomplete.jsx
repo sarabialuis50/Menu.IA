@@ -3,7 +3,7 @@ import { useGoogleMaps } from '@/hooks/useGoogleMaps';
 import { Input } from '@/components/ui/input';
 import { MapPin } from 'lucide-react';
 
-const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY || "AIzaSyAwduq9rijltqE2tgI9shSHF76m-45K_iY";
 
 export const PlacesAutocomplete = ({ value, onChange, onPlaceSelected, placeholder, className }) => {
     const inputRef = useRef(null);

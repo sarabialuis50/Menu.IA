@@ -1,0 +1,22 @@
+=== Last 200 Twilio Messages ===
+[2026-03-06 23:29:25+00:00] whatsapp:+16617952400 -> whatsapp:+573128833350 | Status: delivered | ErrCode: None | Body: 🔔 Nuevo Pedido - Don Jediondo  🆔 ID del Pedido: 8F428A27  👤 DATOS DEL CLIENTE No
+[2026-03-06 23:29:25+00:00] whatsapp:+16617952400 -> whatsapp:+573017810256 | Status: delivered | ErrCode: None | Body: 🔔 Nuevo Pedido - Don Jediondo  🆔 ID del Pedido: 8F428A27  👤 DATOS DEL CLIENTE No
+[2026-03-06 19:50:24+00:00] whatsapp:+16617952400 -> whatsapp:+573128833350 | Status: delivered | ErrCode: None | Body: 🔔 Nuevo Pedido - Don Jediondo TEST  🆔 ID del Pedido: 7A5F2457  👤 DATOS DEL CLIEN
+[2026-03-06 19:49:23+00:00] whatsapp:+16617952400 -> whatsapp:+573128833350 | Status: delivered | ErrCode: None | Body: 🔔 Nuevo Pedido - Don Jediondo TEST  🆔 ID del Pedido: DBD83F07  👤 DATOS DEL CLIEN
+[2026-03-06 02:19:22+00:00] whatsapp:+16617952400 -> whatsapp:+573128833350 | Status: undelivered | ErrCode: 63016 | Body: 🔔 *NUEVO PEDIDO RECIBIDO* 🏢 *Don Jediondo* 📅 06/03/2026, 02:19  👤 *Cliente:* Cam
+[2026-03-06 02:19:22+00:00] whatsapp:+16617952400 -> whatsapp:+573017810256 | Status: undelivered | ErrCode: 63016 | Body: 🔔 *Nuevo Pedido - Don Jediondo*  🆔 *ID del Pedido:* 7E57480F  👤 *Datos del Clien
+[2026-03-06 02:10:15+00:00] whatsapp:+16617952400 -> whatsapp:+573128833350 | Status: undelivered | ErrCode: 63016 | Body: 🔔 *NUEVO PEDIDO RECIBIDO* 🏢 *Don Jediondo* 📅 06/03/2026, 02:10  👤 *Cliente:* Cam
+[2026-03-06 02:10:14+00:00] whatsapp:+16617952400 -> whatsapp:+573017810256 | Status: undelivered | ErrCode: 63016 | Body: 🔔 *Nuevo Pedido - Don Jediondo*  🆔 *ID del Pedido:* 345AA285  👤 *Datos del Clien
+[2026-03-04 17:05:19+00:00] whatsapp:+16617952400 -> whatsapp:+573128833350 | Status: delivered | ErrCode: None | Body: 🔔 Nuevo Pedido - Don Jediondo  🆔 ID del Pedido: 2D4165CC  👤 DATOS DEL CLIENTE No
+[2026-03-04 17:05:19+00:00] whatsapp:+16617952400 -> whatsapp:+573123607283 | Status: read | ErrCode: None | Body: 🔔 Nuevo Pedido - Don Jediondo  🆔 ID del Pedido: 2D4165CC  👤 DATOS DEL CLIENTE No
+[2026-03-04 01:16:36+00:00] whatsapp:+16617952400 -> whatsapp:+573128833350 | Status: undelivered | ErrCode: 63016 | Body: 🔔 *NUEVO PEDIDO RECIBIDO* 🏢 *Don Jediondo* 📅 04/03/2026, 01:16  👤 *Cliente:* Lui
+[2026-03-04 01:16:36+00:00] whatsapp:+16617952400 -> whatsapp:+573017810256 | Status: undelivered | ErrCode: 63016 | Body: 🔔 *Nuevo Pedido - Don Jediondo*  🆔 *ID del Pedido:* CECCFC26  👤 *Datos del Clien
+[2026-03-03 20:38:02+00:00] whatsapp:+16617952400 -> whatsapp:+573123607283 | Status: read | ErrCode: None | Body: 🔔 Nuevo Pedido - Menú.IA  🆔 ID del Pedido: TEST-1234  👤 DATOS DEL CLIENTE Nombre
+[2026-03-03 20:33:09+00:00] whatsapp:+16617952400 -> whatsapp:+573123607283 | Status: failed | ErrCode: 63013 | Body: 🔔 Nuevo Pedido - Menú.IA  🆔 ID del Pedido: TEST-1234  👤 DATOS DEL CLIENTE Nombre
+[2026-03-03 20:30:02+00:00] whatsapp:+16617952400 -> whatsapp:+573017810256 | Status: failed | ErrCode: 63013 | Body: 🔔 Nuevo Pedido - Menú.IA  🆔 ID del Pedido: TEST-1234  👤 DATOS DEL CLIENTE Nombre
+[2026-03-02 21:54:09+00:00] whatsapp:+16617952400 -> whatsapp:+573128833350 | Status: undelivered | ErrCode: 63016 | Body: 🔔 *NUEVO PEDIDO RECIBIDO* 🏢 *Don Jediondo* 📅 02/03/2026, 16:54  👤 *Cliente:* Lui
+[2026-03-02 21:54:07+00:00] whatsapp:+16617952400 -> whatsapp:+573128833350 | Status: undelivered | ErrCode: 63016 | Body: 🔔 *Nuevo Pedido - Don Jediondo*  🆔 *ID del Pedido:* 7646680D  👤 *Datos del Clien
+[2026-03-02 18:57:01+00:00] whatsapp:+16617952400 -> whatsapp:+573128833350 | Status: undelivered | ErrCode: 63016 | Body: 🔔 *NUEVO PEDIDO RECIBIDO* 🏢 *Don Jediondo* 📅 02/03/2026, 18:57  👤 *Cliente:* Ped
+[2026-03-02 18:57:01+00:00] whatsapp:+16617952400 -> whatsapp:+573128833350 | Status: undelivered | ErrCode: 63016 | Body: 🔔 *Nuevo Pedido - Don Jediondo*  🆔 *ID del Pedido:* 52077470  👤 *Datos del Clien
+[2026-02-26 23:32:30+00:00] whatsapp:+16617952400 -> whatsapp:+573128833350 | Status: delivered | ErrCode: None | Body: 🔔 *NUEVO PEDIDO RECIBIDO* 🏢 *Don Jediondo* 📅 26/02/2026, 23:32  👤 *Cliente:* Ped
+[2026-02-26 23:32:30+00:00] whatsapp:+16617952400 -> whatsapp:+573128833350 | Status: delivered | ErrCode: None | Body: 🔔 *Nuevo Pedido - Don Jediondo*  🆔 *ID del Pedido:* 03DE90A1  👤 *Datos del Clien
