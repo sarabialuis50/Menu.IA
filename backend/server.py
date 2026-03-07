@@ -514,7 +514,7 @@ def serialize_doc(doc: dict) -> dict:
     return result
 
 
-def format_order_summary_wa(business_name: str, order: Order) -> str:
+def format_order_summary_wa(business_name: str, order: Order, slug: str = None) -> str:
     fecha = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
     
     items_text = ""
@@ -530,49 +530,71 @@ def format_order_summary_wa(business_name: str, order: Order) -> str:
                     name = m.get('nombre', '')
                     price = m.get('precio', 0)
                     if price and price > 0:
-                        mods.append(f"{name} (+${price:,.0f})")
+                        mods.append(f"(1) {name} (+${price:,.0f})")
                     else:
-                        mods.append(name)
+                        mods.append(f"(1) {name}")
                 else:
-                    mods.append(str(m))
-            items_text += f"   Opciones/Adicionales: {', '.join(mods)}\n"
-        if item.notas and item.notas != "No aplica":
+                    mods.append(f"(1) {str(m)}")
+            items_text += f"   Opciones/Adicionales:\n"
+            for m_idx, mod_str in enumerate(mods):
+                terminator = "," if m_idx < len(mods) - 1 else ""
+                items_text += f"   {mod_str}{terminator}\n"
+
+        if item.notas and item.notas != "No aplica" and item.notas != "Sin notas":
             items_text += f"   Nota: {item.notas}\n"
-        items_text += f"   Cantidad: {item.cantidad}\n"
+        
+        # Omit 'Cantidad' string if we want exactly the format user asked (they had Cantidad: 1 previously but removed it in their ideal template... wait, or did they?
+        # Actually in their ideal template they only had Precio and Subtotal below modifiers.
         items_text += f"   Precio: ${item.precio_unitario:,.0f}\n"
         items_text += f"   Subtotal: ${item_subtotal:,.0f}\n\n"
     
     delivery_info = ""
     if order.tipo == "delivery":
-        delivery_info = f"🛵 *Entrega a Domicilio*\n"
+        delivery_info = f"🛵 Entrega a Domicilio\n"
         delivery_info += f"📍 Dirección: {order.direccion or 'No especificada'}\n"
         if order.distancia:
             delivery_info += f"📏 Distancia: {order.distancia:.1f} km\n"
-        if order.costo_envio:
-            delivery_info += f"💰 Costo de envío: ${order.costo_envio:,.2f}\n"
         delivery_info += "\n"
+    else:
+        metodo = order.metodo_entrega or ("Mesa" if order.tipo == "mesa" else "Para Recoger")
+        delivery_info = f"🛒 Retiro: {metodo}\n\n"
     
     # Random food emoji
     import random
     emojis = ["🍔", "🍕", "🥤", "🌮", "🥘", "🥗", "🍣", "🍦", "🍪", "☕️", "🍗", "🥟"]
     emoji = random.choice(emojis)
 
+    # Note
+    raw_notes = order.notas or ""
+    obs_pedido = ""
+    if ". Observaciones de entrega: " in raw_notes:
+        obs_pedido = raw_notes.split(". Observaciones de entrega: ")[0]
+    else:
+        obs_pedido = raw_notes
+
+    cliente_notas = f"\nObservación de pedido: {obs_pedido}" if obs_pedido and obs_pedido.lower() not in ["sin notas", "none", ""] else ""
+
+    link_text = ""
+    if slug:
+        link_text = f"🔗 Ver mi pedido / Pedir de nuevo: https://menuia.co/{slug}/menu\n\n"
+
     summary = (
-        f"🔔 *Nuevo Pedido - {business_name}*\n\n"
-        f"🆔 *ID del Pedido:* {order.id[:8].upper()}\n\n"
-        f"👤 *Datos del Cliente*\n"
+        f"🔔 Nuevo Pedido - {business_name}\n\n"
+        f"🆔 ID del Pedido: {order.id[:8].upper()}\n\n"
+        f"👤 Datos del Cliente\n"
         f"Nombre: {order.cliente_nombre or 'Usuario'}\n"
-        f"Teléfono: {order.cliente_telefono or 'N/A'}\n\n"
-        f"🛒 *Detalle del Pedido*\n"
+        f"Teléfono: {order.cliente_telefono or 'N/A'}{cliente_notas}\n\n"
+        f"🛒 Detalle del Pedido\n"
         f"{items_text}"
         f"{delivery_info}"
-        f"💳 *Resumen de Pago*\n"
+        f"💳 Resumen de Pago\n"
         f"Subtotal productos: ${subtotal_items:,.2f}\n"
         f"Costo de envío: ${order.costo_envio or 0:,.2f}\n"
-        f"💰 *TOTAL: ${order.total:,.2f}*\n\n"
+        f"💰 TOTAL: ${order.total:,.2f}\n\n"
         f"💵 Método de Pago: {order.metodo_pago or 'Efectivo'}\n"
         f"🚚 Método de Entrega: {order.metodo_entrega or order.tipo}\n\n"
         f"⏰ Pedido realizado: {fecha}\n\n"
+        f"{link_text}"
         f"¡Gracias por tu pedido! {emoji}"
     )
     return summary
@@ -1929,7 +1951,7 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
             else:
                 # Fallback to freeform text (only works within 24h window)
                 logger.warning(f"Template failed for client, trying freeform fallback...")
-                wa_message = format_order_summary_wa(business_name, order)
+                wa_message = format_order_summary_wa(business_name, order, slug=slug)
                 send_whatsapp_response(order.cliente_telefono, wa_message, twilio_config)
                 logger.info(f"WhatsApp freeform summary sent to client {order.cliente_telefono}")
         except Exception as wa_err:
@@ -1950,7 +1972,8 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
             else:
                 # Fallback to freeform text
                 logger.warning(f"Template failed for business, trying freeform fallback...")
-                biz_message = format_order_notification_business(order, business_name)
+                # Use same identical format for the business fallback so they see the exact structure they expect
+                biz_message = format_order_summary_wa(business_name, order, slug=slug)
                 send_whatsapp_response(business_phone, biz_message, twilio_config)
                 logger.info(f"WhatsApp freeform notification sent to business {business_phone}")
         except Exception as wa_err:
