@@ -261,7 +261,8 @@ export default function PedidosPage() {
         return offsetDate.toDateString() === todayDate.toDateString();
     };
 
-    const totalOrdersToday = orders.filter(o => isToday(o.created_at)).length;
+    const todayOrders = orders.filter(o => isToday(o.created_at));
+    const totalOrdersToday = todayOrders.length;
     const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
 
     return (
@@ -320,13 +321,13 @@ export default function PedidosPage() {
                         {
                             [
                                 { title: 'Totales del Día', count: totalOrdersToday, colorClasses: 'bg-indigo-50 text-indigo-600', Icon: ClipboardList },
-                                { title: 'Pendientes', count: orders.filter(o => o.estado === 'pendiente').length, colorClasses: 'bg-blue-50 text-blue-600', Icon: Clock },
-                                { title: 'Aceptados', count: orders.filter(o => o.estado === 'aceptado').length, colorClasses: 'bg-teal-50 text-teal-600', Icon: CheckCircle2 },
-                                { title: 'Preparando', count: orders.filter(o => o.estado === 'preparando').length, colorClasses: 'bg-yellow-50 text-yellow-600', Icon: ChefHat },
-                                { title: 'Listos', count: orders.filter(o => o.estado === 'listo').length, colorClasses: 'bg-green-50 text-green-600', Icon: CheckCircle2 },
-                                { title: 'Enviados', count: orders.filter(o => o.estado === 'enviado').length, colorClasses: 'bg-purple-50 text-purple-600', Icon: Truck },
-                                { title: 'Entregados', count: orders.filter(o => o.estado === 'entregado').length, colorClasses: 'bg-slate-100 text-slate-600', Icon: Utensils },
-                                { title: 'Cancelados', count: orders.filter(o => o.estado === 'cancelado').length, colorClasses: 'bg-red-50 text-red-600', Icon: XCircle }
+                                { title: 'Pendientes', count: todayOrders.filter(o => o.estado === 'pendiente').length, colorClasses: 'bg-blue-50 text-blue-600', Icon: Clock },
+                                { title: 'Aceptados', count: todayOrders.filter(o => o.estado === 'aceptado').length, colorClasses: 'bg-teal-50 text-teal-600', Icon: CheckCircle2 },
+                                { title: 'Preparando', count: todayOrders.filter(o => o.estado === 'preparando').length, colorClasses: 'bg-yellow-50 text-yellow-600', Icon: ChefHat },
+                                { title: 'Listos', count: todayOrders.filter(o => o.estado === 'listo').length, colorClasses: 'bg-green-50 text-green-600', Icon: CheckCircle2 },
+                                { title: 'Enviados', count: todayOrders.filter(o => o.estado === 'enviado').length, colorClasses: 'bg-purple-50 text-purple-600', Icon: Truck },
+                                { title: 'Entregados', count: todayOrders.filter(o => o.estado === 'entregado').length, colorClasses: 'bg-slate-100 text-slate-600', Icon: Utensils },
+                                { title: 'Cancelados', count: todayOrders.filter(o => o.estado === 'cancelado').length, colorClasses: 'bg-red-50 text-red-600', Icon: XCircle }
                             ].map((stat, idx) => (
                                 <Card key={idx} className="p-4 sm:p-5 border-2 border-gray-100 rounded-3xl bg-white shadow-sm hover:shadow-md transition-all flex flex-col items-center justify-center text-center gap-3">
                                     <div className={`size-12 rounded-2xl flex items-center justify-center shrink-0 ${stat.colorClasses.split(' ')[0]}`}>

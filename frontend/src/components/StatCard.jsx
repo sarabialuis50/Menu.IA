@@ -9,7 +9,7 @@ const StatCard = ({ title, value, icon: Icon, color, subtitle }) => (
     >
         <div className="flex items-start justify-between">
             <div className="min-w-0">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider truncate whitespace-nowrap">{title}</p>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider truncate whitespace-nowrap">{title}</p>
                 <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
                 {subtitle && <p className="text-[10px] text-gray-400 mt-0.5 truncate">{subtitle}</p>}
             </div>

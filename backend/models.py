@@ -413,6 +413,14 @@ class BusinessAnalytics(BaseModel):
     puntos_otorgados_hoy: int = 0
     mensajes_enviados_hoy: int = 0
     domicilios_hoy: int = 0
+    # Campos Históricos (Totales)
+    ventas_total: float = 0
+    pedidos_total: int = 0
+    domicilios_total: int = 0
+    clientes_total: int = 0
+    puntos_total: int = 0
+    mensajes_total: int = 0
+    ticket_promedio_total: float = 0
     ultimos_7_dias: List[DailyStats]
 
 

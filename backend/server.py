@@ -905,10 +905,13 @@ async def get_business_analytics(slug: str, business: Business = Depends(get_cur
     response = supabase.table('pedidos').select('*').match({"negocio_id": business.id}).gte("created_at", today_start.isoformat()).execute()
     today_orders = response.data
     
-    ventas_hoy = sum(float(o.get('total', 0)) for o in today_orders)
-    pedidos_hoy = len(today_orders)
-    pedidos_activos = len([o for o in today_orders if o.get('estado') in ['pendiente', 'preparando']])
-    domicilios_hoy = len([o for o in today_orders if o.get('tipo') in ['domicilio', 'delivery']])
+    # Filter out canceled orders for financial stats
+    active_today_orders = [o for o in today_orders if o.get('estado') != 'cancelado']
+    
+    ventas_hoy = sum(float(o.get('total', 0)) for o in active_today_orders)
+    pedidos_hoy = len(active_today_orders)
+    pedidos_activos = len([o for o in active_today_orders if o.get('estado') in ['pendiente', 'preparando']])
+    domicilios_hoy = len([o for o in active_today_orders if o.get('tipo') in ['domicilio', 'delivery']])
     
     # Clientes nuevos hoy
     response = supabase.table('clientes_puntos').select('id').match({"negocio_id": business.id}).gte("created_at", today_start.isoformat()).execute()
@@ -955,6 +958,32 @@ async def get_business_analytics(slug: str, business: Business = Depends(get_cur
             pedidos_cancelados=len([o for o in day_orders if o.get('estado') == 'cancelado'])
         ))
     
+    # --- NUEVA LÓGICA HISTORICA ---
+    # Todos los pedidos del historial
+    response_hist = supabase.table('pedidos').select('total', 'tipo', 'estado').eq('negocio_id', business.id).execute()
+    all_orders = response_hist.data or []
+    
+    # Filter out canceled for historic totals
+    completed_orders = [o for o in all_orders if o.get('estado') != 'cancelado']
+    
+    ventas_total = sum(float(o.get('total', 0)) for o in completed_orders)
+    pedidos_total = len(completed_orders)
+    domicilios_total = len([o for o in completed_orders if o.get('tipo') in ['domicilio', 'delivery']])
+    ticket_promedio_total = ventas_total / pedidos_total if pedidos_total > 0 else 0
+    
+    # Clientes totales
+    response_clients = supabase.table('clientes_puntos').select('id', count='exact').eq('negocio_id', business.id).execute()
+    clientes_total = response_clients.count if response_clients.count is not None else 0
+    
+    # Puntos totales
+    puntos_total = 0
+    if client_ids:
+        points_res_total = supabase.table('transacciones_puntos').select('puntos').match({"tipo": "ganado"}).in_('cliente_puntos_id', client_ids).execute()
+        puntos_total = sum(int(p.get('puntos', 0)) for p in points_res_total.data) if points_res_total.data else 0
+        
+    mensajes_total = business.wa_messages_count # Esto ya es el total histórico en la tabla business
+    # ------------------------------
+
     return BusinessAnalytics(
         ventas_hoy=ventas_hoy,
         pedidos_hoy=pedidos_hoy,
@@ -966,6 +995,13 @@ async def get_business_analytics(slug: str, business: Business = Depends(get_cur
         puntos_otorgados_hoy=puntos_otorgados_hoy,
         mensajes_enviados_hoy=mensajes_enviados_hoy,
         domicilios_hoy=domicilios_hoy,
+        ventas_total=ventas_total,
+        pedidos_total=pedidos_total,
+        domicilios_total=domicilios_total,
+        clientes_total=clientes_total,
+        puntos_total=puntos_total,
+        mensajes_total=mensajes_total,
+        ticket_promedio_total=ticket_promedio_total,
         ultimos_7_dias=ultimos_7_dias
     )
 
@@ -980,7 +1016,10 @@ async def get_business_analytics_month(slug: str, business: Business = Depends(g
     
     # Get last 30 days orders
     response = supabase.table('pedidos').select('*').match({"negocio_id": business.id}).gte("created_at", month_start.isoformat()).execute()
-    month_orders = response.data
+    month_orders_raw = response.data or []
+    
+    # Filter out canceled for monthly totals
+    month_orders = [o for o in month_orders_raw if o.get('estado') != 'cancelado']
     
     ventas_mes = sum(float(o.get('total', 0)) for o in month_orders)
     pedidos_mes = len(month_orders)

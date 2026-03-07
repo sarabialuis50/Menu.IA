@@ -150,64 +150,66 @@ export default function DashboardPage() {
         {/* Header */}
         <div>
           <h1 className="font-heading text-2xl font-bold text-gray-900">Panel Central</h1>
-          <p className="text-gray-500">Resumen de tu negocio hoy</p>
+          <p className="text-gray-500 font-medium uppercase text-[10px] tracking-widest mt-1">Resumen Histórico de Operaciones</p>
         </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
-            title="Ventas Hoy"
-            value={formatCurrency(analytics?.ventas_hoy || 0)}
+            title="Ventas Totales"
+            value={formatCurrency(analytics?.ventas_total || 0)}
             icon={DollarSign}
             color="bg-[#4ADE80]"
+            subtitle="Ventas acumuladas"
           />
           <StatCard
-            title="Pedidos Hoy"
-            value={analytics?.pedidos_hoy || 0}
+            title="Pedidos Totales"
+            value={analytics?.pedidos_total || 0}
             icon={ShoppingBag}
             color="bg-blue-500"
+            subtitle="Órdenes procesadas"
           />
           <StatCard
-            title="Domicilios Hoy"
-            value={analytics?.domicilios_hoy || 0}
+            title="Domicilios Totales"
+            value={analytics?.domicilios_total || 0}
             icon={Truck}
             color="bg-cyan-500"
-            subtitle="Entrega a domicilio"
+            subtitle="Entrega a domicilio total"
           />
           <StatCard
             title="Mesas"
             value={`${analytics?.mesas_ocupadas || 0}/${analytics?.mesas_totales || 0}`}
             icon={TableProperties}
             color="bg-purple-500"
-            subtitle="Ocupadas"
+            subtitle="Ocupación actual"
           />
           <StatCard
-            title="Clientes Nuevos"
-            value={analytics?.clientes_nuevos_hoy || 0}
+            title="Clientes Totales"
+            value={analytics?.clientes_total || 0}
             icon={UserPlus}
             color="bg-indigo-500"
-            subtitle="Hoy"
+            subtitle="Total base de datos"
           />
           <StatCard
             title="Puntos Fidelidad"
-            value={(analytics?.puntos_otorgados_hoy || 0).toLocaleString()}
+            value={(analytics?.puntos_total || 0).toLocaleString()}
             icon={Gift}
             color="bg-rose-500"
-            subtitle="Puntos otorgados hoy"
+            subtitle="Puntos otorgados total"
           />
           <StatCard
             title="Mensajes"
-            value={(analytics?.mensajes_enviados_hoy || 0).toLocaleString()}
+            value={(analytics?.mensajes_total || 0).toLocaleString()}
             icon={MessageCircle}
             color="bg-emerald-500"
             subtitle="Total campaña/soporte"
           />
           <StatCard
             title="Ticket Promedio"
-            value={formatCurrency(analytics?.pedidos_hoy > 0 ? (analytics?.ventas_hoy / analytics?.pedidos_hoy) : 0)}
+            value={formatCurrency(analytics?.ticket_promedio_total || 0)}
             icon={TrendingUp}
             color="bg-amber-500"
-            subtitle="Promedio por venta"
+            subtitle="Promedio histórico"
           />
         </div>
 
