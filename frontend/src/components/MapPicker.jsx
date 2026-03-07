@@ -3,7 +3,7 @@ import { useGoogleMaps } from '@/hooks/useGoogleMaps';
 import { Loader2, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY || "AIzaSyAwduq9rijltqE2tgI9shSHF76m-45K_iY";
+const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
 export const MapPicker = ({ lat, lng, onChange, address }) => {
     const mapRef = useRef(null);
