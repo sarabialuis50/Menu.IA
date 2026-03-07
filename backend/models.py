@@ -416,6 +416,18 @@ class BusinessAnalytics(BaseModel):
     ultimos_7_dias: List[DailyStats]
 
 
+class MonthlyAnalytics(BaseModel):
+    ventas_mes: float
+    pedidos_mes: int
+    domicilios_mes: int
+    ticket_promedio_mes: float
+    clientes_nuevos_mes: int
+    puntos_otorgados_mes: int
+    mensajes_enviados_mes: int
+    mesas_ocupadas: int
+    mesas_totales: int
+
+
 # WhatsApp Config
 class WhatsAppConfig(BaseModel):
     negocio_id: str

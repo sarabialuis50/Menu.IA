@@ -31,8 +31,14 @@ import {
     Package,
     History,
     ArrowUpRight,
-    Users
+    Users,
+    DollarSign,
+    TrendingUp,
+    Gift,
+    MessageCircle
 } from 'lucide-react';
+import StatCard from '@/components/StatCard';
+import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import {
     DropdownMenu,
@@ -90,6 +96,8 @@ export default function PedidosPage() {
     const [assigning, setAssigning] = useState(false);
     const previousOrdersRef = useRef(new Set());
     const isFirstLoadRef = useRef(true);
+    const [monthlyAnalytics, setMonthlyAnalytics] = useState(null);
+    const [loadingMonthly, setLoadingMonthly] = useState(true);
 
     // Fetch Orders
     useEffect(() => {
@@ -132,9 +140,24 @@ export default function PedidosPage() {
             }
         };
 
+        const fetchMonthlyAnalytics = async () => {
+            try {
+                const res = await api().get(`/business/${slug}/analytics/month`);
+                setMonthlyAnalytics(res.data);
+            } catch (error) {
+                console.error("Error fetching monthly analytics:", error);
+            } finally {
+                setLoadingMonthly(false);
+            }
+        };
+
         fetchOrders();
         fetchRepartidores();
-        const interval = setInterval(fetchOrders, 30000);
+        fetchMonthlyAnalytics();
+        const interval = setInterval(() => {
+            fetchOrders();
+            fetchMonthlyAnalytics();
+        }, 30000);
         return () => clearInterval(interval);
     }, [slug, api]);
 
@@ -252,30 +275,71 @@ export default function PedidosPage() {
                     </div>
                 </div>
 
-                {/* Stats Cards */}
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {
-                        [
-                            { title: 'Totales del Día', count: totalOrdersToday, colorClasses: 'bg-indigo-50 text-indigo-600', Icon: ClipboardList },
-                            { title: 'Pendientes', count: orders.filter(o => o.estado === 'pendiente').length, colorClasses: 'bg-blue-50 text-blue-600', Icon: Clock },
-                            { title: 'Aceptados', count: orders.filter(o => o.estado === 'aceptado').length, colorClasses: 'bg-teal-50 text-teal-600', Icon: CheckCircle2 },
-                            { title: 'Preparando', count: orders.filter(o => o.estado === 'preparando').length, colorClasses: 'bg-yellow-50 text-yellow-600', Icon: ChefHat },
-                            { title: 'Listos', count: orders.filter(o => o.estado === 'listo').length, colorClasses: 'bg-green-50 text-green-600', Icon: CheckCircle2 },
-                            { title: 'Enviados', count: orders.filter(o => o.estado === 'enviado').length, colorClasses: 'bg-purple-50 text-purple-600', Icon: Truck },
-                            { title: 'Entregados', count: orders.filter(o => o.estado === 'entregado').length, colorClasses: 'bg-slate-100 text-slate-600', Icon: Utensils },
-                            { title: 'Cancelados', count: orders.filter(o => o.estado === 'cancelado').length, colorClasses: 'bg-red-50 text-red-600', Icon: XCircle }
-                        ].map((stat, idx) => (
-                            <Card key={idx} className="p-4 sm:p-5 border-2 border-gray-100 rounded-3xl bg-white shadow-sm hover:shadow-md transition-all flex flex-col items-center justify-center text-center gap-3">
-                                <div className={`size-12 rounded-2xl flex items-center justify-center shrink-0 ${stat.colorClasses.split(' ')[0]}`}>
-                                    <stat.Icon className={`w-6 h-6 ${stat.colorClasses.split(' ')[1]}`} />
-                                </div>
-                                <div>
-                                    <h3 className="text-2xl sm:text-3xl font-black text-gray-900 leading-none mb-1.5">{stat.count}</h3>
-                                    <p className="text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest leading-tight line-clamp-1">{stat.title}</p>
-                                </div>
-                            </Card>
-                        ))
-                    }
+                {/* Monthly Stats Cards */}
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em]">Rendimiento Mensual</h2>
+                        <span className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black uppercase tracking-wider">Últimos 30 días</span>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <StatCard
+                            title="Ventas Mes"
+                            value={formatCurrency(monthlyAnalytics?.ventas_mes || 0)}
+                            icon={DollarSign}
+                            color="bg-emerald-500"
+                        />
+                        <StatCard
+                            title="Pedidos Mes"
+                            value={monthlyAnalytics?.pedidos_mes || 0}
+                            icon={ShoppingBag}
+                            color="bg-blue-600"
+                        />
+                        <StatCard
+                            title="Domicilios Mes"
+                            value={monthlyAnalytics?.domicilios_mes || 0}
+                            icon={Truck}
+                            color="bg-teal-500"
+                            subtitle="Entregas a domicilio"
+                        />
+                        <StatCard
+                            title="Mesas"
+                            value={`${monthlyAnalytics?.mesas_ocupadas || 0}/${monthlyAnalytics?.mesas_totales || 0}`}
+                            icon={Utensils}
+                            color="bg-violet-600"
+                            subtitle="Ocupación actual"
+                        />
+                    </div>
+                </div>
+
+                {/* Daily Status Cards */}
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em]">Estado de Pedidos Hoy</h2>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {
+                            [
+                                { title: 'Totales del Día', count: totalOrdersToday, colorClasses: 'bg-indigo-50 text-indigo-600', Icon: ClipboardList },
+                                { title: 'Pendientes', count: orders.filter(o => o.estado === 'pendiente').length, colorClasses: 'bg-blue-50 text-blue-600', Icon: Clock },
+                                { title: 'Aceptados', count: orders.filter(o => o.estado === 'aceptado').length, colorClasses: 'bg-teal-50 text-teal-600', Icon: CheckCircle2 },
+                                { title: 'Preparando', count: orders.filter(o => o.estado === 'preparando').length, colorClasses: 'bg-yellow-50 text-yellow-600', Icon: ChefHat },
+                                { title: 'Listos', count: orders.filter(o => o.estado === 'listo').length, colorClasses: 'bg-green-50 text-green-600', Icon: CheckCircle2 },
+                                { title: 'Enviados', count: orders.filter(o => o.estado === 'enviado').length, colorClasses: 'bg-purple-50 text-purple-600', Icon: Truck },
+                                { title: 'Entregados', count: orders.filter(o => o.estado === 'entregado').length, colorClasses: 'bg-slate-100 text-slate-600', Icon: Utensils },
+                                { title: 'Cancelados', count: orders.filter(o => o.estado === 'cancelado').length, colorClasses: 'bg-red-50 text-red-600', Icon: XCircle }
+                            ].map((stat, idx) => (
+                                <Card key={idx} className="p-4 sm:p-5 border-2 border-gray-100 rounded-3xl bg-white shadow-sm hover:shadow-md transition-all flex flex-col items-center justify-center text-center gap-3">
+                                    <div className={`size-12 rounded-2xl flex items-center justify-center shrink-0 ${stat.colorClasses.split(' ')[0]}`}>
+                                        <stat.Icon className={`w-6 h-6 ${stat.colorClasses.split(' ')[1]}`} />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-2xl sm:text-3xl font-black text-gray-900 leading-none mb-1.5">{stat.count}</h3>
+                                        <p className="text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest leading-tight line-clamp-1">{stat.title}</p>
+                                    </div>
+                                </Card>
+                            ))
+                        }
+                    </div>
                 </div>
 
                 {/* Main Content */}
@@ -344,12 +408,12 @@ export default function PedidosPage() {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-gray-50/50 border-b border-gray-100">
-                                    <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">ID Pedido</th>
-                                    <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">Fecha/Hora</th>
-                                    <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">Cliente / Mesa</th>
-                                    <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">Estado</th>
-                                    <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">Items</th>
-                                    <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest text-right">Total</th>
+                                    <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest text-left">Cliente / Método</th>
+                                    <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest text-left">Items</th>
+                                    <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest text-left">Fecha/Hora</th>
+                                    <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest text-left">ID Pedido</th>
+                                    <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest text-left">Total</th>
+                                    <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest text-left">Estado</th>
                                     <th className="px-3 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest text-center">Acciones</th>
                                 </tr>
                             </thead>
@@ -374,21 +438,6 @@ export default function PedidosPage() {
                                         return (
                                             <tr key={order.id} className="hover:bg-gray-50/50 transition-colors group">
                                                 <td className="px-3 py-4">
-                                                    <span className="font-mono text-[11px] font-bold text-gray-900 border px-1.5 py-0.5 rounded-md bg-gray-50 border-gray-200 shadow-sm">
-                                                        {order.numero_secuencial ? `PED-${order.numero_secuencial}` : `#${order.id.slice(0, 8)}`}
-                                                    </span>
-                                                </td>
-                                                <td className="px-3 py-4">
-                                                    <div className="flex flex-col">
-                                                        <span className="text-sm font-bold text-gray-900">
-                                                            {format(new Date(order.created_at), 'HH:mm', { locale: es })}
-                                                        </span>
-                                                        <span className="text-[10px] font-medium text-gray-400 uppercase">
-                                                            {format(new Date(order.created_at), 'dd MMM', { locale: es })}
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-3 py-4">
                                                     <div className="flex flex-col">
                                                         <span className="text-sm font-bold text-gray-900">
                                                             {order.mesa_numero ? `Mesa ${order.mesa_numero}` : (order.tipo === 'delivery' || order.tipo_pedido === 'delivery' ? 'Domicilio' : 'Para Recoger')}
@@ -401,12 +450,6 @@ export default function PedidosPage() {
                                                     </div>
                                                 </td>
                                                 <td className="px-3 py-4">
-                                                    <Badge className={`rounded-lg px-2.5 py-1 text-[10px] font-black border uppercase tracking-wide gap-1.5 shadow-sm ${statusConfig.color}`}>
-                                                        <StatusIcon className="w-3 h-3" />
-                                                        {statusConfig.label}
-                                                    </Badge>
-                                                </td>
-                                                <td className="px-3 py-4">
                                                     <div className="text-xs text-gray-600 max-w-[200px] truncate">
                                                         {order.items.map(i => `${i.cantidad}x ${i.nombre}`).join(', ')}
                                                     </div>
@@ -414,10 +457,31 @@ export default function PedidosPage() {
                                                         {order.items.length} {order.items.length === 1 ? 'item' : 'items'}
                                                     </span>
                                                 </td>
-                                                <td className="px-3 py-4 text-right">
-                                                    <span className="font-heading font-black text-gray-900">
+                                                <td className="px-3 py-4">
+                                                    <div className="flex flex-col text-left">
+                                                        <span className="text-sm font-bold text-gray-900">
+                                                            {format(new Date(order.created_at), 'HH:mm', { locale: es })}
+                                                        </span>
+                                                        <span className="text-[10px] font-medium text-gray-400 uppercase">
+                                                            {format(new Date(order.created_at), 'dd MMM', { locale: es })}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-3 py-4">
+                                                    <span className="font-mono text-[11px] font-bold text-[#6366F1]">
+                                                        {order.id.slice(0, 8).toUpperCase()}
+                                                    </span>
+                                                </td>
+                                                <td className="px-3 py-4 text-left">
+                                                    <span className="font-heading font-black text-gray-900 block">
                                                         {formatCurrency(order.total)}
                                                     </span>
+                                                </td>
+                                                <td className="px-3 py-4">
+                                                    <Badge className={`rounded-lg px-2.5 py-1 text-[10px] font-black border uppercase tracking-wide gap-1.5 shadow-sm ${statusConfig.color}`}>
+                                                        <StatusIcon className="w-3 h-3" />
+                                                        {statusConfig.label}
+                                                    </Badge>
                                                 </td>
                                                 <td className="px-3 py-4 text-center">
                                                     <DropdownMenu>
@@ -544,7 +608,7 @@ export default function PedidosPage() {
                         {/* Header Info */}
                         <div className="text-center space-y-1">
                             <h2 className="text-2xl font-black text-[#FF6B00]">{user?.nombre || 'Mi Negocio'}</h2>
-                            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">{selectedOrder?.numero_secuencial ? `ID del Pedido: PED-${selectedOrder.numero_secuencial}` : `ID del Pedido: #${selectedOrder?.id?.slice(0, 8).toUpperCase()}`}</p>
+                            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">ID del Pedido: {selectedOrder?.id?.slice(0, 8).toUpperCase()}</p>
                             <p className="text-[11px] font-bold text-gray-400">Realizado: {selectedOrder ? format(new Date(selectedOrder.created_at), 'dd/MM/yyyy, HH:mm:ss') : ''}</p>
                         </div>
 
@@ -698,7 +762,7 @@ export default function PedidosPage() {
                         {/* Order Summary Card */}
                         <Card className="bg-white rounded-3xl p-6 shadow-sm border-2 border-gray-100 space-y-3">
                             <div className="flex justify-between items-center">
-                                <h4 className="text-lg font-black text-gray-900">Orden #{selectedOrder?.id?.slice(0, 8).toUpperCase()}</h4>
+                                <h4 className="text-lg font-black text-gray-900">Orden {selectedOrder?.id?.slice(0, 8).toUpperCase()}</h4>
                             </div>
                             <div className="space-y-1">
                                 <p className="text-sm font-bold text-gray-500">Cliente: <span className="text-gray-900">{selectedOrder?.cliente_nombre || 'Usuario de Prueba'}</span></p>

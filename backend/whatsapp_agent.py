@@ -692,7 +692,7 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
             "total": total,
             "cliente_nombre": args.get('cliente_nombre'),
             "cliente_telefono": args.get('cliente_telefono'),
-            "tipo_pedido": tipo_ai,
+            "tipo": tipo_ai,
             "direccion": args.get('direccion'),
             "metodo_pago": args.get('metodo_pago', 'Efectivo'),
             "estado": "pendiente",

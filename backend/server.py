@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 # Import WhatsApp Agent Functions (now env vars are loaded)
 from whatsapp_agent import process_whatsapp_message, send_whatsapp_response, send_whatsapp_message, get_or_create_conversation, send_whatsapp_template
 
-from models import Business, BusinessCreate, BusinessLogin, BusinessPublic, BusinessAnalytics, DailyStats
+from models import Business, BusinessCreate, BusinessLogin, BusinessPublic, BusinessAnalytics, DailyStats, MonthlyAnalytics
 from models import ForgotPasswordRequest, ResetPasswordRequest, ChangePasswordRequest
 from models import Product, ProductCreate, ProductUpdate
 from models import Table, TableCreate, TableUpdate, TableStatus
@@ -908,7 +908,7 @@ async def get_business_analytics(slug: str, business: Business = Depends(get_cur
     ventas_hoy = sum(float(o.get('total', 0)) for o in today_orders)
     pedidos_hoy = len(today_orders)
     pedidos_activos = len([o for o in today_orders if o.get('estado') in ['pendiente', 'preparando']])
-    domicilios_hoy = len([o for o in today_orders if o.get('tipo_pedido') in ['domicilio', 'delivery']])
+    domicilios_hoy = len([o for o in today_orders if o.get('tipo') in ['domicilio', 'delivery']])
     
     # Clientes nuevos hoy
     response = supabase.table('clientes_puntos').select('id').match({"negocio_id": business.id}).gte("created_at", today_start.isoformat()).execute()
@@ -932,9 +932,9 @@ async def get_business_analytics(slug: str, business: Business = Depends(get_cur
     mesas_totales = len(tables)
     
     # Get unavailable products
-    response = supabase.table('productos').select('id', count='exact').match({
+    response = supabase.table('menu_items').select('id', count='exact').match({
         "negocio_id": business.id,
-        "disponible": False
+        "available": False
     }).execute()
     productos_agotados = response.count if response.count is not None else 0
     
@@ -967,6 +967,61 @@ async def get_business_analytics(slug: str, business: Business = Depends(get_cur
         mensajes_enviados_hoy=mensajes_enviados_hoy,
         domicilios_hoy=domicilios_hoy,
         ultimos_7_dias=ultimos_7_dias
+    )
+
+
+@api_router.get("/business/{slug}/analytics/month", response_model=MonthlyAnalytics)
+async def get_business_analytics_month(slug: str, business: Business = Depends(get_current_business)):
+    if business.slug != slug:
+        raise HTTPException(status_code=403, detail="No autorizado")
+    
+    now = datetime.now(timezone.utc)
+    month_start = now - timedelta(days=30)
+    
+    # Get last 30 days orders
+    response = supabase.table('pedidos').select('*').match({"negocio_id": business.id}).gte("created_at", month_start.isoformat()).execute()
+    month_orders = response.data
+    
+    ventas_mes = sum(float(o.get('total', 0)) for o in month_orders)
+    pedidos_mes = len(month_orders)
+    domicilios_mes = len([o for o in month_orders if o.get('tipo') in ['domicilio', 'delivery']])
+    ticket_promedio_mes = ventas_mes / pedidos_mes if pedidos_mes > 0 else 0
+    
+    # Clientes nuevos mes
+    response = supabase.table('clientes_puntos').select('id').match({"negocio_id": business.id}).gte("created_at", month_start.isoformat()).execute()
+    clientes_nuevos_mes = len(response.data) if response.data else 0
+    
+    # Puntos otorgados mes
+    puntos_otorgados_mes = 0
+    # First get customer IDs for this business
+    clients_res = supabase.table('clientes_puntos').select('id').eq('negocio_id', business.id).execute()
+    client_ids = [c['id'] for c in clients_res.data] if clients_res.data else []
+    
+    if client_ids:
+        # Get transactions for these clients in the last 30 days
+        points_res = supabase.table('transacciones_puntos').select('puntos').match({"tipo": "ganado"}).in_('cliente_puntos_id', client_ids).gte("created_at", month_start.isoformat()).execute()
+        puntos_otorgados_mes = sum(int(p.get('puntos', 0)) for p in points_res.data) if points_res.data else 0
+
+    # Mensajes enviados (Using current count as a proxy or if we had history... for now current total for the month)
+    # Ideally we'd have messages history, but for now we follow the 'hoys' pattern
+    mensajes_enviados_mes = business.wa_messages_count
+    
+    # Tables (Current status, as requested)
+    response = supabase.table('mesas').select('*').eq("negocio_id", business.id).execute()
+    tables = response.data
+    mesas_ocupadas = len([t for t in tables if t.get('estado') != 'libre'])
+    mesas_totales = len(tables)
+    
+    return MonthlyAnalytics(
+        ventas_mes=ventas_mes,
+        pedidos_mes=pedidos_mes,
+        domicilios_mes=domicilios_mes,
+        ticket_promedio_mes=ticket_promedio_mes,
+        clientes_nuevos_mes=clientes_nuevos_mes,
+        puntos_otorgados_mes=puntos_otorgados_mes,
+        mensajes_enviados_mes=mensajes_enviados_mes,
+        mesas_ocupadas=mesas_ocupadas,
+        mesas_totales=mesas_totales
     )
 
 
@@ -1012,14 +1067,44 @@ async def get_products(slug: str, categoria: Optional[str] = None):
         raise HTTPException(status_code=404, detail="Negocio no encontrado")
     business_id = response.data[0]['id']
     
-    query = supabase.table('productos').select('*').eq('negocio_id', business_id).order('orden')
+    query = supabase.table('menu_items').select('*').eq('negocio_id', business_id)
     if categoria:
-        query = query.eq('categoria', categoria)
+        query = query.eq('category', categoria)
     
     try:
         response = query.execute()
-        products = response.data
-        return [Product(**p) for p in products]
+        items = response.data
+        # Map menu_items fields back to Product model for compatibility
+        products = []
+        for item in items:
+            p_dict = {
+                "id": item.get("id"),
+                "negocio_id": item.get("negocio_id"),
+                "nombre": item.get("name"),
+                "descripcion": item.get("description"),
+                "precio": float(item.get("base_price", 0)),
+                "categoria": item.get("category"),
+                "imagen": item.get("image_url"),
+                "disponible": item.get("available"),
+                "destacado": item.get("is_recommended", False),
+                "precio_original": float(item.get("precio_original")) if item.get("precio_original") else None,
+                "oferta_porcentaje": item.get("oferta_porcentaje"),
+                "etiqueta": item.get("etiqueta"),
+                "modificadores": item.get("modificadores"),
+                "tamanos": item.get("tamanos"),
+                "opciones": item.get("opciones"),
+                "nutri_kcal": item.get("nutri_kcal"),
+                "nutri_proteina": item.get("nutri_proteina"),
+                "nutri_carbohidratos": item.get("nutri_carbohidratos"),
+                "nutri_grasa": item.get("nutri_grasa"),
+                "prep_time_minutes": item.get("prep_time_minutes"),
+                "is_vegan": item.get("is_vegan", False),
+                "is_vegetarian": item.get("is_vegetarian", False),
+                "is_gluten_free": item.get("is_gluten_free", False),
+                "is_spicy": item.get("is_spicy", False)
+            }
+            products.append(Product(**p_dict))
+        return products
     except Exception as e:
         logger.error(f"Error getting products: {str(e)}")
         # Log traceback if possible, but at least detailed message
@@ -1053,54 +1138,45 @@ async def create_product(slug: str, data: ProductCreate, business: Business = De
         except Exception as e:
             logger.error(f"Error in auto-nutrition: {e}")
     
+    # Map Product fields to menu_items table fields
+    menu_item_dict = {
+        "id": product.id,
+        "negocio_id": business.id,
+        "name": product.nombre,
+        "description": product.descripcion,
+        "base_price": product.precio,
+        "category": product.categoria,
+        "image_url": product.imagen,
+        "available": product.disponible,
+        "is_recommended": product.destacado,
+        "precio_original": product.precio_original,
+        "oferta_porcentaje": product.oferta_porcentaje,
+        "etiqueta": product.etiqueta,
+        "modificadores": product.modificadores,
+        "tamanos": product.tamanos,
+        "opciones": product.opciones,
+        "nutri_kcal": product.nutri_kcal,
+        "nutri_proteina": product.nutri_proteina,
+        "nutri_carbohidratos": product.nutri_carbohidratos,
+        "nutri_grasa": product.nutri_grasa,
+        "prep_time_minutes": product.prep_time_minutes,
+        "is_vegan": product.is_vegan,
+        "is_vegetarian": product.is_vegetarian,
+        "is_gluten_free": product.is_gluten_free,
+        "is_spicy": product.is_spicy,
+        "currency": "COP" # Default
+    }
+
     try:
-        data_dict = serialize_doc(product.model_dump())
-        res = supabase.table('productos').insert(data_dict).execute()
+        data_dict = serialize_doc(menu_item_dict)
+        res = supabase.table('menu_items').insert(data_dict).execute()
         return product
     except Exception as e:
         error_str = str(e)
-        logger.warning(f"Error creating product, attempting to handle missing columns: {error_str}")
-        
-        # Handle missing columns gracefully
-        new_columns = [
-            'destacado', 'oferta_porcentaje', 'precio_original', 'etiqueta', 
-            'prep_time_minutes', 'nutri_kcal', 'nutri_proteina', 
-            'nutri_carbohidratos', 'nutri_grasa', 'modificadores'
-        ]
-        
-        # If it's a column missing error, try to remove all potentially missing columns that are in the error message
-        if "column" in error_str.lower():
-            for col in new_columns:
-                if col in error_str.lower():
-                    logger.warning(f"Removing missing column '{col}' from insert payload.")
-                    data_dict.pop(col, None)
-            
-            try:
-                # Retry without the missing columns
-                res = supabase.table('productos').insert(data_dict).execute()
-                # Update the product object to reflect what was actually saved
-                for col in new_columns:
-                    if col not in data_dict:
-                        setattr(product, col, None if col != 'destacado' else False)
-                return product
-            except Exception as e2:
-                # If it still fails, check if ANOTHER column from our list is missing
-                error_str2 = str(e2)
-                if "column" in error_str2.lower():
-                    for col in new_columns:
-                        if col in error_str2.lower():
-                            logger.warning(f"Removing another missing column '{col}' from insert payload.")
-                            data_dict.pop(col, None)
-                    
-                    try:
-                        res = supabase.table('productos').insert(data_dict).execute()
-                        for col in new_columns:
-                            if col not in data_dict:
-                                setattr(product, col, None if col != 'destacado' else False)
-                        return product
-                    except Exception as e3:
-                        logger.error(f"Error on second retry: {str(e3)}")
-                        raise HTTPException(status_code=500, detail=f"Error al crear producto (múltiples columnas faltantes): {str(e3)}")
+        logger.error(f"Error creating product in menu_items: {error_str}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error al crear producto: {error_str}")
 
         logger.error(f"Error creating product: {error_str}")
         import traceback
@@ -1113,22 +1189,37 @@ async def update_product(slug: str, product_id: str, data: ProductUpdate, busine
     if business.slug != slug:
         raise HTTPException(status_code=403, detail="No autorizado")
     
-    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    # Map ProductUpdate fields to menu_items table fields
+    mapping = {
+        'nombre': 'name',
+        'descripcion': 'description',
+        'precio': 'base_price',
+        'categoria': 'category',
+        'imagen': 'image_url',
+        'disponible': 'available',
+        'destacado': 'is_recommended'
+    }
+    
+    update_data = {}
+    for k, v in data.model_dump().items():
+        if v is not None:
+            target_key = mapping.get(k, k)
+            update_data[target_key] = v
+
     if not update_data:
         raise HTTPException(status_code=400, detail="No hay datos para actualizar")
 
     # If name or description changed, and no nutrition info provided in update, re-estimate?
-    # We only re-estimate if the name or description is updated AND no nutritional data is explicitly sent in this update.
-    has_name_change = 'nombre' in update_data or 'descripcion' in update_data
+    has_name_change = 'name' in update_data or 'description' in update_data
     has_nutri_input = any(k in update_data for k in ['nutri_kcal', 'nutri_proteina', 'nutri_carbohidratos', 'nutri_grasa'])
     
     if has_name_change and not has_nutri_input:
-        # Get current data to have full context for estimation
-        curr_res = supabase.table('productos').select('nombre, descripcion').eq('id', product_id).execute()
+        # Get current data from menu_items
+        curr_res = supabase.table('menu_items').select('name, description').eq('id', product_id).execute()
         if curr_res.data:
             current = curr_res.data[0]
-            new_name = update_data.get('nombre', current.get('nombre'))
-            new_desc = update_data.get('descripcion', current.get('descripcion'))
+            new_name = update_data.get('name', current.get('name'))
+            new_desc = update_data.get('description', current.get('description'))
             
             try:
                 deduct_ai_credit(business.id, 'nutri', business)
@@ -1138,14 +1229,14 @@ async def update_product(slug: str, product_id: str, data: ProductUpdate, busine
                     update_data['nutri_proteina'] = nutrition.get('proteina')
                     update_data['nutri_carbohidratos'] = nutrition.get('carbohidratos')
                     update_data['nutri_grasa'] = nutrition.get('grasa')
-                    logger.info(f"Re-estimated nutrition for updated product {product_id}")
+                    logger.info(f"Re-estimated nutrition for updated menu item {product_id}")
             except HTTPException:
                 logger.info(f"Skipping re-estimation for {product_id} due to no credits")
             except Exception as e:
                 logger.error(f"Error in re-estimation: {e}")
     
     try:
-        response = supabase.table('productos').update(update_data).match({
+        response = supabase.table('menu_items').update(update_data).match({
             "id": product_id, 
             "negocio_id": business.id
         }).execute()
@@ -1153,7 +1244,35 @@ async def update_product(slug: str, product_id: str, data: ProductUpdate, busine
         if not response.data:
             raise HTTPException(status_code=404, detail="Producto no encontrado")
         
-        return Product(**response.data[0])
+        # Map menu_items fields back to Product model for compatibility
+        item = response.data[0]
+        p_dict = {
+            "id": item.get("id"),
+            "negocio_id": item.get("negocio_id"),
+            "nombre": item.get("name"),
+            "descripcion": item.get("description"),
+            "precio": float(item.get("base_price", 0)),
+            "categoria": item.get("category"),
+            "imagen": item.get("image_url"),
+            "disponible": item.get("available"),
+            "destacado": item.get("is_recommended", False),
+            "precio_original": float(item.get("precio_original")) if item.get("precio_original") else None,
+            "oferta_porcentaje": item.get("oferta_porcentaje"),
+            "etiqueta": item.get("etiqueta"),
+            "modificadores": item.get("modificadores"),
+            "tamanos": item.get("tamanos"),
+            "opciones": item.get("opciones"),
+            "nutri_kcal": item.get("nutri_kcal"),
+            "nutri_proteina": item.get("nutri_proteina"),
+            "nutri_carbohidratos": item.get("nutri_carbohidratos"),
+            "nutri_grasa": item.get("nutri_grasa"),
+            "prep_time_minutes": item.get("prep_time_minutes"),
+            "is_vegan": item.get("is_vegan", False),
+            "is_vegetarian": item.get("is_vegetarian", False),
+            "is_gluten_free": item.get("is_gluten_free", False),
+            "is_spicy": item.get("is_spicy", False)
+        }
+        return Product(**p_dict)
     except Exception as e:
         logger.error(f"Error updating product: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error al actualizar producto: {str(e)}")
@@ -1164,7 +1283,7 @@ async def delete_product(slug: str, product_id: str, business: Business = Depend
     if business.slug != slug:
         raise HTTPException(status_code=403, detail="No autorizado")
     
-    response = supabase.table('productos').delete().match({
+    response = supabase.table('menu_items').delete().match({
         "id": product_id, 
         "negocio_id": business.id
     }).execute()
@@ -1393,7 +1512,7 @@ async def get_tags(slug: str):
     # Fallback
     # Safe get: select all columns and use .get() to avoid crash if column is missing
     try:
-        response = supabase.table('productos').select('*').eq('negocio_id', business_id).execute()
+        response = supabase.table('menu_items').select('name, etiqueta').eq('negocio_id', business_id).execute()
         tags = sorted(list(set(p['etiqueta'] for p in response.data if p.get('etiqueta'))))
         return tags
     except:
@@ -2097,6 +2216,33 @@ async def update_order(slug: str, order_id: str, data: OrderUpdate, background_t
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.delete("/orders/{slug}/{order_id}")
+async def delete_order(slug: str, order_id: str, business: Business = Depends(get_current_business)):
+    if business.slug != slug:
+        raise HTTPException(status_code=403, detail="No autorizado")
+    
+    try:
+        response = supabase.table('pedidos').delete().match({
+            "id": order_id,
+            "negocio_id": business.id
+        }).execute()
+        
+        if not response.data:
+            # Check if it exists at all to give better error
+            check = supabase.table('pedidos').select('id').eq('id', order_id).execute()
+            if not check.data:
+                raise HTTPException(status_code=404, detail="Pedido no encontrado")
+            else:
+                raise HTTPException(status_code=403, detail="No tiene permisos para eliminar este pedido")
+                
+        return {"message": "Pedido eliminado correctamente"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting order: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error al eliminar pedido: {str(e)}")
 
 
 @api_router.get("/orders/{slug}/track/{order_id}", response_model=Order)
@@ -3182,7 +3328,7 @@ async def get_ai_insights(negocio_id: str, business: Business = Depends(get_curr
         pedidos_semana = supabase.table('pedidos').select('total, created_at').match({"negocio_id": negocio_id}).gte('created_at', week_ago.isoformat()).execute()
         
         mesas = supabase.table('mesas').select('*').eq('negocio_id', negocio_id).execute()
-        productos_top = supabase.table('productos').select('nombre, precio, categoria').eq('negocio_id', negocio_id).limit(10).execute()
+        productos_top = supabase.table('menu_items').select('name, base_price, category').eq('negocio_id', negocio_id).limit(10).execute()
         empleados = supabase.table('empleados').select('nombre, rol').eq('negocio_id', negocio_id).execute()
 
         # 2. Construir contexto para Gemini

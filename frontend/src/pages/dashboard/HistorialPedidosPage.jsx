@@ -338,12 +338,12 @@ export default function HistorialPedidosPage() {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-gray-50/20 border-b border-gray-100">
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">ID Pedido</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Fecha/Hora</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Cliente / Mesa</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Estado</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Items</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Total</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-left">Cliente / Método</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-left">Items</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-left">Fecha/Hora</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-left">ID Pedido</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-left">Total</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-left">Estado</th>
                                     <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Acciones</th>
                                 </tr>
                             </thead>
@@ -359,24 +359,9 @@ export default function HistorialPedidosPage() {
                                         return (
                                             <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
                                                 <td className="px-6 py-4">
-                                                    <span className="font-mono text-xs text-indigo-600 font-bold">#{order.id.slice(0, 8).toUpperCase()}</span>
-                                                </td>
-                                                <td className="px-6 py-4 text-[11px] font-bold text-gray-400">
-                                                    <div className="flex flex-col">
-                                                        <span className="text-sm font-black text-gray-900">{format(new Date(order.created_at), 'HH:mm')}</span>
-                                                        <span className="uppercase tracking-widest">{format(new Date(order.created_at), 'dd MMM')}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div className="flex flex-col">
+                                                    <div className="flex flex-col text-left">
                                                         <span className="text-sm font-black text-gray-900">{order.cliente_nombre || (order.mesa_numero ? `Mesa ${order.mesa_numero}` : 'Cliente')}</span>
                                                         <span className="text-[10px] font-bold text-gray-400 tracking-wider uppercase">{order.mesa_numero ? `Mesa ${order.mesa_numero}` : (order.tipo === 'delivery' ? 'Domicilio' : 'Para Recoger')}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-wider ${statusConfig.color}`}>
-                                                        <StatusIcon className="w-3 h-3" />
-                                                        {statusConfig.label}
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
@@ -387,8 +372,23 @@ export default function HistorialPedidosPage() {
                                                         <span className="text-[10px] font-bold text-gray-400 lowercase">{order.items?.length || 0} items</span>
                                                     </div>
                                                 </td>
+                                                <td className="px-6 py-4 text-[11px] font-bold text-gray-400">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-sm font-black text-gray-900">{format(new Date(order.created_at), 'HH:mm')}</span>
+                                                        <span className="uppercase tracking-widest">{format(new Date(order.created_at), 'dd MMM')}</span>
+                                                    </div>
+                                                </td>
                                                 <td className="px-6 py-4">
-                                                    <span className="text-lg font-black text-gray-900">{formatCurrency(order.total)}</span>
+                                                    <span className="font-mono text-xs text-indigo-600 font-bold">{order.id.slice(0, 8).toUpperCase()}</span>
+                                                </td>
+                                                <td className="px-6 py-4 text-left">
+                                                    <span className="text-lg font-black text-gray-900 block">{formatCurrency(order.total)}</span>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-wider ${statusConfig.color}`}>
+                                                        <StatusIcon className="w-3 h-3" />
+                                                        {statusConfig.label}
+                                                    </div>
                                                 </td>
                                                 <td className="px-6 py-4 text-center">
                                                     <DropdownMenu>
@@ -488,7 +488,7 @@ export default function HistorialPedidosPage() {
                     <div className="p-8 space-y-8 overflow-y-auto max-h-[80vh] no-scrollbar">
                         <div className="text-center space-y-1">
                             <h2 className="text-2xl font-black text-[#FF6B00]">MenuPro</h2>
-                            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">ID del Pedido: #{selectedOrder?.id?.slice(0, 8).toUpperCase()}</p>
+                            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">ID del Pedido: {selectedOrder?.id?.slice(0, 8).toUpperCase()}</p>
                             <p className="text-[11px] font-bold text-gray-400">Realizado: {selectedOrder ? format(new Date(selectedOrder.created_at), 'dd/MM/yyyy, HH:mm:ss') : ''}</p>
                         </div>
 
@@ -593,7 +593,7 @@ export default function HistorialPedidosPage() {
                     <div className="p-8 space-y-8 overflow-y-auto max-h-[80vh] no-scrollbar">
                         <Card className="bg-white rounded-3xl p-6 shadow-sm border-2 border-gray-100 space-y-3">
                             <div className="flex justify-between items-center">
-                                <h4 className="text-lg font-black text-gray-900">Orden #{selectedOrder?.id?.slice(0, 8).toUpperCase()}</h4>
+                                <h4 className="text-lg font-black text-gray-900">Orden {selectedOrder?.id?.slice(0, 8).toUpperCase()}</h4>
                             </div>
                             <div className="space-y-1">
                                 <p className="text-sm font-bold text-gray-500">Cliente: <span className="text-gray-900">{selectedOrder?.cliente_nombre || 'No registrado'}</span></p>

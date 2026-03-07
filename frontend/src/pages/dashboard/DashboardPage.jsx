@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { DashboardLayout } from '@/layouts/DashboardLayout';
 import { motion } from 'framer-motion';
+import StatCard from '@/components/StatCard';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import {
   DollarSign,
@@ -32,25 +33,6 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from 'sonner';
 
-const StatCard = ({ title, value, icon: Icon, color, subtitle }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    whileHover={{ y: -4 }}
-    className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow"
-  >
-    <div className="flex items-start justify-between">
-      <div>
-        <p className="text-sm font-medium text-gray-500">{title}</p>
-        <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
-        {subtitle && <p className="text-xs text-gray-400 mt-1">{subtitle}</p>}
-      </div>
-      <div className={`w-10 h-10 rounded-lg ${color} flex items-center justify-center`}>
-        <Icon className="w-5 h-5 text-white" />
-      </div>
-    </div>
-  </motion.div>
-);
 
 const OrderStatusBadge = ({ status }) => {
   const statusConfig = {
@@ -186,11 +168,11 @@ export default function DashboardPage() {
             color="bg-blue-500"
           />
           <StatCard
-            title="Ticket Promedio"
-            value={formatCurrency(analytics?.pedidos_hoy > 0 ? (analytics?.ventas_hoy / analytics?.pedidos_hoy) : 0)}
-            icon={TrendingUp}
-            color="bg-amber-500"
-            subtitle="Promedio por venta"
+            title="Domicilios Hoy"
+            value={analytics?.domicilios_hoy || 0}
+            icon={Truck}
+            color="bg-cyan-500"
+            subtitle="Entrega a domicilio"
           />
           <StatCard
             title="Mesas"
@@ -207,25 +189,25 @@ export default function DashboardPage() {
             subtitle="Hoy"
           />
           <StatCard
-            title="Puntos de Fidelidad"
+            title="Puntos Fidelidad"
             value={(analytics?.puntos_otorgados_hoy || 0).toLocaleString()}
             icon={Gift}
             color="bg-rose-500"
             subtitle="Puntos otorgados hoy"
           />
           <StatCard
-            title="Mensajes Enviados"
+            title="Mensajes"
             value={(analytics?.mensajes_enviados_hoy || 0).toLocaleString()}
             icon={MessageCircle}
             color="bg-emerald-500"
             subtitle="Total campaña/soporte"
           />
           <StatCard
-            title="Domicilios Hoy"
-            value={analytics?.domicilios_hoy || 0}
-            icon={Truck}
-            color="bg-cyan-500"
-            subtitle="Entrega a domicilio"
+            title="Ticket Promedio"
+            value={formatCurrency(analytics?.pedidos_hoy > 0 ? (analytics?.ventas_hoy / analytics?.pedidos_hoy) : 0)}
+            icon={TrendingUp}
+            color="bg-amber-500"
+            subtitle="Promedio por venta"
           />
         </div>
 
