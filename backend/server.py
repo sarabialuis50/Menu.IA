@@ -2152,6 +2152,12 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
         
         frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:3000")
         
+        twilio_config = {
+            "sid": biz.get('twilio_sid'),
+            "token": biz.get('twilio_token'),
+            "number": biz.get('twilio_number')
+        } if biz.get('twilio_sid') else None
+
         if type == 'assignment':
             # Notify Messenger
             rep_id = order.get('repartidor_id')
@@ -2165,27 +2171,40 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
             
             phone = rep.get('telefono')
             if phone:
-                send_whatsapp_response(phone, msg)
+                send_whatsapp_response(phone, msg, custom_config=twilio_config)
             else:
                 logger.warning(f"Repartidor {rep['nombre']} sin telefono") 
             
         elif type == 'enviado':
             # Notify Customer
             link = f"{frontend_url}/{slug}/mis-pedidos"
-            msg = f"🔔 *¡Tu pedido va en camino!* (#ID: {order_id[:8].upper()})\n\nNuestro repartidor ya salió del local. Puedes seguir el rastro en tiempo real aquí: {link}\n\n¡Prepárate!"
-            send_whatsapp_response(order['cliente_telefono'], msg)
+            cust_phone = order.get('cliente_telefono')
+            if cust_phone:
+                # Try template first
+                res_tmpl = send_whatsapp_template(
+                    to_number=cust_phone,
+                    template_key="pedido_en_camino",
+                    custom_config=twilio_config,
+                    cliente_nombre=order.get('cliente_nombre', 'Cliente'),
+                    negocio_nombre=biz.get('nombre', 'Nuestro Negocio'),
+                    link_seguimiento=link
+                )
+                if not res_tmpl:
+                    # Fallback
+                    msg = f"🔔 *¡Tu pedido va en camino!* (#ID: {order_id[:8].upper()})\n\nNuestro repartidor ya salió del local. Puedes seguir el rastro en tiempo real aquí: {link}\n\n¡Prepárate!"
+                    send_whatsapp_response(cust_phone, msg, custom_config=twilio_config)
             
         elif type == 'entregado':
             # Notify Customer
             msg_cust = f"✅ *¡Pedido Entregado!* (#ID: {order_id[:8].upper()})\n\nEsperamos que disfrutes tu comida. ¡Gracias por elegir {biz['nombre']}!"
             if order.get('cliente_telefono'):
-                send_whatsapp_response(order['cliente_telefono'], msg_cust)
+                send_whatsapp_response(order['cliente_telefono'], msg_cust, custom_config=twilio_config)
             
             # Notify Admin/Business
             msg_admin = f"💰 *ENTREGA COMPLETADA*\n\nEl pedido #{order_id[:8].upper()} ha sido entregado exitosamente al cliente {order.get('cliente_nombre', 'Cliente')}."
             biz_phone = biz.get('whatsapp') or biz.get('telefono')
             if biz_phone:
-                send_whatsapp_response(biz_phone, msg_admin)
+                send_whatsapp_response(biz_phone, msg_admin, custom_config=twilio_config)
 
     except Exception as e:
         logger.error(f"Error in delivery notification background: {str(e)}")

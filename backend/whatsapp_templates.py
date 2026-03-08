@@ -36,21 +36,26 @@ def get_template_data(template_key, **kwargs):
         #   {{8}} → 🚚 Método de Entrega: [Entrega]
         #   {{9}} → 🌐 Realizado: [Fecha]
         #   {{10}} → 🔗 Ver mi pedido: [Link]
+        def sanitize_val(val, truncate_len=None):
+            if not isinstance(val, str): val = str(val)
+            cleaned = val.replace('\r\n', ' - ').replace('\n', ' - ').replace('\r', ' - ')
+            return cleaned[:truncate_len] if truncate_len else cleaned
+
         variables = {
-            "1": str(kwargs.get("negocio_nombre", "Nuestro Negocio"))[:50],
-            "2": str(kwargs.get("pedido_id", "N/A")),
-            "3": "\n* Nombre: {}\n* Tel: {}{}".format(
+            "1": sanitize_val(kwargs.get("negocio_nombre", "Nuestro Negocio"), 50),
+            "2": sanitize_val(kwargs.get("pedido_id", "N/A"), 50),
+            "3": sanitize_val("Nombre: {} Tel: {} {}".format(
                 str(kwargs.get('cliente_nombre', 'Cliente'))[:30],
                 str(kwargs.get('cliente_telefono', 'N/A')),
-                f"\n* Observación de pedido: {kwargs.get('obs_pedido')}" if kwargs.get('obs_pedido') and kwargs.get('obs_pedido') != "Sin notas" else ""
-            ),
-            "4": str(kwargs.get("detalle_carrito", "Detalle no disponible"))[:900],
-            "5": str(kwargs.get("entrega_info", "Recoge en local"))[:400],
-            "6": str(kwargs.get("resumen_pago", "TOTAL: $0"))[:400],
-            "7": "\n* " + str(kwargs.get("metodo_pago", "Efectivo"))[:30],
-            "8": str(kwargs.get("metodo_entrega", "Domicilio"))[:200],
-            "9": str(kwargs.get("fecha", "")),
-            "10": str(kwargs.get("link_seguimiento", "https://menuia.co"))
+                f"Obs: {kwargs.get('obs_pedido')}" if kwargs.get('obs_pedido') and kwargs.get('obs_pedido') != "Sin notas" else ""
+            ).strip(), 200),
+            "4": sanitize_val(kwargs.get("detalle_carrito", "Detalle no disponible"), 900),
+            "5": sanitize_val(kwargs.get("entrega_info", "Recoge en local"), 400),
+            "6": sanitize_val(kwargs.get("resumen_pago", "TOTAL: $0"), 400),
+            "7": sanitize_val(kwargs.get("metodo_pago", "Efectivo"), 30),
+            "8": sanitize_val(kwargs.get("metodo_entrega", "Domicilio"), 200),
+            "9": sanitize_val(kwargs.get("fecha", ""), 50),
+            "10": sanitize_val(kwargs.get("link_seguimiento", "https://menuia.co"), 100)
         }
 
     elif template_key == "fidelidad":
