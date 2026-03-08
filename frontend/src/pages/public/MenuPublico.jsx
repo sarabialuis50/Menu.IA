@@ -183,7 +183,7 @@ const MenuContent = () => {
   // Delivery states
   const [tipoPedido, setTipoPedido] = useState(mesa ? 'mesa' : 'takeaway');
   const [direccion, setDireccion] = useState('');
-  const [isManualAddress, setIsManualAddress] = useState(false);
+  const [isManualAddress, setIsManualAddress] = useState(true);
   const [distancia, setDistancia] = useState(0);
   const [costoEnvio, setCostoEnvio] = useState(0);
   const [calculatingDistance, setCalculatingDistance] = useState(false);
@@ -1429,27 +1429,29 @@ const MenuContent = () => {
                           className="w-full h-12 rounded-2xl border-2 border-dashed border-[#4ADE80]/30 text-[#618972] font-black text-xs gap-2 hover:bg-[#4ADE80]/5 transition-all"
                         >
                           {calculatingDistance ? <Loader2 className="w-4 h-4 animate-spin" /> : <NavigationIcon className="w-4 h-4" />}
-                          USAR MI UBICACIÓN ACTUAL
+                          USAR MI UBICACIÓN ACTUAL (GPS)
                         </Button>
 
-                        <div className="space-y-2">
-                          <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Ajusta tu ubicación en el mapa</Label>
-                          <MapPicker
-                            lat={customerInfo.lat}
-                            lng={customerInfo.lng}
-                            onChange={({ lat, lng }) => {
-                              setCustomerInfo(prev => ({ ...prev, lat, lng }));
-                              if (business?.lat && business?.lng) {
-                                const dist = calculateDistance(business.lat, business.lng, lat, lng);
-                                setDistancia(dist);
-                                const precioKm = business.precio_km || 0;
-                                const costoMin = business.costo_minimo_domicilio || 0;
-                                const calculado = dist * precioKm;
-                                setCostoEnvio(Math.max(calculado, costoMin));
-                              }
-                            }}
-                          />
-                        </div>
+                        {!isManualAddress && (
+                          <div className="space-y-2">
+                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Ajusta tu ubicación en el mapa</Label>
+                            <MapPicker
+                              lat={customerInfo.lat}
+                              lng={customerInfo.lng}
+                              onChange={({ lat, lng }) => {
+                                setCustomerInfo(prev => ({ ...prev, lat, lng }));
+                                if (business?.lat && business?.lng) {
+                                  const dist = calculateDistance(business.lat, business.lng, lat, lng);
+                                  setDistancia(dist);
+                                  const precioKm = business.precio_km || 0;
+                                  const costoMin = business.costo_minimo_domicilio || 0;
+                                  const calculado = dist * precioKm;
+                                  setCostoEnvio(Math.max(calculado, costoMin));
+                                }
+                              }}
+                            />
+                          </div>
+                        )}
                       </div>
 
                       {distancia > 0 && (
