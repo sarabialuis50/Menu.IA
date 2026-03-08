@@ -1832,30 +1832,32 @@ const MenuContent = () => {
                           <p className="text-[10px] text-[#618972] font-medium opacity-60 italic mt-2">
                             * Valores aproximados calculados por inteligencia artificial basados en la receta estándar.
                           </p>
+                        </div>
+                      )}
 
-                          {/* Dietary Info (🌱 Vegano, etc.) - Reposicionado debajo de nutrición */}
-                          <div className="flex flex-nowrap items-center gap-2 pt-2 overflow-x-auto no-scrollbar">
-                            {selectedProduct.is_vegan && (
-                              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#edfdf2] border border-[#d3f9d8] text-[#00a854] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap">
-                                <span>🌱</span> VEGANO
-                              </div>
-                            )}
-                            {selectedProduct.is_vegetarian && (
-                              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fffbe6] border border-[#fff1b8] text-[#c49c00] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap">
-                                <span>🥗</span> VEGETARIANO
-                              </div>
-                            )}
-                            {selectedProduct.is_gluten_free && (
-                              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fff2e8] border border-[#ffd8bf] text-[#d46b08] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap">
-                                <span>🌾</span> SIN GLUTEN
-                              </div>
-                            )}
-                            {selectedProduct.is_spicy && (
-                              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fff1f0] border border-[#ffa39e] text-[#cf1322] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap">
-                                <span>🌶️</span> PICANTE
-                              </div>
-                            )}
-                          </div>
+                      {/* Dietary Info (🌱 Vegano, etc.) - Reposicionado debajo de nutrición e independiente */}
+                      {(selectedProduct.is_vegan || selectedProduct.is_vegetarian || selectedProduct.is_gluten_free || selectedProduct.is_spicy) && (
+                        <div className="flex flex-nowrap items-center gap-2 pt-2 overflow-x-auto no-scrollbar w-full">
+                          {selectedProduct.is_vegan && (
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#edfdf2] border border-[#d3f9d8] text-[#00a854] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap flex-shrink-0">
+                              <span>🌱</span> VEGANO
+                            </div>
+                          )}
+                          {selectedProduct.is_vegetarian && (
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fffbe6] border border-[#fff1b8] text-[#c49c00] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap flex-shrink-0">
+                              <span>🥗</span> VEGETARIANO
+                            </div>
+                          )}
+                          {selectedProduct.is_gluten_free && (
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fff2e8] border border-[#ffd8bf] text-[#d46b08] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap flex-shrink-0">
+                              <span>🌾</span> SIN GLUTEN
+                            </div>
+                          )}
+                          {selectedProduct.is_spicy && (
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fff1f0] border border-[#ffa39e] text-[#cf1322] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap flex-shrink-0">
+                              <span>🌶️</span> PICANTE
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>

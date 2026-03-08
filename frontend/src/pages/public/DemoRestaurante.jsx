@@ -769,24 +769,24 @@ export default function DemoRestaurante() {
 
                                                     {/* Dietary Labels - Relocated below grid */}
                                                     {(selectedProduct.is_vegan || selectedProduct.is_vegetarian || selectedProduct.is_gluten_free || selectedProduct.is_spicy) && (
-                                                        <div className="flex flex-nowrap gap-2 pt-2 overflow-x-auto no-scrollbar">
+                                                        <div className="flex flex-nowrap gap-2 pt-2 overflow-x-auto no-scrollbar w-full">
                                                             {selectedProduct.is_vegan && (
-                                                                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#edfdf2] border border-[#d3f9d8] text-[#00a854] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm">
+                                                                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#edfdf2] border border-[#d3f9d8] text-[#00a854] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap flex-shrink-0">
                                                                     <span>🌱</span> VEGANO
                                                                 </div>
                                                             )}
                                                             {selectedProduct.is_vegetarian && !selectedProduct.is_vegan && (
-                                                                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fffbe6] border border-[#fff1b8] text-[#c49c00] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm">
+                                                                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fffbe6] border border-[#fff1b8] text-[#c49c00] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap flex-shrink-0">
                                                                     <span>🥗</span> VEGETARIANO
                                                                 </div>
                                                             )}
                                                             {selectedProduct.is_gluten_free && (
-                                                                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fff2e8] border border-[#ffd8bf] text-[#d46b08] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm">
+                                                                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fff2e8] border border-[#ffd8bf] text-[#d46b08] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap flex-shrink-0">
                                                                     <span>🌾</span> SIN GLUTEN
                                                                 </div>
                                                             )}
                                                             {selectedProduct.is_spicy && (
-                                                                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fff1f0] border border-[#ffa39e] text-[#cf1322] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm">
+                                                                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fff1f0] border border-[#ffa39e] text-[#cf1322] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap flex-shrink-0">
                                                                     <span>🌶️</span> PICANTE
                                                                 </div>
                                                             )}
