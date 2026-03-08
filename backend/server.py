@@ -2135,6 +2135,16 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
             logger.error(f"Error sending WhatsApp to business: {wa_err}")
             logger.error(traceback.format_exc())
 
+def clean_wa_phone(phone: str) -> str:
+    """Limpia y normaliza el número de teléfono para WhatsApp (ej: +573...)"""
+    if not phone: return None
+    clean = str(phone).replace(' ', '').replace('-', '').replace('+', '').replace('whatsapp:', '').strip()
+    if len(clean) == 10 and clean.startswith('3'):
+        return f"+57{clean}"
+    if not clean.startswith('+'):
+        return f"+{clean}"
+    return f"+{clean.replace('+', '')}"
+
 def notify_delivery_update_background(slug: str, order_id: str, type: str, data: dict = None):
     """
     Background task to handle delivery notifications.
@@ -2152,35 +2162,66 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
         
         frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:3000")
         
+        # Limpieza de teléfonos y logs previos
+        logger.info(f"--- DELIVERY_NOTIF_START: {type} para Pedido {order_id} ---")
+        
         twilio_config = {
             "sid": biz.get('twilio_sid'),
             "token": biz.get('twilio_token'),
             "number": biz.get('twilio_number')
         } if biz.get('twilio_sid') else None
+        
+        if twilio_config:
+            logger.info(f"Usando configuración custom de Twilio: {twilio_config['sid'][:6]}...")
+        else:
+            logger.info("Usando configuración Global de Twilio")
 
         if type == 'assignment':
-            # Notify Messenger
+            # Notificación al Repartidor (Asignación)
+            # USAMOS PLANTILLA para que llegue sin necesidad de conversación previa
             rep_id = order.get('repartidor_id')
-            if not rep_id: return
+            if not rep_id: 
+                logger.warning(f"No hay repartidor_id en el pedido {order_id}")
+                return
+                
             res_rep = supabase.table('empleados').select('*').eq('id', rep_id).execute()
-            if not res_rep.data: return
+            if not res_rep.data: 
+                logger.error(f"No se encontró repartidor {rep_id}")
+                return
             rep = res_rep.data[0]
             
-            link = f"{frontend_url}/reparto/{slug}/{order_id}"
-            msg = f"🛵 *Nuevo Pedido Asignado*\n\nHola {rep['nombre']}, tienes un nuevo pedido para entregar (#ID: {order_id[:8].upper()}).\n\n📍 GESTIONAR AQUÍ: {link}"
-            
-            phone = rep.get('telefono')
+            phone = clean_wa_phone(rep.get('telefono'))
             if phone:
-                send_whatsapp_response(phone, msg, custom_config=twilio_config)
+                link = f"{frontend_url}/reparto/{slug}/{order_id}"
+                logger.info(f"Enviando plantilla asignacion_repartidor a repartidor {rep['nombre']} ({phone})")
+                
+                res_tmpl = send_whatsapp_template(
+                    to_number=phone,
+                    template_key="asignacion_repartidor",
+                    custom_config=twilio_config,
+                    repartidor_nombre=rep.get('nombre', 'Repartidor'),
+                    negocio_nombre=biz.get('nombre', 'Nuestro Negocio'),
+                    cliente_nombre=order.get('cliente_nombre', 'Cliente'),
+                    cliente_telefono=order.get('cliente_telefono', 'N/A'),
+                    direccion_entrega=order.get('direccion', 'Ver en mapa'),
+                    order_id_corto=order_id[:8].upper(),
+                    link_seguimiento=link
+                )
+                
+                if res_tmpl:
+                    logger.info(f"Asignación enviada al repartidor via plantilla. SID: {res_tmpl}")
+                else:
+                    logger.error(f"Error al enviar plantilla asignacion_repartidor a {phone}. (¿Ya fue aprobada en Twilio?)")
             else:
-                logger.warning(f"Repartidor {rep['nombre']} sin telefono") 
+                logger.warning(f"Repartidor {rep['nombre']} sin teléfono")
             
         elif type == 'enviado':
-            # Notify Customer
-            link = f"{frontend_url}/{slug}/mis-pedidos"
-            cust_phone = order.get('cliente_telefono')
+            # Notificación al Cliente (Usando la plantilla pedido_en_camino)
+            cust_phone = clean_wa_phone(order.get('cliente_telefono'))
             if cust_phone:
-                # Try template first
+                link = f"{frontend_url}/{slug}/mis-pedidos"
+                logger.info(f"Enviando plantilla pedido_en_camino a cliente {cust_phone}")
+                
                 res_tmpl = send_whatsapp_template(
                     to_number=cust_phone,
                     template_key="pedido_en_camino",
@@ -2189,20 +2230,21 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
                     negocio_nombre=biz.get('nombre', 'Nuestro Negocio'),
                     link_seguimiento=link
                 )
+                
                 if not res_tmpl:
-                    # Fallback
-                    msg = f"🔔 *¡Tu pedido va en camino!* (#ID: {order_id[:8].upper()})\n\nNuestro repartidor ya salió del local. Puedes seguir el rastro en tiempo real aquí: {link}\n\n¡Prepárate!"
-                    send_whatsapp_response(cust_phone, msg, custom_config=twilio_config)
+                    msg_fallback = f"🔔 *¡Tu pedido de {biz['nombre']} va en camino!*\n\nPuedes seguirlo aquí: {link}"
+                    send_whatsapp_response(cust_phone, msg_fallback, custom_config=twilio_config)
             
         elif type == 'entregado':
-            # Notify Customer
-            msg_cust = f"✅ *¡Pedido Entregado!* (#ID: {order_id[:8].upper()})\n\nEsperamos que disfrutes tu comida. ¡Gracias por elegir {biz['nombre']}!"
-            if order.get('cliente_telefono'):
-                send_whatsapp_response(order['cliente_telefono'], msg_cust, custom_config=twilio_config)
+            # Notificar Cliente
+            msg_cust = f"✅ *¡Pedido Entregado!* (#ID: {order_id[:8].upper()})\n\nEsperamos que lo disfrutes. ¡Vuelve pronto a {biz.get('nombre', 'nuestro local')}!"
+            cust_phone = clean_wa_phone(order.get('cliente_telefono'))
+            if cust_phone:
+                send_whatsapp_response(cust_phone, msg_cust, custom_config=twilio_config)
             
-            # Notify Admin/Business
-            msg_admin = f"💰 *ENTREGA COMPLETADA*\n\nEl pedido #{order_id[:8].upper()} ha sido entregado exitosamente al cliente {order.get('cliente_nombre', 'Cliente')}."
-            biz_phone = biz.get('whatsapp') or biz.get('telefono')
+            # Notificar Admin
+            msg_admin = f"💰 *ENTREGA COMPLETADA*\n\nEl pedido #{order_id[:8].upper()} ha sido registrado como entregado al cliente {order.get('cliente_nombre', 'N/A')}."
+            biz_phone = clean_wa_phone(biz.get('whatsapp') or biz.get('telefono'))
             if biz_phone:
                 send_whatsapp_response(biz_phone, msg_admin, custom_config=twilio_config)
 

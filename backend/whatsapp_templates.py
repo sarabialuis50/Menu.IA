@@ -11,7 +11,8 @@ TWILIO_SIDS = {
     "cumpleanos": "HX1f5542e7ab4c3a77f396a6a70fef1658",          # Plantilla: felicitacion_cumple_negocio
     "campana_marketing": "HX4e4cf9232106524f8a3f412c1baecc96",   # Plantilla: campana_masiva_custom
     "pedido_en_camino": "HX89eb01626bffa51988179da38eef6f79",    # Plantilla: pedido_en_camino
-    "codigo_verificacion": "HX42003eb243fd020dbeaa9d9b983e7ea4"                # Plantilla: verificacion_otp
+    "codigo_verificacion": "HX42003eb243fd020dbeaa9d9b983e7ea4",              # Plantilla: verificacion_otp
+    "asignacion_repartidor": "HXb3b35f302a415df95db291d3181c6548"              # Plantilla: asignacion_repartidor
 }
 
 def get_template_data(template_key, **kwargs):
@@ -19,12 +20,31 @@ def get_template_data(template_key, **kwargs):
     Prepara el Content SID y las variables dinámicas para Twilio.
     """
     sid = TWILIO_SIDS.get(template_key)
-    if not sid or sid == "PENDIENTE_APROBACION":
+    if not sid or sid == "PENDIENTE":
         return None, None
+    
+    # Función auxiliar para limpiar y truncar valores (evita fallos de Twilio por longitud o caracteres)
+    def sanitize_val(val, truncate_len=None):
+        if val is None: return ""
+        if not isinstance(val, str): val = str(val)
+        cleaned = val.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ').strip()
+        return cleaned[:truncate_len] if truncate_len else cleaned
 
     variables = {}
 
-    if template_key == "resumen_pedido":
+    if template_key == "asignacion_repartidor":
+        # {{1}} Repartidor, {{2}} Negocio, {{3}} Cliente, {{4}} Tel Cliente, {{5}} Dirección, {{6}} PedidoID, {{7}} Link Mapa
+        variables = {
+            "1": sanitize_val(kwargs.get("repartidor_nombre", "Repartidor"), 40),
+            "2": sanitize_val(kwargs.get("negocio_nombre", "Nuestro Negocio"), 50),
+            "3": sanitize_val(kwargs.get("cliente_nombre", "Cliente"), 50),
+            "4": sanitize_val(kwargs.get("cliente_telefono", "N/A"), 25),
+            "5": sanitize_val(kwargs.get("direccion_entrega", "Ver en mapa"), 200),
+            "6": sanitize_val(kwargs.get("order_id_corto", "N/A"), 20),
+            "7": sanitize_val(kwargs.get("link_seguimiento", "https://menuia.co"), 100)
+        }
+
+    elif template_key == "resumen_pedido":
         # Template labels in Twilio (FIXED mapping):
         #   {{1}} → 🔔 Nuevo Pedido - [Negocio]
         #   {{2}} → 🆔 ID del Pedido: [ID]
@@ -36,19 +56,10 @@ def get_template_data(template_key, **kwargs):
         #   {{8}} → 🚚 Método de Entrega: [Entrega]
         #   {{9}} → 🌐 Realizado: [Fecha]
         #   {{10}} → 🔗 Ver mi pedido: [Link]
-        def sanitize_val(val, truncate_len=None):
-            if not isinstance(val, str): val = str(val)
-            cleaned = val.replace('\r\n', ' - ').replace('\n', ' - ').replace('\r', ' - ')
-            return cleaned[:truncate_len] if truncate_len else cleaned
-
         variables = {
             "1": sanitize_val(kwargs.get("negocio_nombre", "Nuestro Negocio"), 50),
             "2": sanitize_val(kwargs.get("pedido_id", "N/A"), 50),
-            "3": sanitize_val("Nombre: {} Tel: {} {}".format(
-                str(kwargs.get('cliente_nombre', 'Cliente'))[:30],
-                str(kwargs.get('cliente_telefono', 'N/A')),
-                f"Obs: {kwargs.get('obs_pedido')}" if kwargs.get('obs_pedido') and kwargs.get('obs_pedido') != "Sin notas" else ""
-            ).strip(), 200),
+            "3": sanitize_val(f"Nombre: {kwargs.get('cliente_nombre', 'Cliente')} Tel: {kwargs.get('cliente_telefono', 'N/A')}", 200),
             "4": sanitize_val(kwargs.get("detalle_carrito", "Detalle no disponible"), 900),
             "5": sanitize_val(kwargs.get("entrega_info", "Recoge en local"), 400),
             "6": sanitize_val(kwargs.get("resumen_pago", "TOTAL: $0"), 400),
