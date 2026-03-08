@@ -1689,7 +1689,10 @@ const MenuContent = () => {
       </Sheet>
       {/* Product Detail Modal */}
       <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
-        <DialogContent className="max-w-[100vw] sm:max-w-[95vw] lg:max-w-6xl xl:max-w-[1300px] w-full p-0 overflow-hidden rounded-t-[2.5rem] rounded-b-none sm:rounded-[3rem] bg-white border-none shadow-2xl [&>button]:hidden outline-none !top-auto !bottom-0 !translate-y-0 sm:!top-[50%] sm:!bottom-auto sm:!translate-y-[-50%]" aria-describedby="product-description">
+        <DialogContent
+          className="max-w-[100vw] sm:max-w-[95vw] lg:max-w-6xl xl:max-w-[1300px] w-full p-0 overflow-hidden rounded-t-[2.5rem] rounded-b-none sm:rounded-[3rem] bg-white border-none shadow-2xl [&>button]:hidden outline-none !left-0 !translate-x-0 sm:!left-[50%] sm:!translate-x-[-50%] !top-auto !bottom-0 !translate-y-0 sm:!top-[50%] sm:!bottom-auto sm:!translate-y-[-50%]"
+          aria-describedby="product-description"
+        >
           <DialogHeader className="sr-only">
             <DialogTitle>Detalles del Producto</DialogTitle>
             <DialogDescription id="product-description">Vista detallada del producto seleccionado con opciones de personalización.</DialogDescription>
@@ -1736,7 +1739,7 @@ const MenuContent = () => {
                 <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-10 pb-40 md:pb-56">
                   <div className="max-w-2xl mx-auto space-y-8">
                     {/* Basic Info */}
-                    <div className="space-y-4">
+                    <div className="space-y-4 overflow-hidden">
                       <div>
                         <div className="flex flex-wrap items-center gap-2 mb-2">
                           <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#4ADE80]/10 text-[10px] font-black text-[#22C55E] uppercase tracking-wider">
