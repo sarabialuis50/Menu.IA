@@ -423,50 +423,52 @@ const MenuContent = () => {
           const costoMin = business.costo_minimo_domicilio || 0;
           const calculado = dist * precioKm;
           setCostoEnvio(Math.max(calculado, costoMin));
+        }
 
-          // Intentar obtener dirección legible
-          try {
-            let addressFound = null;
+        // Intentar obtener dirección legible
+        try {
+          let addressFound = null;
 
-            // 1. Intentar con Geocoder de Google en el Frontend (si está cargado)
-            if (window.google && window.google.maps && window.google.maps.Geocoder) {
-              try {
-                const geocoder = new window.google.maps.Geocoder();
-                const response = await geocoder.geocode({ location: { lat: latitude, lng: longitude } });
-                if (response.results && response.results.length > 0) {
-                  // Filtrar los plus codes que son molestos e ilegibles para el usuario normal
-                  const validResults = response.results.filter(r => !r.types.includes('plus_code'));
-                  if (validResults.length > 0) {
-                    addressFound = validResults[0].formatted_address;
-                  } else {
-                    addressFound = response.results[0].formatted_address;
-                  }
+          // 1. Intentar con fetch directo a la API de Geocoding (Método Fideli.IA)
+          const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+          if (apiKey) {
+            try {
+              const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`);
+              const data = await res.json();
+              if (data.status === "OK" && data.results && data.results.length > 0) {
+                // Filtrar los plus codes que son molestos e ilegibles para el usuario normal
+                const validResults = data.results.filter(r => !r.types.includes('plus_code'));
+                if (validResults.length > 0) {
+                  addressFound = validResults[0].formatted_address;
+                } else {
+                  addressFound = data.results[0].formatted_address;
                 }
-              } catch (e) {
-                console.warn("Frontend geocoding failed, trying backend...");
               }
+            } catch (e) {
+              console.warn("Direct fetch geocoding failed, trying backend...", e);
             }
+          }
 
-            // 2. Si falló o no está cargado, intentar por el Backend (que ya tiene la API Key)
-            if (!addressFound) {
-              const res = await axios.get(`${API}/geocoding/reverse?lat=${latitude}&lng=${longitude}`);
-              if (res.data && res.data.address) {
-                addressFound = res.data.address;
-              } else if (res.data.error) {
-                console.error("Backend geocoding error:", res.data.message);
-              }
+          // 2. Si falló o no está cargado, intentar por el Backend (que ya tiene la API Key)
+          if (!addressFound) {
+            const res = await axios.get(`${API}/geocoding/reverse?lat=${latitude}&lng=${longitude}`);
+            if (res.data && res.data.address) {
+              addressFound = res.data.address;
+            } else if (res.data.error) {
+              console.error("Backend geocoding error:", res.data.message);
             }
+          }
 
-            if (addressFound) {
-              setDireccion(addressFound);
-            } else {
-              setDireccion("Ubicación actual detectada");
-            }
-          } catch (e) {
-            console.error("Geocoding failed entirely:", e);
+          if (addressFound) {
+            setDireccion(addressFound);
+          } else {
             setDireccion("Ubicación actual detectada");
           }
+        } catch (e) {
+          console.error("Geocoding failed entirely:", e);
+          setDireccion("Ubicación actual detectada");
         }
+
         setCalculatingDistance(false);
       },
       (error) => {
