@@ -91,15 +91,15 @@ export const DashboardLayout = ({ children }) => {
 
       {/* Sidebar */}
       <aside className={`
-        fixed top-0 left-0 h-full lg:h-screen w-72 bg-[#0F172A] border-r border-slate-800 z-50 shadow-2xl lg:shadow-none
+        fixed top-0 left-0 h-[100dvh] lg:h-screen w-72 bg-[#0F172A] border-r border-slate-800 z-50 shadow-2xl lg:shadow-none
         transform transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1)
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0
       `}>
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800">
-            <Link to={basePath} className="flex items-center gap-0.5">
+          <div className="h-16 shrink-0 flex items-center justify-between px-6 border-b border-slate-800">
+            <Link to={basePath} className="flex items-center gap-0.5" onClick={() => setSidebarOpen(false)}>
               <div className="size-10 rounded-xl bg-transparent flex items-center justify-center overflow-hidden">
                 <img src="/logos/logo-icon-transparent.png" alt="Menu.IA" className="w-full h-full object-contain" />
               </div>
@@ -117,7 +117,7 @@ export const DashboardLayout = ({ children }) => {
           </div>
 
           {/* Business Info */}
-          <div className="px-4 mb-2 mt-2 lg:mt-4">
+          <div className="px-4 mb-2 mt-2 lg:mt-4 shrink-0">
             <div className="p-2.5 lg:p-3 rounded-2xl bg-slate-800/50 border border-slate-700 flex items-center gap-3">
               <div className="size-8 rounded-xl bg-slate-800 shadow-sm flex items-center justify-center font-bold text-[#22C55E] overflow-hidden">
                 {user?.logo_url ? (
@@ -134,34 +134,35 @@ export const DashboardLayout = ({ children }) => {
           </div>
 
           {/* Navigation */}
-          {/* Navigation */}
-          <nav className="flex-1 px-3 py-6 flex flex-col justify-between overflow-y-auto no-scrollbar min-h-0">
-            {navItems.map((item) => {
-              const fullPath = `${basePath}${item.path}`;
-              const isActive = location.pathname === fullPath ||
-                (item.path === '' && location.pathname === basePath);
+          <nav className="flex-1 px-3 py-4 flex flex-col overflow-y-auto no-scrollbar min-h-0">
+            <div className="flex flex-col justify-between flex-1 gap-1">
+              {navItems.map((item) => {
+                const fullPath = `${basePath}${item.path}`;
+                const isActive = location.pathname === fullPath ||
+                  (item.path === '' && location.pathname === basePath);
 
-              return (
-                <Link
-                  key={item.path}
-                  to={fullPath}
-                  onClick={() => setSidebarOpen(false)}
-                  className={`
-                    flex items-center gap-3 px-3 py-2 lg:py-2.5 rounded-xl font-bold text-xs transition-all duration-300 group
-                    ${isActive
-                      ? 'bg-[#4ADE80] text-[#111814] shadow-lg shadow-green-500/20 scale-[1.01]'
-                      : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-                    }
-                  `}
-                >
-                  <item.icon className={`w-4 h-4 transition-transform duration-300 ${isActive ? 'scale-105' : 'group-hover:scale-105'}`} />
-                  <span className="flex-1 truncate">{item.label}</span>
-                  {isActive && <ChevronRight className="w-3 h-3 opacity-50" />}
-                </Link>
-              );
-            })}
+                return (
+                  <Link
+                    key={item.path}
+                    to={fullPath}
+                    onClick={() => setSidebarOpen(false)}
+                    className={`
+                      flex items-center gap-3 px-3 py-2 lg:py-2.5 rounded-xl font-bold text-xs transition-all duration-300 group
+                      ${isActive
+                        ? 'bg-[#4ADE80] text-[#111814] shadow-lg shadow-green-500/20 scale-[1.01]'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                      }
+                    `}
+                  >
+                    <item.icon className={`w-4 h-4 transition-transform duration-300 ${isActive ? 'scale-105' : 'group-hover:scale-105'}`} />
+                    <span className="flex-1 truncate">{item.label}</span>
+                    {isActive && <ChevronRight className="w-3 h-3 opacity-50" />}
+                  </Link>
+                );
+              })}
+            </div>
 
-            <div className="pt-4 mt-auto border-t border-slate-800">
+            <div className="pt-4 mt-2 mb-4 border-t border-slate-800 shrink-0">
               <button
                 onClick={handleLogout}
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-bold text-xs text-red-400 hover:bg-red-500/10 transition-all active:scale-95 group"
