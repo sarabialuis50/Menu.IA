@@ -2692,27 +2692,6 @@ const ConfiguracionPage = () => {
                                 </div>
 
 
-                                {/* Divider or Section Break */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end p-6 rounded-[2.5rem] border border-[#4ADE80]/10 bg-white/50">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-3">
-                                            <Switch
-                                                id="featured-toggle"
-                                                checked={productForm.destacado}
-                                                onCheckedChange={checked => setProductForm({ ...productForm, destacado: checked })}
-                                                className="data-[state=checked]:bg-[#4ADE80]"
-                                            />
-                                            <Label htmlFor="featured-toggle" className="font-bold cursor-pointer flex items-center gap-2 text-[#111814]">
-                                                <Star className={`w-4 h-4 ${productForm.destacado ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
-                                                Producto Destacado
-                                            </Label>
-                                        </div>
-                                        <p className="text-[10px] text-[#618972] leading-tight pl-11 font-medium">
-                                            Aparecerá en la sección principal de Recomendados de tu página.
-                                        </p>
-                                    </div>
-
-                                </div>
 
                                 {/* Valores Nutricionales */}
                                 <div className="space-y-4 pt-4 border-t border-gray-100">
@@ -3047,15 +3026,33 @@ const ConfiguracionPage = () => {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-4 py-4 px-6 rounded-2xl border border-[#4ADE80]/10 bg-white shadow-sm">
-                                    <Switch
-                                        checked={productForm.disponible}
-                                        onCheckedChange={checked => setProductForm({ ...productForm, disponible: checked })}
-                                        className="data-[state=checked]:bg-[#4ADE80]"
-                                    />
-                                    <div>
-                                        <Label className="font-bold text-[#111814]">Disponible para la venta</Label>
-                                        <p className="text-[10px] text-[#618972] font-medium">Si lo desactivas, aparecerá como "Agotado" en el menú.</p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="flex items-center gap-4 py-4 px-6 rounded-2xl border border-[#4ADE80]/10 bg-white shadow-sm">
+                                        <Switch
+                                            checked={productForm.disponible}
+                                            onCheckedChange={checked => setProductForm({ ...productForm, disponible: checked })}
+                                            className="data-[state=checked]:bg-[#4ADE80]"
+                                        />
+                                        <div>
+                                            <Label className="font-bold text-[#111814]">Disponible para la venta</Label>
+                                            <p className="text-[10px] text-[#618972] font-medium leading-tight">Si lo desactivas, aparecerá como "Agotado" en el menú.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-4 py-4 px-6 rounded-2xl border border-[#4ADE80]/10 bg-white shadow-sm">
+                                        <Switch
+                                            id="featured-toggle"
+                                            checked={productForm.destacado}
+                                            onCheckedChange={checked => setProductForm({ ...productForm, destacado: checked })}
+                                            className="data-[state=checked]:bg-[#4ADE80]"
+                                        />
+                                        <div>
+                                            <Label htmlFor="featured-toggle" className="font-bold cursor-pointer flex items-center gap-2 text-[#111814]">
+                                                <Star className={`w-3.5 h-3.5 ${productForm.destacado ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
+                                                Producto Destacado
+                                            </Label>
+                                            <p className="text-[10px] text-[#618972] font-medium leading-tight">Aparecerá en los recomendados.</p>
+                                        </div>
                                     </div>
                                 </div>
 
