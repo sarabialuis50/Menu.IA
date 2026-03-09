@@ -278,10 +278,10 @@ const MenuContent = () => {
           nutri_proteina: p.nutri_proteina || (lowerName.includes('hamburguesa') ? '32g' : lowerName.includes('paisa') ? '45g' : lowerName.includes('salada') ? '12g' : lowerName.includes('salmón') ? '38g' : null),
           nutri_carbohidratos: p.nutri_carbohidratos || (lowerName.includes('hamburguesa') ? '48g' : lowerName.includes('paisa') ? '110g' : lowerName.includes('salada') ? '15g' : lowerName.includes('salmón') ? '12g' : null),
           nutri_grasa: p.nutri_grasa || (lowerName.includes('hamburguesa') ? '38g' : lowerName.includes('paisa') ? '58g' : lowerName.includes('salada') ? '18g' : lowerName.includes('salmón') ? '22g' : null),
-          is_vegan: p.is_vegan || lowerName.includes('vegano') || lowerName.includes('vegan'),
-          is_vegetarian: p.is_vegetarian || lowerName.includes('vegetariano') || lowerName.includes('veggie'),
-          is_gluten_free: p.is_gluten_free || lowerName.includes('sin gluten') || lowerName.includes('gluten free'),
-          is_spicy: p.is_spicy || lowerName.includes('picante') || lowerName.includes('chili')
+          is_vegan: false,
+          is_vegetarian: false,
+          is_gluten_free: false,
+          is_spicy: false
         };
       });
 
@@ -1690,7 +1690,7 @@ const MenuContent = () => {
       {/* Product Detail Modal */}
       <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
         <DialogContent
-          className="max-w-[100vw] sm:max-w-[95vw] lg:max-w-6xl xl:max-w-[1300px] w-full p-0 overflow-hidden rounded-t-[2.5rem] rounded-b-none sm:rounded-[3rem] bg-white border-none shadow-2xl [&>button]:hidden outline-none !left-0 !translate-x-0 sm:!left-[50%] sm:!translate-x-[-50%] !top-auto !bottom-0 !translate-y-0 sm:!top-[50%] sm:!bottom-auto sm:!translate-y-[-50%]"
+          className="w-full sm:max-w-[95vw] lg:max-w-6xl xl:max-w-[1300px] p-0 overflow-hidden rounded-t-[2.5rem] rounded-b-none sm:rounded-[3rem] bg-white border-none shadow-2xl [&>button]:hidden outline-none !left-0 !right-0 !mx-auto !bottom-0 !top-auto !translate-x-0 !translate-y-0 sm:!left-1/2 sm:!top-1/2 sm:!bottom-auto sm:!translate-x-[-50%] sm:!translate-y-[-50%]"
           aria-describedby="product-description"
         >
           <DialogHeader className="sr-only">
@@ -1818,31 +1818,6 @@ const MenuContent = () => {
                           <p className="text-[10px] text-[#618972] font-medium opacity-60 italic mt-2">
                             * Valores aproximados calculados por inteligencia artificial basados en la receta estándar.
                           </p>
-                        </div>
-                      )}
-                      {/* Dietary Info (🌱 Vegano, etc.) - Reposicionado debajo de nutrición e independiente */}
-                      {(selectedProduct.is_vegan || selectedProduct.is_vegetarian || selectedProduct.is_gluten_free || selectedProduct.is_spicy) && (
-                        <div className="flex flex-nowrap items-center gap-2 pt-2 overflow-x-auto no-scrollbar w-full">
-                          {selectedProduct.is_vegan && (
-                            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#edfdf2] border border-[#d3f9d8] text-[#00a854] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap flex-shrink-0">
-                              <span>🌱</span> VEGANO
-                            </div>
-                          )}
-                          {selectedProduct.is_vegetarian && (
-                            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fffbe6] border border-[#fff1b8] text-[#c49c00] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap flex-shrink-0">
-                              <span>🥗</span> VEGETARIANO
-                            </div>
-                          )}
-                          {selectedProduct.is_gluten_free && (
-                            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fff2e8] border border-[#ffd8bf] text-[#d46b08] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap flex-shrink-0">
-                              <span>🌾</span> SIN GLUTEN
-                            </div>
-                          )}
-                          {selectedProduct.is_spicy && (
-                            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fff1f0] border border-[#ffa39e] text-[#cf1322] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap flex-shrink-0">
-                              <span>🌶️</span> PICANTE
-                            </div>
-                          )}
                         </div>
                       )}
 

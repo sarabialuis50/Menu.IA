@@ -2711,40 +2711,7 @@ const ConfiguracionPage = () => {
                                             Aparecerá en la sección principal de Recomendados de tu página.
                                         </p>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-2 h-12 items-center">
-                                        <div className="flex items-center gap-2">
-                                            <Switch
-                                                checked={productForm.is_vegan}
-                                                onCheckedChange={val => setProductForm({ ...productForm, is_vegan: val })}
-                                                className="data-[state=checked]:bg-[#22C55E] scale-75"
-                                            />
-                                            <Label className="text-[10px] font-bold text-gray-600">Vegano 🌱</Label>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Switch
-                                                checked={productForm.is_vegetarian}
-                                                onCheckedChange={val => setProductForm({ ...productForm, is_vegetarian: val })}
-                                                className="data-[state=checked]:bg-yellow-500 scale-75"
-                                            />
-                                            <Label className="text-[10px] font-bold text-gray-600">Vegetariano 🥗</Label>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Switch
-                                                checked={productForm.is_gluten_free}
-                                                onCheckedChange={val => setProductForm({ ...productForm, is_gluten_free: val })}
-                                                className="data-[state=checked]:bg-blue-400 scale-75"
-                                            />
-                                            <Label className="text-[10px] font-bold text-gray-600">Sin Gluten 🌾</Label>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Switch
-                                                checked={productForm.is_spicy}
-                                                onCheckedChange={val => setProductForm({ ...productForm, is_spicy: val })}
-                                                className="data-[state=checked]:bg-red-500 scale-75"
-                                            />
-                                            <Label className="text-[10px] font-bold text-gray-600">Picante 🌶️</Label>
-                                        </div>
-                                    </div>
+
                                 </div>
 
                                 {/* Valores Nutricionales */}
