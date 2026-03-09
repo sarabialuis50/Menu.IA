@@ -12,7 +12,7 @@ TWILIO_SIDS = {
     "campana_marketing": "HX4e4cf9232106524f8a3f412c1baecc96",   # Plantilla: campana_masiva_custom
     "pedido_en_camino": "HX89eb01626bffa51988179da38eef6f79",    # Plantilla: pedido_en_camino
     "codigo_verificacion": "HX42003eb243fd020dbeaa9d9b983e7ea4",              # Plantilla: verificacion_otp
-    "asignacion_repartidor": "HXb3b35f302a415df95db291d3181c6548"              # Plantilla: asignacion_repartidor
+    "asignacion_repartidor": "HX1743ee41809bd9c543ab1e5393ea7645"              # Plantilla: asignacion_repartidor
 }
 
 def get_template_data(template_key, **kwargs):
