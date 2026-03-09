@@ -65,6 +65,7 @@ import { MapPicker } from '@/components/MapPicker';
 import { PlacesAutocomplete } from '@/components/PlacesAutocomplete';
 import { FloatingWA } from '@/components/FloatingWA';
 import PublicTrialLocked from '@/components/PublicTrialLocked';
+import GOOGLE_MAPS_API_KEY from '@/config/googleMaps';
 
 const AvailableIcons = {
   UtensilsCrossed,
@@ -430,7 +431,7 @@ const MenuContent = () => {
           let addressFound = null;
 
           // 1. Intentar con fetch directo a la API de Geocoding (Método Fideli.IA)
-          const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+          const apiKey = GOOGLE_MAPS_API_KEY;
           if (apiKey) {
             try {
               const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`);

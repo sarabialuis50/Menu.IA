@@ -2,8 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useGoogleMaps } from '@/hooks/useGoogleMaps';
 import { Loader2, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import GOOGLE_MAPS_API_KEY from '@/config/googleMaps';
 
-const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+const API_KEY = GOOGLE_MAPS_API_KEY;
 
 export const MapPicker = ({ lat, lng, onChange, address }) => {
     const mapRef = useRef(null);

@@ -662,7 +662,7 @@ export default function PedidosPage() {
                                             <div className="flex flex-col">
                                                 <span className="text-sm font-black text-gray-900">{idx + 1}. {item.nombre}</span>
                                                 {item.descripcion && (
-                                                    <p className="text-[11px] text-gray-500 line-clamp-2 leading-tight">
+                                                    <p className="text-[11px] font-bold text-gray-600 line-clamp-2 leading-tight">
                                                         {item.descripcion}
                                                     </p>
                                                 )}

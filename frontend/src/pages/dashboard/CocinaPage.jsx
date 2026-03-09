@@ -232,6 +232,12 @@ function OrderCard({ order, onUpdateStatus }) {
                 <span className="font-medium text-gray-900">{item.nombre}</span>
               </div>
 
+              {item.descripcion && (
+                <div className="ml-8 text-[11px] font-bold text-gray-600 leading-tight mb-1">
+                  {item.descripcion}
+                </div>
+              )}
+
               {item.notas && (
                 <div className="ml-8 text-sm font-black text-amber-600 leading-tight mb-1 bg-amber-50 px-2 py-1 rounded border-l-2 border-amber-400">
                   Nota: {item.notas}
