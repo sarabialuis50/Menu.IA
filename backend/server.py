@@ -2215,25 +2215,10 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
             else:
                 logger.warning(f"Repartidor {rep['nombre']} sin teléfono")
             
+        # Estado 'enviado': No se envía notificación adicional.
+        # El repartidor ya fue notificado con 'asignacion_repartidor' al pasar a 'listo'.
         elif type == 'enviado':
-            # Notificación al Cliente (Usando la plantilla pedido_en_camino)
-            cust_phone = clean_wa_phone(order.get('cliente_telefono'))
-            if cust_phone:
-                link = f"{frontend_url}/{slug}/mis-pedidos"
-                logger.info(f"Enviando plantilla pedido_en_camino a cliente {cust_phone}")
-                
-                res_tmpl = send_whatsapp_template(
-                    to_number=cust_phone,
-                    template_key="pedido_en_camino",
-                    custom_config=twilio_config,
-                    cliente_nombre=order.get('cliente_nombre', 'Cliente'),
-                    negocio_nombre=biz.get('nombre', 'Nuestro Negocio'),
-                    link_seguimiento=link
-                )
-                
-                if not res_tmpl:
-                    msg_fallback = f"🔔 *¡Tu pedido de {biz['nombre']} va en camino!*\n\nPuedes seguirlo aquí: {link}"
-                    send_whatsapp_response(cust_phone, msg_fallback, custom_config=twilio_config)
+            logger.info(f"Pedido {order_id} marcado como enviado. Sin notificación adicional.")
             
         elif type == 'entregado':
             # Notificar Cliente

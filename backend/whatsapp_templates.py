@@ -10,7 +10,6 @@ TWILIO_SIDS = {
     "fidelidad": "HX23628ad40f0211a1379819bf608de21b",           # Plantilla: notificacion_fidelidad_v1
     "cumpleanos": "HX1f5542e7ab4c3a77f396a6a70fef1658",          # Plantilla: felicitacion_cumple_negocio
     "campana_marketing": "HX4e4cf9232106524f8a3f412c1baecc96",   # Plantilla: campana_masiva_custom
-    "pedido_en_camino": "HX89eb01626bffa51988179da38eef6f79",    # Plantilla: pedido_en_camino
     "codigo_verificacion": "HX42003eb243fd020dbeaa9d9b983e7ea4",              # Plantilla: verificacion_otp
     "asignacion_repartidor": "HX1743ee41809bd9c543ab1e5393ea7645"              # Plantilla: asignacion_repartidor
 }
@@ -101,12 +100,5 @@ def get_template_data(template_key, **kwargs):
             "2": kwargs.get("negocio_nombre", "Menu.IA")
         }
 
-    elif template_key == "pedido_en_camino":
-        # variables: {{1}} Cliente, {{2}} Negocio, {{3}} Link Seguimiento / Tel Repartidor
-        variables = {
-            "1": kwargs.get("cliente_nombre", "Cliente"),
-            "2": kwargs.get("negocio_nombre", "Nuestro Negocio"),
-            "3": kwargs.get("link_seguimiento", "https://menuia.co/pedidos")
-        }
 
     return sid, variables
