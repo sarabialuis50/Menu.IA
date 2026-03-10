@@ -1,6 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { UtensilsCrossed, ArrowLeft, User } from 'lucide-react';
 import { FloatingWA } from '@/components/FloatingWA';
+import { InstallPWAInstructions } from '@/components/InstallPWAInstructions';
 import { useAuth } from '@/context/AuthContext';
 
 export const PublicLayout = ({
@@ -114,6 +115,12 @@ export const PublicLayout = ({
         aiUseModal={aiUseModal}
         isClosed={isClosed}
         hidden={hidden}
+      />
+
+      {/* PWA Install Instructions for Mobile */}
+      <InstallPWAInstructions
+        businessName={businessName}
+        businessLogo={businessLogo}
       />
 
       {/* Shared Footer or Spacing */}
