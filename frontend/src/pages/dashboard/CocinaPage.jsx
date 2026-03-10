@@ -160,7 +160,7 @@ function OrderCard({ order, onUpdateStatus }) {
   const getTimeSince = (d) => { const diff = Math.floor((new Date() - new Date(d)) / 60000); return diff < 1 ? 'Ahora' : diff < 60 ? diff + ' min' : Math.floor(diff / 60) + 'h'; };
 
   let config;
-  if (order.estado === 'pendiente') {
+  if (order.estado === 'pendiente' || order.estado === 'aceptado') {
     config = {
       label: 'Nuevo',
       color: 'border-blue-400 bg-blue-50',
