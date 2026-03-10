@@ -42,7 +42,7 @@ def get_template_data(template_key, **kwargs):
             "3": sanitize_val(kwargs.get("cliente_nombre", "Cliente"), 60),
             "4": sanitize_val(kwargs.get("cliente_telefono", "N/A"), 30),
             "5": sanitize_val(kwargs.get("direccion_entrega", "Ver en mapa"), 300),
-            "6": f"`{sanitize_val(kwargs.get('order_id_corto', 'N/A'), 28)}`",
+            "6": sanitize_val(kwargs.get("order_id_corto", "N/A"), 30),
             "7": sanitize_val(kwargs.get("link_seguimiento", "https://menuia.co"), 150)
         }
     
@@ -55,7 +55,7 @@ def get_template_data(template_key, **kwargs):
             "3": sanitize_val(kwargs.get("repartidor_nombre", "Repartidor"), 60),
             "4": sanitize_val(kwargs.get("repartidor_telefono", "N/A"), 30),
             "5": sanitize_val(kwargs.get("direccion_entrega", "Ver en mapa"), 300),
-            "6": f"`{sanitize_val(kwargs.get('order_id_corto', 'N/A'), 28)}`",
+            "6": sanitize_val(kwargs.get("order_id_corto", "N/A"), 30),
             "7": sanitize_val(kwargs.get("link_seguimiento", "https://menuia.co"), 150)
         }
 
