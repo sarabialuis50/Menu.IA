@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 # --- CONFIGURACIÓN DE IDS DE TWILIO ---
 # REEMPLAZA estos valores con los 'Content SID' que te asigne Twilio (ej: HXxxxxxxxx...)
 TWILIO_SIDS = {
-    "resumen_pedido": "HX0a347542fcdee021da48601dab0775df",      # Plantilla: resumen_pedido
+    "resumen_pedido": "HXf94d25186b54a3d484e794ec0de5fa27",      # Plantilla: resumen_vertical_v1
     "fidelidad": "HX23628ad40f0211a1379819bf608de21b",           # Plantilla: notificacion_fidelidad_v1
     "cumpleanos": "HX1f5542e7ab4c3a77f396a6a70fef1658",          # Plantilla: felicitacion_cumple_negocio
     "campana_marketing": "HX4e4cf9232106524f8a3f412c1baecc96",   # Plantilla: campana_masiva_custom
