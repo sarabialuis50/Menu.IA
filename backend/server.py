@@ -2386,54 +2386,6 @@ async def track_order(slug: str, order_id: str):
         order_doc['business_lng'] = biz_res.data[0].get('lng')
         
     return Order(**order_doc)
-    
-@api_router.get("/manifest/{slug}")
-async def get_dynamic_manifest(slug: str):
-    response = supabase.table('negocios').select('nombre', 'descripcion', 'logo_url', 'color_primario').eq('slug', slug).execute()
-    if not response.data:
-        raise HTTPException(status_code=404, detail="Negocio no encontrado")
-        
-    business = response.data[0]
-    
-    # Default parameters
-    app_name = business.get('nombre', 'Menu.IA')
-    app_short_name = app_name[:12] if len(app_name) > 12 else app_name
-    description = business.get('descripcion', f'Menú y Pedidos de {app_name}')
-    color = business.get('color_primario', '#22C55E')
-    logo = business.get('logo_url') or "/logos/logo-icon-white.png"
-    
-    manifest = {
-        "short_name": app_short_name,
-        "name": app_name,
-        "description": description,
-        "icons": [
-            {
-                "src": logo,
-                "sizes": "192x192",
-                "type": "image/png",
-                "purpose": "any maskable"
-            },
-            {
-                "src": logo,
-                "sizes": "512x512",
-                "type": "image/png",
-                "purpose": "any maskable"
-            }
-        ],
-        "start_url": f"/{slug}/menu",
-        "display": "standalone",
-        "orientation": "portrait",
-        "theme_color": color,
-        "background_color": "#FAFAF9",
-        "categories": [
-            "food",
-            "business",
-            "productivity"
-        ],
-        "lang": "es"
-    }
-    
-    return manifest
 
 
 @api_router.get("/orders/{slug}/my-orders")

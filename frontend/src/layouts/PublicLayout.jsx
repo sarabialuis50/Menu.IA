@@ -1,9 +1,7 @@
-import React, { useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { UtensilsCrossed, ArrowLeft, User } from 'lucide-react';
 import { FloatingWA } from '@/components/FloatingWA';
 import { useAuth } from '@/context/AuthContext';
-import { API } from '@/config';
 
 export const PublicLayout = ({
   children,
@@ -21,25 +19,6 @@ export const PublicLayout = ({
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-
-  useEffect(() => {
-    if (!slug) return;
-
-    // Cambiar dinámicamente el titulo y meta-descripción (Opcional, pero bueno para el PWA context)
-    if (businessName) document.title = `${businessName} - Menú`;
-
-    // Buscar o crear la etiqueta manifest
-    let manifestLink = document.querySelector('link[rel="manifest"]');
-    if (!manifestLink) {
-      manifestLink = document.createElement('link');
-      manifestLink.rel = 'manifest';
-      document.head.appendChild(manifestLink);
-    }
-
-    // Apuntar a la nueva ruta en el backend
-    manifestLink.href = `${API}/manifest/${slug}`;
-
-  }, [slug, businessName]);
 
   const handleBack = () => {
     // 1. Prioridad: Path específico inyectado
