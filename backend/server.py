@@ -2398,13 +2398,17 @@ async def get_customer_orders(slug: str, query: str = None):
     if not query:
         return []
 
-    # Search by ID prefix (The 8-char code the user sees)
-    # ilike handles the UUID to string comparison in most Postgres setups
+    # ilike on UUID fields fails in Supabase. Fetch recent and filter in python.
+    # We fetch up to 1000 to ensure we catch recent active orders.
     response = supabase.table('pedidos').select('*').eq('negocio_id', business_id)\
-        .ilike('id', f"{query}%")\
-        .order('created_at', desc=True).limit(10).execute()
+        .order('created_at', desc=True).limit(1000).execute()
     
-    orders = response.data
+    orders = []
+    if response.data:
+        q_lower = query.lower()
+        matched = [o for o in response.data if str(o.get('id', '')).lower().startswith(q_lower)]
+        orders = matched[:10]
+        
     return [Order(**o) for o in orders]
 
 

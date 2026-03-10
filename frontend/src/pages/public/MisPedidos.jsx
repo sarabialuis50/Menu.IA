@@ -42,7 +42,7 @@ export default function MisPedidos() {
               baseURL: API || '',
               headers: { Authorization: `Bearer ${token}` }
             });
-            const clientOrdersRes = await api.get('/api/client/orders');
+            const clientOrdersRes = await api.get('/client/orders');
             if (clientOrdersRes.data && clientOrdersRes.data.length > 0) {
               setOrders(clientOrdersRes.data);
 
@@ -498,7 +498,17 @@ function DeliveryMap({ lat, lng, businessLat, businessLng, clienteLat, clienteLn
     }
 
     if (hasPoints && !isDelivered) {
-      map.fitBounds(bounds, { top: 50, bottom: 50, left: 50, right: 50 });
+      if (bounds.getNorthEast().equals(bounds.getSouthWest())) {
+        map.setCenter(bounds.getNorthEast());
+        map.setZoom(16);
+      } else {
+        map.fitBounds(bounds, { top: 50, bottom: 50, left: 50, right: 50 });
+        // prevent over-zooming
+        const listener = window.google.maps.event.addListener(map, 'idle', function () {
+          if (map.getZoom() > 16) map.setZoom(16);
+          window.google.maps.event.removeListener(listener);
+        });
+      }
     }
   }, [map, lat, lng, businessLat, businessLng, clienteLat, clienteLng, isDelivered]);
 
