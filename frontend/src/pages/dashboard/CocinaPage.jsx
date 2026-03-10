@@ -287,7 +287,7 @@ function OrderCard({ order, onUpdateStatus }) {
                     return Object.entries(grouped)
                       .filter(([_, mods]) => mods.length > 0)
                       .map(([cat, mods], i) => (
-                        <div key={i} className={`flex flex-col min-w-0 ${cat === 'ADICIONALES' ? '-ml-[5%]' : ''}`}>
+                        <div key={i} className={`flex flex-col min-w-0 ${cat === 'ADICIONALES' ? '-ml-[4%]' : ''}`}>
                           <span className="text-[9px] text-gray-500 font-bold uppercase tracking-wider mb-0.5 leading-none whitespace-nowrap" title={cat}>
                             {cat === 'OPCIONES' ? 'OPCIONES:' : cat}
                           </span>
