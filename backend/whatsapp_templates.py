@@ -27,7 +27,8 @@ def get_template_data(template_key, **kwargs):
     def sanitize_val(val, truncate_len=None):
         if val is None: return ""
         if not isinstance(val, str): val = str(val)
-        cleaned = val.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ').strip()
+        # Preserve newlines for formatting
+        cleaned = val.strip()
         return cleaned[:truncate_len] if truncate_len else cleaned
 
     variables = {}
@@ -71,7 +72,7 @@ def get_template_data(template_key, **kwargs):
         variables = {
             "1": sanitize_val(kwargs.get("negocio_nombre", "Nuestro Negocio"), 50),
             "2": sanitize_val(kwargs.get("pedido_id", "N/A"), 50),
-            "3": sanitize_val(f"Nombre: {kwargs.get('cliente_nombre', 'Cliente')} Tel: {kwargs.get('cliente_telefono', 'N/A')}", 200),
+            "3": sanitize_val(kwargs.get('cliente_info', f"Nombre: {kwargs.get('cliente_nombre', 'Cliente')}\nTel: {kwargs.get('cliente_telefono', 'N/A')}"), 400),
             "4": sanitize_val(kwargs.get("detalle_carrito", "Detalle no disponible"), 900),
             "5": sanitize_val(kwargs.get("entrega_info", "Recoge en local"), 400),
             "6": sanitize_val(kwargs.get("resumen_pago", "TOTAL: $0"), 400),

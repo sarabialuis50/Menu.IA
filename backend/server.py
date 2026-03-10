@@ -2013,17 +2013,13 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
         item_subtotal = (item.cantidad or 0) * (item.precio_unitario or 0)
         subtotal += item_subtotal
         
-        line = f"\n* {idx}. {item.nombre} x{item.cantidad} (${item.precio_unitario:,.0f})"
+        line = f"\n* {idx}. {item.nombre} x{item.cantidad} (${item.precio_unitario:,.0f}) "
         
         # Process modifiers
         if item.modificadores:
-            mods_list = []
             for m in item.modificadores:
                 m_name = m.get('nombre', str(m)) if isinstance(m, dict) else str(m)
-                m_price = m.get('precio', 0) if isinstance(m, dict) else 0
-                mods_list.append(m_name)
-            if mods_list:
-                line += f"\n* {', '.join(mods_list)}"
+                line += f"\n*({item.cantidad or 1}) {m_name}, "
         
         # Specific item notes
         if hasattr(item, 'notas') and item.notas and item.notas.lower() not in ["no aplica", "ninguna", ""]:
@@ -2062,15 +2058,17 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
     
     # Delivery Info Formatted
     if order.tipo == "delivery":
-        entrega_info = f"{metodo_entrega}"
-        if direccion_legible: entrega_info += f"\n* Dirección: {direccion_legible}"
-        if order.distancia: entrega_info += f"\n* Distancia: {order.distancia:.1f} km"
-        if obs_entrega: entrega_info += f"\n* Observación de entrega: {obs_entrega}"
+        entrega_info = f"{metodo_entrega} \n\n"
+        if direccion_legible: entrega_info += f"* Dirección: {direccion_legible} \n"
+        if obs_entrega: entrega_info += f"* Observación de entrega: {obs_entrega}"
     else:
         entrega_info = f"\n* Retiro en: {metodo_entrega}"
     
     # Payment summary formatted
-    resumen_pago = f"\n* Subtotal: ${subtotal:,.0f}\n* Envío: ${order.costo_envio or 0:,.0f}\n* TOTAL: ${order.total:,.0f}\n"
+    resumen_pago = f"\n\n* Subtotal: ${subtotal:,.0f} \n* Envío: ${order.costo_envio or 0:,.0f} \n* TOTAL: ${order.total:,.0f}\n"
+
+    # Cliente Info Formatted
+    cliente_info = f"\n\n*Nombre: {order.cliente_nombre or 'Cliente'} \n*Tel: {order.cliente_telefono or 'N/A'}"
 
     # Build business-specific link
     link_negocio = f"https://menuia.co/{slug}" if slug else "https://menuia.co"
@@ -2080,16 +2078,14 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
     template_kwargs = {
         "negocio_nombre": business_name,
         "pedido_id": order.id[:8].upper(),
-        "cliente_nombre": order.cliente_nombre or "Cliente",
-        "cliente_telefono": order.cliente_telefono or "N/A",
-        "obs_pedido": obs_pedido,
+        "cliente_info": cliente_info,
         "detalle_carrito": detalle_carrito,
         "entrega_info": entrega_info,
         "resumen_pago": resumen_pago,
         "metodo_pago": order.metodo_pago or "Efectivo",
-        "metodo_entrega": f"{metodo_entrega}" + (f"\n* Observaciones de entrega: {obs_entrega}" if obs_entrega else ""),
+        "metodo_entrega": f"{metodo_entrega}",
         "fecha": fecha,
-        "link_seguimiento": link_negocio
+        "link_seguimiento": f"https://menuia.co/{slug}/mis-pedidos"
     }
 
     # 1. Send to Client (using approved template)
