@@ -2177,7 +2177,7 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
             logger.info("Usando configuración Global de Twilio")
 
         if type == 'assignment':
-            # Notificación al Repartidor (Asignación)
+            # Notificación al Repartidor Y al Cliente (Asignación)
             # USAMOS PLANTILLA para que llegue sin necesidad de conversación previa
             rep_id = order.get('repartidor_id')
             if not rep_id: 
@@ -2190,30 +2190,55 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
                 return
             rep = res_rep.data[0]
             
-            phone = clean_wa_phone(rep.get('telefono'))
-            if phone:
-                link = f"{frontend_url}/reparto/{slug}/{order_id}"
-                logger.info(f"Enviando plantilla asignacion_repartidor a repartidor {rep['nombre']} ({phone})")
-                
+            # Links diferentes para cada destinatario
+            link_repartidor = f"{frontend_url}/reparto/{slug}/{order_id}"
+            link_cliente = f"{frontend_url}/{slug}/mis-pedidos?order={order_id}"
+            
+            # Parámetros comunes de la plantilla
+            common_params = dict(
+                repartidor_nombre=rep.get('nombre', 'Repartidor'),
+                negocio_nombre=biz.get('nombre', 'Nuestro Negocio'),
+                cliente_nombre=order.get('cliente_nombre', 'Cliente'),
+                cliente_telefono=order.get('cliente_telefono', 'N/A'),
+                direccion_entrega=order.get('direccion', 'Ver en mapa'),
+                order_id_corto=order_id[:8].upper()
+            )
+            
+            # 1. Enviar al Repartidor (con link a su interfaz de despacho)
+            rep_phone = clean_wa_phone(rep.get('telefono'))
+            if rep_phone:
+                logger.info(f"Enviando plantilla asignacion_repartidor a repartidor {rep['nombre']} ({rep_phone})")
                 res_tmpl = send_whatsapp_template(
-                    to_number=phone,
+                    to_number=rep_phone,
                     template_key="asignacion_repartidor",
                     custom_config=twilio_config,
-                    repartidor_nombre=rep.get('nombre', 'Repartidor'),
-                    negocio_nombre=biz.get('nombre', 'Nuestro Negocio'),
-                    cliente_nombre=order.get('cliente_nombre', 'Cliente'),
-                    cliente_telefono=order.get('cliente_telefono', 'N/A'),
-                    direccion_entrega=order.get('direccion', 'Ver en mapa'),
-                    order_id_corto=order_id[:8].upper(),
-                    link_seguimiento=link
+                    link_seguimiento=link_repartidor,
+                    **common_params
                 )
-                
                 if res_tmpl:
                     logger.info(f"Asignación enviada al repartidor via plantilla. SID: {res_tmpl}")
                 else:
-                    logger.error(f"Error al enviar plantilla asignacion_repartidor a {phone}. (¿Ya fue aprobada en Twilio?)")
+                    logger.error(f"Error al enviar plantilla asignacion_repartidor a repartidor {rep_phone}")
             else:
                 logger.warning(f"Repartidor {rep['nombre']} sin teléfono")
+            
+            # 2. Enviar al Cliente (con link a seguimiento en tiempo real)
+            cust_phone = clean_wa_phone(order.get('cliente_telefono'))
+            if cust_phone:
+                logger.info(f"Enviando plantilla asignacion_repartidor a cliente {order.get('cliente_nombre')} ({cust_phone})")
+                res_tmpl_cust = send_whatsapp_template(
+                    to_number=cust_phone,
+                    template_key="asignacion_repartidor",
+                    custom_config=twilio_config,
+                    link_seguimiento=link_cliente,
+                    **common_params
+                )
+                if res_tmpl_cust:
+                    logger.info(f"Asignación enviada al cliente via plantilla. SID: {res_tmpl_cust}")
+                else:
+                    logger.error(f"Error al enviar plantilla asignacion_repartidor a cliente {cust_phone}")
+            else:
+                logger.warning(f"Cliente sin teléfono registrado")
             
         # Estado 'enviado': No se envía notificación adicional.
         # El repartidor ya fue notificado con 'asignacion_repartidor' al pasar a 'listo'.

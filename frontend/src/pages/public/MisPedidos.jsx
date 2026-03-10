@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGoogleMaps } from '@/hooks/useGoogleMaps';
+import GOOGLE_MAPS_API_KEY from '@/config/googleMaps';
 
 // Backend API URL
 const API = (import.meta.env && (import.meta.env.VITE_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL)) || '/api';
@@ -395,7 +396,7 @@ function OrderTimeline({ order, onRefresh, onReset, onHide }) {
 }
 
 function DeliveryMap({ lat, lng, businessLat, businessLng, clienteLat, clienteLng, isDelivered }) {
-  const { isLoaded, loadError } = useGoogleMaps();
+  const isLoaded = useGoogleMaps(GOOGLE_MAPS_API_KEY);
   const [map, setMap] = useState(null);
   const mapRef = useState(null);
 
@@ -498,7 +499,6 @@ function DeliveryMap({ lat, lng, businessLat, businessLng, clienteLat, clienteLn
     }
   }, [map, lat, lng, businessLat, businessLng, clienteLat, clienteLng, isDelivered]);
 
-  if (loadError) return <div className="p-4 text-center text-red-500">Error cargando el mapa</div>;
   if (!isLoaded) return <div className="p-4 text-center"><RefreshCw className="w-6 h-6 animate-spin mx-auto text-[#22C55E]" /></div>;
 
   return <div id="map-container" className="w-full h-full z-0" />;
