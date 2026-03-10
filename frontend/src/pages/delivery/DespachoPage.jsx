@@ -186,10 +186,10 @@ export default function DespachoPage() {
                             <div className="space-y-6">
                                 <div>
                                     <p className="text-3xl font-black text-white tracking-tighter mb-1 uppercase italic leading-none">{order.cliente_nombre}</p>
-                                    <div className="flex items-center gap-2 text-[#22C55E]">
+                                    <a href={`tel:${order.cliente_telefono}`} className="inline-flex items-center gap-2 text-[#22C55E] hover:text-[#4ADE80] active:scale-95 transition-all cursor-pointer">
                                         <Phone className="w-3 h-3" />
                                         <span className="text-xs font-bold leading-none">{order.cliente_telefono}</span>
-                                    </div>
+                                    </a>
                                 </div>
 
                                 <div className="pt-6 border-t border-white/10">
