@@ -84,22 +84,25 @@ export default function MisPedidos() {
   }, [selectedOrder?.id, selectedOrder?.estado]);
 
   const searchOrders = async () => {
-    const cleanPhone = phone.trim();
-    if (!cleanPhone) return;
+    const query = phone.trim().toUpperCase();
+    if (!query) return;
 
     setSearching(true);
     setHasSearched(false);
 
     try {
-      const response = await axios.get(`${API}/orders/${slug}/my-orders?telefono=${encodeURIComponent(cleanPhone)}`);
+      const response = await axios.get(`${API}/orders/${slug}/my-orders?query=${encodeURIComponent(query)}`);
       setOrders(response.data);
       setHasSearched(true);
 
       if (response.data.length > 0) {
         setSelectedOrder(response.data[0]);
+      } else {
+        toast.error("No encontramos ningún pedido con ese código.");
       }
     } catch (error) {
       console.error('Error:', error);
+      toast.error("Ocurrió un error al buscar el pedido.");
     } finally {
       setSearching(false);
     }
@@ -153,10 +156,10 @@ export default function MisPedidos() {
             >
               <ArrowLeft className="w-3 h-3" /> {localStorage.getItem('client_token') ? 'Volver a Mi Cuenta' : 'Volver al Menú'}
             </Button>
-            <h1 className="text-4xl font-black text-[#111814] tracking-tighter leading-none">Mis Pedidos</h1>
+            <h1 className="text-4xl font-black text-[#111814] tracking-tighter leading-none">Mi Pedido</h1>
           </div>
           <div className="size-14 rounded-2xl bg-[#4ADE80]/10 flex items-center justify-center text-[#22C55E]">
-            <Smartphone className="w-8 h-8" />
+            <Package className="w-8 h-8" />
           </div>
         </div>
 
@@ -181,7 +184,7 @@ export default function MisPedidos() {
               exit={{ opacity: 0, scale: 0.95 }}
               key="search"
             >
-              <SearchSection phone={phone} setPhone={setPhone} searchOrders={searchOrders} searching={searching} />
+              <SearchSection search_query={phone} setSearchQuery={setPhone} searchOrders={searchOrders} searching={searching} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -192,29 +195,29 @@ export default function MisPedidos() {
   );
 }
 
-function SearchSection({ phone, setPhone, searchOrders, searching }) {
+function SearchSection({ search_query, setSearchQuery, searchOrders, searching }) {
   return (
     <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-xl shadow-gray-200/50 space-y-6">
       <div className="space-y-2">
         <h2 className="text-xl font-black text-[#111814] tracking-tight">Rastrear mi pedido</h2>
         <p className="text-sm text-[#618972] font-medium leading-relaxed">
-          Ingresa el número de teléfono que usaste al pedir para ver el estado en tiempo real.
+          Ingresa el código único de seguimiento de tu pedido (8 caracteres) para ver su estado actual.
         </p>
       </div>
 
       <div className="space-y-4">
         <div className="relative">
-          <Phone className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-[#618972]/40" />
+          <Package className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-[#618972]/40" />
           <Input
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            value={search_query}
+            onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 searchOrders();
               }
             }}
-            placeholder="Tu número de teléfono"
-            className="h-16 pl-14 rounded-2xl bg-gray-50/50 border-gray-100 font-bold text-lg focus:ring-[#22C55E] focus:border-[#22C55E] transition-all"
+            placeholder="Código del pedido (Ej: 5CDE18)"
+            className="h-16 pl-14 rounded-2xl bg-gray-50/50 border-gray-100 font-bold text-lg focus:ring-[#22C55E] focus:border-[#22C55E] transition-all uppercase"
           />
         </div>
         <Button
@@ -225,7 +228,7 @@ function SearchSection({ phone, setPhone, searchOrders, searching }) {
           {searching ? <RefreshCw className="w-5 h-5 animate-spin" /> : (
             <div className="flex items-center gap-2">
               <Search className="w-5 h-5" />
-              <span>Ver mis pedidos</span>
+              <span>Rastrear Pedido</span>
             </div>
           )}
         </Button>

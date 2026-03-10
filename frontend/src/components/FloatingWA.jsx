@@ -4,16 +4,23 @@ import { MessageCircle, X, Sparkles } from 'lucide-react';
 import { ChatModal } from './ChatModal';
 
 export const FloatingWA = ({ businessName, whatsapp, aiEnabled, aiSaludo, slug, aiUseModal = true, isClosed = false, hidden = false }) => {
+    // Read sessionStorage on init — if already dismissed, never show again
+    const alreadyDismissed = typeof window !== 'undefined' && sessionStorage.getItem(`wa_tooltip_closed_${slug}`) === 'true';
     const [showTooltip, setShowTooltip] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const tooltipShownRef = React.useRef(false);
 
     useEffect(() => {
-        // Show tooltip after 3 seconds
+        // If already dismissed in this session, never show
+        if (alreadyDismissed || tooltipShownRef.current) return;
+
+        // Show tooltip after 3 seconds (only once)
         const timer = setTimeout(() => {
+            tooltipShownRef.current = true;
             setShowTooltip(true);
         }, 3000);
         return () => clearTimeout(timer);
-    }, []);
+    }, []); // empty deps — run only on first mount
 
     if (!aiEnabled) return null;
 
@@ -29,6 +36,7 @@ export const FloatingWA = ({ businessName, whatsapp, aiEnabled, aiSaludo, slug, 
         e.preventDefault();
         setIsModalOpen(true);
         setShowTooltip(false);
+        sessionStorage.setItem(`wa_tooltip_closed_${slug}`, 'true');
     };
 
     return (
@@ -43,7 +51,10 @@ export const FloatingWA = ({ businessName, whatsapp, aiEnabled, aiSaludo, slug, 
                             className="bg-white p-4 rounded-2xl rounded-br-none shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-gray-100 max-w-[240px] pointer-events-auto relative mb-1"
                         >
                             <button
-                                onClick={() => setShowTooltip(false)}
+                                onClick={() => {
+                                    setShowTooltip(false);
+                                    sessionStorage.setItem(`wa_tooltip_closed_${slug}`, 'true');
+                                }}
                                 tabIndex={-1}
                                 onPointerDown={(e) => e.preventDefault()}
                                 className="absolute -top-2 -left-2 size-6 bg-white border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 shadow-sm"

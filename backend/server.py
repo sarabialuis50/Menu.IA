@@ -2389,22 +2389,20 @@ async def track_order(slug: str, order_id: str):
 
 
 @api_router.get("/orders/{slug}/my-orders")
-async def get_customer_orders(slug: str, telefono: str):
+async def get_customer_orders(slug: str, query: str = None):
     response = supabase.table('negocios').select('id').eq('slug', slug).execute()
     if not response.data:
         raise HTTPException(status_code=404, detail="Negocio no encontrado")
     business_id = response.data[0]['id']
     
-    # Búsqueda flexible: con y sin prefijo +57
-    possible_phones = [telefono]
-    if not telefono.startswith('+'):
-        possible_phones.append(f"+57{telefono}")
-    
-    or_filter = ",".join([f"cliente_telefono.eq.{p}" for p in possible_phones])
-    
+    if not query:
+        return []
+
+    # Search by ID prefix (The 8-char code the user sees)
+    # ilike handles the UUID to string comparison in most Postgres setups
     response = supabase.table('pedidos').select('*').eq('negocio_id', business_id)\
-        .or_(or_filter)\
-        .order('created_at', desc=True).limit(20).execute()
+        .ilike('id', f"{query}%")\
+        .order('created_at', desc=True).limit(10).execute()
     
     orders = response.data
     return [Order(**o) for o in orders]
