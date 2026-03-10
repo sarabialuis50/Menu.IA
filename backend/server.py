@@ -2058,10 +2058,18 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
     
     # Delivery Info Formatted
     if order.tipo == "delivery":
-        entrega_info = f"{metodo_entrega} \n\n"
-        if direccion_legible: entrega_info += f"* Dirección: {direccion_legible} \n"
-        if order.distancia: entrega_info += f"* Distancia: {order.distancia:.1f} km \n"
-        if obs_entrega: entrega_info += f"* Observación de entrega: {obs_entrega}"
+        lines = [f"{metodo_entrega} \n"] # Header same line
+        if direccion_legible:
+            lines.append(f"* Dirección: {direccion_legible}")
+        if order.distancia:
+            lines.append(f"* Distancia: {order.distancia:.1f} Km")
+        if obs_entrega:
+            lines.append(f"* Observación de entrega: {obs_entrega}")
+        
+        # Build the final string with double newline after header, then single between items
+        header = lines[0]
+        content = "\n".join(lines[1:])
+        entrega_info = f"{header}\n{content}"
     else:
         entrega_info = f"\n* Retiro en: {metodo_entrega}"
     

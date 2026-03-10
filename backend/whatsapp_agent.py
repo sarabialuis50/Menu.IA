@@ -758,11 +758,13 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
         cliente_info = f"\n\n*Nombre: {args.get('cliente_nombre', 'Cliente')} \n*Tel: {args.get('cliente_telefono', 'N/A')}"
         
         # Delivery Info
-        entrega_info = f"{args.get('tipo', 'Domicilio').capitalize()} \n\n"
-        entrega_info += f"* Dirección: {args.get('direccion', 'Punto de venta')} \n"
-        entrega_info += f"* Distancia: {args.get('distancia', 'N/A')} km \n"
+        d_lines = [f"{args.get('tipo', 'Domicilio').capitalize()} \n"]
+        d_lines.append(f"* Dirección: {args.get('direccion', 'Punto de venta')}")
+        d_lines.append(f"* Distancia: {args.get('distancia', 'N/A')} Km")
         if args.get('notas_entrega'):
-            entrega_info += f"* Observación de entrega: {args.get('notas_entrega')}"
+            d_lines.append(f"* Observación de entrega: {args.get('notas_entrega')}")
+        
+        entrega_info = f"{d_lines[0]}\n" + "\n".join(d_lines[1:])
 
         template_kwargs = {
             "negocio_nombre": business_name,
