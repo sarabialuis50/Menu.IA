@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 # --- CONFIGURACIÓN DE IDS DE TWILIO ---
 # REEMPLAZA estos valores con los 'Content SID' que te asigne Twilio (ej: HXxxxxxxxx...)
 TWILIO_SIDS = {
-    "resumen_pedido": "HXf94d25186b54a3d484e794ec0de5fa27",      # Plantilla: resumen_vertical_v1
+    "resumen_pedido": "HXf94d25186b54a3d484e794ec0de5fa27",      # Plantilla: resumen_vertical_v1 (Creada por el usuario)
     "fidelidad": "HX23628ad40f0211a1379819bf608de21b",           # Plantilla: notificacion_fidelidad_v1
     "cumpleanos": "HX1f5542e7ab4c3a77f396a6a70fef1658",          # Plantilla: felicitacion_cumple_negocio
     "campana_marketing": "HX4e4cf9232106524f8a3f412c1baecc96",   # Plantilla: campana_masiva_custom
@@ -35,41 +35,54 @@ def get_template_data(template_key, **kwargs):
 
     if template_key == "asignacion_repartidor":
         # Variable names in Content SID HX1743ee41809bd9c543ab1e5393ea7645
+        # variables: {{1}} Repartidor, {{2}} Negocio, {{3}} Cliente, {{4}} Telefono Cliente, {{5}} Dirección, {{6}} ID Pedido, {{7}} Link
         variables = {
-            "repartidor_nombre": sanitize_val(kwargs.get("repartidor_nombre", "Repartidor"), 60),
-            "negocio_nombre": sanitize_val(kwargs.get("negocio_nombre", "Nuestro Negocio"), 60),
-            "cliente_nombre": sanitize_val(kwargs.get("cliente_nombre", "Cliente"), 60),
-            "cliente_telefono": sanitize_val(kwargs.get("cliente_telefono", "N/A"), 30),
-            "direccion_entrega": sanitize_val(kwargs.get("direccion_entrega", "Ver en mapa"), 300),
-            "order_id_corto": sanitize_val(kwargs.get("order_id_corto", "N/A"), 30),
-            "link_seguimiento": sanitize_val(kwargs.get("link_seguimiento", "https://menuia.co"), 150)
+            "1": sanitize_val(kwargs.get("repartidor_nombre", "Repartidor"), 60),
+            "2": sanitize_val(kwargs.get("negocio_nombre", "Nuestro Negocio"), 60),
+            "3": sanitize_val(kwargs.get("cliente_nombre", "Cliente"), 60),
+            "4": sanitize_val(kwargs.get("cliente_telefono", "N/A"), 30),
+            "5": sanitize_val(kwargs.get("direccion_entrega", "Ver en mapa"), 300),
+            "6": sanitize_val(kwargs.get("order_id_corto", "N/A"), 30),
+            "7": sanitize_val(kwargs.get("link_seguimiento", "https://menuia.co"), 150)
         }
     
     elif template_key == "seguimiento_cliente":
         # Variable names in Content SID HX3659bc5dccb53e716316f42582cf45b4
+        # variables: {{1}} Cliente, {{2}} Negocio, {{3}} Repartidor, {{4}} Telefono Repartidor, {{5}} Dirección, {{6}} ID Pedido, {{7}} Link
         variables = {
-            "cliente_nombre": sanitize_val(kwargs.get("cliente_nombre", "Cliente"), 60),
-            "negocio_nombre": sanitize_val(kwargs.get("negocio_nombre", "Nuestro Negocio"), 60),
-            "repartidor_nombre": sanitize_val(kwargs.get("repartidor_nombre", "Repartidor"), 60),
-            "repartidor_telefono": sanitize_val(kwargs.get("repartidor_telefono", "N/A"), 30),
-            "direccion_entrega": sanitize_val(kwargs.get("direccion_entrega", "Ver en mapa"), 300),
-            "order_id_corto": sanitize_val(kwargs.get("order_id_corto", "N/A"), 30),
-            "link_seguimiento": sanitize_val(kwargs.get("link_seguimiento", "https://menuia.co"), 150)
+            "1": sanitize_val(kwargs.get("cliente_nombre", "Cliente"), 60),
+            "2": sanitize_val(kwargs.get("negocio_nombre", "Nuestro Negocio"), 60),
+            "3": sanitize_val(kwargs.get("repartidor_nombre", "Repartidor"), 60),
+            "4": sanitize_val(kwargs.get("repartidor_telefono", "N/A"), 30),
+            "5": sanitize_val(kwargs.get("direccion_entrega", "Ver en mapa"), 300),
+            "6": sanitize_val(kwargs.get("order_id_corto", "N/A"), 30),
+            "7": sanitize_val(kwargs.get("link_seguimiento", "https://menuia.co"), 150)
         }
 
     elif template_key == "resumen_pedido":
-        # Variable names in Content SID HXf94d25186b54a3d484e794ec0de5fa27
+        # Supports both numbered mapping for vertical_v1 and potential named mapping
+        negocio = sanitize_val(kwargs.get("negocio_nombre", "Nuestro Negocio"), 80)
+        pedido_id = sanitize_val(kwargs.get("pedido_id", "N/A"), 40)
+        cliente = sanitize_val(kwargs.get('cliente_info', ""), 800)
+        detalle = sanitize_val(kwargs.get("detalle_carrito", "Varios"), 2500)
+        entrega = sanitize_val(kwargs.get("entrega_info", ""), 1000)
+        resumen = sanitize_val(kwargs.get("resumen_pago", ""), 800)
+        metodo_p = sanitize_val(kwargs.get("metodo_pago", "Efectivo"), 60)
+        metodo_e = sanitize_val(kwargs.get("metodo_entrega", "Domicilio"), 80)
+        fecha_str = sanitize_val(kwargs.get("fecha", ""), 100)
+        link = sanitize_val(kwargs.get("link_seguimiento", "https://menuia.co"), 250)
+
         variables = {
-            "negocio_nombre": sanitize_val(kwargs.get("negocio_nombre", "Nuestro Negocio"), 60),
-            "pedido_id": sanitize_val(kwargs.get("pedido_id", "N/A"), 40),
-            "cliente_info": sanitize_val(kwargs.get('cliente_info', ""), 500),
-            "detalle_carrito": sanitize_val(kwargs.get("detalle_carrito", "Varios"), 1500),
-            "entrega_info": sanitize_val(kwargs.get("entrega_info", "Domicilio"), 600),
-            "resumen_pago": sanitize_val(kwargs.get("resumen_pago", ""), 500),
-            "metodo_pago": sanitize_val(kwargs.get("metodo_pago", "Efectivo"), 40),
-            "metodo_entrega": sanitize_val(kwargs.get("metodo_entrega", "Domicilio"), 60),
-            "fecha": sanitize_val(kwargs.get("fecha", ""), 50),
-            "link_seguimiento": sanitize_val(kwargs.get("link_seguimiento", "https://menuia.co"), 150)
+            "1": negocio, "negocio_nombre": negocio,
+            "2": pedido_id, "pedido_id": pedido_id,
+            "3": cliente, "cliente_info": cliente,
+            "4": detalle, "detalle_carrito": detalle,
+            "5": entrega, "entrega_info": entrega,
+            "6": resumen, "resumen_pago": resumen,
+            "7": metodo_p, "metodo_pago": metodo_p,
+            "8": metodo_e, "metodo_entrega": metodo_e,
+            "9": fecha_str, "fecha": fecha_str,
+            "10": link, "link_seguimiento": link
         }
 
     elif template_key == "fidelidad":
@@ -103,9 +116,10 @@ def get_template_data(template_key, **kwargs):
     elif template_key == "codigo_verificacion":
         # variables: {{1}} OTP Code, {{2}} Negocio
         # Variable names in Content SID HX42003eb243fd020dbeaa9d9b983e7ea4
+        # variables: {{1}} OTP Code, {{2}} Negocio
         variables = {
-            "otp_code": kwargs.get("otp_code", ""),
-            "negocio_nombre": kwargs.get("negocio_nombre", "Menu.IA")
+            "1": kwargs.get("otp_code", ""),
+            "2": kwargs.get("negocio_nombre", "Menu.IA")
         }
 
 

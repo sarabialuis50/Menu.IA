@@ -2002,7 +2002,8 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
     """Send order notifications to Client and Business using approved templates"""
     
     # Prepare common data for the template
-    fecha = datetime.now().strftime("%d/%m/%Y, %H:%M")
+    # Format date in 12h format (am/pm) as requested
+    fecha = datetime.now().strftime("%d/%m/%Y, %I:%M %p").lower()
     
     # Build cart detail (clean, readable format)
     detalle_items = []
@@ -2013,13 +2014,13 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
         item_subtotal = (item.cantidad or 0) * (item.precio_unitario or 0)
         subtotal += item_subtotal
         
-        line = f"\n* {idx}. {item.nombre} x{item.cantidad} (${item.precio_unitario:,.0f}) "
+        line = f"* {item.nombre} x{item.cantidad} (${item.precio_unitario:,.0f})"
         
         # Process modifiers
         if item.modificadores:
             for m in item.modificadores:
                 m_name = m.get('nombre', str(m)) if isinstance(m, dict) else str(m)
-                line += f"\n*({item.cantidad or 1}) {m_name}, "
+                line += f"\n*({item.cantidad or 1}) {m_name}"
         
         # Specific item notes
         if hasattr(item, 'notas') and item.notas and item.notas.lower() not in ["no aplica", "ninguna", ""]:
@@ -2027,7 +2028,7 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
             
         detalle_items.append(line)
         
-    detalle_carrito = "".join(detalle_items)
+    detalle_carrito = "\n".join(detalle_items)
     
     # Consolidate notes 
     raw_notes = order.notas or ""
@@ -2056,28 +2057,23 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
     # Determine delivery method display name
     metodo_entrega = order.metodo_entrega or ("Domicilio" if order.tipo == "delivery" else ("Mesa" if order.tipo == "mesa" else "Para Recoger"))
     
-    # Delivery Info Formatted
+    # Delivery Info Formatted (Vertical as requested)
     if order.tipo == "delivery":
-        lines = [f"{metodo_entrega} \n"] # Header same line
-        if direccion_legible:
-            lines.append(f"* Dirección: {direccion_legible}")
+        d_info = f"{metodo_entrega}\n\n"
+        d_info += f"* Dirección: {direccion_legible or 'N/A'}\n"
         if order.distancia:
-            lines.append(f"* Distancia: {order.distancia:.1f} Km")
+            d_info += f"* Distancia: {order.distancia:.1f} Km\n"
         if obs_entrega:
-            lines.append(f"* Observación de entrega: {obs_entrega}")
-        
-        # Build the final string with double newline after header, then single between items
-        header = lines[0]
-        content = "\n".join(lines[1:])
-        entrega_info = f"{header}\n{content}"
+            d_info += f"* Observación de entrega: {obs_entrega}"
+        entrega_info = d_info.strip()
     else:
-        entrega_info = f"\n* Retiro en: {metodo_entrega}"
+        entrega_info = f"{metodo_entrega}"
     
-    # Payment summary formatted
-    resumen_pago = f"\n\n* Subtotal: ${subtotal:,.0f} \n* Envío: ${order.costo_envio or 0:,.0f} \n* TOTAL: ${order.total:,.0f}\n"
+    # Payment summary formatted (Vertical as requested)
+    resumen_pago = f"\n* Subtotal: ${subtotal:,.0f}\n* Envío: ${order.costo_envio or 0:,.0f}\n* TOTAL: ${order.total:,.0f}"
 
-    # Cliente Info Formatted
-    cliente_info = f"\n\n*Nombre: {order.cliente_nombre or 'Cliente'} \n*Tel: {order.cliente_telefono or 'N/A'}"
+    # Cliente Info Formatted (Vertical as requested)
+    cliente_info = f"\n\n*Nombre: {order.cliente_nombre or 'Cliente'}\n*Tel: {order.cliente_telefono or 'N/A'}"
 
     # Build business-specific link
     link_negocio = f"https://menuia.co/{slug}" if slug else "https://menuia.co"

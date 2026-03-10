@@ -207,12 +207,21 @@ function OrderCard({ order, onUpdateStatus }) {
     <div className={`rounded-xl border-2 overflow-hidden flex flex-col h-full ${config.color}`} data-testid={`order-ticket-${order.id}`}>
       <div className={`${config.headerColor} text-white px-4 py-2 flex items-center justify-between`}>
         <span className="font-bold shrink-0">{config.label}</span>
-        <div className="flex items-center gap-3 text-sm shrink-0">
-          {order.numero_secuencial && <span className="font-black bg-white/20 px-2 py-0.5 rounded-md">#{order.numero_secuencial}</span>}
-          <div className="flex items-center gap-1">
-            <Clock className="w-4 h-4 shrink-0" />
-            <span className="shrink-0">{getTimeSince(order.created_at)}</span>
-          </div>
+        <div className="flex items-center gap-2 text-sm">
+          <Clock className="w-4 h-4 shrink-0" />
+          <span className="shrink-0">{getTimeSince(order.created_at)}</span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (window.confirm('¿Deseas rechazar/cancelar este pedido?')) {
+                onUpdateStatus(order.id, 'cancelado');
+              }
+            }}
+            className="w-6 h-6 flex items-center justify-center rounded-full border-2 border-white hover:bg-white/20 transition-colors"
+            title="Rechazar Pedido"
+          >
+            <X className="w-3.5 h-3.5 text-white" />
+          </button>
         </div>
       </div>
       <div className="p-4 flex-1 flex flex-col">
@@ -220,9 +229,10 @@ function OrderCard({ order, onUpdateStatus }) {
           <h3 className="font-heading font-bold text-xl text-gray-900 leading-tight">
             {order.mesa_numero ? `Mesa ${order.mesa_numero}` : (order.tipo === 'delivery' || order.tipo_pedido === 'delivery' ? '🛵 Domicilio' : '🛍️ Para Recoger')}
           </h3>
-          <span className="text-xs font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100 shrink-0 ml-2">
-            #{order.id?.slice(0, 8).toUpperCase()}
-          </span>
+          <div className="flex flex-col items-end shrink-0 ml-2">
+            <span className="text-[11px] font-black text-blue-700 leading-tight">ID: {order.id?.slice(0, 8).toUpperCase()}</span>
+            {order.numero_secuencial && <span className="text-[11px] font-black text-gray-500 leading-tight"># Pedido: {order.numero_secuencial}</span>}
+          </div>
         </div>
         <p className="text-xs font-bold text-gray-500 mb-3 line-clamp-1">Cliente: {order.cliente_nombre || 'N/A'}</p>
 

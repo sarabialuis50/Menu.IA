@@ -722,7 +722,8 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
             supabase.table('negocios').update({"wa_messages_count": wa_count + credits_to_deduct}).eq("id", negocio_id).execute()
 
         # 4. Send Notifications using approved template
-        fecha = datetime.now(timezone.utc).strftime("%d/%m/%Y, %H:%M")
+        # Format date in 12h format (am/pm) as requested (using local time)
+        fecha = datetime.now().strftime("%d/%m/%Y, %I:%M %p").lower()
         biz_slug = biz_data.get('slug', '')
         
         # Build cart detail - VERTICAL FORMAT with Labels
@@ -732,7 +733,7 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
             p_name = item.get('nombre', '?')
             p_qty = item.get('cantidad', 1)
             p_price = item.get('precio', 0)
-            line = f"\n* {idx}. {p_name} x{p_qty} (${p_price:,.0f}) "
+            line = f"* {p_name} x{p_qty} (${p_price:,.0f})"
             
             # Process extras
             tamanos = item.get('tamanos', [])
@@ -741,7 +742,7 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
             
             mods = tamanos + adicionales + opciones
             for m in mods:
-                line += f"\n*({p_qty}) {m}, "
+                line += f"\n*({p_qty}) {m}"
             
             p_notes = item.get('notas')
             if p_notes and str(p_notes).lower() not in ["no aplica", "ninguna", "", "null", "none"]:
@@ -749,22 +750,24 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
             
             detalle_items.append(line)
             
-        detalle_carrito = "".join(detalle_items)
+        detalle_carrito = "\n".join(detalle_items)
         
         # Build business-specific link
         link_negocio = f"https://menuia.co/{biz_slug}" if biz_slug else "https://menuia.co"
         if biz_slug: link_negocio += "/menu"
         
-        cliente_info = f"\n\n*Nombre: {args.get('cliente_nombre', 'Cliente')} \n*Tel: {args.get('cliente_telefono', 'N/A')}"
+        cliente_info = f"* Nombre: {args.get('cliente_nombre', 'Cliente')}\n* Tel: {args.get('cliente_telefono', 'N/A')}"
         
-        # Delivery Info
-        d_lines = [f"{args.get('tipo', 'Domicilio').capitalize()} \n"]
-        d_lines.append(f"* Dirección: {args.get('direccion', 'Punto de venta')}")
-        d_lines.append(f"* Distancia: {args.get('distancia', 'N/A')} Km")
+        # Delivery Info (Vertical as requested)
+        d_val = f"{args.get('tipo', 'Domicilio')}\n\n"
+        if args.get('direccion'):
+            d_val += f"* Dirección: {args.get('direccion')}\n"
+        if args.get('distancia'):
+            d_val += f"* Distancia: {args.get('distancia')} Km\n"
         if args.get('notas_entrega'):
-            d_lines.append(f"* Observación de entrega: {args.get('notas_entrega')}")
+            d_val += f"* Observación de entrega: {args.get('notas_entrega')}"
         
-        entrega_info = f"{d_lines[0]}\n" + "\n".join(d_lines[1:])
+        entrega_info = d_val.strip() if d_val.strip() else "Punto de venta"
 
         template_kwargs = {
             "negocio_nombre": business_name,
@@ -772,7 +775,7 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
             "cliente_info": cliente_info,
             "detalle_carrito": detalle_carrito,
             "entrega_info": entrega_info,
-            "resumen_pago": f"\n\n* Subtotal: ${total:,.0f} \n* Envío: $0 \n* TOTAL: ${total:,.0f}\n",
+            "resumen_pago": f"* Subtotal: ${total:,.0f}\n* Envío: $0\n* TOTAL: ${total:,.0f}",
             "metodo_pago": args.get('metodo_pago', 'Efectivo'),
             "metodo_entrega": args.get('tipo', 'Domicilio'),
             "fecha": fecha,
