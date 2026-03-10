@@ -21,6 +21,29 @@ export const PublicLayout = ({
   const location = useLocation();
   const { user } = useAuth();
 
+  useEffect(() => {
+    // 1. Cambiar el título para que el acceso directo tome el nombre correcto
+    if (businessName) {
+      document.title = `${businessName}`;
+    }
+
+    // 2. Eliminar el manifest global de Menu.IA para forzar a Chrome a usar el "Acceso Directo" tradicional
+    // Esto evita que instale la app de Menu.IA en vez del perfil del negocio.
+    const manifestNode = document.querySelector('link[rel="manifest"]');
+    if (manifestNode) {
+      manifestNode.remove();
+    }
+
+    // 3. Cambiar icono
+    let iconNode = document.querySelector('link[rel="icon"]');
+    let appleIconNode = document.querySelector('link[rel="apple-touch-icon"]');
+
+    if (businessLogo) {
+      if (iconNode) iconNode.href = businessLogo;
+      if (appleIconNode) appleIconNode.href = businessLogo;
+    }
+  }, [businessName, businessLogo]);
+
   const handleBack = () => {
     // 1. Prioridad: Path específico inyectado
     if (backPath) {
