@@ -2226,27 +2226,18 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
             # 2. Enviar al Cliente (con link a seguimiento en tiempo real)
             cust_phone = clean_wa_phone(order.get('cliente_telefono'))
             if cust_phone:
-                logger.info(f"Enviando plantilla asignacion_repartidor a cliente {order.get('cliente_nombre')} ({cust_phone})")
-                
-                # Para el CLIENTE, invertimos variables para que el texto de la plantilla tenga sentido:
-                # La plantilla dice: "Estimado {{1}}, tienes nueva entrega... Entregar a {{3}} ({{4}})"
-                # Queremos que diga: "Estimado [Cliente], ... Entregar por [Repartidor] ([Tel Repartidor])"
-                customer_params = common_params.copy()
-                customer_params["repartidor_nombre"] = common_params["cliente_nombre"] # {{1}} -> Nombre Cliente
-                customer_params["cliente_nombre"] = common_params["repartidor_nombre"]  # {{3}} -> Nombre Repartidor
-                customer_params["cliente_telefono"] = common_params["repartidor_telefono"] # {{4}} -> Tel Repartidor
-                
+                logger.info(f"Enviando plantilla seguimiento_cliente a cliente {order.get('cliente_nombre')} ({cust_phone})")
                 res_tmpl_cust = send_whatsapp_template(
                     to_number=cust_phone,
-                    template_key="asignacion_repartidor",
+                    template_key="seguimiento_cliente",
                     custom_config=twilio_config,
                     link_seguimiento=link_cliente,
-                    **customer_params
+                    **common_params
                 )
                 if res_tmpl_cust:
-                    logger.info(f"Asignación enviada al cliente via plantilla. SID: {res_tmpl_cust}")
+                    logger.info(f"Seguimiento enviado al cliente via plantilla. SID: {res_tmpl_cust}")
                 else:
-                    logger.error(f"Error al enviar plantilla asignacion_repartidor a cliente {cust_phone}")
+                    logger.error(f"Error al enviar plantilla seguimiento_cliente a cliente {cust_phone}")
             else:
                 logger.warning(f"Cliente sin teléfono registrado")
             
