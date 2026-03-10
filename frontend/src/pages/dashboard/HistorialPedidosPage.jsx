@@ -100,7 +100,8 @@ export default function HistorialPedidosPage() {
         return new Intl.NumberFormat('es-CO', {
             style: 'currency',
             currency: 'COP',
-            minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Number(value));
+            minimumFractionDigits: 0, maximumFractionDigits: 0
+        }).format(Number(value));
     };
 
     const handleUpdateStatus = async (orderId, newStatus) => {
@@ -547,7 +548,7 @@ export default function HistorialPedidosPage() {
                                                 <div className="mt-2 flex flex-wrap gap-1">
                                                     {item.modificadores.map((mod, i) => (
                                                         <span key={i} className="px-2 py-0.5 rounded-md bg-orange-50 text-orange-600 text-[9px] font-black border border-orange-100 uppercase">
-                                                            + {mod}
+                                                            + {typeof mod === 'string' ? mod : `(${mod.cantidad || 1}) ${mod.nombre}`}
                                                         </span>
                                                     ))}
                                                 </div>

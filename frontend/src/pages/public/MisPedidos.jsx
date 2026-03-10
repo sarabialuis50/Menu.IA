@@ -217,7 +217,7 @@ function SearchSection({ search_query, setSearchQuery, searchOrders, searching }
               }
             }}
             placeholder="Código del pedido (Ej: 5CDE18)"
-            className="h-16 pl-14 rounded-2xl bg-gray-50/50 border-gray-100 font-bold text-lg focus:ring-[#22C55E] focus:border-[#22C55E] transition-all uppercase"
+            className="h-16 pl-14 rounded-2xl bg-gray-50/50 border-gray-100 font-bold text-sm md:text-lg focus:ring-[#22C55E] focus:border-[#22C55E] transition-all uppercase placeholder:text-xs md:placeholder:text-base"
           />
         </div>
         <Button
@@ -255,7 +255,8 @@ function OrderTimeline({ order, onRefresh, onReset, onHide }) {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
-      minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Number(v));
+      minimumFractionDigits: 0, maximumFractionDigits: 0
+    }).format(Number(v));
   };
   const steps = ['pendiente', 'aceptado', 'preparando', 'listo', 'enviado', 'entregado'];
   const stepData = [
@@ -353,7 +354,7 @@ function OrderTimeline({ order, onRefresh, onReset, onHide }) {
                     <div className="mt-1 flex flex-wrap gap-1">
                       {item.modificadores.map((mod, modIdx) => (
                         <span key={modIdx} className="text-[9px] font-bold text-[#22C55E]/80 bg-[#22C55E]/5 px-2 py-0.5 rounded-full border border-[#22C55E]/10">
-                          {mod}
+                          {typeof mod === 'string' ? mod : `(${mod.cantidad || 1}) ${mod.nombre}`}
                         </span>
                       ))}
                     </div>

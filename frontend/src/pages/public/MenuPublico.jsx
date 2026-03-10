@@ -1266,7 +1266,7 @@ const MenuContent = () => {
                               <div className="flex flex-wrap gap-1.5 mb-2">
                                 {item.modificadores.map((mod, midx) => (
                                   <span key={midx} className="text-[9px] font-black bg-[#4ADE80]/10 text-[#22C55E] px-2 py-0.5 rounded-lg uppercase tracking-tight">
-                                    + {mod}
+                                    + {typeof mod === 'string' ? mod : `(${mod.cantidad || 1}) ${mod.nombre}`}
                                   </span>
                                 ))}
                               </div>
