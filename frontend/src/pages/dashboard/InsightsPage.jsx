@@ -71,7 +71,7 @@ export default function InsightsPage() {
             currency: 'COP',
             minimumFractionDigits: 0,
             maximumFractionDigits: 0
-        }).format(value);
+        }).format(Number(value));
     };
 
     if (loading) {

@@ -111,7 +111,7 @@ export default function DashboardPage() {
       currency: 'COP',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
-    }).format(value);
+    }).format(Number(value));
   };
 
   const chartData = analytics?.ultimos_7_dias?.slice().reverse().map(day => ({

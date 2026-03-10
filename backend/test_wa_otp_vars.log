@@ -1,0 +1,30 @@
+Testing template HX42003eb243fd020dbeaa9d9b983e7ea4 with NAMED...
+FAILED with NAMED: 
+[31m[49mHTTP Error[0m [37m[49mYour request was:[0m
+
+[36m[49mPOST /Accounts/AC7bde986ff3ef63f525e9d260d2ecbdb6/Messages.json[0m
+
+[37m[49mTwilio returned the following information:[0m
+
+[34m[49mUnable to create record: The Content Variables parameter is invalid.[0m
+
+[37m[49mMore information may be available here:[0m
+
+[34m[49mhttps://www.twilio.com/docs/errors/21656[0m
+
+
+Testing template HX42003eb243fd020dbeaa9d9b983e7ea4 with NUMBERED...
+FAILED with NUMBERED: 
+[31m[49mHTTP Error[0m [37m[49mYour request was:[0m
+
+[36m[49mPOST /Accounts/AC7bde986ff3ef63f525e9d260d2ecbdb6/Messages.json[0m
+
+[37m[49mTwilio returned the following information:[0m
+
+[34m[49mUnable to create record: The Content Variables parameter is invalid.[0m
+
+[37m[49mMore information may be available here:[0m
+
+[34m[49mhttps://www.twilio.com/docs/errors/21656[0m
+
+

@@ -109,7 +109,7 @@ export default function AllProductsPage() {
             style: 'currency',
             currency: 'COP',
             maximumFractionDigits: 0
-        }).format(value);
+        }).format(Number(value));
     };
 
     return (

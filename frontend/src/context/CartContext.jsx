@@ -53,7 +53,15 @@ export const CartProvider = ({ children }) => {
         imagen: product.imagen,
         modificadores: selectedModifiers?.map(m => {
           if (typeof m === 'string') return m;
-          return `(${m.cantidad || 1}) ${m.nombre}`;
+          let cat = 'Adicionales';
+          if (product.tamanos?.some(g => g.opciones?.some(o => o.nombre === m.nombre))) cat = 'Tamaños';
+          else if (product.opciones?.some(g => g.opciones?.some(o => o.nombre === m.nombre))) cat = 'Opciones';
+          else if (product.modificadores?.some(g => g.opciones?.some(o => o.nombre === m.nombre))) {
+            // Find the exact modifier group name if needed, or default to Adicionales
+            const group = product.modificadores.find(g => g.opciones?.some(o => o.nombre === m.nombre));
+            cat = group ? group.nombre : 'Adicionales';
+          }
+          return { categoria: cat, nombre: m.nombre, cantidad: m.cantidad || 1, precio: m.precio || 0 };
         }) || []
       }];
     });
@@ -80,7 +88,14 @@ export const CartProvider = ({ children }) => {
         imagen: product.imagen,
         modificadores: selectedModifiers?.map(m => {
           if (typeof m === 'string') return m;
-          return `${m.cantidad ? `(${m.cantidad}) ` : ''}${m.nombre}`;
+          let cat = 'Adicionales';
+          if (product.tamanos?.some(g => g.opciones?.some(o => o.nombre === m.nombre))) cat = 'Tamaños';
+          else if (product.opciones?.some(g => g.opciones?.some(o => o.nombre === m.nombre))) cat = 'Opciones';
+          else if (product.modificadores?.some(g => g.opciones?.some(o => o.nombre === m.nombre))) {
+            const group = product.modificadores.find(g => g.opciones?.some(o => o.nombre === m.nombre));
+            cat = group ? group.nombre : 'Adicionales';
+          }
+          return { categoria: cat, nombre: m.nombre, cantidad: m.cantidad || 1, precio: m.precio || 0 };
         }) || []
       };
       return updated;

@@ -275,7 +275,7 @@ export default function FidelidadPage() {
     }
   };
 
-  const formatCurrency = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(v);
+  const formatCurrency = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Number(v));
 
   const totalPuntos = customers.reduce((sum, c) => sum + (c.puntos_disponibles || 0), 0);
   const totalClientes = customers.length;

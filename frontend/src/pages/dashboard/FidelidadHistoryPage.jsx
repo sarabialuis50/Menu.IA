@@ -53,7 +53,7 @@ export default function FidelidadHistoryPage() {
             style: 'currency',
             currency: 'COP',
             maximumFractionDigits: 0
-        }).format(value);
+        }).format(Number(value));
     };
 
     const handleExportExcel = () => {
