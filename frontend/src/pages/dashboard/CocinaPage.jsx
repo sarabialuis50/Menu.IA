@@ -247,7 +247,7 @@ function OrderCard({ order, onUpdateStatus }) {
               </div>
 
               {item.descripcion && (
-                <div className="ml-8 text-[11px] font-bold text-gray-600 leading-tight mt-0.5 italic">
+                <div className="ml-8 text-[11px] font-bold text-gray-600 leading-tight mt-0.5">
                   {item.descripcion}
                 </div>
               )}
@@ -293,8 +293,8 @@ function OrderCard({ order, onUpdateStatus }) {
                           </span>
                           <div className="flex flex-col gap-[1px]">
                             {mods.map((m, j) => (
-                              <span key={j} className="text-[9px] text-blue-600 font-black uppercase leading-tight whitespace-nowrap overflow-visible z-10 relative" title={`* ${m}`}>
-                                * {m}
+                              <span key={j} className="text-[9px] text-blue-600 font-black uppercase leading-tight whitespace-nowrap overflow-visible z-10 relative" title={m}>
+                                {m}
                               </span>
                             ))}
                           </div>
