@@ -2060,6 +2060,7 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
     if order.tipo == "delivery":
         entrega_info = f"{metodo_entrega} \n\n"
         if direccion_legible: entrega_info += f"* Dirección: {direccion_legible} \n"
+        if order.distancia: entrega_info += f"* Distancia: {order.distancia:.1f} km \n"
         if obs_entrega: entrega_info += f"* Observación de entrega: {obs_entrega}"
     else:
         entrega_info = f"\n* Retiro en: {metodo_entrega}"

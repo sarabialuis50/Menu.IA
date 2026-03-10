@@ -760,6 +760,7 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
         # Delivery Info
         entrega_info = f"{args.get('tipo', 'Domicilio').capitalize()} \n\n"
         entrega_info += f"* Dirección: {args.get('direccion', 'Punto de venta')} \n"
+        entrega_info += f"* Distancia: {args.get('distancia', 'N/A')} km \n"
         if args.get('notas_entrega'):
             entrega_info += f"* Observación de entrega: {args.get('notas_entrega')}"
 
