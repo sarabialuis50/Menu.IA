@@ -2309,6 +2309,18 @@ async def update_order(slug: str, order_id: str, data: OrderUpdate, background_t
             broadcast_data['puntos_ganados'] = points_info
         
         if 'repartidor_id' in update_data:
+            # Al asignar repartidor, cambiar automáticamente a "enviado"
+            supabase.table('pedidos').update({"estado": "enviado"}).eq('id', order_id).execute()
+            logger.info(f"Pedido {order_id}: repartidor asignado → estado cambiado a 'enviado' automáticamente")
+            # Refrescar el order con el nuevo estado
+            res_fresh = supabase.table('pedidos').select('*').eq('id', order_id).execute()
+            if res_fresh.data:
+                updated_order = res_fresh.data[0]
+                order = Order(**updated_order)
+                broadcast_data = serialize_doc(order.model_dump())
+                if points_info:
+                    broadcast_data['puntos_ganados'] = points_info
+            # Enviar notificación al repartidor y al cliente
             asyncio.create_task(asyncio.to_thread(notify_delivery_update_background, slug, order_id, 'assignment'))
         
         if data.estado == OrderStatus.ENVIADO:

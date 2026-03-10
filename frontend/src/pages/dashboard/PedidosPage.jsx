@@ -225,9 +225,9 @@ export default function PedidosPage() {
             setAssigning(true);
             await api().put(`/orders/${slug}/${selectedOrder.id}`, { repartidor_id: messengerId });
             setOrders(prev => prev.map(order =>
-                order.id === selectedOrder.id ? { ...order, repartidor_id: messengerId } : order
+                order.id === selectedOrder.id ? { ...order, repartidor_id: messengerId, estado: 'enviado' } : order
             ));
-            toast.success("Mensajero asignado correctamente");
+            toast.success("Mensajero asignado y pedido enviado");
             setShowAssignModal(false);
 
             // Note: Here we could trigger a WhatsApp to the messenger automatically if needed
