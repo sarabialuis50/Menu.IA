@@ -2197,6 +2197,7 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
             # Parámetros comunes de la plantilla
             common_params = dict(
                 repartidor_nombre=rep.get('nombre', 'Repartidor'),
+                repartidor_telefono=rep.get('telefono', 'N/A'),
                 negocio_nombre=biz.get('nombre', 'Nuestro Negocio'),
                 cliente_nombre=order.get('cliente_nombre', 'Cliente'),
                 cliente_telefono=order.get('cliente_telefono', 'N/A'),
@@ -2226,12 +2227,21 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
             cust_phone = clean_wa_phone(order.get('cliente_telefono'))
             if cust_phone:
                 logger.info(f"Enviando plantilla asignacion_repartidor a cliente {order.get('cliente_nombre')} ({cust_phone})")
+                
+                # Para el CLIENTE, invertimos variables para que el texto de la plantilla tenga sentido:
+                # La plantilla dice: "Estimado {{1}}, tienes nueva entrega... Entregar a {{3}} ({{4}})"
+                # Queremos que diga: "Estimado [Cliente], ... Entregar por [Repartidor] ([Tel Repartidor])"
+                customer_params = common_params.copy()
+                customer_params["repartidor_nombre"] = common_params["cliente_nombre"] # {{1}} -> Nombre Cliente
+                customer_params["cliente_nombre"] = common_params["repartidor_nombre"]  # {{3}} -> Nombre Repartidor
+                customer_params["cliente_telefono"] = common_params["repartidor_telefono"] # {{4}} -> Tel Repartidor
+                
                 res_tmpl_cust = send_whatsapp_template(
                     to_number=cust_phone,
                     template_key="asignacion_repartidor",
                     custom_config=twilio_config,
                     link_seguimiento=link_cliente,
-                    **common_params
+                    **customer_params
                 )
                 if res_tmpl_cust:
                     logger.info(f"Asignación enviada al cliente via plantilla. SID: {res_tmpl_cust}")
