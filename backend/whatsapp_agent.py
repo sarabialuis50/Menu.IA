@@ -736,60 +736,88 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
             fecha = datetime.now().strftime("%d/%m/%Y, %I:%M %p").lower()
             biz_slug = biz_data.get('slug', '')
             
-            # Build cart detail - VERTICAL FORMAT with Labels
+            # Build cart detail - individual fields for the 19-variable template
             detalle_items = []
+            all_tamanos = []
+            all_adicionales = []
+            all_opciones = []
             product_notes = []
             for idx, item in enumerate(items, 1):
                 p_name = item.get('nombre', '?')
                 p_qty = item.get('cantidad', 1)
                 p_price = item.get('precio', 0)
-                line = f"* {p_name} x{p_qty} (${p_price:,.0f})"
+                line = f"{idx}. {p_name} x{p_qty} (${p_price:,.0f})"
+                detalle_items.append(line)
                 
-                # Process extras
+                # Process extras into separate categories
                 tamanos = item.get('tamanos', [])
                 adicionales = item.get('adicionales', [])
                 opciones = item.get('opciones', [])
                 
-                mods = tamanos + adicionales + opciones
+                all_tamanos.extend(tamanos)
+                all_adicionales.extend(adicionales)
+                all_opciones.extend(opciones)
+                
+                # Also check modificadores for categorized mods
+                mods = item.get('modificadores', [])
                 for m in mods:
-                    line += f"\n*({p_qty}) {m}"
+                    if isinstance(m, dict):
+                        m_name = m.get('nombre', '')
+                        m_tipo = (m.get('tipo', '') or '').lower()
+                        m_precio = m.get('precio', 0)
+                        display = m_name
+                        if m_precio and m_precio > 0:
+                            display += f" (+${m_precio:,.0f})"
+                        if m_tipo in ('tamano', 'tamaño'):
+                            all_tamanos.append(display)
+                        elif m_tipo == 'adicional':
+                            all_adicionales.append(display)
+                        elif m_tipo in ('opcion', 'opción'):
+                            all_opciones.append(display)
+                        else:
+                            all_adicionales.append(display)
+                    else:
+                        all_adicionales.append(str(m))
                 
                 p_notes = item.get('notas')
                 if p_notes and str(p_notes).lower() not in ["no aplica", "ninguna", "", "null", "none"]:
-                    line += f"\n* Observación: {p_notes}"
+                    product_notes.append(p_notes)
                 
-                detalle_items.append(line)
-                
-            detalle_carrito = "\n".join(detalle_items)
+            detalle_productos = "\n".join(detalle_items)
+            tamanos_str = ", ".join(all_tamanos) if all_tamanos else "N/A"
+            adicionales_str = ", ".join(all_adicionales) if all_adicionales else "Ninguno"
+            opciones_str = ", ".join(all_opciones) if all_opciones else "Ninguna"
+            obs_pedido = ". ".join(product_notes) if product_notes else "Sin observaciones"
             
             # Build business-specific link
             link_negocio = f"https://menuia.co/{biz_slug}" if biz_slug else "https://menuia.co"
             if biz_slug: link_negocio += "/menu"
             
-            cliente_info = f"* Nombre: {args.get('cliente_nombre', 'Cliente')}\n* Tel: {args.get('cliente_telefono', 'N/A')}"
-            
-            # Delivery Info (Vertical as requested)
-            d_val = f"{args.get('tipo', 'Domicilio')}\n\n"
-            if args.get('direccion'):
-                d_val += f"* Dirección: {args.get('direccion')}\n"
-            if args.get('distancia'):
-                d_val += f"* Distancia: {args.get('distancia')} Km\n"
-            if args.get('notas_entrega'):
-                d_val += f"* Observación de entrega: {args.get('notas_entrega')}"
-            
-            entrega_info = d_val.strip() if d_val.strip() else "Punto de venta"
+            # Delivery Info
+            direccion_val = args.get('direccion', 'N/A')
+            distancia_val = f"{args.get('distancia', 'N/A')} Km" if args.get('distancia') else "N/A"
+            obs_entrega = args.get('notas_entrega', 'Sin observaciones') or "Sin observaciones"
 
             template_kwargs = {
-                "negocio_nombre": business_name,
-                "pedido_id": order_id[:8].upper() if order_id != "new_order" else "NEW",
-                "cliente_info": cliente_info,
-                "detalle_carrito": detalle_carrito,
-                "entrega_info": entrega_info,
-                "resumen_pago": f"* Subtotal: ${total:,.0f}\n* Envío: $0\n* TOTAL: ${total:,.0f}",
-                "metodo_pago": args.get('metodo_pago', 'Efectivo'),
-                "metodo_entrega": args.get('tipo', 'Domicilio'),
-                "fecha": fecha,
-                "link_seguimiento": f"https://menuia.co/{biz_slug}/mis-pedidos"
+                "negocio_nombre":     business_name,                                          # {{1}}
+                "pedido_id":          order_id[:8].upper() if order_id != "new_order" else "NEW",  # {{2}}
+                "cliente_nombre":     args.get('cliente_nombre', 'Cliente'),                   # {{3}}
+                "cliente_telefono":   args.get('cliente_telefono', 'N/A'),                     # {{4}}
+                "detalle_productos":  detalle_productos,                                       # {{5}}
+                "tamanos":            tamanos_str,                                             # {{6}}
+                "adicionales":        adicionales_str,                                         # {{7}}
+                "opciones":           opciones_str,                                            # {{8}}
+                "observacion_pedido": obs_pedido,                                              # {{9}}
+                "metodo_entrega":     args.get('tipo', 'Domicilio'),                           # {{10}}
+                "direccion":          direccion_val,                                            # {{11}}
+                "distancia":          distancia_val,                                           # {{12}}
+                "observacion_entrega": obs_entrega,                                            # {{13}}
+                "metodo_pago":        args.get('metodo_pago', 'Efectivo'),                     # {{14}}
+                "subtotal":           f"${total:,.0f}",                                        # {{15}}
+                "costo_envio":        "$0",                                                    # {{16}}
+                "total":              f"${total:,.0f}",                                        # {{17}}
+                "fecha":              fecha,                                                    # {{18}}
+                "link_seguimiento":   f"https://menuia.co/{biz_slug}/mis-pedidos"              # {{19}}
             }
             
             client_phone = args.get('cliente_telefono')

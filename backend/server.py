@@ -2010,96 +2010,99 @@ def reverse_geocode_address(direccion: str) -> str:
 def send_order_wa_background(business_name: str, order: Order, business_phone: str = None, twilio_config: Dict[str, Any] = None, slug: str = None):
     """Send order notifications to Client and Business using approved templates"""
     
-    # Prepare common data for the template
     # Format date in 12h format (am/pm) as requested
     fecha = datetime.now().strftime("%d/%m/%Y, %I:%M %p").lower()
     
-    # Build cart detail (clean, readable format)
+    # ── Build individual fields for the 19-variable template ──
+    
+    # {{5}} Product detail lines
     detalle_items = []
-    product_notes = []
+    all_tamanos = []
+    all_adicionales = []
+    all_opciones = []
     subtotal = 0
     
     for idx, item in enumerate(order.items, 1):
         item_subtotal = (item.cantidad or 0) * (item.precio_unitario or 0)
         subtotal += item_subtotal
         
-        line = f"* {item.nombre} x{item.cantidad} (${item.precio_unitario:,.0f})"
-        
-        # Process modifiers
-        if item.modificadores:
-            for m in item.modificadores:
-                m_name = m.get('nombre', str(m)) if isinstance(m, dict) else str(m)
-                line += f"\n*({item.cantidad or 1}) {m_name}"
-        
-        # Specific item notes
-        if hasattr(item, 'notas') and item.notas and item.notas.lower() not in ["no aplica", "ninguna", ""]:
-            line += f"\n* Observación: {item.notas}"
-            
+        line = f"{idx}. {item.nombre} x{item.cantidad} (${item.precio_unitario:,.0f})"
         detalle_items.append(line)
         
-    detalle_carrito = "\n".join(detalle_items)
+        # Process modifiers into separate categories
+        if item.modificadores:
+            for m in item.modificadores:
+                if isinstance(m, dict):
+                    m_name = m.get('nombre', '')
+                    m_tipo = m.get('tipo', '').lower() if m.get('tipo') else ''
+                    m_precio = m.get('precio', 0)
+                    
+                    display = m_name
+                    if m_precio and m_precio > 0:
+                        display += f" (+${m_precio:,.0f})"
+                    
+                    if m_tipo == 'tamano' or m_tipo == 'tamaño':
+                        all_tamanos.append(display)
+                    elif m_tipo == 'adicional':
+                        all_adicionales.append(display)
+                    elif m_tipo == 'opcion' or m_tipo == 'opción':
+                        all_opciones.append(display)
+                    else:
+                        # Default: if no tipo, add to adicionales
+                        all_adicionales.append(display)
+                else:
+                    all_adicionales.append(str(m))
     
-    # Consolidate notes 
+    detalle_productos = "\n".join(detalle_items)
+    tamanos_str = ", ".join(all_tamanos) if all_tamanos else "N/A"
+    adicionales_str = ", ".join(all_adicionales) if all_adicionales else "Ninguno"
+    opciones_str = ", ".join(all_opciones) if all_opciones else "Ninguna"
+    
+    # Parse notes: "{notas_pedido}. Observaciones de entrega: {notas_entrega}"
     raw_notes = order.notas or ""
-    # Assume first part is delivery notes if there's no period delimiter or if order notes are raw text
-    # Actually, front-end saves: "{notas_pedido}. Observaciones de entrega: {notas_entrega}"
-    # Wait, earlier code had split on '. ' but to be safer let's just use raw notes string logic
-    obs_pedido = "Sin notas"
-    obs_entrega = "Sin notas"
+    obs_pedido = "Sin observaciones"
+    obs_entrega = "Sin observaciones"
     
     if ". Observaciones de entrega: " in raw_notes:
         parts = raw_notes.split(". Observaciones de entrega: ")
-        obs_pedido = parts[0]
-        obs_entrega = parts[1]
-    else:
-        # Default fallback
-        obs_entrega = raw_notes if raw_notes and raw_notes.lower() not in ["sin observaciones", ""] else ""
-        obs_pedido = ""
-    
-    # If we have general order observation (obs_pedido), append to cart detail
-    if obs_pedido and obs_pedido.lower() not in ["sin notas", "none", ""]:
-        detalle_carrito += f"\n\n* Observación global de pedido: {obs_pedido}"
+        obs_pedido = parts[0] if parts[0] else "Sin observaciones"
+        obs_entrega = parts[1] if len(parts) > 1 and parts[1] else "Sin observaciones"
+    elif raw_notes and raw_notes.lower() not in ["sin observaciones", ""]:
+        obs_entrega = raw_notes
     
     # Reverse geocode GPS coordinates to readable address
-    direccion_legible = reverse_geocode_address(order.direccion) if order.direccion else ""
+    direccion_legible = reverse_geocode_address(order.direccion) if order.direccion else "N/A"
     
-    # Determine delivery method display name
+    # Determine delivery method display name 
     metodo_entrega = order.metodo_entrega or ("Domicilio" if order.tipo == "delivery" else ("Mesa" if order.tipo == "mesa" else "Para Recoger"))
     
-    # Delivery Info Formatted (Vertical as requested)
-    if order.tipo == "delivery":
-        d_info = f"{metodo_entrega}\n\n"
-        d_info += f"* Dirección: {direccion_legible or 'N/A'}\n"
-        if order.distancia:
-            d_info += f"* Distancia: {order.distancia:.1f} Km\n"
-        if obs_entrega:
-            d_info += f"* Observación de entrega: {obs_entrega}"
-        entrega_info = d_info.strip()
-    else:
-        entrega_info = f"{metodo_entrega}"
+    # Distance
+    distancia_str = f"{order.distancia:.1f} Km" if order.distancia else "N/A"
     
-    # Payment summary formatted (Vertical as requested)
-    resumen_pago = f"\n* Subtotal: ${subtotal:,.0f}\n* Envío: ${order.costo_envio or 0:,.0f}\n* TOTAL: ${order.total:,.0f}"
-
-    # Cliente Info Formatted (Vertical as requested)
-    cliente_info = f"\n\n*Nombre: {order.cliente_nombre or 'Cliente'}\n*Tel: {order.cliente_telefono or 'N/A'}"
-
-    # Build business-specific link
-    link_negocio = f"https://menuia.co/{slug}" if slug else "https://menuia.co"
-    if slug: link_negocio += "/menu"
+    # Payment
+    costo_envio = order.costo_envio or 0
     
-    # ──── TEMPLATE VARIABLE MAPPING ────
+    # ── TEMPLATE VARIABLE MAPPING (19 variables) ──
     template_kwargs = {
-        "negocio_nombre": business_name,
-        "pedido_id": order.id[:8].upper(),
-        "cliente_info": cliente_info,
-        "detalle_carrito": detalle_carrito,
-        "entrega_info": entrega_info,
-        "resumen_pago": resumen_pago,
-        "metodo_pago": order.metodo_pago or "Efectivo",
-        "metodo_entrega": f"{metodo_entrega}",
-        "fecha": fecha,
-        "link_seguimiento": f"https://menuia.co/{slug}/mis-pedidos"
+        "negocio_nombre":     business_name,                           # {{1}}
+        "pedido_id":          order.id[:8].upper(),                    # {{2}}
+        "cliente_nombre":     order.cliente_nombre or "Cliente",       # {{3}}
+        "cliente_telefono":   order.cliente_telefono or "N/A",         # {{4}}
+        "detalle_productos":  detalle_productos,                       # {{5}}
+        "tamanos":            tamanos_str,                             # {{6}}
+        "adicionales":        adicionales_str,                         # {{7}}
+        "opciones":           opciones_str,                            # {{8}}
+        "observacion_pedido": obs_pedido,                              # {{9}}
+        "metodo_entrega":     metodo_entrega,                          # {{10}}
+        "direccion":          direccion_legible,                        # {{11}}
+        "distancia":          distancia_str,                           # {{12}}
+        "observacion_entrega": obs_entrega,                            # {{13}}
+        "metodo_pago":        order.metodo_pago or "Efectivo",         # {{14}}
+        "subtotal":           f"${subtotal:,.0f}",                     # {{15}}
+        "costo_envio":        f"${costo_envio:,.0f}",                  # {{16}}
+        "total":              f"${order.total:,.0f}",                  # {{17}}
+        "fecha":              fecha,                                    # {{18}}
+        "link_seguimiento":   f"https://menuia.co/{slug}/mis-pedidos"  # {{19}}
     }
 
     # 1. Send to Client (using approved template)
