@@ -151,6 +151,8 @@ else:
     cors_origins = [
         "https://menuia.co",
         "https://www.menuia.co",
+        "https://menuia.co/",
+        "https://www.menuia.co/",
         "https://menuia-production.up.railway.app",
         "http://localhost:3000",
         "http://localhost:5173",
@@ -168,6 +170,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
@@ -188,16 +197,6 @@ async def log_requests(request: Request, call_next):
         logger.error(f"Request failed: {method} {path} - Error: {str(e)}")
         logger.error(traceback.format_exc())
         raise
-
-# Create a router with the /api prefix
-api_router = APIRouter(prefix="/api")
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
 
 logger.info(f"Allowed CORS origins: {cors_origins}")
 
