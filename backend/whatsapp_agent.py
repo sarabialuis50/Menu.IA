@@ -708,96 +708,108 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
         
         order_data["numero_secuencial"] = (cq_res.count or 0) + 1
         print(f"DEBUG order_data: {order_data}")
-        res = supabase.table('pedidos').insert(order_data).execute()
-        order_id = res.data[0]['id'] if res.data else "new_order"
         
-        # 3. Deduct 2 Credits (for notifications)
-        wa_credits = biz_data.get('wa_credits', 0)
-        wa_count = biz_data.get('wa_messages_count', 0)
-        credits_to_deduct = 2
+        # Check if it's a demo business to avoid creating real orders
+        slug = biz_data.get('slug', '')
+        is_demo = slug == 'demo-restaurante'
         
-        if wa_credits >= credits_to_deduct:
-            supabase.table('negocios').update({"wa_credits": wa_credits - credits_to_deduct}).eq("id", negocio_id).execute()
+        order_id = "demo_order"
+        if not is_demo:
+            res = supabase.table('pedidos').insert(order_data).execute()
+            order_id = res.data[0]['id'] if res.data else "new_order"
         else:
-            supabase.table('negocios').update({"wa_messages_count": wa_count + credits_to_deduct}).eq("id", negocio_id).execute()
+            logger.info(f"DEMO ORDER via AI detected for {slug}. Skipping DB insertion.")
 
-        # 4. Send Notifications using approved template
-        # Format date in 12h format (am/pm) as requested (using local time)
-        fecha = datetime.now().strftime("%d/%m/%Y, %I:%M %p").lower()
-        biz_slug = biz_data.get('slug', '')
-        
-        # Build cart detail - VERTICAL FORMAT with Labels
-        detalle_items = []
-        product_notes = []
-        for idx, item in enumerate(items, 1):
-            p_name = item.get('nombre', '?')
-            p_qty = item.get('cantidad', 1)
-            p_price = item.get('precio', 0)
-            line = f"* {p_name} x{p_qty} (${p_price:,.0f})"
+        # 3. Deduct 2 Credits (for notifications)
+        if not is_demo:
+            wa_credits = biz_data.get('wa_credits', 0)
+            wa_count = biz_data.get('wa_messages_count', 0)
+            credits_to_deduct = 2
             
-            # Process extras
-            tamanos = item.get('tamanos', [])
-            adicionales = item.get('adicionales', [])
-            opciones = item.get('opciones', [])
-            
-            mods = tamanos + adicionales + opciones
-            for m in mods:
-                line += f"\n*({p_qty}) {m}"
-            
-            p_notes = item.get('notas')
-            if p_notes and str(p_notes).lower() not in ["no aplica", "ninguna", "", "null", "none"]:
-                line += f"\n* Observación: {p_notes}"
-            
-            detalle_items.append(line)
-            
-        detalle_carrito = "\n".join(detalle_items)
-        
-        # Build business-specific link
-        link_negocio = f"https://menuia.co/{biz_slug}" if biz_slug else "https://menuia.co"
-        if biz_slug: link_negocio += "/menu"
-        
-        cliente_info = f"* Nombre: {args.get('cliente_nombre', 'Cliente')}\n* Tel: {args.get('cliente_telefono', 'N/A')}"
-        
-        # Delivery Info (Vertical as requested)
-        d_val = f"{args.get('tipo', 'Domicilio')}\n\n"
-        if args.get('direccion'):
-            d_val += f"* Dirección: {args.get('direccion')}\n"
-        if args.get('distancia'):
-            d_val += f"* Distancia: {args.get('distancia')} Km\n"
-        if args.get('notas_entrega'):
-            d_val += f"* Observación de entrega: {args.get('notas_entrega')}"
-        
-        entrega_info = d_val.strip() if d_val.strip() else "Punto de venta"
+            if wa_credits >= credits_to_deduct:
+                supabase.table('negocios').update({"wa_credits": wa_credits - credits_to_deduct}).eq("id", negocio_id).execute()
+            else:
+                supabase.table('negocios').update({"wa_messages_count": wa_count + credits_to_deduct}).eq("id", negocio_id).execute()
 
-        template_kwargs = {
-            "negocio_nombre": business_name,
-            "pedido_id": order_id[:8].upper(),
-            "cliente_info": cliente_info,
-            "detalle_carrito": detalle_carrito,
-            "entrega_info": entrega_info,
-            "resumen_pago": f"* Subtotal: ${total:,.0f}\n* Envío: $0\n* TOTAL: ${total:,.0f}",
-            "metodo_pago": args.get('metodo_pago', 'Efectivo'),
-            "metodo_entrega": args.get('tipo', 'Domicilio'),
-            "fecha": fecha,
-            "link_seguimiento": f"https://menuia.co/{biz_slug}/mis-pedidos"
-        }
-        
-        client_phone = args.get('cliente_telefono')
-        if client_phone:
-            send_whatsapp_template(
-                to_number=client_phone,
-                template_key="resumen_pedido",
-                custom_config=twilio_config,
-                **template_kwargs
-            )
+            # 4. Send Notifications using approved template
+            # Format date in 12h format (am/pm) as requested (using local time)
+            fecha = datetime.now().strftime("%d/%m/%Y, %I:%M %p").lower()
+            biz_slug = biz_data.get('slug', '')
             
-        if business_phone:
-            send_whatsapp_template(
-                to_number=business_phone,
-                template_key="resumen_pedido",
-                custom_config=twilio_config,
-                **template_kwargs
-            )
+            # Build cart detail - VERTICAL FORMAT with Labels
+            detalle_items = []
+            product_notes = []
+            for idx, item in enumerate(items, 1):
+                p_name = item.get('nombre', '?')
+                p_qty = item.get('cantidad', 1)
+                p_price = item.get('precio', 0)
+                line = f"* {p_name} x{p_qty} (${p_price:,.0f})"
+                
+                # Process extras
+                tamanos = item.get('tamanos', [])
+                adicionales = item.get('adicionales', [])
+                opciones = item.get('opciones', [])
+                
+                mods = tamanos + adicionales + opciones
+                for m in mods:
+                    line += f"\n*({p_qty}) {m}"
+                
+                p_notes = item.get('notas')
+                if p_notes and str(p_notes).lower() not in ["no aplica", "ninguna", "", "null", "none"]:
+                    line += f"\n* Observación: {p_notes}"
+                
+                detalle_items.append(line)
+                
+            detalle_carrito = "\n".join(detalle_items)
+            
+            # Build business-specific link
+            link_negocio = f"https://menuia.co/{biz_slug}" if biz_slug else "https://menuia.co"
+            if biz_slug: link_negocio += "/menu"
+            
+            cliente_info = f"* Nombre: {args.get('cliente_nombre', 'Cliente')}\n* Tel: {args.get('cliente_telefono', 'N/A')}"
+            
+            # Delivery Info (Vertical as requested)
+            d_val = f"{args.get('tipo', 'Domicilio')}\n\n"
+            if args.get('direccion'):
+                d_val += f"* Dirección: {args.get('direccion')}\n"
+            if args.get('distancia'):
+                d_val += f"* Distancia: {args.get('distancia')} Km\n"
+            if args.get('notas_entrega'):
+                d_val += f"* Observación de entrega: {args.get('notas_entrega')}"
+            
+            entrega_info = d_val.strip() if d_val.strip() else "Punto de venta"
+
+            template_kwargs = {
+                "negocio_nombre": business_name,
+                "pedido_id": order_id[:8].upper() if order_id != "new_order" else "NEW",
+                "cliente_info": cliente_info,
+                "detalle_carrito": detalle_carrito,
+                "entrega_info": entrega_info,
+                "resumen_pago": f"* Subtotal: ${total:,.0f}\n* Envío: $0\n* TOTAL: ${total:,.0f}",
+                "metodo_pago": args.get('metodo_pago', 'Efectivo'),
+                "metodo_entrega": args.get('tipo', 'Domicilio'),
+                "fecha": fecha,
+                "link_seguimiento": f"https://menuia.co/{biz_slug}/mis-pedidos"
+            }
+            
+            client_phone = args.get('cliente_telefono')
+            if client_phone:
+                send_whatsapp_template(
+                    to_number=client_phone,
+                    template_key="resumen_pedido",
+                    custom_config=twilio_config,
+                    **template_kwargs
+                )
+                
+            if business_phone:
+                send_whatsapp_template(
+                    to_number=business_phone,
+                    template_key="resumen_pedido",
+                    custom_config=twilio_config,
+                    **template_kwargs
+                )
+        else:
+            logger.info(f"DEMO ORDER via AI: Skipping notifications and credits.")
 
         return json.dumps({
             "status": "success", 

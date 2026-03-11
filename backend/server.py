@@ -1877,17 +1877,23 @@ async def create_order(slug: str, data: OrderCreate, background_tasks: Backgroun
 
         logger.info(f"Inserting into DB: {order_dict.get('id')} with seq: {order_dict['numero_secuencial']}")
         
-        supabase.table('pedidos').insert(order_dict).execute()
+        # Check if it's a demo business to avoid creating real orders
+        is_demo = slug == 'demo-restaurante'
         
-        # Update table status if mesa_id provided
-        if data.mesa_id:
-            supabase.table('mesas').update({"estado": "ocupada"}).eq("id", data.mesa_id).execute()
-        
-        # Broadcast new order to kitchen
-        await manager.broadcast(business_id, {
-            "type": "new_order",
-            "data": order_dict
-        })
+        if not is_demo:
+            supabase.table('pedidos').insert(order_dict).execute()
+            
+            # Update table status if mesa_id provided
+            if data.mesa_id:
+                supabase.table('mesas').update({"estado": "ocupada"}).eq("id", data.mesa_id).execute()
+            
+            # Broadcast new order to kitchen
+            await manager.broadcast(business_id, {
+                "type": "new_order",
+                "data": order_dict
+            })
+        else:
+            logger.info(f"DEMO ORDER detected for {slug}. Skipping DB insertion and real-time broadcast.")
 
         # 2. Credits Deduction Logic
         # Notificaciones WA: 2 Créditos (Cliente + Negocio)
@@ -1897,13 +1903,16 @@ async def create_order(slug: str, data: OrderCreate, background_tasks: Backgroun
         wa_credits = business_data.get('wa_credits', 0)
         wa_count = business_data.get('wa_messages_count', 0)
         
-        if wa_credits >= credits_to_deduct:
-            supabase.table('negocios').update({"wa_credits": wa_credits - credits_to_deduct}).eq("id", business_id).execute()
-        else:
-            supabase.table('negocios').update({"wa_messages_count": wa_count + credits_to_deduct}).eq("id", business_id).execute()
+        if not is_demo:
+            if wa_credits >= credits_to_deduct:
+                supabase.table('negocios').update({"wa_credits": wa_credits - credits_to_deduct}).eq("id", business_id).execute()
+            else:
+                supabase.table('negocios').update({"wa_messages_count": wa_count + credits_to_deduct}).eq("id", business_id).execute()
 
-        # Send WhatsApp notifications (Client + Business)
-        background_tasks.add_task(send_order_wa_background, business_name, order, business_phone, twilio_config, slug)
+            # Send WhatsApp notifications (Client + Business)
+            background_tasks.add_task(send_order_wa_background, business_name, order, business_phone, twilio_config, slug)
+        else:
+            logger.info(f"DEMO ORDER: Skipping credits deduction and WhatsApp notifications.")
         
         return order
     except Exception as e:

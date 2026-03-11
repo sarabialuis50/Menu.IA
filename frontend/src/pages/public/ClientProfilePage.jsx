@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import {
     User, Edit, MapPin, Package, Heart, Ticket, LogOut, ArrowLeft,
     Truck, Star, Plus, Briefcase, Home, CheckCircle2, Loader2, Phone, ShieldCheck,
-    Lock, Shield, Navigation, Trash2
+    Lock, Shield, Navigation, Trash2, Eye, EyeOff
 } from 'lucide-react';
 import {
     Dialog,
@@ -48,6 +48,9 @@ export default function ClientProfilePage() {
         confirm_password: ''
     });
     const [changingPassword, setChangingPassword] = useState(false);
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     // Address Modal State
     const [showAddressModal, setShowAddressModal] = useState(false);
@@ -365,8 +368,7 @@ export default function ClientProfilePage() {
                 </div>
             </header>
 
-            <main className="max-w-4xl mx-auto p-4 space-y-6">
-
+            <main className="max-w-4xl mx-auto p-4 space-y-8">
                 {/* Profile Hero */}
                 <Card className="border-none shadow-[0_10px_40px_rgba(0,0,0,0.04)] rounded-[2rem] bg-white overflow-hidden">
                     <CardContent className="p-8">
@@ -403,6 +405,13 @@ export default function ClientProfilePage() {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Puntos Acumulados Integrated */}
+                            <div className="flex flex-col items-center px-8 py-4 bg-[#4ADE80]/5 border-2 border-[#4ADE80]/30 rounded-2xl transition-all hover:border-[#4ADE80] hover:bg-[#4ADE80]/10 shrink-0">
+                                <span className="text-4xl font-black text-[#22C55E]">{loyalty?.puntos_actuales || 0}</span>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Puntos Acumulados</span>
+                            </div>
+
                             <Button
                                 onClick={() => navigate(`/${slug}/mi-cuenta/editar`)}
                                 className="rounded-xl px-6 bg-white border-2 border-[#4ADE80] text-[#22C55E] hover:bg-[#4ADE80] hover:text-[#111814] font-bold transition-all shadow-md active:scale-95"
@@ -413,270 +422,101 @@ export default function ClientProfilePage() {
                     </CardContent>
                 </Card>
 
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-
-                    <div className="md:col-span-12 lg:col-span-7 space-y-6">
-
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between px-2">
-                                <h3 className="text-lg font-black text-[#111814] flex items-center gap-2">
-                                    <Package className="w-5 h-5 text-[#22C55E]" />
-                                    Mis Pedidos Recientes
-                                </h3>
-                                <Button
-                                    variant="ghost"
-                                    className="text-xs font-bold text-[#22C55E] hover:text-[#16A34A] hover:bg-green-50 rounded-lg ml-auto"
-                                    onClick={() => navigate(`/${slug}/mi-cuenta/pedidos`)}
-                                >
-                                    Ver todo
-                                </Button>
-                            </div>
-                            <div className="space-y-4">
-                                {orders.filter(o => !hiddenOrderIds.includes(o.id)).length === 0 ? (
-                                    <Card className="border-none shadow-sm rounded-[1.5rem] bg-gray-50/50">
-                                        <CardContent className="p-8 text-center text-gray-500 font-medium">
-                                            No tienes pedidos recientes
-                                        </CardContent>
-                                    </Card>
-                                ) : (
-                                    orders.filter(o => !hiddenOrderIds.includes(o.id)).map((order) => (
-                                        <Card key={order.id} className="border-none shadow-sm hover:shadow-md transition-shadow rounded-[1.5rem] overflow-hidden group cursor-pointer" onClick={() => navigate(`/${order.negocio_slug || slug}/mis-pedidos?order=${order.id}`)}>
-                                            <CardContent className="p-6">
-                                                <div className="flex gap-4">
-                                                    <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center shrink-0">
-                                                        {order.negocio_logo ? (
-                                                            <img src={order.negocio_logo} alt="Logo" className="w-full h-full object-cover rounded-2xl" />
-                                                        ) : (
-                                                            <Package className="w-6 h-6 text-gray-400" />
-                                                        )}
-                                                    </div>
-
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex justify-between items-start">
-                                                            <div className="flex items-center gap-2 min-w-0 pr-4">
-                                                                <h4 className="font-bold text-[#111814] leading-tight truncate text-base">
-                                                                    {order.items?.length > 0 ? `${order.items[0].nombre} ${order.items.length > 1 ? `+ ${order.items.length - 1}` : ''}` : 'Pedido'}
-                                                                </h4>
-                                                                <span className="text-[10px] font-bold text-gray-400 shrink-0 bg-gray-100 px-1.5 py-0.5 rounded">#{order.id?.slice(-6).toUpperCase()}</span>
-                                                            </div>
-                                                            <span className="text-xs text-gray-500 font-medium shrink-0">
-                                                                {(() => {
-                                                                    const d = new Date(order.created_at);
-                                                                    const today = new Date();
-                                                                    const isToday = d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
-                                                                    const yesterday = new Date(today);
-                                                                    yesterday.setDate(yesterday.getDate() - 1);
-                                                                    const isYesterday = d.toDateString() === yesterday.toDateString();
-
-                                                                    if (isToday) return `Hoy, ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-                                                                    if (isYesterday) return 'Ayer';
-                                                                    return d.toLocaleDateString();
-                                                                })()}
-                                                            </span>
-                                                        </div>
-
-                                                        <p className="text-sm text-gray-500 mt-1 truncate">
-                                                            {order.negocio_nombre || 'Restaurante'} • {order.items?.length || 0} items • <span className="text-gray-900 font-bold ml-1">${order.total?.toLocaleString()}</span>
-                                                        </p>
-
-                                                        <div className="flex items-center gap-3 mt-3">
-                                                            <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-gray-100 ${['entregado'].includes(order.estado) ? 'text-gray-500' : 'text-green-700 bg-green-50'}`}>
-                                                                {order.estado?.replace('_', ' ')}
-                                                            </div>
-
-                                                            {['pendiente', 'en_proceso', 'en_camino'].includes(order.estado) && (
-                                                                <button
-                                                                    className="text-sm font-bold text-[#2563EB] hover:text-[#22C55E] transition-colors"
-                                                                    onClick={(e) => { e.stopPropagation(); navigate(`/${order.negocio_slug || slug}/mis-pedidos?order=${order.id}`); }}
-                                                                >
-                                                                    Rastrear pedido
-                                                                </button>
-                                                            )}
-                                                            {['entregado', 'cancelado'].includes(order.estado) && (
-                                                                <button
-                                                                    className="text-sm font-bold text-[#22C55E] hover:text-[#16A34A] transition-colors"
-                                                                    onClick={(e) => { e.stopPropagation(); navigate(`/${order.negocio_slug || slug}/menu`); }}
-                                                                >
-                                                                    Volver a pedir
-                                                                </button>
-                                                            )}
-                                                            {order.estado === 'entregado' && (
-                                                                <button
-                                                                    className="text-xs font-bold text-red-500 hover:text-red-600 transition-colors flex items-center gap-1.5 ml-auto border border-red-100 px-2.5 py-1 rounded-lg hover:bg-red-50"
-                                                                    onClick={(e) => { e.stopPropagation(); handleHideOrder(order.id); }}
-                                                                >
-                                                                    <Trash2 className="w-3.5 h-3.5" />
-                                                                    Eliminar
-                                                                </button>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    ))
-                                )}
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div className="md:col-span-12 lg:col-span-5 flex flex-col">
-                        <div className="space-y-6">
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between px-2">
-                                    <h3 className="text-lg font-black text-[#111814] flex items-center gap-2">
-                                        <MapPin className="w-5 h-5 text-[#22C55E]" />
-                                        Direcciones
-                                    </h3>
-                                    <Dialog open={showAddressModal} onOpenChange={setShowAddressModal}>
-                                        <DialogTrigger asChild>
-                                            <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full border-2 border-[#4ADE80] bg-white text-[#22C55E] hover:bg-[#4ADE80] hover:text-[#111814] transition-all">
-                                                <Plus className="w-4 h-4" />
-                                            </Button>
-                                        </DialogTrigger>
-                                        <DialogContent className="rounded-[2rem] max-w-md">
-                                            <DialogHeader>
-                                                <DialogTitle className="text-xl font-black">Nueva Dirección</DialogTitle>
-                                            </DialogHeader>
-                                            <form onSubmit={handleSaveAddress} className="space-y-6 pt-4">
-                                                <div className="space-y-4">
-                                                    <div className="space-y-2">
-                                                        <Label className="font-bold">Nombre (Ej: Casa, Oficina)</Label>
-                                                        <Input
-                                                            placeholder="Mi Casa"
-                                                            value={addressForm.nombre}
-                                                            onChange={e => setAddressForm({ ...addressForm, nombre: e.target.value })}
-                                                            className="rounded-xl h-11"
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <Label className="font-bold">Dirección Completa</Label>
-                                                        <div className="relative">
-                                                            <Input
-                                                                placeholder="Calle 123 #45-67..."
-                                                                value={addressForm.direccion}
-                                                                onChange={e => setAddressForm({ ...addressForm, direccion: e.target.value })}
-                                                                className="rounded-xl h-11 pr-12"
-                                                            />
-                                                            <Button
-                                                                type="button"
-                                                                size="icon"
-                                                                variant="ghost"
-                                                                className="absolute right-1 top-1/2 -translate-y-1/2 rounded-lg text-[#22C55E] hover:bg-green-50"
-                                                                onClick={handleGetCurrentLocation}
-                                                                disabled={detectingLocation}
-                                                            >
-                                                                {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <Navigation className="w-4 h-4" />}
-                                                            </Button>
-                                                        </div>
-                                                        <p className="text-[10px] text-gray-400 font-medium ml-1">Usa el ícono de GPS para autocompletar</p>
-                                                    </div>
-                                                </div>
-                                                <div className="flex gap-3 pt-2">
-                                                    <Button
-                                                        type="button"
-                                                        variant="ghost"
-                                                        className="flex-1 rounded-xl h-12 font-bold"
-                                                        onClick={() => setShowAddressModal(false)}
-                                                    >
-                                                        Cancelar
-                                                    </Button>
-                                                    <Button
-                                                        type="submit"
-                                                        disabled={savingAddress}
-                                                        className="flex-1 rounded-xl h-12 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black"
-                                                    >
-                                                        {savingAddress ? <Loader2 className="w-4 h-4 animate-spin" /> : "Guardar"}
-                                                    </Button>
-                                                </div>
-                                            </form>
-                                        </DialogContent>
-                                    </Dialog>
-                                </div>
-                                <div className="space-y-3">
-                                    {addresses.length === 0 ? (
-                                        <div className="text-center py-4 text-sm text-gray-400 font-medium">No hay direcciones guardadas</div>
-                                    ) : (
-                                        addresses.map((addr) => (
-                                            <Card key={addr.id} className="border-none shadow-sm hover:shadow-md transition-shadow rounded-[1.5rem] overflow-hidden group">
-                                                <CardContent className="p-5 flex items-center gap-4">
-                                                    <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center shrink-0">
-                                                        <Home className="w-5 h-5 text-[#22C55E]" />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex items-center gap-2 mb-0.5">
-                                                            <h4 className="font-bold text-[#111814] text-sm">{addr.nombre}</h4>
-                                                            {addr.es_principal && (
-                                                                <Badge className="h-4 text-[9px] px-1.5 bg-[#4ADE80]/20 text-[#111814] hover:bg-[#4ADE80]/30 border-none shadow-none uppercase font-bold">
-                                                                    Principal
-                                                                </Badge>
-                                                            )}
-                                                        </div>
-                                                        <p className="text-xs text-gray-500 font-medium leading-relaxed line-clamp-2">{addr.direccion}</p>
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
-                                        ))
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex-1 min-h-[1.5rem]" />
-
-                        <Card className="border-none rounded-[2rem] bg-[#4ADE80] text-[#111814] overflow-hidden relative shadow-lg">
-                            <CardContent className="p-8 relative z-10 text-center space-y-4">
-                                <div className="space-y-1">
-                                    <h3 className="text-xl font-black">Puntos Acumulados</h3>
-                                    <div className="flex flex-col items-center">
-                                        <span className="text-5xl font-black drop-shadow-md">{loyalty?.puntos_actuales || 0}</span>
-                                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-80 mt-1">Puntos Disponibles</span>
-                                    </div>
-                                    <p className="text-white/90 text-sm font-medium pt-2">
-                                        {loyalty?.puntos_actuales > 0
-                                            ? `¡Tienes $${(loyalty.puntos_actuales * 100).toLocaleString()} para tu próxima compra!`
-                                            : "¡Empieza a sumar puntos con tus pedidos!"
-                                        }
-                                    </p>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
-                </div>
-
-                <div className="space-y-4 pt-4">
+                {/* Direcciones - Horizontal Section */}
+                <div className="space-y-4">
                     <div className="flex items-center justify-between px-2">
                         <h3 className="text-lg font-black text-[#111814] flex items-center gap-2">
-                            <Heart className="w-5 h-5 text-[#22C55E]" />
-                            Mis Favoritos
+                            <MapPin className="w-5 h-5 text-[#22C55E]" />
+                            Mis Direcciones
                         </h3>
+                        <Dialog open={showAddressModal} onOpenChange={setShowAddressModal}>
+                            <DialogTrigger asChild>
+                                <Button size="sm" className="rounded-xl bg-[#4ADE80]/10 text-[#22C55E] hover:bg-[#4ADE80]/20 border-none font-bold gap-2">
+                                    <Plus className="w-4 h-4" /> Nueva
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="rounded-[2rem] max-w-md">
+                                <DialogHeader>
+                                    <DialogTitle className="text-xl font-black">Nueva Dirección</DialogTitle>
+                                </DialogHeader>
+                                <form onSubmit={handleSaveAddress} className="space-y-6 pt-4">
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <Label className="font-bold">Nombre (Ej: Casa, Oficina)</Label>
+                                            <Input
+                                                placeholder="Mi Casa"
+                                                value={addressForm.nombre}
+                                                onChange={e => setAddressForm({ ...addressForm, nombre: e.target.value })}
+                                                className="rounded-xl h-11"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="font-bold">Dirección Completa</Label>
+                                            <div className="relative">
+                                                <Input
+                                                    placeholder="Calle 123 #45-67..."
+                                                    value={addressForm.direccion}
+                                                    onChange={e => setAddressForm({ ...addressForm, direccion: e.target.value })}
+                                                    className="rounded-xl h-11 pr-12"
+                                                />
+                                                <Button
+                                                    type="button"
+                                                    size="icon"
+                                                    variant="ghost"
+                                                    className="absolute right-1 top-1/2 -translate-y-1/2 rounded-lg text-[#22C55E] hover:bg-green-50"
+                                                    onClick={handleGetCurrentLocation}
+                                                    disabled={detectingLocation}
+                                                >
+                                                    {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <Navigation className="w-4 h-4" />}
+                                                </Button>
+                                            </div>
+                                            <p className="text-[10px] text-gray-400 font-medium ml-1">Usa el ícono de GPS para autocompletar</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-3 pt-2">
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            className="flex-1 rounded-xl h-12 font-bold"
+                                            onClick={() => setShowAddressModal(false)}
+                                        >
+                                            Cancelar
+                                        </Button>
+                                        <Button
+                                            type="submit"
+                                            disabled={savingAddress}
+                                            className="flex-1 rounded-xl h-12 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black"
+                                        >
+                                            {savingAddress ? <Loader2 className="w-4 h-4 animate-spin" /> : "Guardar"}
+                                        </Button>
+                                    </div>
+                                </form>
+                            </DialogContent>
+                        </Dialog>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {favorites.length === 0 ? (
-                            <Card className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4 border-none shadow-sm rounded-[1.5rem] bg-gray-50/50">
-                                <CardContent className="p-12 text-center text-gray-500 font-medium">
-                                    No tienes favoritos aún
-                                </CardContent>
-                            </Card>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {addresses.length === 0 ? (
+                            <div className="col-span-full border-2 border-dashed border-[#4ADE80]/15 rounded-[1.5rem] bg-[#4ADE80]/5 py-12 text-center text-gray-500 font-medium">
+                                No hay direcciones guardadas
+                            </div>
                         ) : (
-                            favorites.map((fav) => (
-                                <Card key={fav.negocio_id} className="border-none shadow-sm hover:shadow-md transition-shadow rounded-[1.5rem] overflow-hidden cursor-pointer group" onClick={() => window.location.href = `/${fav.negocio_slug}`}>
+                            addresses.map((addr) => (
+                                <Card key={addr.id} className="border-none shadow-sm hover:shadow-md transition-shadow rounded-[1.5rem] overflow-hidden group">
                                     <CardContent className="p-5 flex items-center gap-4">
-                                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-gray-50 overflow-hidden group-hover:scale-110 transition-transform`}>
-                                            {fav.negocio_logo ? (
-                                                <img src={fav.negocio_logo} alt={fav.negocio_nombre} className="w-full h-full object-cover" />
-                                            ) : (
-                                                <span className="font-black text-lg opacity-40">{fav.negocio_nombre?.charAt(0)}</span>
-                                            )}
+                                        <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center shrink-0">
+                                            <Home className="w-5 h-5 text-[#22C55E]" />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h4 className="font-bold text-[#111814] truncate">{fav.negocio_nombre}</h4>
-                                            <p className="text-xs text-gray-500 font-medium truncate">{fav.negocio_categoria}</p>
-                                            <div className="flex items-center gap-1 mt-1">
-                                                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                                                <span className="text-[10px] font-bold text-gray-600">4.9</span>
+                                            <div className="flex items-center gap-2 mb-0.5">
+                                                <h4 className="font-bold text-[#111814] text-sm truncate">{addr.nombre}</h4>
+                                                {addr.es_principal && (
+                                                    <Badge className="h-4 text-[9px] px-1.5 bg-[#4ADE80]/20 text-[#111814] hover:bg-[#4ADE80]/30 border-none shadow-none uppercase font-bold">
+                                                        Principal
+                                                    </Badge>
+                                                )}
                                             </div>
+                                            <p className="text-xs text-gray-500 font-medium leading-relaxed truncate">{addr.direccion}</p>
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -685,76 +525,249 @@ export default function ClientProfilePage() {
                     </div>
                 </div>
 
-                <div className="space-y-4 pt-4">
-                    <div className="px-2">
-                        <h3 className="text-lg font-black text-[#111814] flex items-center gap-2">
-                            <Shield className="w-5 h-5 text-[#EAB308]" />
-                            Seguridad
-                        </h3>
+                <div className="space-y-6">
+                    {/* Favorites Section Moved Up */}
+                    <div className="space-y-4 pt-4">
+                        <div className="flex items-center justify-between px-2">
+                            <h3 className="text-lg font-black text-[#111814] flex items-center gap-2">
+                                <Heart className="w-5 h-5 text-[#22C55E]" />
+                                Mis Favoritos
+                            </h3>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {favorites.length === 0 ? (
+                                <Card className="col-span-full border-2 border-[#4ADE80]/10 border-dashed rounded-[1.5rem] bg-green-50/5">
+                                    <CardContent className="p-12 text-center text-gray-500 font-medium">
+                                        No tienes favoritos aún
+                                    </CardContent>
+                                </Card>
+                            ) : (
+                                favorites.map((fav) => (
+                                    <Card key={fav.negocio_id} className="border-none shadow-sm hover:shadow-md transition-shadow rounded-[1.5rem] overflow-hidden cursor-pointer group" onClick={() => window.location.href = `/${fav.negocio_slug}`}>
+                                        <CardContent className="p-5 flex items-center gap-4">
+                                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-gray-50 overflow-hidden group-hover:scale-110 transition-transform`}>
+                                                {fav.negocio_logo ? (
+                                                    <img src={fav.negocio_logo} alt={fav.negocio_nombre} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <span className="font-black text-lg opacity-40">{fav.negocio_nombre?.charAt(0)}</span>
+                                                )}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="font-bold text-[#111814] truncate">{fav.negocio_nombre}</h4>
+                                                <p className="text-xs text-gray-500 font-medium truncate">{fav.negocio_categoria}</p>
+                                                <div className="flex items-center gap-1 mt-1">
+                                                    <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                                    <span className="text-[10px] font-bold text-gray-600">4.9</span>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))
+                            )}
+                        </div>
                     </div>
-                    <Card className="border-none shadow-sm rounded-[2rem] bg-white overflow-hidden">
-                        <CardContent className="p-8">
-                            <form onSubmit={handleChangePassword} className="space-y-5">
-                                <p className="text-sm text-gray-500 font-medium mb-4">
-                                    Si deseas establecer una contraseña para tu cuenta, o cambiar la actual, ingresa los detalles abajo.
-                                </p>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <div className="space-y-2">
-                                        <Label className="font-bold text-gray-700">Contraseña Actual (si ya tienes una)</Label>
-                                        <div className="relative">
-                                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                            <Input
-                                                type="password"
-                                                placeholder="••••••••"
-                                                className="pl-11 h-12 rounded-xl bg-gray-50 border-gray-200"
-                                                value={passwordData.old_password}
-                                                onChange={e => setPasswordData({ ...passwordData, old_password: e.target.value })}
-                                            />
+
+                    {/* Recent Orders Section Moved Down */}
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between px-2">
+                            <h3 className="text-lg font-black text-[#111814] flex items-center gap-2">
+                                <Package className="w-5 h-5 text-[#22C55E]" />
+                                Mis Pedidos Recientes
+                            </h3>
+                            <Button
+                                variant="ghost"
+                                className="text-xs font-bold text-[#22C55E] hover:text-[#16A34A] hover:bg-green-50 rounded-lg ml-auto"
+                                onClick={() => navigate(`/${slug}/mi-cuenta/pedidos`)}
+                            >
+                                Ver todo
+                            </Button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {orders.filter(o => !hiddenOrderIds.includes(o.id)).length === 0 ? (
+                                <Card className="col-span-full border-none shadow-sm rounded-[1.5rem] bg-gray-50/50">
+                                    <CardContent className="p-8 text-center text-gray-500 font-medium">
+                                        No tienes pedidos recientes
+                                    </CardContent>
+                                </Card>
+                            ) : (
+                                orders.filter(o => !hiddenOrderIds.includes(o.id)).map((order) => (
+                                    <Card key={order.id} className="border-none shadow-sm hover:shadow-md transition-shadow rounded-[1.5rem] overflow-hidden group cursor-pointer" onClick={() => navigate(`/${order.negocio_slug || slug}/mis-pedidos?order=${order.id}`)}>
+                                        <CardContent className="p-6">
+                                            <div className="flex gap-4">
+                                                <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center shrink-0">
+                                                    {order.negocio_logo ? (
+                                                        <img src={order.negocio_logo} alt="Logo" className="w-full h-full object-cover rounded-2xl" />
+                                                    ) : (
+                                                        <Package className="w-6 h-6 text-gray-400" />
+                                                    )}
+                                                </div>
+
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex justify-between items-start">
+                                                        <div className="flex items-center gap-2 min-w-0 pr-4">
+                                                            <h4 className="font-bold text-[#111814] leading-tight truncate text-base">
+                                                                {order.items?.length > 0 ? `${order.items[0].nombre} ${order.items.length > 1 ? `+ ${order.items.length - 1}` : ''}` : 'Pedido'}
+                                                            </h4>
+                                                            <span className="text-[10px] font-bold text-gray-400 shrink-0 bg-gray-100 px-1.5 py-0.5 rounded">#{order.id?.slice(-6).toUpperCase()}</span>
+                                                        </div>
+                                                        <span className="text-xs text-gray-500 font-medium shrink-0">
+                                                            {(() => {
+                                                                const d = new Date(order.created_at);
+                                                                const today = new Date();
+                                                                const isToday = d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
+                                                                const yesterday = new Date(today);
+                                                                yesterday.setDate(yesterday.getDate() - 1);
+                                                                const isYesterday = d.toDateString() === yesterday.toDateString();
+
+                                                                if (isToday) return `Hoy, ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+                                                                if (isYesterday) return 'Ayer';
+                                                                return d.toLocaleDateString();
+                                                            })()}
+                                                        </span>
+                                                    </div>
+
+                                                    <p className="text-sm text-gray-500 mt-1 truncate">
+                                                        {order.negocio_nombre || 'Restaurante'} • {order.items?.length || 0} items • <span className="text-gray-900 font-bold ml-1">${order.total?.toLocaleString()}</span>
+                                                    </p>
+
+                                                    <div className="flex items-center gap-3 mt-3">
+                                                        <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-gray-100 ${['entregado'].includes(order.estado) ? 'text-gray-500' : 'text-green-700 bg-green-50'}`}>
+                                                            {order.estado?.replace('_', ' ')}
+                                                        </div>
+
+                                                        {['pendiente', 'en_proceso', 'en_camino'].includes(order.estado) && (
+                                                            <button
+                                                                className="text-sm font-bold text-[#2563EB] hover:text-[#22C55E] transition-colors"
+                                                                onClick={(e) => { e.stopPropagation(); navigate(`/${order.negocio_slug || slug}/mis-pedidos?order=${order.id}`); }}
+                                                            >
+                                                                Rastrear pedido
+                                                            </button>
+                                                        )}
+                                                        {['entregado', 'cancelado'].includes(order.estado) && (
+                                                            <button
+                                                                className="text-sm font-bold text-[#22C55E] hover:text-[#16A34A] transition-colors"
+                                                                onClick={(e) => { e.stopPropagation(); navigate(`/${order.negocio_slug || slug}/menu`); }}
+                                                            >
+                                                                Volver a pedir
+                                                            </button>
+                                                        )}
+                                                        {order.estado === 'entregado' && (
+                                                            <button
+                                                                className="text-xs font-bold text-red-500 hover:text-red-600 transition-colors flex items-center gap-1.5 ml-auto border border-red-100 px-2.5 py-1 rounded-lg hover:bg-red-50"
+                                                                onClick={(e) => { e.stopPropagation(); handleHideOrder(order.id); }}
+                                                            >
+                                                                <Trash2 className="w-3.5 h-3.5" />
+                                                                Eliminar
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="space-y-4 pt-4">
+                        <div className="px-2">
+                            <h3 className="text-lg font-black text-[#111814] flex items-center gap-2">
+                                <Shield className="w-5 h-5 text-[#EAB308]" />
+                                Seguridad
+                            </h3>
+                        </div>
+                        <Card className="border-none shadow-sm rounded-[2rem] bg-white overflow-hidden">
+                            <CardContent className="p-8">
+                                <form onSubmit={handleChangePassword} className="space-y-5">
+                                    <p className="text-sm text-gray-500 font-medium mb-4">
+                                        Si deseas establecer una contraseña para tu cuenta, o cambiar la actual, ingresa los detalles abajo.
+                                    </p>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                        <div className="space-y-2">
+                                            <Label className="font-bold text-gray-700">Contraseña Actual (si ya tienes una)</Label>
+                                            <div className="relative">
+                                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                                <Input
+                                                    type={showOldPassword ? "text" : "password"}
+                                                    placeholder="••••••••"
+                                                    className="pl-11 pr-11 h-12 rounded-xl bg-gray-50 border-gray-200"
+                                                    value={passwordData.old_password}
+                                                    onChange={e => setPasswordData({ ...passwordData, old_password: e.target.value })}
+                                                />
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-transparent"
+                                                    onClick={() => setShowOldPassword(!showOldPassword)}
+                                                >
+                                                    {showOldPassword ? <EyeOff className="w-4 h-4 text-gray-400" /> : <Eye className="w-4 h-4 text-gray-400" />}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="font-bold text-gray-700">Nueva Contraseña</Label>
+                                            <div className="relative">
+                                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                                <Input
+                                                    type={showNewPassword ? "text" : "password"}
+                                                    placeholder="••••••••"
+                                                    className="pl-11 pr-11 h-12 rounded-xl bg-gray-50 border-gray-200"
+                                                    value={passwordData.new_password}
+                                                    onChange={e => setPasswordData({ ...passwordData, new_password: e.target.value })}
+                                                />
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-transparent"
+                                                    onClick={() => setShowNewPassword(!showNewPassword)}
+                                                >
+                                                    {showNewPassword ? <EyeOff className="w-4 h-4 text-gray-400" /> : <Eye className="w-4 h-4 text-gray-400" />}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2 md:col-span-2">
+                                            <Label className="font-bold text-gray-700">Confirmar Nueva Contraseña</Label>
+                                            <div className="relative">
+                                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                                <Input
+                                                    type={showConfirmPassword ? "text" : "password"}
+                                                    placeholder="••••••••"
+                                                    className="pl-11 pr-11 h-12 rounded-xl bg-gray-50 border-gray-200"
+                                                    value={passwordData.confirm_password}
+                                                    onChange={e => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
+                                                />
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-transparent"
+                                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                >
+                                                    {showConfirmPassword ? <EyeOff className="w-4 h-4 text-gray-400" /> : <Eye className="w-4 h-4 text-gray-400" />}
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label className="font-bold text-gray-700">Nueva Contraseña</Label>
-                                        <div className="relative">
-                                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                            <Input
-                                                type="password"
-                                                placeholder="••••••••"
-                                                className="pl-11 h-12 rounded-xl bg-gray-50 border-gray-200"
-                                                value={passwordData.new_password}
-                                                onChange={e => setPasswordData({ ...passwordData, new_password: e.target.value })}
-                                            />
-                                        </div>
+                                    <div className="pt-2">
+                                        <Button
+                                            type="submit"
+                                            disabled={changingPassword}
+                                            className={`w-full md:w-auto px-10 h-12 rounded-2xl font-black transition-all border-2 border-[#4ADE80] flex items-center justify-center gap-2 ${isPasswordDirty
+                                                ? 'bg-[#4ADE80] text-[#111814] hover:bg-[#22C55E]'
+                                                : 'bg-white text-[#22C55E] hover:bg-green-50'
+                                                }`}
+                                        >
+                                            {changingPassword ? <Loader2 className="w-5 h-5 animate-spin" /> : <Shield className="w-4 h-4" />}
+                                            {changingPassword ? 'Actualizando...' : 'Actualizar Contraseña'}
+                                        </Button>
                                     </div>
-                                    <div className="space-y-2 md:col-span-2">
-                                        <Label className="font-bold text-gray-700">Confirmar Nueva Contraseña</Label>
-                                        <div className="relative">
-                                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                            <Input
-                                                type="password"
-                                                placeholder="••••••••"
-                                                className="pl-11 h-12 rounded-xl bg-gray-50 border-gray-200"
-                                                value={passwordData.confirm_password}
-                                                onChange={e => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="pt-2">
-                                    <Button
-                                        type="submit"
-                                        disabled={changingPassword}
-                                        className={`w-full md:w-auto px-10 h-12 rounded-2xl font-black transition-all border-2 border-[#4ADE80] flex items-center justify-center gap-2 ${isPasswordDirty
-                                            ? 'bg-[#4ADE80] text-[#111814] hover:bg-[#22C55E]'
-                                            : 'bg-white text-[#22C55E] hover:bg-green-50'
-                                            }`}
-                                    >
-                                        {changingPassword ? <Loader2 className="w-5 h-5 animate-spin" /> : <Shield className="w-4 h-4" />}
-                                        {changingPassword ? 'Actualizando...' : 'Actualizar Contraseña'}
-                                    </Button>
-                                </div>
-                            </form>
-                        </CardContent>
-                    </Card>
+                                </form>
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
             </main>
         </div>
