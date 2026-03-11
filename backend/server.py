@@ -47,7 +47,7 @@ from models import RedeemPointsRequest, RedeemPointsResponse, AwardPointsRequest
 from models import MenuItem, MenuItemCreate, MenuItemOption, MenuItemOptionCreate, MenuItemTag, MenuItemTagCreate, MarketingAISuggestionRequest
 from models_client import Cliente, ClienteCreate, ClienteUpdate
 from models_client import Address, AddressCreate, AddressUpdate
-from models_client import OTPRequest, OTPVerify, ClientTokenResponse, PINLogin, UpdatePINRequest
+from models_client import OTPRequest, OTPVerify, ClientTokenResponse, PINLogin, UpdatePINRequest, ResetPINRequest, RecoveryInfo
 
 # Supabase connection
 url: str = os.environ.get("SUPABASE_URL")
