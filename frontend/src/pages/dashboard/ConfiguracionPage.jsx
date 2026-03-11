@@ -1013,21 +1013,11 @@ const ConfiguracionPage = () => {
                 {/* Header Contextual */}
                 <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="space-y-1 text-center md:text-left">
-                        <div className="flex items-center justify-center md:justify-start gap-2 text-[#618972] font-black text-[10px] uppercase tracking-[0.2em]">
-                            <Settings2 className="w-3 h-3 text-[#22C55E]" />
-                            Panel de Control
-                        </div>
+
                         <h1 className="text-4xl font-black text-[#111814] tracking-tighter">Configuración</h1>
                         <p className="text-[#618972] font-medium italic">Gestiona tu identidad y menú desde un solo lugar.</p>
                     </div>
-                    <Button
-                        onClick={handleSaveBusiness}
-                        disabled={saving}
-                        className={getButtonStyle(hasChanges())}
-                    >
-                        {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-                        GUARDAR CAMBIOS
-                    </Button>
+
                 </div>
 
                 <Tabs
