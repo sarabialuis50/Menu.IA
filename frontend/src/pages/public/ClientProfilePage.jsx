@@ -29,10 +29,12 @@ export default function ClientProfilePage() {
     const [token, setToken] = useState(localStorage.getItem('client_token'));
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [authStep, setAuthStep] = useState('phone'); // phone, otp
+    const [authStep, setAuthStep] = useState('phone'); // phone, otp, pin
     const [phone, setPhone] = useState('');
     const [otp, setOtp] = useState('');
+    const [pin, setPin] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [business, setBusiness] = useState(null);
 
     // Data State
     const [orders, setOrders] = useState([]);
@@ -40,6 +42,13 @@ export default function ClientProfilePage() {
     // Favorites State
     const [favorites, setFavorites] = useState([]);
     const [loyalty, setLoyalty] = useState(null);
+    const [recoveryInfo, setRecoveryInfo] = useState(null);
+    const [recoveryAnswer, setRecoveryAnswer] = useState('');
+    const [newPin, setNewPin] = useState('');
+    const [recoveryMethod, setRecoveryMethod] = useState('hint'); // 'hint' or 'question'
+    const [pinHint, setPinHint] = useState('');
+    const [securityQuestion, setSecurityQuestion] = useState('');
+    const [securityAnswer, setSecurityAnswer] = useState('');
 
     // Password change state
     const [passwordData, setPasswordData] = useState({
@@ -69,12 +78,22 @@ export default function ClientProfilePage() {
     });
 
     useEffect(() => {
+        fetchBusiness();
         if (token) {
             fetchProfile();
         } else {
             setLoading(false);
         }
-    }, [token]);
+    }, [token, slug]);
+
+    async function fetchBusiness() {
+        try {
+            const res = await axios.get(`/api/public/business/${slug}`);
+            setBusiness(res.data);
+        } catch (err) {
+            console.error("Error fetching business:", err);
+        }
+    }
 
     async function fetchProfile() {
         setLoading(true);
@@ -137,8 +156,33 @@ export default function ClientProfilePage() {
             setAuthStep('otp');
             toast.success("Código enviado por WhatsApp");
         } catch (error) {
+            if (error.response?.status === 400 && error.response?.data?.detail?.includes("No tienes un PIN")) {
+                // If the backend would support checking PIN first, we could skip OTP
+                // But current request-otp always sends OTP. 
+                // Let's add an option to use PIN if they already have one.
+            }
             toast.error("Error al enviar código. Intenta de nuevo.");
             console.error(error);
+        } finally {
+            setSubmitting(false);
+        }
+    }
+
+    async function handleLoginPin(e) {
+        e.preventDefault();
+        if (!pin || pin.length < 4) {
+            toast.error("Ingresa tu PIN de 4 dígitos");
+            return;
+        }
+        setSubmitting(true);
+        try {
+            const res = await axios.post('/api/auth/client/login-pin', { telefono: phone, pin });
+            const newToken = res.data.access_token;
+            localStorage.setItem('client_token', newToken);
+            setToken(newToken);
+            toast.success("¡Bienvenido!");
+        } catch (error) {
+            toast.error(error.response?.data?.detail || "PIN incorrecto");
         } finally {
             setSubmitting(false);
         }
@@ -155,6 +199,44 @@ export default function ClientProfilePage() {
             toast.success("¡Bienvenido!");
         } catch (error) {
             toast.error("Código inválido o expirado");
+        } finally {
+            setSubmitting(false);
+        }
+    }
+
+    async function handleGetRecovery() {
+        if (!phone) return toast.error("Ingresa tu número");
+        setSubmitting(true);
+        try {
+            const res = await axios.get(`/api/auth/client/recovery-info/${phone}`);
+            setRecoveryInfo(res.data);
+            setAuthStep('recovery');
+        } catch (error) {
+            toast.error(error.response?.data?.detail || "No se encontró información de recuperación");
+        } finally {
+            setSubmitting(false);
+        }
+    }
+
+    async function handleResetPin(e) {
+        e.preventDefault();
+        if (recoveryInfo?.method === 'question' && !recoveryAnswer) return toast.error("Ingresa la respuesta");
+        if (newPin.length !== 4) return toast.error("El nuevo PIN debe ser de 4 dígitos");
+
+        setSubmitting(true);
+        try {
+            await axios.post('/api/auth/client/reset-pin', {
+                telefono: phone,
+                answer: recoveryAnswer,
+                new_pin: newPin
+            });
+            toast.success("PIN restablecido con éxito");
+            setAuthStep('pin');
+            setPin('');
+            setRecoveryAnswer('');
+            setNewPin('');
+        } catch (error) {
+            toast.error(error.response?.data?.detail || "Error al restablecer PIN");
         } finally {
             setSubmitting(false);
         }
@@ -269,12 +351,16 @@ export default function ClientProfilePage() {
                             <ShieldCheck className="w-8 h-8 text-[#22C55E]" />
                         </div>
                         <h1 className="text-2xl font-black text-[#111814]">
-                            {authStep === 'phone' ? 'Bienvenido' : 'Verifica tu número'}
+                            {authStep === 'phone' ? 'Bienvenido' : authStep === 'otp' ? 'Verifica tu número' : authStep === 'pin' ? 'Ingresa con tu PIN' : 'Recuperar PIN'}
                         </h1>
                         <p className="text-gray-500 font-medium">
                             {authStep === 'phone'
                                 ? 'Ingresa tu celular para acceder a tu perfil y pedidos.'
-                                : `Ingresa el código enviado a WhatsApp al ${phone}`
+                                : authStep === 'otp'
+                                    ? `Ingresa el código enviado al ${phone}`
+                                    : authStep === 'pin'
+                                        ? `Accede rápidamente con tu PIN de 4 dígitos`
+                                        : `Sigue los pasos para recuperar tu acceso`
                             }
                         </p>
                     </div>
@@ -282,7 +368,7 @@ export default function ClientProfilePage() {
                     <Card className="border-none shadow-xl rounded-[2rem] overflow-hidden">
                         <CardContent className="p-8">
                             {authStep === 'phone' ? (
-                                <form onSubmit={handleRequestOtp} className="space-y-6">
+                                <form onSubmit={(e) => { e.preventDefault(); if (phone.length >= 10) setAuthStep('pin'); else toast.error("Ingresa un número válido"); }} className="space-y-6">
                                     <div className="space-y-2">
                                         <Label className="font-bold text-gray-700">Número de Celular</Label>
                                         <div className="relative">
@@ -301,10 +387,30 @@ export default function ClientProfilePage() {
                                         className="w-full h-12 rounded-xl bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black text-base shadow-lg shadow-[#4ADE80]/20"
                                         disabled={submitting}
                                     >
-                                        {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Continuar"}
+                                        {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Entrar con PIN"}
                                     </Button>
+                                    <div className="relative py-4">
+                                        <div className="absolute inset-0 flex items-center">
+                                            <span className="w-full border-t border-gray-100"></span>
+                                        </div>
+                                        <div className="relative flex justify-center text-xs uppercase">
+                                            <span className="bg-white px-2 text-gray-400 font-bold">Otras opciones</span>
+                                        </div>
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={handleRequestOtp}
+                                        disabled={submitting}
+                                        className="w-full h-12 rounded-xl border-gray-200 text-gray-600 font-bold hover:bg-gray-50 flex items-center justify-center gap-2"
+                                    >
+                                        <Phone className="w-4 h-4" /> Recibir código (SMS/WA)
+                                    </Button>
+                                    <p className="text-[10px] text-center text-gray-400 mt-4 leading-relaxed">
+                                        Si el código no llega por problemas técnicos de Meta/WhatsApp, usa tu <b>PIN</b>.
+                                    </p>
                                 </form>
-                            ) : (
+                            ) : authStep === 'otp' ? (
                                 <form onSubmit={handleVerifyOtp} className="space-y-6">
                                     <div className="space-y-2">
                                         <Label className="font-bold text-gray-700">Código de Verificación</Label>
@@ -330,10 +436,127 @@ export default function ClientProfilePage() {
                                         className="w-full text-gray-500 font-bold"
                                         onClick={() => setAuthStep('phone')}
                                     >
-                                        Cambiar número
+                                        Cambiar número o método
                                     </Button>
                                 </form>
-                            )}
+                            ) : authStep === 'pin' ? (
+                                <form onSubmit={handleLoginPin} className="space-y-6">
+                                    <div className="space-y-2">
+                                        <Label className="font-bold text-gray-700">Ingresa tu PIN</Label>
+                                        <Input
+                                            type="password"
+                                            placeholder="••••"
+                                            className="h-12 rounded-xl bg-gray-50 border-gray-200 focus:ring-[#22C55E]/20 focus:border-[#22C55E] text-center text-2xl tracking-[1rem] font-bold"
+                                            value={pin}
+                                            onChange={(e) => setPin(e.target.value)}
+                                            maxLength={4}
+                                            required
+                                        />
+                                        <p className="text-[10px] text-center text-gray-400 font-medium">
+                                            Usa los primeros o últimos 4 dígitos de tu teléfono si no lo has cambiado.
+                                        </p>
+                                    </div>
+                                    <Button
+                                        type="submit"
+                                        className="w-full h-12 rounded-xl bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black text-base shadow-lg shadow-[#4ADE80]/20"
+                                        disabled={submitting}
+                                    >
+                                        {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Entrar"}
+                                    </Button>
+
+                                    <div className="space-y-2 pt-2">
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            className="w-full text-gray-500 font-bold"
+                                            onClick={() => setAuthStep('phone')}
+                                        >
+                                            Cambiar número
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="link"
+                                            className="w-full text-[#16A34A] font-bold text-xs"
+                                            onClick={handleGetRecovery}
+                                        >
+                                            ¿Olvidaste tu PIN?
+                                        </Button>
+                                    </div>
+                                </form>
+                            ) : authStep === 'recovery' ? (
+                                <form onSubmit={handleResetPin} className="space-y-6">
+                                    <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 space-y-4">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <Shield className="w-5 h-5 text-[#EAB308]" />
+                                            <h3 className="font-black text-[#111814]">Recuperar Acceso</h3>
+                                        </div>
+
+                                        {recoveryInfo?.method === 'hint' ? (
+                                            <div className="space-y-4">
+                                                <div className="bg-yellow-50 border border-yellow-100 p-4 rounded-xl">
+                                                    <p className="text-xs font-bold text-yellow-800 uppercase mb-1">Tu Pista para el PIN:</p>
+                                                    <p className="text-sm font-medium text-yellow-900 italic">"{recoveryInfo.hint}"</p>
+                                                </div>
+                                                <p className="text-xs text-center text-gray-500 font-medium">
+                                                    Intenta recordar tu PIN con esta pista y vuelve al inicio.
+                                                </p>
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    className="w-full h-11 rounded-xl border-gray-200 text-gray-700 font-bold"
+                                                    onClick={() => setAuthStep('pin')}
+                                                >
+                                                    Entendido, volver a intentar
+                                                </Button>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-4">
+                                                <div className="space-y-2">
+                                                    <p className="text-xs font-bold text-gray-500 uppercase">Pregunta de Seguridad:</p>
+                                                    <p className="text-sm font-black text-[#111814]">{recoveryInfo?.question}</p>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label className="text-xs font-bold text-gray-700">Tu Respuesta</Label>
+                                                    <Input
+                                                        placeholder="Respuesta..."
+                                                        className="h-11 rounded-xl bg-white border-gray-200 font-medium"
+                                                        value={recoveryAnswer}
+                                                        onChange={e => setRecoveryAnswer(e.target.value)}
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label className="text-xs font-bold text-gray-700">Escribe un Nuevo PIN</Label>
+                                                    <Input
+                                                        type="password"
+                                                        maxLength={4}
+                                                        placeholder="••••"
+                                                        className="h-11 rounded-xl bg-white border-gray-200 text-center text-xl tracking-widest font-black"
+                                                        value={newPin}
+                                                        onChange={e => setNewPin(e.target.value)}
+                                                        required
+                                                    />
+                                                </div>
+                                                <Button
+                                                    type="submit"
+                                                    className="w-full h-12 rounded-xl bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black"
+                                                    disabled={submitting}
+                                                >
+                                                    {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Cambiar PIN y Entrar"}
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    className="w-full text-gray-500 font-bold text-sm"
+                                                    onClick={() => setAuthStep('pin')}
+                                                >
+                                                    Cancelar
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </form>
+                            ) : null}
                         </CardContent>
                     </Card>
                     <Button
@@ -344,7 +567,7 @@ export default function ClientProfilePage() {
                         Volver al menú
                     </Button>
                 </div>
-            </div>
+            </div >
         );
     }
 
@@ -679,92 +902,213 @@ export default function ClientProfilePage() {
                         </div>
                         <Card className="border-none shadow-sm rounded-[2rem] bg-white overflow-hidden">
                             <CardContent className="p-8">
-                                <form onSubmit={handleChangePassword} className="space-y-5">
-                                    <p className="text-sm text-gray-500 font-medium mb-4">
-                                        Si deseas establecer una contraseña para tu cuenta, o cambiar la actual, ingresa los detalles abajo.
-                                    </p>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        <div className="space-y-2">
-                                            <Label className="font-bold text-gray-700">Contraseña Actual (si ya tienes una)</Label>
-                                            <div className="relative">
-                                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                                <Input
-                                                    type={showOldPassword ? "text" : "password"}
-                                                    placeholder="••••••••"
-                                                    className="pl-11 pr-11 h-12 rounded-xl bg-gray-50 border-gray-200"
-                                                    value={passwordData.old_password}
-                                                    onChange={e => setPasswordData({ ...passwordData, old_password: e.target.value })}
-                                                />
+                                <div className="space-y-6">
+                                    <div className="pb-6 border-b border-gray-100">
+                                        <h4 className="font-bold text-gray-900 mb-2">PIN de Acceso Rápido</h4>
+                                        <p className="text-sm text-gray-500 font-medium mb-4">
+                                            Establece un PIN de 4 dígitos para entrar a tu cuenta sin esperar el código de WhatsApp.
+                                            Te recomendamos usar los primeros o últimos 4 dígitos de tu celular.
+                                        </p>
+                                        <form onSubmit={async (e) => {
+                                            e.preventDefault();
+                                            const pinVal = e.target.pin.value;
+                                            if (pinVal.length !== 4) return toast.error("El PIN debe tener 4 dígitos");
+                                            if (recoveryMethod === 'question' && (!securityQuestion || !securityAnswer)) {
+                                                return toast.error("Configura la pregunta y respuesta de seguridad");
+                                            }
+                                            if (recoveryMethod === 'hint' && !pinHint) {
+                                                return toast.error("Escribe una pista para tu PIN");
+                                            }
+
+                                            setSubmitting(true);
+                                            try {
+                                                const api = axios.create({
+                                                    baseURL: (import.meta.env && import.meta.env.REACT_APP_BACKEND_URL) || '/api',
+                                                    headers: { Authorization: `Bearer ${token}` }
+                                                });
+                                                await api.post('/client/update-pin', {
+                                                    pin: pinVal,
+                                                    recovery_method: recoveryMethod,
+                                                    pin_hint: pinHint,
+                                                    security_question: securityQuestion,
+                                                    security_answer: securityAnswer
+                                                });
+                                                toast.success("PIN y método de recuperación guardados");
+                                                e.target.reset();
+                                            } catch (err) {
+                                                toast.error("Error al guardar configuración");
+                                            } finally {
+                                                setSubmitting(false);
+                                            }
+                                        }} className="space-y-4">
+                                            <div className="flex flex-col sm:flex-row gap-4 items-end">
+                                                <div className="space-y-1 w-full sm:w-32">
+                                                    <Label className="text-xs font-bold text-gray-500">Nuevo PIN</Label>
+                                                    <Input
+                                                        name="pin"
+                                                        type="password"
+                                                        maxLength={4}
+                                                        placeholder="••••"
+                                                        className="h-12 rounded-xl bg-gray-50 border-gray-200 font-bold text-center text-xl tracking-widest w-full"
+                                                        required
+                                                    />
+                                                </div>
                                                 <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-transparent"
-                                                    onClick={() => setShowOldPassword(!showOldPassword)}
+                                                    type="submit"
+                                                    disabled={submitting}
+                                                    className="bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black h-12 rounded-xl px-8 flex-1 sm:flex-none"
                                                 >
-                                                    {showOldPassword ? <EyeOff className="w-4 h-4 text-gray-400" /> : <Eye className="w-4 h-4 text-gray-400" />}
+                                                    {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Guardar PIN y Seguridad"}
                                                 </Button>
                                             </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="font-bold text-gray-700">Nueva Contraseña</Label>
-                                            <div className="relative">
-                                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                                <Input
-                                                    type={showNewPassword ? "text" : "password"}
-                                                    placeholder="••••••••"
-                                                    className="pl-11 pr-11 h-12 rounded-xl bg-gray-50 border-gray-200"
-                                                    value={passwordData.new_password}
-                                                    onChange={e => setPasswordData({ ...passwordData, new_password: e.target.value })}
-                                                />
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-transparent"
-                                                    onClick={() => setShowNewPassword(!showNewPassword)}
-                                                >
-                                                    {showNewPassword ? <EyeOff className="w-4 h-4 text-gray-400" /> : <Eye className="w-4 h-4 text-gray-400" />}
-                                                </Button>
+
+                                            <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 space-y-4">
+                                                <Label className="font-bold text-gray-700">Método de recuperación</Label>
+                                                <div className="flex gap-4">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setRecoveryMethod('hint')}
+                                                        className={`flex-1 p-3 rounded-xl border-2 transition-all text-sm font-bold ${recoveryMethod === 'hint' ? 'border-[#4ADE80] bg-white text-[#111814]' : 'border-gray-100 bg-gray-50 text-gray-400'}`}
+                                                    >
+                                                        Pista (Hint)
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setRecoveryMethod('question')}
+                                                        className={`flex-1 p-3 rounded-xl border-2 transition-all text-sm font-bold ${recoveryMethod === 'question' ? 'border-[#4ADE80] bg-white text-[#111814]' : 'border-gray-100 bg-gray-50 text-gray-400'}`}
+                                                    >
+                                                        Pregunta Secreta
+                                                    </button>
+                                                </div>
+
+                                                {recoveryMethod === 'hint' ? (
+                                                    <div className="space-y-2">
+                                                        <Label className="text-xs font-bold text-gray-500">Pista para recordar tu PIN</Label>
+                                                        <Input
+                                                            placeholder="Ej: Últimos 4 del cel, año especial..."
+                                                            className="h-11 rounded-xl bg-white border-gray-200 text-sm"
+                                                            value={pinHint}
+                                                            onChange={e => setPinHint(e.target.value)}
+                                                        />
+                                                    </div>
+                                                ) : (
+                                                    <div className="space-y-3">
+                                                        <div className="space-y-2">
+                                                            <Label className="text-xs font-bold text-gray-500">Elige tu pregunta</Label>
+                                                            <select
+                                                                className="w-full h-11 rounded-xl bg-white border border-gray-200 px-4 text-sm font-medium focus:ring-[#4ADE80] focus:border-[#4ADE80]"
+                                                                value={securityQuestion}
+                                                                onChange={e => setSecurityQuestion(e.target.value)}
+                                                            >
+                                                                <option value="">Selecciona una pregunta...</option>
+                                                                <option value="¿Nombre de tu primera mascota?">¿Nombre de tu primera mascota?</option>
+                                                                <option value="¿Ciudad donde naciste?">¿Ciudad donde naciste?</option>
+                                                                <option value="¿Nombre de tu escuela primaria?">¿Nombre de tu escuela primaria?</option>
+                                                                <option value="¿Marca de tu primer auto?">¿Marca de tu primer auto?</option>
+                                                            </select>
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            <Label className="text-xs font-bold text-gray-500">Tu Respuesta</Label>
+                                                            <Input
+                                                                placeholder="Escribe la respuesta..."
+                                                                className="h-11 rounded-xl bg-white border-gray-200 text-sm"
+                                                                value={securityAnswer}
+                                                                onChange={e => setSecurityAnswer(e.target.value)}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
-                                        </div>
-                                        <div className="space-y-2 md:col-span-2">
-                                            <Label className="font-bold text-gray-700">Confirmar Nueva Contraseña</Label>
-                                            <div className="relative">
-                                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                                <Input
-                                                    type={showConfirmPassword ? "text" : "password"}
-                                                    placeholder="••••••••"
-                                                    className="pl-11 pr-11 h-12 rounded-xl bg-gray-50 border-gray-200"
-                                                    value={passwordData.confirm_password}
-                                                    onChange={e => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
-                                                />
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-transparent"
-                                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                                >
-                                                    {showConfirmPassword ? <EyeOff className="w-4 h-4 text-gray-400" /> : <Eye className="w-4 h-4 text-gray-400" />}
-                                                </Button>
-                                            </div>
-                                        </div>
+                                        </form>
                                     </div>
-                                    <div className="pt-2">
-                                        <Button
-                                            type="submit"
-                                            disabled={changingPassword}
-                                            className={`w-full md:w-auto px-10 h-12 rounded-2xl font-black transition-all border-2 border-[#4ADE80] flex items-center justify-center gap-2 ${isPasswordDirty
-                                                ? 'bg-[#4ADE80] text-[#111814] hover:bg-[#22C55E]'
-                                                : 'bg-white text-[#22C55E] hover:bg-green-50'
-                                                }`}
-                                        >
-                                            {changingPassword ? <Loader2 className="w-5 h-5 animate-spin" /> : <Shield className="w-4 h-4" />}
-                                            {changingPassword ? 'Actualizando...' : 'Actualizar Contraseña'}
-                                        </Button>
-                                    </div>
-                                </form>
+
+                                    <form onSubmit={handleChangePassword} className="space-y-5 pt-2">
+                                        <p className="text-sm text-gray-500 font-medium mb-4">
+                                            Si deseas establecer una contraseña para tu cuenta, o cambiar la actual, ingresa los detalles abajo.
+                                        </p>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                            <div className="space-y-2">
+                                                <Label className="font-bold text-gray-700">Contraseña Actual (si ya tienes una)</Label>
+                                                <div className="relative">
+                                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                                    <Input
+                                                        type={showOldPassword ? "text" : "password"}
+                                                        placeholder="••••••••"
+                                                        className="pl-11 pr-11 h-12 rounded-xl bg-gray-50 border-gray-200"
+                                                        value={passwordData.old_password}
+                                                        onChange={e => setPasswordData({ ...passwordData, old_password: e.target.value })}
+                                                    />
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-transparent"
+                                                        onClick={() => setShowOldPassword(!showOldPassword)}
+                                                    >
+                                                        {showOldPassword ? <EyeOff className="w-4 h-4 text-gray-400" /> : <Eye className="w-4 h-4 text-gray-400" />}
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="font-bold text-gray-700">Nueva Contraseña</Label>
+                                                <div className="relative">
+                                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                                    <Input
+                                                        type={showNewPassword ? "text" : "password"}
+                                                        placeholder="••••••••"
+                                                        className="pl-11 pr-11 h-12 rounded-xl bg-gray-50 border-gray-200"
+                                                        value={passwordData.new_password}
+                                                        onChange={e => setPasswordData({ ...passwordData, new_password: e.target.value })}
+                                                    />
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-transparent"
+                                                        onClick={() => setShowNewPassword(!showNewPassword)}
+                                                    >
+                                                        {showNewPassword ? <EyeOff className="w-4 h-4 text-gray-400" /> : <Eye className="w-4 h-4 text-gray-400" />}
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2 md:col-span-2">
+                                                <Label className="font-bold text-gray-700">Confirmar Nueva Contraseña</Label>
+                                                <div className="relative">
+                                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                                    <Input
+                                                        type={showConfirmPassword ? "text" : "password"}
+                                                        placeholder="••••••••"
+                                                        className="pl-11 pr-11 h-12 rounded-xl bg-gray-50 border-gray-200"
+                                                        value={passwordData.confirm_password}
+                                                        onChange={e => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
+                                                    />
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-transparent"
+                                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                    >
+                                                        {showConfirmPassword ? <EyeOff className="w-4 h-4 text-gray-400" /> : <Eye className="w-4 h-4 text-gray-400" />}
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="pt-2">
+                                            <Button
+                                                type="submit"
+                                                disabled={changingPassword}
+                                                className={`w-full md:w-auto px-10 h-12 rounded-2xl font-black transition-all border-2 border-[#4ADE80] flex items-center justify-center gap-2 ${isPasswordDirty
+                                                    ? 'bg-[#4ADE80] text-[#111814] hover:bg-[#22C55E]'
+                                                    : 'bg-white text-[#22C55E] hover:bg-green-50'
+                                                    }`}
+                                            >
+                                                {changingPassword ? <Loader2 className="w-5 h-5 animate-spin" /> : <Shield className="w-4 h-4" />}
+                                                {changingPassword ? 'Actualizando...' : 'Actualizar Contraseña'}
+                                            </Button>
+                                        </div>
+                                    </form>
+                                </div>
                             </CardContent>
                         </Card>
                     </div>

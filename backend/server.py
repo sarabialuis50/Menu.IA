@@ -47,7 +47,7 @@ from models import RedeemPointsRequest, RedeemPointsResponse, AwardPointsRequest
 from models import MenuItem, MenuItemCreate, MenuItemOption, MenuItemOptionCreate, MenuItemTag, MenuItemTagCreate, MarketingAISuggestionRequest
 from models_client import Cliente, ClienteCreate, ClienteUpdate
 from models_client import Address, AddressCreate, AddressUpdate
-from models_client import OTPRequest, OTPVerify, ClientTokenResponse
+from models_client import OTPRequest, OTPVerify, ClientTokenResponse, PINLogin, UpdatePINRequest
 
 # Supabase connection
 url: str = os.environ.get("SUPABASE_URL")
@@ -4626,6 +4626,42 @@ async def request_otp(data: OTPRequest):
              return {"message": "OTP enviado (DEV MODE)", "otp_debug": otp}
         raise HTTPException(status_code=500, detail="Error al enviar OTP")
 
+@api_router.post("/auth/client/login-pin", response_model=ClientTokenResponse)
+async def login_client_pin(data: PINLogin):
+    phone = data.telefono.replace(' ', '').replace('+', '')
+    
+    # Get Client
+    client_res = supabase.table('clientes').select('*').eq('telefono', phone).execute()
+    
+    if not client_res.data:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+        
+    client_data = client_res.data[0]
+    hashed_pin = client_data.get('pin')
+    
+    if not hashed_pin:
+        # If no PIN is set, allow them to log in with OTP first
+        raise HTTPException(status_code=400, detail="No tienes un PIN configurado. Ingresa con WhatsApp.")
+        
+    if not verify_password(data.pin, hashed_pin):
+        raise HTTPException(status_code=401, detail="PIN incorrecto")
+        
+    # Generate Token
+    access_token_expires = timedelta(hours=ACCESS_TOKEN_EXPIRE_HOURS)
+    expire = datetime.now(timezone.utc) + access_token_expires
+    to_encode = {"sub": phone, "role": "client", "exp": expire}
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    
+    # Remove PIN from response
+    if 'pin' in client_data:
+        del client_data['pin']
+        
+    return {
+        "access_token": encoded_jwt,
+        "token_type": "bearer",
+        "cliente": client_data
+    }
+
 @api_router.post("/auth/client/verify-otp", response_model=ClientTokenResponse)
 async def verify_otp(data: OTPVerify):
     phone = data.telefono.replace(' ', '').replace('+', '')
@@ -4670,6 +4706,10 @@ async def verify_otp(data: OTPVerify):
     to_encode = {"sub": phone, "role": "client", "exp": expire}
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     
+    # Remove PIN from response
+    if 'pin' in client_data:
+        del client_data['pin']
+        
     return {
         "access_token": encoded_jwt,
         "token_type": "bearer",
@@ -4684,14 +4724,91 @@ async def get_client_profile(client: Cliente = Depends(get_current_client)):
 async def update_client_profile(data: ClienteUpdate, client: Cliente = Depends(get_current_client)):
     # Remove None values
     update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    
+    # If providing a new PIN, hash it
+    if 'pin' in update_data and update_data['pin']:
+        update_data['pin'] = hash_password(update_data['pin'])
+    
     update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
     
     res = supabase.table('clientes').update(update_data).eq('id', client.id).execute()
     
     if not res.data:
         raise HTTPException(status_code=500, detail="Error actualizando perfil")
+    
+    client_res = res.data[0]
+    if 'pin' in client_res:
+        del client_res['pin']
         
-    return res.data[0]
+    return client_res
+
+@api_router.post("/client/update-pin")
+async def update_client_pin(data: UpdatePINRequest, client: Cliente = Depends(get_current_client)):
+    hashed_pin = hash_password(data.pin)
+    update_item = {
+        'pin': hashed_pin,
+        'recovery_method': data.recovery_method,
+        'pin_hint': data.pin_hint,
+        'security_question': data.security_question
+    }
+    
+    if data.security_answer:
+        update_item['security_answer'] = hash_password(data.security_answer.lower().strip())
+        
+    res = supabase.table('clientes').update(update_item).eq('id', client.id).execute()
+    if not res.data:
+        raise HTTPException(status_code=500, detail="Error actualizando PIN y recuperación")
+    return {"message": "PIN y método de recuperación configurados"}
+
+@api_router.get("/auth/client/recovery-info/{phone}", response_model=RecoveryInfo)
+async def get_client_recovery_info(phone: str):
+    phone = phone.replace(' ', '').replace('+', '')
+    res = supabase.table('clientes').select('recovery_method', 'pin_hint', 'security_question').eq('telefono', phone).execute()
+    if not res.data:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+        
+    c = res.data[0]
+    if not c.get('recovery_method'):
+        raise HTTPException(status_code=400, detail="No tienes configurado un método de recuperación")
+        
+    return {
+        "method": c['recovery_method'],
+        "hint": c.get('pin_hint'),
+        "question": c.get('security_question')
+    }
+
+@api_router.post("/auth/client/reset-pin")
+async def reset_client_pin(data: ResetPINRequest):
+    phone = data.telefono.replace(' ', '').replace('+', '')
+    # Get client
+    res = supabase.table('clientes').select('*').eq('telefono', phone).execute()
+    if not res.data:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+    
+    client = res.data[0]
+    method = client.get('recovery_method')
+    
+    if method == 'question':
+        if not data.answer:
+            raise HTTPException(status_code=400, detail="Falta la respuesta a la pregunta")
+        if not client.get('security_answer') or not verify_password(data.answer.lower().strip(), client['security_answer']):
+            raise HTTPException(status_code=401, detail="Respuesta incorrecta")
+    elif method == 'hint':
+        # Hint is just a reminder, if they are here they are supposed to try again with the login.
+        # But wait, if they want to RESET it, hint doesn't prove ownership.
+        # If method is hint, they can't reset it automatically? 
+        # User said: "one of the two and that will be the way to recover their pin"
+        # For 'hint', recovery is just seeing the hint and typing the pin again in Login.
+        # If they still don't remember, they need to log in with OTP.
+        raise HTTPException(status_code=400, detail="El método de pista solo sirve para recordarte el PIN en la pantalla de inicio.")
+    else:
+        raise HTTPException(status_code=400, detail="Método de recuperación no soportado para reseteo")
+
+    # If verification pass (only for 'question' for now), allow reset
+    new_hashed = hash_password(data.new_pin)
+    supabase.table('clientes').update({'pin': new_hashed}).eq('id', client['id']).execute()
+    
+    return {"message": "PIN restablecido con éxito. Ahora puedes entrar."}
     
 @api_router.post("/client/upload-avatar")
 async def upload_client_avatar(
