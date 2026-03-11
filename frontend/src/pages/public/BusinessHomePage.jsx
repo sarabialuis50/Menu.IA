@@ -283,7 +283,7 @@ const BusinessHomePageContent = () => {
                                     : 'bg-red-50 text-red-700 border-red-100'
                                     }`}>
                                     <Clock className="w-4 h-4" />
-                                    {!(scheduleData?.isClosed ?? !business.abierto) ? 'Abierto ahora' : 'Cerrado temporalmente'}
+                                    {!(scheduleData?.isClosed ?? !business.abierto) ? 'Abierto ahora' : 'Cerrado'}
                                 </div>
                             </div>
 
