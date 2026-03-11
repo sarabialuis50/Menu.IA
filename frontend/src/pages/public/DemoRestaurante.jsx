@@ -62,8 +62,8 @@ const DEMO_CATEGORIES = [
 
 const DEMO_PRODUCTS = [
     // Hamburguesas
-    { id: 1, categoria: 'Hamburguesas', nombre: 'Clásica Grill', precio: 18000, descripcion: 'Carne artesanal, queso cheddar, lechuga y tomate.', imagen: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80', destacado: true, etiqueta: 'NUEVO', nutri_kcal: 750, nutri_proteina: '28g', nutri_carbohidratos: '42g', nutri_grasa: '35g', prep_time_minutes: 15, is_gluten_free: true, modificadores: [{ nombre: "Adicionales", obligatorio: false, seleccion_maxima: 5, opciones: [{ nombre: "Queso Extra", precio: 3500 }, { nombre: "Tocineta", precio: 4500 }, { nombre: "Huevo", precio: 2000 }] }] },
-    { id: 2, categoria: 'Hamburguesas', nombre: 'Monster Bacon', precio: 25000, descripcion: 'Doble carne, triple tocino crujiente y mucha salsa.', imagen: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=500&q=80', destacado: true, etiqueta: 'OFERTA', precio_original: 28000, oferta_porcentaje: 10, nutri_kcal: 1150, nutri_proteina: '45g', nutri_carbohidratos: '38g', nutri_grasa: '65g', prep_time_minutes: 20, is_spicy: true, modificadores: [{ nombre: "Toppings Premium", obligatorio: false, seleccion_maxima: 3, opciones: [{ nombre: "Cebolla Caramelizada", precio: 2500 }, { nombre: "Champiñones", precio: 3000 }, { nombre: "Aros de Cebolla", precio: 4000 }] }] },
+    { id: 1, categoria: 'Hamburguesas', nombre: 'Clásica Grill', precio: 18000, descripcion: 'Carne artesanal, queso cheddar, lechuga y tomate.', imagen: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80', destacado: true, etiqueta: 'NUEVO', nutri_kcal: 750, nutri_proteina: '28g', nutri_carbohidratos: '42g', nutri_grasa: '35g', prep_time_minutes: 15, tamanos: [{ nombre: "Tamaño", obligatorio: true, seleccion_maxima: 1, opciones: [{ nombre: "Sencilla", precio: 0 }, { nombre: "Doble", precio: 6000 }, { nombre: "Combo", precio: 10000 }] }], modificadores: [{ nombre: "Adicionales", obligatorio: false, seleccion_maxima: 5, opciones: [{ nombre: "Queso Extra", precio: 3500 }, { nombre: "Tocineta", precio: 4500 }, { nombre: "Huevo", precio: 2000 }] }], opciones: [{ nombre: "Opciones", obligatorio: false, seleccion_maxima: 3, opciones: [{ nombre: "Sin Cebolla", precio: 0 }, { nombre: "Sin Pepinillos", precio: 0 }, { nombre: "Salsas Aparte", precio: 0 }] }] },
+    { id: 2, categoria: 'Hamburguesas', nombre: 'Monster Bacon', precio: 25000, descripcion: 'Doble carne, triple tocino crujiente y mucha salsa.', imagen: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=500&q=80', destacado: true, etiqueta: 'OFERTA', precio_original: 28000, oferta_porcentaje: 10, nutri_kcal: 1150, nutri_proteina: '45g', nutri_carbohidratos: '38g', nutri_grasa: '65g', prep_time_minutes: 20, is_spicy: true, tamanos: [{ nombre: "Tamaño", obligatorio: true, seleccion_maxima: 1, opciones: [{ nombre: "Normal", precio: 0 }, { nombre: "XL", precio: 5000 }] }], modificadores: [{ nombre: "Toppings Premium", obligatorio: false, seleccion_maxima: 3, opciones: [{ nombre: "Cebolla Caramelizada", precio: 2500 }, { nombre: "Champiñones", precio: 3000 }, { nombre: "Aros de Cebolla", precio: 4000 }] }], opciones: [{ nombre: "Opciones", obligatorio: false, seleccion_maxima: 2, opciones: [{ nombre: "Término Medio", precio: 0 }, { nombre: "Bien Cocida", precio: 0 }] }] },
     { id: 3, categoria: 'Hamburguesas', nombre: 'Crispy Chicken', precio: 22000, descripcion: 'Pechuga de pollo apanada, cole slaw y pepinillos.', imagen: 'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=500&q=80', etiqueta: 'HOT', nutri_kcal: 680, nutri_proteina: '32g', nutri_carbohidratos: '45g', nutri_grasa: '28g', prep_time_minutes: 18, is_spicy: true },
     { id: 4, categoria: 'Hamburguesas', nombre: 'Veggie Power', precio: 20000, descripcion: 'Hamburguesa de lentejas, champiñones y rúcula.', imagen: 'https://images.unsplash.com/photo-1525059696034-4967a8504e71?w=500&q=80', nutri_kcal: 420, nutri_proteina: '18g', nutri_carbohidratos: '55g', nutri_grasa: '12g', prep_time_minutes: 15, is_vegan: true, is_vegetarian: true },
     { id: 37, categoria: 'Hamburguesas', nombre: 'Doble Queso XL', precio: 24000, descripcion: 'Doble carne y cuatro capas de queso monterey jack.', imagen: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=500&q=80', destacado: false },
@@ -156,7 +156,8 @@ export default function DemoRestaurante() {
         return new Intl.NumberFormat('es-CO', {
             style: 'currency',
             currency: 'COP',
-            minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Number(value));
+            minimumFractionDigits: 0, maximumFractionDigits: 0
+        }).format(Number(value));
     };
 
 
@@ -617,11 +618,11 @@ export default function DemoRestaurante() {
                                 {step !== 'success' ? (
                                     <>
                                         <button
-                                            onClick={handleConfirmOrder}
+                                            onClick={cart.length === 0 ? resetAll : handleConfirmOrder}
                                             className="w-full h-14 bg-[#4ADE80] text-[#111814] rounded-2xl font-black text-lg shadow-xl shadow-[#4ADE80]/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
                                         >
-                                            {step === 'cart' ? 'Continuar Compra' : 'Confirmar Pedido'}
-                                            <Send className="w-5 h-5" />
+                                            {step === 'cart' ? (cart.length === 0 ? 'Ver menu para hacer pedido' : 'Continuar Compra') : 'Confirmar Pedido'}
+                                            {cart.length > 0 && <Send className="w-5 h-5" />}
                                         </button>
                                         {step === 'checkout' && (
                                             <button onClick={() => setStep('cart')} className="w-full mt-4 text-xs font-black text-gray-400 uppercase tracking-widest hover:text-gray-900 transition-colors">Volver al carrito</button>
@@ -745,7 +746,7 @@ export default function DemoRestaurante() {
                                                         * Valores aproximados calculados por inteligencia artificial basados en la receta estándar.
                                                     </p>
                                                     {/* Dietary Labels - Relocated below grid */}
-                                                    {(selectedProduct.is_vegan || selectedProduct.is_vegetarian || selectedProduct.is_gluten_free || selectedProduct.is_spicy) && (
+                                                    {(selectedProduct.is_vegan || selectedProduct.is_vegetarian || selectedProduct.is_spicy) && (
                                                         <div className="flex flex-nowrap gap-2 pt-2 overflow-x-auto no-scrollbar w-full">
                                                             {selectedProduct.is_vegan && (
                                                                 <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#edfdf2] border border-[#d3f9d8] text-[#00a854] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap flex-shrink-0">
@@ -755,11 +756,6 @@ export default function DemoRestaurante() {
                                                             {selectedProduct.is_vegetarian && !selectedProduct.is_vegan && (
                                                                 <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fffbe6] border border-[#fff1b8] text-[#c49c00] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap flex-shrink-0">
                                                                     <span>🥗</span> VEGETARIANO
-                                                                </div>
-                                                            )}
-                                                            {selectedProduct.is_gluten_free && (
-                                                                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fff2e8] border border-[#ffd8bf] text-[#d46b08] text-[9px] md:text-[11px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap flex-shrink-0">
-                                                                    <span>🌾</span> SIN GLUTEN
                                                                 </div>
                                                             )}
                                                             {selectedProduct.is_spicy && (
