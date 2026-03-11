@@ -65,6 +65,8 @@ import { MapPicker } from '@/components/MapPicker';
 import { PlacesAutocomplete } from '@/components/PlacesAutocomplete';
 import { FloatingWA } from '@/components/FloatingWA';
 import PublicTrialLocked from '@/components/PublicTrialLocked';
+import { parseBusinessSchedule } from '@/utils/scheduleParser';
+import { BusinessClosedModal } from '@/components/BusinessClosedModal';
 import GOOGLE_MAPS_API_KEY from '@/config/googleMaps';
 
 const AvailableIcons = {
@@ -141,6 +143,8 @@ const MenuContent = () => {
   const { items, addItem, updateQuantity, clearCart, total, itemCount, customerInfo, setCustomerInfo } = useCart();
 
   const [business, setBusiness] = useState(null);
+  const [scheduleData, setScheduleData] = useState(null);
+  const [showClosedModal, setShowClosedModal] = useState(false);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [activeCategory, setActiveCategory] = useState('Todas');
@@ -224,6 +228,12 @@ const MenuContent = () => {
       ]);
 
       setBusiness(businessRes.data);
+
+      const parsedSched = parseBusinessSchedule(businessRes.data.horarios, businessRes.data.abierto);
+      setScheduleData(parsedSched);
+      if (parsedSched.isClosed) {
+        setShowClosedModal(true);
+      }
 
       // Initialize payment method from active ones
       const pMethods = businessRes.data.metodos_pago || {};
@@ -2104,8 +2114,14 @@ const MenuContent = () => {
         aiSaludo={business?.ai_saludo}
         slug={slug}
         aiUseModal={business?.ai_use_modal}
-        isClosed={!business?.abierto}
+        isClosed={scheduleData?.isClosed ?? !business?.abierto}
         hidden={!!selectedProduct || cartOpen || showSuccessModal}
+      />
+
+      <BusinessClosedModal
+        isOpen={showClosedModal}
+        onClose={() => setShowClosedModal(false)}
+        scheduleData={scheduleData}
       />
     </div >
   );

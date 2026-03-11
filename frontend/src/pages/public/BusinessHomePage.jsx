@@ -26,6 +26,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import PublicTrialLocked from '@/components/PublicTrialLocked';
+import { parseBusinessSchedule } from '@/utils/scheduleParser';
+import { BusinessClosedModal } from '@/components/BusinessClosedModal';
 
 // Backend API URL
 // Consistent with AuthContext prefixing
@@ -40,6 +42,8 @@ const BusinessHomePageContent = () => {
     const [loading, setLoading] = useState(true);
     const [lockedMessage, setLockedMessage] = useState(null);
     const [products, setProducts] = useState([]); // Added new state for all products
+    const [scheduleData, setScheduleData] = useState(null);
+    const [showClosedModal, setShowClosedModal] = useState(false);
 
     useEffect(() => {
         fetchData();
@@ -52,6 +56,12 @@ const BusinessHomePageContent = () => {
             // Fetch business first
             const businessRes = await axios.get(`${API}/business/${slug}`);
             setBusiness(businessRes.data);
+
+            const parsedSched = parseBusinessSchedule(businessRes.data.horarios, businessRes.data.abierto);
+            setScheduleData(parsedSched);
+            if (parsedSched.isClosed) {
+                setShowClosedModal(true);
+            }
 
             // Fetch products separately so failure doesn't block the whole page
             try {
@@ -140,7 +150,8 @@ const BusinessHomePageContent = () => {
         return new Intl.NumberFormat('es-CO', {
             style: 'currency',
             currency: 'COP',
-            minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Number(value));
+            minimumFractionDigits: 0, maximumFractionDigits: 0
+        }).format(Number(value));
     };
 
     if (loading) {
@@ -179,11 +190,11 @@ const BusinessHomePageContent = () => {
             aiEnabled={business.ai_habilitado}
             aiSaludo={business.ai_saludo}
             aiUseModal={business.ai_use_modal}
-            isClosed={!business.abierto}
+            isClosed={scheduleData?.isClosed ?? !business.abierto}
         >
             <div className="bg-[#f6f8f7] min-h-screen pb-20">
                 {/* Closure Alert Banner */}
-                {!business.abierto && (
+                {scheduleData?.isClosed && (
                     <div className="bg-red-600 text-white py-4 px-4 sticky top-0 z-[60] shadow-xl animate-pulse">
                         <div className="max-w-[1200px] mx-auto flex items-center justify-center gap-3">
                             <Clock className="w-5 h-5" />
@@ -267,12 +278,12 @@ const BusinessHomePageContent = () => {
                                     <Star className="w-4 h-4 fill-orange-700" />
                                     4.9 (1.2k)
                                 </div>
-                                <div className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border ${business.abierto
+                                <div className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border ${!(scheduleData?.isClosed ?? !business.abierto)
                                     ? 'bg-blue-50 text-blue-700 border-blue-100'
                                     : 'bg-red-50 text-red-700 border-red-100'
                                     }`}>
                                     <Clock className="w-4 h-4" />
-                                    {business.abierto ? 'Abierto ahora' : 'Cerrado temporalmente'}
+                                    {!(scheduleData?.isClosed ?? !business.abierto) ? 'Abierto ahora' : 'Cerrado temporalmente'}
                                 </div>
                             </div>
 
@@ -537,6 +548,11 @@ const BusinessHomePageContent = () => {
                     </div>
                 </motion.div>
             </div >
+            <BusinessClosedModal
+                isOpen={showClosedModal}
+                onClose={() => setShowClosedModal(false)}
+                scheduleData={scheduleData}
+            />
         </PublicLayout >
     );
 };
