@@ -576,6 +576,12 @@ export default function MiPerfilPage() {
                                                 className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white transition-all font-medium"
                                                 placeholder="Ej: 12:00 PM - 10:00 PM"
                                             />
+                                            <p className="text-[10px] text-gray-400 font-medium ml-1">
+                                                * Ej: <span className="text-[#111814]">12:00 PM - 08:00 PM</span> o <span className="text-[#111814]">Cerrado</span>.
+                                            </p>
+                                            <p className="text-[10px] text-gray-400 font-medium ml-1">
+                                                * Usa <span className="text-[#111814]">12:00 PM</span> para el mediodía y <span className="text-[#111814]">12:00 AM</span> para la medianoche.
+                                            </p>
                                         </div>
                                         <div className="space-y-2.5">
                                             <Label className="text-[#111814] font-bold ml-1 flex items-center gap-2">
@@ -591,6 +597,9 @@ export default function MiPerfilPage() {
                                                 className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white transition-all font-medium"
                                                 placeholder="Ej: 12:00 PM - 11:00 PM"
                                             />
+                                            <p className="text-[10px] text-gray-400 font-medium ml-1">
+                                                * Formato: <span className="text-[#111814]">Apertura - Cierre</span>.
+                                            </p>
                                         </div>
                                     </div>
                                     <div className="space-y-2.5">

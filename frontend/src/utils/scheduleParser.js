@@ -1,11 +1,9 @@
 export function parseBusinessSchedule(horarios, isOpenOverride = true) {
-    // If manual override says closed, it's closed.
     if (!isOpenOverride) {
-        return { isClosed: true, nextOpenTime: null, overridesClosed: true, parsedSchedule: null };
+        return { isClosed: true, nextOpenTime: null, overridesClosed: true, parsedSchedule: null, status: 'Cerrado' };
     }
 
-    // If no horarios defined, assume open
-    if (!horarios) return { isClosed: false, nextOpenTime: null, parsedSchedule: null };
+    if (!horarios) return { isClosed: false, nextOpenTime: null, parsedSchedule: null, status: 'Abierto' };
 
     let schedule = horarios;
     if (typeof horarios === 'string') {
@@ -13,63 +11,39 @@ export function parseBusinessSchedule(horarios, isOpenOverride = true) {
             try {
                 schedule = JSON.parse(horarios);
             } catch (e) {
-                return { isClosed: false, nextOpenTime: null, parsedSchedule: null }; // Invalid JSON
+                return { isClosed: false, nextOpenTime: null, parsedSchedule: null, status: 'Abierto' };
             }
         } else {
-            // Just a string, we can't parse easily without days, assume open
-            return { isClosed: false, nextOpenTime: null, parsedSchedule: null };
+            return { isClosed: false, nextOpenTime: null, parsedSchedule: null, status: 'Abierto' };
         }
     }
 
-    if (typeof schedule !== 'object' || schedule === null) {
-        return { isClosed: false, nextOpenTime: null, parsedSchedule: null };
-    }
-
     const now = new Date();
-    // For standard JS Date, 0 is Sunday, 1 is Monday ... 6 is Saturday
-    const today = now.getDay();
 
-    // Determine today's schedule string
-    let todayScheduleStr = '';
-    if (today >= 1 && today <= 5) { // Lunes a Viernes
-        todayScheduleStr = schedule.semana || schedule.week || '';
-    } else if (today === 6) { // Sabados
-        todayScheduleStr = schedule.sabado || schedule.saturday || schedule.semana || '';
-    } else if (today === 0) { // Domingos y festivos
-        todayScheduleStr = schedule.domingos || schedule.sunday || schedule.fines || schedule.weekend || schedule.semana || '';
-    }
-
-    if (!todayScheduleStr) {
-        return { isClosed: false, nextOpenTime: null, parsedSchedule: schedule }; // Default to open if not defined
-    }
-
-    if (todayScheduleStr.toLowerCase().includes('cerrado') || todayScheduleStr.toLowerCase().includes('festivo solo')) {
-        return { isClosed: true, nextOpenTime: null, parsedSchedule: schedule, todayScheduleStr };
-    }
-
-    // Parse time range: e.g., "12:00 PM - 17:00 PM", "11:00 AM - 11:00 PM"
-    // We'll split by '-' or 'a' or 'to'
-    const timeParts = todayScheduleStr.toLowerCase().split(/\s*-\s*|\s+a\s+|\s+to\s+/);
-    if (timeParts.length !== 2) {
-        return { isClosed: false, nextOpenTime: null, parsedSchedule: schedule }; // Cannot parse, default to open
-    }
+    // Helper to get day range string
+    const getDayScheduleStr = (date) => {
+        const day = date.getDay(); // 0 is Sunday, 1 is Monday ... 6 is Saturday
+        if (day >= 1 && day <= 5) return schedule.semana || schedule.week || '';
+        if (day === 6) return schedule.sabado || schedule.saturday || schedule.semana || '';
+        if (day === 0) return schedule.domingos || schedule.sunday || schedule.fines || schedule.weekend || schedule.semana || '';
+        return '';
+    };
 
     const parseTimeStr = (timeStr, baseDate) => {
+        if (!timeStr) return null;
         try {
-            let t = timeStr.trim().replace(/\./g, ''); // replace p.m. with pm
+            let t = timeStr.trim().toLowerCase().replace(/\./g, '');
             let isPM = t.includes('pm') || t.includes('p');
             let isAM = t.includes('am') || t.includes('a');
-            t = t.replace(/[a-z]/g, '').trim(); // Remove letters
+            t = t.replace(/[a-z]/g, '').trim();
 
             let [hoursStr, minutesStr] = t.split(':');
             let hours = parseInt(hoursStr, 10);
             let minutes = parseInt(minutesStr || '0', 10);
 
-            if (isNaN(hours) || isNaN(minutes)) return null;
-
-            // Handle AM/PM logic
+            if (isNaN(hours)) return null;
             if (isPM && hours < 12) hours += 12;
-            if (isAM && hours === 12) hours = 0; // 12 AM is 00:00
+            if (isAM && hours === 12) hours = 0;
 
             const d = new Date(baseDate);
             d.setHours(hours, minutes, 0, 0);
@@ -79,49 +53,62 @@ export function parseBusinessSchedule(horarios, isOpenOverride = true) {
         }
     };
 
-    const openTime = parseTimeStr(timeParts[0], now);
-    const closeTime = parseTimeStr(timeParts[1], now);
+    const getTimesForDay = (scheduleStr, baseDate) => {
+        if (!scheduleStr || scheduleStr.toLowerCase().includes('cerrado')) return null;
+        const parts = scheduleStr.split(/\s*-\s*|\s+a\s+|\s+to\s+/);
+        if (parts.length < 2) return null;
+        const open = parseTimeStr(parts[0], baseDate);
+        const close = parseTimeStr(parts[1], baseDate);
+        if (!open || !close) return null;
 
-    if (!openTime || !closeTime) {
-        return { isClosed: false, nextOpenTime: null, parsedSchedule: schedule };
-    }
+        let effectiveClose = new Date(close);
+        if (close <= open) { // Across midnight logic
+            effectiveClose.setDate(effectiveClose.getDate() + 1);
+        }
+        return { open, close: effectiveClose };
+    };
 
-    // If closeTime is before or equal openTime, assume the store runs past midnight (e.g. 10PM - 2AM)
-    if (closeTime <= openTime) {
-        closeTime.setDate(closeTime.getDate() + 1);
-    }
+    // 1. Check if open today (based on today's shift)
+    const todayStr = getDayScheduleStr(now);
+    const todayTimes = getTimesForDay(todayStr, now);
+    let isOpen = todayTimes ? (now >= todayTimes.open && now <= todayTimes.close) : false;
 
-    // If we are currently BEFORE openTime today but wait, if it's currently 1 AM and the store closes at 2 AM
-    // from yesterday's schedule, we might be inside the window!
-    // To handle this strictly, we would have to evaluate yesterday's schedule.
-    // For simplicity, we just check if now is between openTime and closeTime assuming we crossed midnight.
-    let isOpen = now >= openTime && now <= closeTime;
-
-    // Quick fix for the "now is 1AM, yesterday closed at 2AM" issue.
-    // If we are before open time today, shift both open and close 24 hours back and see if we are in that window.
-    if (now < openTime) {
-        const yesterdayOpen = new Date(openTime.getTime() - 24 * 60 * 60 * 1000);
-        const yesterdayClose = new Date(closeTime.getTime() - 24 * 60 * 60 * 1000);
-        if (now >= yesterdayOpen && now <= yesterdayClose) {
-            isOpen = true; // Still open from yesterday
+    // 2. If not open by today's shift, check if still open from yesterday's shift
+    if (!isOpen) {
+        const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        const yesterdayStr = getDayScheduleStr(yesterday);
+        const yesterdayTimes = getTimesForDay(yesterdayStr, yesterday);
+        if (yesterdayTimes && now >= yesterdayTimes.open && now <= yesterdayTimes.close) {
+            isOpen = true;
         }
     }
 
+    // 3. Special case for "24 horas"
+    if (todayStr.toLowerCase().includes('24 horas') || todayStr.toLowerCase().includes('24h')) {
+        isOpen = true;
+    }
+
+    // 4. Calculate nextOpenTime
     let nextOpenTime = null;
     if (!isOpen) {
-        if (now < openTime) {
-            nextOpenTime = openTime; // Will open later today
-        } else {
-            // Will open tomorrow
-            nextOpenTime = new Date(openTime);
-            nextOpenTime.setDate(nextOpenTime.getDate() + 1);
+        // Find next opening in current or future days
+        for (let i = 0; i < 7; i++) {
+            const checkDay = new Date(now.getTime() + i * 24 * 60 * 60 * 1000);
+            const checkStr = getDayScheduleStr(checkDay);
+            const checkTimes = getTimesForDay(checkStr, checkDay);
+            if (checkTimes && checkTimes.open > now) {
+                nextOpenTime = checkTimes.open;
+                break;
+            }
         }
     }
 
     return {
         isClosed: !isOpen,
+        isOpen,
+        status: isOpen ? 'Abierto' : 'Cerrado',
         nextOpenTime,
-        parsedSchedule: schedule,
-        todayScheduleStr
+        todayScheduleStr: todayStr,
+        parsedSchedule: schedule
     };
 }
