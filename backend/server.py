@@ -198,6 +198,9 @@ async def log_requests(request: Request, call_next):
         logger.error(traceback.format_exc())
         raise
 
+# Create a router with the /api prefix
+api_router = APIRouter(prefix="/api")
+
 logger.info(f"Allowed CORS origins: {cors_origins}")
 
 
