@@ -1363,11 +1363,14 @@ const ConfiguracionPage = () => {
                                                             </div>
                                                         </>
                                                     ) : (
-                                                        <div className="flex flex-col items-center justify-center text-orange-300 gap-2">
-                                                            <div className="p-4 bg-white rounded-2xl shadow-sm">
-                                                                <Upload className="w-8 h-8" />
+                                                        <div className="flex flex-col items-center justify-center text-orange-300 gap-2 text-center">
+                                                            <div className="p-3 bg-white rounded-2xl shadow-sm">
+                                                                <Upload className="w-6 h-6" />
                                                             </div>
-                                                            <span className="text-[11px] font-black uppercase tracking-tighter">Subir Imagen Publicitaria</span>
+                                                            <div className="flex flex-col items-center gap-0.5">
+                                                                <span className="text-[11px] font-black uppercase tracking-tighter">Subir Imagen Publicitaria</span>
+                                                                <span className="text-[9px] font-medium text-orange-400/80 tracking-tight">* Recomendado: 1080x1350px (Vertical), PNG/JPG</span>
+                                                            </div>
                                                         </div>
                                                     )}
                                                 </div>
