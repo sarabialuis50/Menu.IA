@@ -145,7 +145,7 @@ async def reverse_geocode_api(lat: float, lng: float):
 # Configure CORS based on environment variables
 cors_origins_str = os.environ.get("CORS_ORIGINS", "")
 if cors_origins_str:
-    cors_origins = [origin.strip() for origin in cors_origins_str.split(",")]
+    cors_origins = [origin.strip() for origin in cors_origins_str.split(",") if origin.strip()]
 else:
     # Fallback to hardcoded list if env var is missing
     cors_origins = [
@@ -157,14 +157,37 @@ else:
         "http://localhost:8000"
     ]
 
+# Add "*" to origins if explicitly allowed in env or as a fallback for testing
+if os.environ.get("ALLOW_ALL_CORS") == "True":
+    cors_origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
-    allow_credentials=True,
+    allow_credentials=True if "*" not in cors_origins else False,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["*"] # Ensure all headers are exposed
 )
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    origin = request.headers.get("origin")
+    method = request.method
+    path = request.url.path
+    logger.info(f"Incoming request: {method} {path} from origin: {origin}")
+    
+    # Handle preflight manually if needed (FastAPI should do it, but logging helps)
+    if method == "OPTIONS":
+        logger.info(f"Preflight request for {path} from {origin}")
+        
+    try:
+        response = await call_next(request)
+        logger.info(f"Response status: {response.status_code} for {method} {path}")
+        return response
+    except Exception as e:
+        logger.error(f"Request failed: {method} {path} - Error: {str(e)}")
+        logger.error(traceback.format_exc())
+        raise
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
