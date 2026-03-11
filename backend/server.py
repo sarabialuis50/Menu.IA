@@ -2034,21 +2034,19 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
             for m in item.modificadores:
                 if isinstance(m, dict):
                     m_name = m.get('nombre', '')
-                    m_tipo = m.get('tipo', '').lower() if m.get('tipo') else ''
+                    m_cat = (m.get('categoria') or m.get('tipo') or '').lower()
                     m_precio = m.get('precio', 0)
+                    m_cant = m.get('cantidad', 1)
                     
-                    display = m_name
+                    display = f"{m_cant}x {m_name}" if m_cant > 1 else m_name
                     if m_precio and m_precio > 0:
                         display += f" (+${m_precio:,.0f})"
                     
-                    if m_tipo == 'tamano' or m_tipo == 'tamaño':
+                    if 'tamañ' in m_cat or 'taman' in m_cat:
                         all_tamanos.append(display)
-                    elif m_tipo == 'adicional':
-                        all_adicionales.append(display)
-                    elif m_tipo == 'opcion' or m_tipo == 'opción':
+                    elif 'opci' in m_cat:
                         all_opciones.append(display)
                     else:
-                        # Default: if no tipo, add to adicionales
                         all_adicionales.append(display)
                 else:
                     all_adicionales.append(str(m))

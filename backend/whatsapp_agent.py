@@ -763,16 +763,17 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
                 for m in mods:
                     if isinstance(m, dict):
                         m_name = m.get('nombre', '')
-                        m_tipo = (m.get('tipo', '') or '').lower()
+                        m_cat = (m.get('categoria') or m.get('tipo') or '').lower()
                         m_precio = m.get('precio', 0)
-                        display = m_name
+                        m_cant = m.get('cantidad', 1)
+                        
+                        display = f"{m_cant}x {m_name}" if m_cant > 1 else m_name
                         if m_precio and m_precio > 0:
                             display += f" (+${m_precio:,.0f})"
-                        if m_tipo in ('tamano', 'tamaño'):
+                            
+                        if 'tamañ' in m_cat or 'taman' in m_cat:
                             all_tamanos.append(display)
-                        elif m_tipo == 'adicional':
-                            all_adicionales.append(display)
-                        elif m_tipo in ('opcion', 'opción'):
+                        elif 'opci' in m_cat:
                             all_opciones.append(display)
                         else:
                             all_adicionales.append(display)
