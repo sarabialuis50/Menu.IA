@@ -51,6 +51,10 @@ class BusinessBase(BaseModel):
     banner_tag: Optional[str] = "Los mejores sabores"
     banner_title: Optional[str] = "Nuestro Menú"
     banner_description: Optional[str] = None
+    # Promo Modal Config
+    promo_habilitado: Optional[bool] = False
+    promo_imagen_url: Optional[str] = None
+    promo_precio: Optional[float] = None
     # Delivery Config
     precio_km: Optional[float] = 0.0
     costo_minimo_domicilio: Optional[float] = 0.0

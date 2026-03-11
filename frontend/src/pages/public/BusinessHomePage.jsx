@@ -28,6 +28,7 @@ import { toast } from 'sonner';
 import PublicTrialLocked from '@/components/PublicTrialLocked';
 import { parseBusinessSchedule } from '@/utils/scheduleParser';
 import { BusinessClosedModal } from '@/components/BusinessClosedModal';
+import { PromoModal } from '@/components/PromoModal';
 
 // Backend API URL
 // Consistent with AuthContext prefixing
@@ -553,6 +554,7 @@ const BusinessHomePageContent = () => {
                 onClose={() => setShowClosedModal(false)}
                 scheduleData={scheduleData}
             />
+            <PromoModal business={business} />
         </PublicLayout >
     );
 };

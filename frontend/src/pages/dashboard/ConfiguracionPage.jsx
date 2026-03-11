@@ -4,6 +4,7 @@ import { DashboardLayout } from '@/layouts/DashboardLayout';
 import { useAuth } from '@/context/AuthContext';
 import {
     Building2,
+    Store,
     MapPin,
     Phone,
     Clock,
@@ -447,6 +448,19 @@ const ConfiguracionPage = () => {
     };
 
     const handleSaveBusiness = async () => {
+        if (businessData.promo_habilitado) {
+            if (!businessData.promo_precio || parseFloat(businessData.promo_precio) <= 0) {
+                toast.error('El precio es obligatorio para activar el modal promocional');
+                setSearchParams({ tab: 'diseno' }); // Ensure we are on the right tab
+                return;
+            }
+            if (!businessData.promo_imagen_url) {
+                toast.error('La imagen es obligatoria para activar el modal promocional');
+                setSearchParams({ tab: 'diseno' });
+                return;
+            }
+        }
+
         setSaving(true);
         try {
             // Normalize delivery methods
@@ -962,7 +976,8 @@ const ConfiguracionPage = () => {
         return new Intl.NumberFormat('es-CO', {
             style: 'currency',
             currency: 'COP',
-            minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Number(value));
+            minimumFractionDigits: 0, maximumFractionDigits: 0
+        }).format(Number(value));
     };
 
     const filteredProducts = products.filter(p => {
@@ -1237,56 +1252,160 @@ const ConfiguracionPage = () => {
                                     </div>
                                 </div>
 
-                                {/* Logo Section */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-gray-50/50 p-4 md:p-8 rounded-[2rem] border border-gray-100">
-                                    <div className="space-y-4">
-                                        <div>
-                                            <Label className="text-base font-black uppercase tracking-tight">Logo del Negocio</Label>
-                                            <p className="text-xs text-[#618972]">Tu sello distintivo.</p>
+                                {/* Unified Section with individual boxes */}
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+                                    {/* Logo Section Box */}
+                                    <div className="bg-white rounded-[2.5rem] border border-gray-100 p-6 md:p-8 shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col">
+                                        <div className="flex items-center gap-3 mb-8">
+                                            <div className="bg-green-50 p-3 rounded-2xl border border-green-100 flex-shrink-0">
+                                                <Store className="w-5 h-5 text-[#22C55E]" />
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <Label className="text-lg font-black uppercase tracking-tight text-gray-900 leading-none whitespace-nowrap">Logo del Negocio</Label>
+                                                <p className="text-[11px] text-[#618972] mt-1 truncate">Tu sello distintivo.</p>
+                                            </div>
                                         </div>
-                                        <div
-                                            className="relative w-40 h-40 rounded-full bg-white p-2 shadow-2xl border-4 border-white overflow-hidden group cursor-pointer"
-                                            onClick={() => document.getElementById('logo-upload').click()}
-                                        >
-                                            <img
-                                                src={businessData.logo_url || `https://ui-avatars.com/api/?name=${businessData.nombre}&background=13ec6d&color=111814&bold=true`}
-                                                className="w-full h-full object-cover rounded-full"
-                                            />
-                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
-                                                <Camera className="w-6 h-6 text-white" />
+
+                                        <div className="flex flex-col flex-1">
+                                            {/* Preview Area - Fixed height to match Promo */}
+                                            <div className="h-[200px] flex items-center justify-center mb-6">
+                                                <div
+                                                    className="relative w-44 h-44 rounded-full bg-gray-50 p-2 shadow-inner border-4 border-white overflow-hidden group cursor-pointer"
+                                                    onClick={() => document.getElementById('logo-upload').click()}
+                                                >
+                                                    <img
+                                                        src={businessData.logo_url || `https://ui-avatars.com/api/?name=${businessData.nombre}&background=13ec6d&color=111814&bold=true`}
+                                                        className="w-full h-full object-cover rounded-full shadow-lg"
+                                                    />
+                                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all text-white backdrop-blur-[2px]">
+                                                        <Camera className="w-8 h-8" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-5">
+                                                <div className="space-y-2">
+                                                    <Label className="font-bold text-xs text-gray-700">URL del Logotipo</Label>
+                                                    <Input
+                                                        value={businessData.logo_url || ''}
+                                                        onChange={e => setBusinessData({ ...businessData, logo_url: e.target.value })}
+                                                        className="rounded-2xl bg-gray-50 border-gray-200 text-xs font-mono h-12 focus:bg-white transition-colors"
+                                                        placeholder="URL del logo..."
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col gap-3">
+                                                    <input
+                                                        type="file"
+                                                        id="logo-upload"
+                                                        className="hidden"
+                                                        accept="image/*"
+                                                        onChange={(e) => handleBusinessMediaUpload(e, 'logo_url')}
+                                                    />
+                                                    <Button
+                                                        variant="outline"
+                                                        size="lg"
+                                                        className="w-full rounded-2xl border-2 border-dashed border-gray-200 hover:bg-[#4ADE80]/5 hover:text-[#22C55E] hover:border-[#4ADE80]/50 transition-all font-black h-14 uppercase tracking-wider text-xs"
+                                                        onClick={() => document.getElementById('logo-upload').click()}
+                                                        disabled={saving}
+                                                    >
+                                                        {saving ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Upload className="w-5 h-5 mr-3" />}
+                                                        Cambiar Logotipo
+                                                    </Button>
+                                                    <p className="text-[10px] text-gray-400 italic text-center px-4 font-medium leading-relaxed">
+                                                        * Recomendado: 512x512px, formato PNG.
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between">
-                                            <Label className="font-bold">URL del Logotipo</Label>
-                                        </div>
-                                        <Input
-                                            value={businessData.logo_url || ''}
-                                            onChange={e => setBusinessData({ ...businessData, logo_url: e.target.value })}
-                                            className="rounded-2xl bg-white border-dashed text-xs font-mono"
-                                            placeholder="URL del logo (preferiblemente PNG sin fondo)..."
-                                        />
-                                        <div className="flex justify-end">
-                                            <input
-                                                type="file"
-                                                id="logo-upload"
-                                                className="hidden"
-                                                accept="image/*"
-                                                onChange={(e) => handleBusinessMediaUpload(e, 'logo_url')}
+
+                                    {/* Promo Modal Box */}
+                                    <div className="bg-white rounded-[2.5rem] border border-orange-100 p-6 md:p-8 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col relative overflow-hidden">
+                                        {/* Orange accent top bar */}
+                                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-orange-400 to-orange-600" />
+
+                                        {/* Header & Switch */}
+                                        <div className="flex items-center justify-between gap-4 mb-8">
+                                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                                                <div className="bg-orange-50 p-3 rounded-2xl border border-orange-100 flex-shrink-0">
+                                                    <Sparkles className="w-5 h-5 text-orange-600" />
+                                                </div>
+                                                <div className="min-w-0 flex-1">
+                                                    <Label className="text-lg font-black uppercase tracking-tight text-orange-900 leading-none block whitespace-nowrap">
+                                                        Banner Promocional
+                                                    </Label>
+                                                    <p className="text-[11px] text-orange-700/80 mt-1 truncate">Banner inicial publicitario.</p>
+                                                </div>
+                                            </div>
+                                            <Switch
+                                                checked={businessData.promo_habilitado || false}
+                                                onCheckedChange={val => setBusinessData({ ...businessData, promo_habilitado: val })}
+                                                className="data-[state=checked]:bg-orange-500 scale-110 shadow-sm flex-shrink-0"
                                             />
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="w-full md:w-auto rounded-xl border-dashed hover:bg-[#4ADE80]/5 hover:text-[#22C55E] hover:border-[#4ADE80]/30 transition-all font-bold h-11"
-                                                onClick={() => document.getElementById('logo-upload').click()}
-                                                disabled={saving}
-                                            >
-                                                {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
-                                                SUBIR LOGOTIPO
-                                            </Button>
                                         </div>
-                                        <p className="text-[10px] text-[#618972] italic">* Recomendado: 512x512px, PNG transparente.</p>
+
+                                        <div className={`flex flex-col flex-1 transition-all duration-300 ${!businessData.promo_habilitado ? 'grayscale opacity-40 pointer-events-none' : ''}`}>
+                                            {/* Preview Area - Adjusted MB to align better with Logo */}
+                                            <div className="space-y-3 mb-10">
+                                                <Label className="font-bold text-[11px] text-orange-900 flex items-center gap-1.5 uppercase tracking-widest pl-1">
+                                                    Banner Vertical
+                                                    <span className="text-red-600 font-black text-sm">*</span>
+                                                </Label>
+                                                <div
+                                                    className="relative h-[155px] rounded-3xl bg-orange-50/50 border-2 border-dashed border-orange-200 flex items-center justify-center overflow-hidden group cursor-pointer shadow-inner transition-all hover:border-orange-400"
+                                                    onClick={() => document.getElementById('promo-image-upload').click()}
+                                                >
+                                                    {businessData.promo_imagen_url ? (
+                                                        <>
+                                                            <img src={businessData.promo_imagen_url} className="absolute w-full h-full object-cover" alt="Promo" />
+                                                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all text-white backdrop-blur-[2px]">
+                                                                <Camera className="w-8 h-8" />
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <div className="flex flex-col items-center justify-center text-orange-300 gap-2">
+                                                            <div className="p-4 bg-white rounded-2xl shadow-sm">
+                                                                <Upload className="w-8 h-8" />
+                                                            </div>
+                                                            <span className="text-[11px] font-black uppercase tracking-tighter">Subir Imagen Publicitaria</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <input
+                                                    type="file"
+                                                    id="promo-image-upload"
+                                                    className="hidden"
+                                                    accept="image/*"
+                                                    onChange={(e) => handleBusinessMediaUpload(e, 'promo_imagen_url')}
+                                                />
+                                            </div>
+
+                                            {/* URL & Price (Stacked Vertically) */}
+                                            <div className="flex flex-col gap-5">
+                                                <div className="space-y-2">
+                                                    <Label className="font-bold text-[11px] text-orange-800 uppercase tracking-widest pl-1">URL Imagen</Label>
+                                                    <Input
+                                                        value={businessData.promo_imagen_url || ''}
+                                                        onChange={e => setBusinessData({ ...businessData, promo_imagen_url: e.target.value })}
+                                                        className="rounded-2xl bg-orange-50/50 border-orange-200 text-sm font-mono h-12 focus:bg-white transition-colors"
+                                                        placeholder="https://..."
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <div className="relative">
+                                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-600 font-black text-sm">$</span>
+                                                        <Input
+                                                            type="number"
+                                                            value={businessData.promo_precio || ''}
+                                                            onChange={e => setBusinessData({ ...businessData, promo_precio: e.target.value ? parseFloat(e.target.value) : null })}
+                                                            className="pl-8 rounded-2xl bg-orange-50/50 border-orange-200 font-black h-12 text-orange-950 placeholder:text-orange-900/30 text-sm focus:bg-white transition-colors"
+                                                            placeholder="0"
+                                                        />
+                                                    </div>
+                                                    <p className="text-[9px] text-orange-800 font-bold leading-tight italic text-center w-full">El precio es indispensable para habilitar compra directa.</p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </CardContent>

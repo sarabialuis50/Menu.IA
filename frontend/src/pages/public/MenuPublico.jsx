@@ -67,6 +67,7 @@ import { FloatingWA } from '@/components/FloatingWA';
 import PublicTrialLocked from '@/components/PublicTrialLocked';
 import { parseBusinessSchedule } from '@/utils/scheduleParser';
 import { BusinessClosedModal } from '@/components/BusinessClosedModal';
+import { PromoModal } from '@/components/PromoModal';
 import GOOGLE_MAPS_API_KEY from '@/config/googleMaps';
 
 const AvailableIcons = {
@@ -2123,6 +2124,7 @@ const MenuContent = () => {
         onClose={() => setShowClosedModal(false)}
         scheduleData={scheduleData}
       />
+      <PromoModal business={business} />
     </div >
   );
 };
