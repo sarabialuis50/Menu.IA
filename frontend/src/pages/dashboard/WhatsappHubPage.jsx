@@ -341,7 +341,15 @@ export default function WhatsappHubPage() {
 
     return (
         <DashboardLayout>
-            <div className="max-w-7xl mx-auto space-y-8 pb-10">
+            <div className="max-w-7xl mx-auto space-y-8 pb-10 px-2 md:px-6">
+                {/* Superior Header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
+                    <div className="space-y-1 text-center md:text-left">
+                        <h1 className="text-3xl font-black text-gray-900 tracking-tight">WhatsApp Hub</h1>
+                        <p className="text-gray-500 font-medium text-sm">Gestiona tus automatizaciones y campañas masivas de fidelización.</p>
+                    </div>
+                </div>
+
                 {/* Global Marketing Metrics */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <Card className="rounded-[1.5rem] border-2 border-gray-100 shadow-sm bg-white overflow-hidden group hover:border-[#4ADE80] transition-all">

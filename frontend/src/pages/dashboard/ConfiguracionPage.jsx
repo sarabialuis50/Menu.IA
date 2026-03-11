@@ -1010,14 +1010,12 @@ const ConfiguracionPage = () => {
     return (
         <DashboardLayout>
             <div className="max-w-7xl mx-auto space-y-6 md:space-y-8 pb-20 px-2 md:px-6">
-                {/* Header Contextual */}
-                <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6">
+                {/* Superior Header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
                     <div className="space-y-1 text-center md:text-left">
-
-                        <h1 className="text-4xl font-black text-[#111814] tracking-tighter">Configuración</h1>
-                        <p className="text-[#618972] font-medium italic">Gestiona tu identidad y menú desde un solo lugar.</p>
+                        <h1 className="text-3xl font-black text-gray-900 tracking-tight">Configuración</h1>
+                        <p className="text-gray-500 font-medium text-sm">Gestiona tu identidad y menú desde un solo lugar.</p>
                     </div>
-
                 </div>
 
                 <Tabs

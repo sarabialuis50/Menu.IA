@@ -11,6 +11,8 @@ import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from 'sonner';
 
+const API_BASE = (import.meta.env && (import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL)) || '/api';
+
 export default function ClientEditProfilePage() {
     const { slug } = useParams();
     const navigate = useNavigate();
@@ -42,13 +44,13 @@ export default function ClientEditProfilePage() {
         try {
             // First get business ID from slug to have context
             try {
-                const businessRes = await axios.get(`/api/business/${slug}`);
+                const businessRes = await axios.get(`${API_BASE}/business/${slug}`);
                 setBusinessId(businessRes.data.id);
             } catch (err) {
                 console.error("Could not fetch business context:", err);
             }
 
-            const res = await axios.get('/api/client/me', {
+            const res = await axios.get(`${API_BASE}/client/me`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const profileData = {
@@ -74,7 +76,7 @@ export default function ClientEditProfilePage() {
         setSaving(true);
 
         try {
-            await axios.put('/api/client/me', formData, {
+            await axios.put(`${API_BASE}/client/me`, formData, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.success("Perfil actualizado correctamente");
@@ -106,7 +108,7 @@ export default function ClientEditProfilePage() {
 
         try {
             // Include business context if available
-            let url = '/api/client/upload-avatar';
+            let url = `${API_BASE}/client/upload-avatar`;
             if (businessId) {
                 url += `?negocio_id=${businessId}`;
             }
@@ -253,8 +255,8 @@ export default function ClientEditProfilePage() {
                             type="submit"
                             disabled={saving}
                             className={`flex-1 h-12 rounded-xl border-2 border-[#22C55E] font-black transition-all shadow-md active:scale-95 ${initialData && JSON.stringify(initialData) !== JSON.stringify(formData)
-                                    ? "bg-[#4ADE80] text-[#111814] shadow-[#4ADE80]/20"
-                                    : "bg-white text-[#111814] hover:bg-[#4ADE80] hover:text-[#111814]"
+                                ? "bg-[#4ADE80] text-[#111814] shadow-[#4ADE80]/20"
+                                : "bg-white text-[#111814] hover:bg-[#4ADE80] hover:text-[#111814]"
                                 }`}
                         >
                             {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : "Guardar Cambios"}

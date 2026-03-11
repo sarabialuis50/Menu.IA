@@ -40,7 +40,7 @@ import {
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 
-// Proxy /api
+const API_BASE = (import.meta.env && (import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL)) || '/api';
 
 
 // PIN Login Component
@@ -57,13 +57,21 @@ const PinLogin = ({ slug, onLogin }) => {
 
     setLoading(true);
     try {
-      const response = await axios.post(`/api/employee/login/${slug}`, { pin });
+      const response = await axios.post(`${API_BASE}/employee/login/${slug}`, { pin });
       localStorage.setItem('menu.ia_employee_token', response.data.access_token);
       localStorage.setItem('menu.ia_employee', JSON.stringify(response.data.employee));
       onLogin(response.data.employee);
       toast.success(`¡Hola, ${response.data.employee.nombre}!`);
     } catch (error) {
-      toast.error('PIN incorrecto');
+      console.error('Employee login error:', error.response?.status, error.response?.data, error.message);
+      const detail = error.response?.data?.detail;
+      if (detail) {
+        toast.error(detail);
+      } else if (error.response?.status === 404) {
+        toast.error('Negocio no encontrado');
+      } else {
+        toast.error('Error de conexión. Verifica tu red.');
+      }
     } finally {
       setLoading(false);
     }
@@ -186,9 +194,9 @@ const WaiterAppContent = ({ employee, slug, onLogout }) => {
   const fetchData = async () => {
     try {
       const [businessRes, productsRes, tablesRes] = await Promise.all([
-        axios.get(`/api/business/${slug}`),
-        axios.get(`/api/menu-items/${slug}`),
-        axios.get(`/api/tables/${slug}`)
+        axios.get(`${API_BASE}/business/${slug}`),
+        axios.get(`${API_BASE}/menu-items/${slug}`),
+        axios.get(`${API_BASE}/tables/${slug}`)
       ]);
 
       setBusiness(businessRes.data);
@@ -228,7 +236,8 @@ const WaiterAppContent = ({ employee, slug, onLogout }) => {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
-      minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Number(value));
+      minimumFractionDigits: 0, maximumFractionDigits: 0
+    }).format(Number(value));
   };
 
   const handleProductClick = (product) => {
@@ -318,7 +327,7 @@ const WaiterAppContent = ({ employee, slug, onLogout }) => {
         tipo: 'mesa'
       };
 
-      await axios.post(`/api/orders/${slug}`, orderData);
+      await axios.post(`${API_BASE}/orders/${slug}`, orderData);
       clearCart();
       setCartOpen(false);
       setSelectedTable(null);
