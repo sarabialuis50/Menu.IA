@@ -2010,8 +2010,9 @@ def reverse_geocode_address(direccion: str) -> str:
 def send_order_wa_background(business_name: str, order: Order, business_phone: str = None, twilio_config: Dict[str, Any] = None, slug: str = None):
     """Send order notifications to Client and Business using approved templates"""
     
-    # Format date in 12h format (am/pm) as requested
-    fecha = datetime.now().strftime("%d/%m/%Y, %I:%M %p").lower()
+    # Format date in 12h format (am/pm) as requested, adjusted for Colombia (GMT-5)
+    bogota_tz = timezone(timedelta(hours=-5))
+    fecha = datetime.now(bogota_tz).strftime("%d/%m/%Y, %I:%M %p").lower()
     
     # ── Build individual fields for the 19-variable template ──
     
@@ -2040,7 +2041,7 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
                     
                     display = f"{m_cant}x {m_name}" if m_cant > 1 else m_name
                     if m_precio and m_precio > 0:
-                        display += f" (+${m_precio:,.0f})"
+                        display += f" (${m_precio:,.0f})"
                     
                     if 'tamañ' in m_cat or 'taman' in m_cat:
                         all_tamanos.append(display)

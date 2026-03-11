@@ -555,8 +555,7 @@ const MenuContent = () => {
         cliente_lng: customerInfo.lng || null,
         notas: [
           customerInfo.notas,
-          discount > 0 ? `Descuento: ${formatCurrency(discount)} (${redeemPoints} pts)` : null,
-          (tipoPedido === 'delivery' && costoEnvio > 0) ? `Envío: ${formatCurrency(costoEnvio)} (${distancia.toFixed(1)} km)` : null
+          discount > 0 ? `Descuento: ${formatCurrency(discount)} (${redeemPoints} pts)` : null
         ].filter(Boolean).join('. ')
       };
 
@@ -1209,15 +1208,20 @@ const MenuContent = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="size-12 rounded-2xl bg-[#4ADE80]/10 flex items-center justify-center text-[#22C55E]">
-                    {checkoutStep === 0 && <ShoppingCart className="w-6 h-6" />}
-                    {checkoutStep === 1 && <User className="w-6 h-6" />}
+                    {checkoutStep === 1 && items.length > 0 && <User className="w-6 h-6" />}
+                    {checkoutStep === 1 && items.length === 0 && <ShoppingCart className="w-6 h-6" />}
+                    {checkoutStep === 2 && <Check className="w-6 h-6" />}
                   </div>
                   <div>
                     <SheetTitle className="text-2xl font-black text-[#111814] tracking-tighter">
-                      {checkoutStep === 1 ? 'Completa tu pedido' : '¡Recibido!'}
+                      {checkoutStep === 1
+                        ? (items.length > 0 ? 'Completa tu pedido' : 'Tu Pedido')
+                        : '¡Recibido!'}
                     </SheetTitle>
                     <SheetDescription id="sheet-description" className="text-xs font-bold text-[#618972] uppercase tracking-[0.1em]">
-                      {checkoutStep === 1 ? 'Revisa y confirma tus datos' : 'Pedido enviado con éxito'}
+                      {checkoutStep === 1
+                        ? (items.length > 0 ? 'Revisa y confirma tus datos' : '0 PRODUCTOS SELECCIONADOS')
+                        : 'Pedido enviado con éxito'}
                     </SheetDescription>
                   </div>
                 </div>
@@ -1236,8 +1240,7 @@ const MenuContent = () => {
 
             <div className="flex-1 overflow-y-auto no-scrollbar pb-6 px-4 md:px-10">
               {/* Combined Checkout View */}
-              {/* Combined Checkout View */}
-              {checkoutStep === 1 && (
+              {checkoutStep === 1 && items.length > 0 && (
                 <div className="space-y-8 pb-12">
 
                   {/* Section 1: Detalle del Pedido (Moved to Top) */}
@@ -1631,6 +1634,23 @@ const MenuContent = () => {
                       }`}
                   >
                     {submitting ? <Loader2 className="w-6 h-6 animate-spin" /> : (!business?.abierto ? 'NEGOCIO CERRADO' : 'Pedir Ahora')}
+                  </Button>
+                </div>
+              )}
+
+              {/* Empty Cart State */}
+              {checkoutStep === 1 && items.length === 0 && (
+                <div className="h-full flex flex-col items-center justify-center text-center py-20 px-6">
+                  <div className="size-24 bg-gray-50 rounded-full flex items-center justify-center mb-8 text-gray-200">
+                    <ShoppingCart className="w-12 h-12" />
+                  </div>
+                  <h3 className="text-xl font-black text-[#111814] mb-2 leading-tight">Aún no has añadido nada delicioso</h3>
+                  <p className="text-[#618972] text-sm mb-10 max-w-xs mx-auto">Explora nuestro menú y elige tus platos favoritos para realizar un pedido.</p>
+                  <Button
+                    onClick={() => setCartOpen(false)}
+                    className="w-full h-14 bg-[#4ADE80] text-[#111814] rounded-2xl font-black text-lg hover:bg-[#22C55E] transition-all shadow-lg shadow-[#4ADE80]/20"
+                  >
+                    Ver menú para hacer pedido
                   </Button>
                 </div>
               )}
