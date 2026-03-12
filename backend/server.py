@@ -854,11 +854,14 @@ async def client_change_password(data: ChangePasswordRequest, client: Cliente = 
 
 # ============ BUSINESS ROUTES ============
 @api_router.get("/business/{slug}", response_model=BusinessPublic)
+@api_router.get("/public/business/{slug}", response_model=BusinessPublic)
 async def get_business_by_slug(slug: str):
     # Normalize slug
     slug = slug.lower().strip().rstrip('/')
+    logger.info(f"Fetching business with slug: {slug}")
     response = supabase.table('negocios').select('*').match({"slug": slug}).execute()
     if not response.data:
+        logger.warning(f"Business not found: {slug}")
         raise HTTPException(status_code=404, detail="Negocio no encontrado")
     
     business_doc = response.data[0]
@@ -4672,7 +4675,8 @@ async def login_client_pin(data: PINLogin):
     else:
         client_data = client_res.data[0]
         
-    hashed_pin = client_data.get('pin')
+    # Use password_hash for the PIN as the 'pin' column is missing
+    hashed_pin = client_data.get('password_hash') or client_data.get('pin')
     
     if not hashed_pin:
         # Default PIN is the last 4 digits of the phone
@@ -4783,21 +4787,31 @@ async def update_client_profile(data: ClienteUpdate, client: Cliente = Depends(g
 
 @api_router.post("/client/update-pin")
 async def update_client_pin(data: UpdatePINRequest, client: Cliente = Depends(get_current_client)):
-    hashed_pin = hash_password(data.pin)
-    update_item = {
-        'pin': hashed_pin,
-        'recovery_method': data.recovery_method,
-        'pin_hint': data.pin_hint,
-        'security_question': data.security_question
-    }
-    
-    if data.security_answer:
-        update_item['security_answer'] = hash_password(data.security_answer.lower().strip())
+    try:
+        logger.info(f"Updating PIN for client ID: {client.id}")
+        hashed_pin = hash_password(data.pin)
+        update_item = {
+            'password_hash': hashed_pin, # Fix: Use existing column
+            'recovery_method': data.recovery_method,
+            'pin_hint': data.pin_hint,
+            'security_question': data.security_question
+        }
         
-    res = supabase.table('clientes').update(update_item).eq('id', client.id).execute()
-    if not res.data:
-        raise HTTPException(status_code=500, detail="Error actualizando PIN y recuperación")
-    return {"message": "PIN y método de recuperación configurados"}
+        if data.security_answer:
+            update_item['security_answer'] = hash_password(data.security_answer.lower().strip())
+            
+        logger.info(f"Update data: {update_item}")
+        res = supabase.table('clientes').update(update_item).eq('id', client.id).execute()
+        
+        if not res.data:
+            logger.error(f"Supabase update returned no data for client {client.id}")
+            raise HTTPException(status_code=500, detail="Error actualizando PIN y recuperación")
+            
+        return {"message": "PIN y método de recuperación configurados"}
+    except Exception as e:
+        logger.error(f"Critical error in update_client_pin: {e}")
+        logger.error(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
 
 @api_router.get("/auth/client/recovery-info/{phone}", response_model=RecoveryInfo)
 async def get_client_recovery_info(phone: str):
@@ -4845,7 +4859,7 @@ async def reset_client_pin(data: ResetPINRequest):
 
     # If verification pass (only for 'question' for now), allow reset
     new_hashed = hash_password(data.new_pin)
-    supabase.table('clientes').update({'pin': new_hashed}).eq('id', client['id']).execute()
+    supabase.table('clientes').update({'password_hash': new_hashed}).eq('id', client['id']).execute()
     
     return {"message": "PIN restablecido con éxito. Ahora puedes entrar."}
     

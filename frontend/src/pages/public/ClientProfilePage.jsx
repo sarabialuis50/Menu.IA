@@ -88,7 +88,7 @@ export default function ClientProfilePage() {
 
     async function fetchBusiness() {
         try {
-            const res = await axios.get(`/api/public/business/${slug}`);
+            const res = await axios.get(`/api/business/${slug}`);
             setBusiness(res.data);
         } catch (err) {
             console.error("Error fetching business:", err);
@@ -236,7 +236,7 @@ export default function ClientProfilePage() {
                 new_pin: newPin
             });
             toast.success("PIN restablecido con éxito");
-            setAuthStep('pin');
+            setAuthStep('phone');
             setPin('');
             setRecoveryAnswer('');
             setNewPin('');
@@ -356,16 +356,14 @@ export default function ClientProfilePage() {
                             <ShieldCheck className="w-8 h-8 text-[#22C55E]" />
                         </div>
                         <h1 className="text-2xl font-black text-[#111814]">
-                            {authStep === 'phone' ? 'Bienvenido' : authStep === 'otp' ? 'Verifica tu número' : authStep === 'pin' ? 'Ingresa con tu PIN' : 'Recuperar PIN'}
+                            {authStep === 'phone' ? 'Bienvenido' : authStep === 'otp' ? 'Verifica tu número' : 'Recuperar PIN'}
                         </h1>
                         <p className="text-gray-500 font-medium">
                             {authStep === 'phone'
-                                ? 'Ingresa tu celular para acceder a tu perfil y pedidos.'
+                                ? 'Ingresa tu celular y PIN para acceder.'
                                 : authStep === 'otp'
                                     ? `Ingresa el código enviado al ${phone}`
-                                    : authStep === 'pin'
-                                        ? `Accede rápidamente con tu PIN de 4 dígitos`
-                                        : `Sigue los pasos para recuperar tu acceso`
+                                    : `Sigue los pasos para recuperar tu acceso`
                             }
                         </p>
                     </div>
@@ -373,27 +371,64 @@ export default function ClientProfilePage() {
                     <Card className="border-none shadow-xl rounded-[2rem] overflow-hidden">
                         <CardContent className="p-8">
                             {authStep === 'phone' ? (
-                                <form onSubmit={(e) => { e.preventDefault(); if (phone.length >= 10) setAuthStep('pin'); else toast.error("Ingresa un número válido"); }} className="space-y-6">
-                                    <div className="space-y-2">
-                                        <Label className="font-bold text-gray-700">Número de Celular</Label>
-                                        <div className="relative">
-                                            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                            <Input
-                                                type="tel"
-                                                placeholder="300 123 4567"
-                                                className="pl-12 h-12 rounded-xl bg-gray-50 border-gray-200 focus:ring-[#22C55E]/20 focus:border-[#22C55E]"
-                                                value={phone}
-                                                onChange={(e) => setPhone(e.target.value)}
-                                            />
+                                <form
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        if (phone.length >= 4 && pin.length === 4) handleLoginPin(e);
+                                        else if (phone.length < 4) toast.error("Código de usuario inválido");
+                                        else toast.error("Ingresa tu PIN de 4 dígitos");
+                                    }}
+                                    className="space-y-6"
+                                    autoComplete="off"
+                                >
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <div className="relative">
+                                                <Input
+                                                    type="tel"
+                                                    placeholder="Celular"
+                                                    className="h-12 rounded-xl bg-gray-50 border-gray-200 text-center font-bold text-lg"
+                                                    value={phone}
+                                                    onChange={(e) => setPhone(e.target.value)}
+                                                    autoComplete="off"
+                                                    name="p_user_login"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <div className="relative">
+                                                <Input
+                                                    type="password"
+                                                    placeholder="PIN"
+                                                    maxLength={4}
+                                                    className="h-12 rounded-xl bg-gray-50 border-gray-200 text-center text-2xl tracking-[0.5rem] font-bold"
+                                                    value={pin}
+                                                    onChange={(e) => setPin(e.target.value)}
+                                                    autoComplete="new-password"
+                                                    name="p_pin_login"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                    <Button
-                                        type="submit"
-                                        className="w-full h-12 rounded-xl bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black text-base shadow-lg shadow-[#4ADE80]/20"
-                                        disabled={submitting}
-                                    >
-                                        {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Entrar con PIN"}
-                                    </Button>
+
+                                    <div className="space-y-3">
+                                        <Button
+                                            type="submit"
+                                            className="w-full h-12 rounded-xl bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black text-base shadow-lg shadow-[#4ADE80]/20"
+                                            disabled={submitting}
+                                        >
+                                            {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Entrar con PIN"}
+                                        </Button>
+
+                                        <button
+                                            type="button"
+                                            onClick={handleGetRecovery}
+                                            className="w-full text-xs font-bold text-gray-400 hover:text-[#22C55E] transition-colors"
+                                        >
+                                            ¿Olvidaste tu PIN?
+                                        </button>
+                                    </div>
+
                                     <p className="text-[10px] text-center text-gray-400 mt-4 leading-relaxed">
                                         ¿Primera vez? Usa los <b>últimos 4 dígitos</b> de tu celular como PIN inicial.
                                     </p>
@@ -424,55 +459,11 @@ export default function ClientProfilePage() {
                                         className="w-full text-gray-500 font-bold"
                                         onClick={() => setAuthStep('phone')}
                                     >
-                                        Cambiar número o método
+                                        Atrás
                                     </Button>
-                                </form>
-                            ) : authStep === 'pin' ? (
-                                <form onSubmit={handleLoginPin} className="space-y-6">
-                                    <div className="space-y-2">
-                                        <Label className="font-bold text-gray-700">Ingresa tu PIN</Label>
-                                        <Input
-                                            type="password"
-                                            placeholder="••••"
-                                            className="h-12 rounded-xl bg-gray-50 border-gray-200 focus:ring-[#22C55E]/20 focus:border-[#22C55E] text-center text-2xl tracking-[1rem] font-bold"
-                                            value={pin}
-                                            onChange={(e) => setPin(e.target.value)}
-                                            maxLength={4}
-                                            required
-                                        />
-                                        <p className="text-[10px] text-center text-gray-400 font-medium">
-                                            Usa los primeros o últimos 4 dígitos de tu teléfono si no lo has cambiado.
-                                        </p>
-                                    </div>
-                                    <Button
-                                        type="submit"
-                                        className="w-full h-12 rounded-xl bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black text-base shadow-lg shadow-[#4ADE80]/20"
-                                        disabled={submitting}
-                                    >
-                                        {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Entrar"}
-                                    </Button>
-
-                                    <div className="space-y-2 pt-2">
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            className="w-full text-gray-500 font-bold"
-                                            onClick={() => setAuthStep('phone')}
-                                        >
-                                            Cambiar número
-                                        </Button>
-                                        <Button
-                                            type="button"
-                                            variant="link"
-                                            className="w-full text-[#16A34A] font-bold text-xs"
-                                            onClick={handleGetRecovery}
-                                        >
-                                            ¿Olvidaste tu PIN?
-                                        </Button>
-                                    </div>
                                 </form>
                             ) : authStep === 'recovery' ? (
-                                <form onSubmit={handleResetPin} className="space-y-6">
+                                <form onSubmit={handleResetPin} className="space-y-6" autoComplete="off">
                                     <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 space-y-4">
                                         <div className="flex items-center gap-2 mb-2">
                                             <Shield className="w-5 h-5 text-[#EAB308]" />
@@ -492,7 +483,7 @@ export default function ClientProfilePage() {
                                                     type="button"
                                                     variant="outline"
                                                     className="w-full h-11 rounded-xl border-gray-200 text-gray-700 font-bold"
-                                                    onClick={() => setAuthStep('pin')}
+                                                    onClick={() => setAuthStep('phone')}
                                                 >
                                                     Entendido, volver a intentar
                                                 </Button>
@@ -511,6 +502,7 @@ export default function ClientProfilePage() {
                                                         value={recoveryAnswer}
                                                         onChange={e => setRecoveryAnswer(e.target.value)}
                                                         required
+                                                        autoComplete="off"
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
@@ -518,11 +510,12 @@ export default function ClientProfilePage() {
                                                     <Input
                                                         type="password"
                                                         maxLength={4}
-                                                        placeholder="••••"
+                                                        placeholder="PIN"
                                                         className="h-11 rounded-xl bg-white border-gray-200 text-center text-xl tracking-widest font-black"
                                                         value={newPin}
                                                         onChange={e => setNewPin(e.target.value)}
                                                         required
+                                                        autoComplete="new-password"
                                                     />
                                                 </div>
                                                 <Button
@@ -536,7 +529,7 @@ export default function ClientProfilePage() {
                                                     type="button"
                                                     variant="ghost"
                                                     className="w-full text-gray-500 font-bold text-sm"
-                                                    onClick={() => setAuthStep('pin')}
+                                                    onClick={() => setAuthStep('phone')}
                                                 >
                                                     Cancelar
                                                 </Button>
@@ -862,7 +855,7 @@ export default function ClientProfilePage() {
                                                                 Volver a pedir
                                                             </button>
                                                         )}
-                                                        {order.estado === 'entregado' && (
+                                                        {['entregado', 'cancelado'].includes(order.estado) && (
                                                             <button
                                                                 className="text-xs font-bold text-red-500 hover:text-red-600 transition-colors flex items-center gap-1.5 ml-auto border border-red-100 px-2.5 py-1 rounded-lg hover:bg-red-50"
                                                                 onClick={(e) => { e.stopPropagation(); handleHideOrder(order.id); }}
