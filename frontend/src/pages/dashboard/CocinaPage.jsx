@@ -229,8 +229,7 @@ function OrderCard({ order, onUpdateStatus }) {
             <p className="text-xs font-bold text-gray-500 line-clamp-1">Cliente: {order.cliente_nombre || 'N/A'}</p>
           </div>
           <div className="flex flex-col items-end shrink-0 ml-2">
-            <span className="text-[11px] font-black text-blue-700 leading-tight">ID: {order.id?.slice(0, 8).toUpperCase()}</span>
-            {order.numero_secuencial && <span className="text-[11px] font-black text-gray-500 leading-tight mt-0.5">Pedido No: {order.numero_secuencial}</span>}
+            <span className="text-[11px] font-black text-blue-700 leading-tight">ID: {order.numero_secuencial || order.id?.slice(0, 8).toUpperCase()}</span>
             <div className="flex items-center gap-1 mt-1 text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-md">
               <Clock className="w-3 h-3 shrink-0" />
               <span className="text-[10px] font-bold shrink-0">{getTimeSince(order.created_at)}</span>

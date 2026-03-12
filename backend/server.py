@@ -1,4 +1,5 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Depends, Query, WebSocket, WebSocketDisconnect, File, UploadFile, Form
+import random
 from pydantic import BaseModel
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
@@ -1881,10 +1882,15 @@ async def create_order(slug: str, data: OrderCreate, background_tasks: Backgroun
         subtotal = sum((item.cantidad or 0) * (item.precio_unitario or 0) for item in data.items)
         total = subtotal + (data.costo_envio or 0)
             
+        # Generar código de pedido numerico de 6 digitos (solicitado por el usuario)
+        # Para asegurar que sea clickeable en WhatsApp y de 6 digitos
+        random_id = random.randint(100000, 999999)
+            
         order = Order(
             **data.model_dump(),
             negocio_id=business_id,
-            total=total
+            total=total,
+            numero_secuencial=random_id
         )
         
         order_dict = serialize_doc(order.model_dump())
@@ -1894,14 +1900,6 @@ async def create_order(slug: str, data: OrderCreate, background_tasks: Backgroun
         order_dict.pop('mesero_nombre', None)
         order_dict.pop('negocio_nombre', None)
         order_dict.pop('negocio_logo', None)
-        
-        # Generar número secuencial diario
-        today_start_sec = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-        cq_res = supabase.table('pedidos').select('id', count='exact')\
-            .eq('negocio_id', business_id)\
-            .gte('created_at', today_start_sec.isoformat()).execute()
-        
-        order_dict['numero_secuencial'] = (cq_res.count or 0) + 1
 
         logger.info(f"Inserting into DB: {order_dict.get('id')} with seq: {order_dict['numero_secuencial']}")
         
@@ -2081,9 +2079,9 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
                     all_adicionales.append(str(m))
     
     detalle_productos = "\n".join(detalle_items)
-    tamanos_str = ", ".join(all_tamanos) if all_tamanos else "N/A"
-    adicionales_str = ", ".join(all_adicionales) if all_adicionales else "Ninguno"
-    opciones_str = ", ".join(all_opciones) if all_opciones else "Ninguna"
+    tamanos_str = ", ".join(all_tamanos) if all_tamanos else ""
+    adicionales_str = ", ".join(all_adicionales) if all_adicionales else ""
+    opciones_str = ", ".join(all_opciones) if all_opciones else ""
     
     # Parse notes: "{notas_pedido}. Observaciones de entrega: {notas_entrega}"
     raw_notes = order.notas or ""
@@ -2092,19 +2090,22 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
     
     if ". Observaciones de entrega: " in raw_notes:
         parts = raw_notes.split(". Observaciones de entrega: ")
-        obs_pedido = parts[0] if parts[0] else "Sin observaciones"
-        obs_entrega = parts[1] if len(parts) > 1 and parts[1] else "Sin observaciones"
+        obs_pedido = parts[0] if parts[0] else ""
+        obs_entrega = parts[1] if len(parts) > 1 and parts[1] else ""
     elif raw_notes and raw_notes.lower() not in ["sin observaciones", ""]:
         obs_entrega = raw_notes
+    else:
+        obs_pedido = ""
+        obs_entrega = ""
     
     # Reverse geocode GPS coordinates to readable address
-    direccion_legible = reverse_geocode_address(order.direccion) if order.direccion else "N/A"
+    direccion_legible = reverse_geocode_address(order.direccion) if order.direccion else ""
     
     # Determine delivery method display name 
     metodo_entrega = order.metodo_entrega or ("Domicilio" if order.tipo == "delivery" else ("Mesa" if order.tipo == "mesa" else "Para Recoger"))
     
     # Distance
-    distancia_str = f"{order.distancia:.1f} Km" if order.distancia else "N/A"
+    distancia_str = f"{order.distancia:.1f} Km" if order.distancia else ""
     
     # Payment
     costo_envio = order.costo_envio or 0
@@ -2112,7 +2113,7 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
     # ── TEMPLATE VARIABLE MAPPING (19 variables) ──
     template_kwargs = {
         "negocio_nombre":     business_name,                           # {{1}}
-        "pedido_id":          order.id[:8].upper(),                    # {{2}}
+        "pedido_id":          str(order.numero_secuencial or order.id[:8].upper()),   # {{2}} - Usar numero secuencial de 6 digitos
         "cliente_nombre":     order.cliente_nombre or "Cliente",       # {{3}}
         "cliente_telefono":   order.cliente_telefono or "N/A",         # {{4}}
         "detalle_productos":  detalle_productos,                       # {{5}}
@@ -2445,7 +2446,8 @@ async def get_customer_orders(slug: str, query: str = None):
     orders = []
     if response.data:
         q_lower = query.lower()
-        matched = [o for o in response.data if str(o.get('id', '')).lower().startswith(q_lower)]
+        # Search by UUID prefix OR by numeric sequential ID (for 6-digit numbers)
+        matched = [o for o in response.data if str(o.get('id', '')).lower().startswith(q_lower) or str(o.get('numero_secuencial', '')).startswith(query)]
         orders = matched[:10]
         
     return [Order(**o) for o in orders]

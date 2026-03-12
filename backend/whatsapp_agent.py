@@ -1,4 +1,6 @@
 import os
+import random
+
 import logging
 from typing import Dict, Any, List, Optional
 import json
@@ -700,13 +702,10 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
         }
         
         
-        # Generar número secuencial diario
-        today_start_sec = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-        cq_res = supabase.table('pedidos').select('id', count='exact')\
-            .eq('negocio_id', negocio_id)\
-            .gte('created_at', today_start_sec.isoformat()).execute()
-        
-        order_data["numero_secuencial"] = (cq_res.count or 0) + 1
+        # Generar código de pedido numerico de 6 digitos (solicitado por el usuario)
+        # Para asegurar que sea clickeable en WhatsApp
+        random_id = random.randint(100000, 999999)
+        order_data["numero_secuencial"] = random_id
         print(f"DEBUG order_data: {order_data}")
         
         # Check if it's a demo business to avoid creating real orders
@@ -785,23 +784,23 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
                     product_notes.append(p_notes)
                 
             detalle_productos = "\n".join(detalle_items)
-            tamanos_str = ", ".join(all_tamanos) if all_tamanos else "N/A"
-            adicionales_str = ", ".join(all_adicionales) if all_adicionales else "Ninguno"
-            opciones_str = ", ".join(all_opciones) if all_opciones else "Ninguna"
-            obs_pedido = ". ".join(product_notes) if product_notes else "Sin observaciones"
+            tamanos_str = ", ".join(all_tamanos) if all_tamanos else ""
+            adicionales_str = ", ".join(all_adicionales) if all_adicionales else ""
+            opciones_str = ", ".join(all_opciones) if all_opciones else ""
+            obs_pedido = ". ".join(product_notes) if product_notes else ""
             
             # Build business-specific link
             link_negocio = f"https://menuia.co/{biz_slug}" if biz_slug else "https://menuia.co"
             if biz_slug: link_negocio += "/menu"
             
             # Delivery Info
-            direccion_val = args.get('direccion', 'N/A')
-            distancia_val = f"{args.get('distancia', 'N/A')} Km" if args.get('distancia') else "N/A"
-            obs_entrega = args.get('notas_entrega', 'Sin observaciones') or "Sin observaciones"
+            direccion_val = args.get('direccion', '')
+            distancia_val = f"{args.get('distancia', '')} Km" if args.get('distancia') else ""
+            obs_entrega = args.get('notas_entrega', '') or ""
 
             template_kwargs = {
                 "negocio_nombre":     business_name,                                          # {{1}}
-                "pedido_id":          order_id[:8].upper() if order_id != "new_order" else "NEW",  # {{2}}
+                "pedido_id":          str(order_data.get("numero_secuencial", "000000")), # {{2}} - Usar el número de 6 dígitos
                 "cliente_nombre":     args.get('cliente_nombre', 'Cliente'),                   # {{3}}
                 "cliente_telefono":   args.get('cliente_telefono', 'N/A'),                     # {{4}}
                 "detalle_productos":  detalle_productos,                                       # {{5}}

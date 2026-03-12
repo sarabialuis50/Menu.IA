@@ -201,7 +201,7 @@ function SearchSection({ search_query, setSearchQuery, searchOrders, searching }
       <div className="space-y-2">
         <h2 className="text-xl font-black text-[#111814] tracking-tight">Rastrear mi pedido</h2>
         <p className="text-sm text-[#618972] font-medium leading-relaxed">
-          Ingresa el código único de seguimiento de tu pedido (8 caracteres) para ver su estado actual.
+          Ingresa el código único de seguimiento de tu pedido (6 dígitos) para ver su estado actual.
         </p>
       </div>
 
@@ -216,7 +216,7 @@ function SearchSection({ search_query, setSearchQuery, searchOrders, searching }
                 searchOrders();
               }
             }}
-            placeholder="Código del pedido (Ej: 5CDE18)"
+            placeholder="Código del pedido (Ej: 123456)"
             className="h-16 pl-14 rounded-2xl bg-gray-50/50 border-gray-100 font-bold text-sm md:text-lg focus:ring-[#22C55E] focus:border-[#22C55E] transition-all uppercase placeholder:text-xs md:placeholder:text-base"
           />
         </div>
@@ -308,7 +308,7 @@ function OrderTimeline({ order, onRefresh, onReset, onHide }) {
                 <span className="inline-block size-2 rounded-full bg-white animate-pulse" />
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Estado Actual</p>
               </div>
-              <p className="font-black text-3xl tracking-tighter">#{order.id.slice(0, 8).toUpperCase()}</p>
+              <p className="font-black text-3xl tracking-tighter">#{order.numero_secuencial || order.id.slice(0, 8).toUpperCase()}</p>
             </div>
             <Button variant="ghost" size="icon" onClick={onRefresh} className="size-12 rounded-2xl bg-[#111814]/10 text-[#111814] hover:bg-[#111814]/20 active:scale-90 transition-all">
               <RefreshCw className="w-6 h-6" />

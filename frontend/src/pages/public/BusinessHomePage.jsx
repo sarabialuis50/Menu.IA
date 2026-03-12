@@ -50,12 +50,17 @@ const BusinessHomePageContent = () => {
         fetchData();
     }, [slug]);
 
-    const fetchData = async () => {
+    const fetchData = async (retryCount = 0) => {
         if (!slug) return;
-        setLoading(true);
+
+        // Clean and normalize slug
+        const cleanSlug = slug.trim().toLowerCase();
+
+        if (retryCount === 0) setLoading(true);
+
         try {
             // Fetch business first
-            const businessRes = await axios.get(`${API}/business/${slug}`);
+            const businessRes = await axios.get(`${API}/business/${cleanSlug}`);
             setBusiness(businessRes.data);
 
             const parsedSched = parseBusinessSchedule(businessRes.data.horarios, businessRes.data.abierto);
@@ -66,7 +71,7 @@ const BusinessHomePageContent = () => {
 
             // Fetch products separately so failure doesn't block the whole page
             try {
-                const productsRes = await axios.get(`${API}/menu-items/${slug}`);
+                const productsRes = await axios.get(`${API}/menu-items/${cleanSlug}`);
                 const productsData = Array.isArray(productsRes.data) ? productsRes.data : [];
 
                 // Map fields for consistency
@@ -97,12 +102,20 @@ const BusinessHomePageContent = () => {
                 setProducts([]);
                 setFeaturedProducts([]);
             }
+            setLoading(false);
         } catch (error) {
-            console.error('Error fetching business data:', error);
+            console.error(`Error fetching business data (Attempt ${retryCount + 1}):`, error);
+
+            // Retry logic: up to 2 retries with a small delay
+            if (retryCount < 2) {
+                const delay = retryCount === 0 ? 500 : 1500;
+                setTimeout(() => fetchData(retryCount + 1), delay);
+                return;
+            }
+
             if (error.response && error.response.status === 403) {
                 setLockedMessage(error.response.data?.detail || "Este restaurante no está disponible temporalmente.");
             }
-        } finally {
             setLoading(false);
         }
     };
@@ -175,9 +188,14 @@ const BusinessHomePageContent = () => {
                 </div>
                 <h1 className="font-heading text-3xl font-bold mb-3 text-[#111814]">Negocio no encontrado</h1>
                 <p className="text-[#618972] max-w-xs mb-8">El enlace que seguiste podría estar roto o el restaurante ya no está disponible.</p>
-                <Button onClick={() => navigate('/')} className="bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] px-8 h-12 rounded-xl font-bold">
-                    Ir al inicio
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-3">
+                    <Button onClick={() => window.location.reload()} className="bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] px-8 h-12 rounded-xl font-bold">
+                        Reintentar
+                    </Button>
+                    <Button onClick={() => navigate('/')} variant="outline" className="px-8 h-12 rounded-xl font-bold border-gray-200 text-gray-500">
+                        Ir al inicio
+                    </Button>
+                </div>
             </div>
         );
     }
@@ -437,21 +455,6 @@ const BusinessHomePageContent = () => {
                 <section className="max-w-[1200px] mx-auto px-4 md:px-10 mb-24">
                     <h2 className="text-2xl font-black text-[#111814] mb-8 tracking-tight">Ubicación y Horarios</h2>
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch">
-                        <div className="md:col-span-7 bg-white p-2 rounded-[2.5rem] shadow-sm border border-[#f0f4f2] h-[300px] md:min-h-full overflow-hidden">
-                            <div className="w-full h-full bg-gray-100 rounded-[2rem] relative overflow-hidden group">
-                                <iframe
-                                    title="Ubicación del Negocio"
-                                    src={`https://maps.google.com/maps?q=${encodeURIComponent(business.direccion || 'Colombia')}&output=embed&hl=es`}
-                                    width="100%"
-                                    height="100%"
-                                    style={{ border: 0 }}
-                                    allowFullScreen=""
-                                    loading="lazy"
-                                    className="opacity-90 group-hover:opacity-100 transition-all duration-700"
-                                ></iframe>
-                            </div>
-                        </div>
-
                         <div className="md:col-span-5 flex flex-col gap-4">
                             {/* Address Card */}
                             <div className="bg-white p-6 rounded-3xl shadow-sm border border-[#f0f4f2] flex gap-5 hover:border-[#22C55E]/30 transition-colors">
@@ -520,6 +523,21 @@ const BusinessHomePageContent = () => {
                                         return <p className="text-[#618972] text-sm leading-relaxed whitespace-pre-wrap">{horarios || 'Lun - Vie: 12:00 PM - 10:00 PM'}</p>;
                                     })()}
                                 </div>
+                            </div>
+                        </div>
+
+                        <div className="md:col-span-7 bg-white p-2 rounded-[2.5rem] shadow-sm border border-[#f0f4f2] h-[300px] md:min-h-full overflow-hidden">
+                            <div className="w-full h-full bg-gray-100 rounded-[2rem] relative overflow-hidden group">
+                                <iframe
+                                    title="Ubicación del Negocio"
+                                    src={`https://maps.google.com/maps?q=${encodeURIComponent(business.direccion || 'Colombia')}&output=embed&hl=es`}
+                                    width="100%"
+                                    height="100%"
+                                    style={{ border: 0 }}
+                                    allowFullScreen=""
+                                    loading="lazy"
+                                    className="opacity-90 group-hover:opacity-100 transition-all duration-700"
+                                ></iframe>
                             </div>
                         </div>
                     </div>

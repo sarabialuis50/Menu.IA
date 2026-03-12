@@ -180,7 +180,7 @@ export default function HistorialPedidosPage() {
         }
 
         const data = filteredOrders.map(order => ({
-            'ID PEDIDO': order.id.slice(0, 8).toUpperCase(),
+            'ID PEDIDO': order.numero_secuencial || order.id.slice(0, 8).toUpperCase(),
             'FECHA': format(new Date(order.created_at), 'dd/MM/yyyy'),
             'HORA': format(new Date(order.created_at), 'HH:mm:ss'),
             'CLIENTE': order.cliente_nombre || (order.mesa_numero ? `Mesa ${order.mesa_numero}` : 'N/A'),
@@ -379,7 +379,7 @@ export default function HistorialPedidosPage() {
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <span className="font-mono text-xs text-indigo-600 font-bold">{order.id.slice(0, 8).toUpperCase()}</span>
+                                                    <span className="font-mono text-xs text-indigo-600 font-bold">{order.numero_secuencial || order.id.slice(0, 8).toUpperCase()}</span>
                                                 </td>
                                                 <td className="px-6 py-4 text-left">
                                                     <span className="text-lg font-black text-gray-900 block">{formatCurrency(order.total)}</span>
@@ -488,7 +488,7 @@ export default function HistorialPedidosPage() {
                     <div className="p-8 space-y-8 overflow-y-auto max-h-[80vh] no-scrollbar">
                         <div className="text-center space-y-1">
                             <h2 className="text-2xl font-black text-[#FF6B00]">MenuPro</h2>
-                            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">ID del Pedido: {selectedOrder?.id?.slice(0, 8).toUpperCase()}</p>
+                            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">ID del Pedido: {selectedOrder?.numero_secuencial || selectedOrder?.id?.slice(0, 8).toUpperCase()}</p>
                             <p className="text-[11px] font-bold text-gray-400">Realizado: {selectedOrder ? format(new Date(selectedOrder.created_at), 'dd/MM/yyyy, HH:mm:ss') : ''}</p>
                         </div>
 
@@ -593,7 +593,7 @@ export default function HistorialPedidosPage() {
                     <div className="p-8 space-y-8 overflow-y-auto max-h-[80vh] no-scrollbar">
                         <Card className="bg-white rounded-3xl p-6 shadow-sm border-2 border-gray-100 space-y-3">
                             <div className="flex justify-between items-center">
-                                <h4 className="text-lg font-black text-gray-900">Orden {selectedOrder?.id?.slice(0, 8).toUpperCase()}</h4>
+                                <h4 className="text-lg font-black text-gray-900">Orden {selectedOrder?.numero_secuencial || selectedOrder?.id?.slice(0, 8).toUpperCase()}</h4>
                             </div>
                             <div className="space-y-1">
                                 <p className="text-sm font-bold text-gray-500">Cliente: <span className="text-gray-900">{selectedOrder?.cliente_nombre || 'No registrado'}</span></p>

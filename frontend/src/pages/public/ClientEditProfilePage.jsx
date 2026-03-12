@@ -232,14 +232,6 @@ export default function ClientEditProfilePage() {
                         </div>
                     </div>
 
-                    {/* Password */}
-                    <div className="space-y-6 pt-4 border-t border-gray-100 opacity-50 pointer-events-none">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Lock className="w-5 h-5 text-[#22C55E]" />
-                            <h3 className="text-lg font-black text-[#111814]">Seguridad</h3>
-                        </div>
-                        <p className="text-sm text-gray-400">El inicio de sesión se realiza mediante código OTP por WhatsApp, no se requiere contraseña.</p>
-                    </div>
 
                     {/* Actions */}
                     <div className="flex items-center gap-4 pt-8 border-t border-gray-100">
