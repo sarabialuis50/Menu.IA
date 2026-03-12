@@ -107,6 +107,11 @@ export default function ClientProfilePage() {
             const currentUser = profileRes.data;
             setUser(currentUser);
 
+            // Initialize security state from user data
+            if (currentUser.recovery_method) setRecoveryMethod(currentUser.recovery_method);
+            if (currentUser.pin_hint) setPinHint(currentUser.pin_hint);
+            if (currentUser.security_question) setSecurityQuestion(currentUser.security_question);
+
             const [ordersRes, addrRes, favRes, pointsRes] = await Promise.all([
                 api.get('/client/orders'),
                 api.get('/client/addresses'),
@@ -389,25 +394,8 @@ export default function ClientProfilePage() {
                                     >
                                         {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Entrar con PIN"}
                                     </Button>
-                                    <div className="relative py-4">
-                                        <div className="absolute inset-0 flex items-center">
-                                            <span className="w-full border-t border-gray-100"></span>
-                                        </div>
-                                        <div className="relative flex justify-center text-xs uppercase">
-                                            <span className="bg-white px-2 text-gray-400 font-bold">Otras opciones</span>
-                                        </div>
-                                    </div>
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        onClick={handleRequestOtp}
-                                        disabled={submitting}
-                                        className="w-full h-12 rounded-xl border-gray-200 text-gray-600 font-bold hover:bg-gray-50 flex items-center justify-center gap-2"
-                                    >
-                                        <Phone className="w-4 h-4" /> Recibir código (SMS/WA)
-                                    </Button>
                                     <p className="text-[10px] text-center text-gray-400 mt-4 leading-relaxed">
-                                        Si el código no llega por problemas técnicos de Meta/WhatsApp, usa tu <b>PIN</b>.
+                                        ¿Primera vez? Usa los <b>últimos 4 dígitos</b> de tu celular como PIN inicial.
                                     </p>
                                 </form>
                             ) : authStep === 'otp' ? (

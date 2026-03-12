@@ -4655,21 +4655,33 @@ async def request_otp(data: OTPRequest):
 async def login_client_pin(data: PINLogin):
     phone = data.telefono.replace(' ', '').replace('+', '')
     
-    # Get Client
+    # Get or Create Client (for PIN-only flow)
     client_res = supabase.table('clientes').select('*').eq('telefono', phone).execute()
     
     if not client_res.data:
-        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+        # Auto-create client if not exists
+        new_client = {
+            "telefono": phone,
+            "nombre": "Cliente Nuevo",
+            "avatar_url": f"https://ui-avatars.com/api/?name=User&background=random"
+        }
+        create_res = supabase.table('clientes').insert(new_client).execute()
+        if not create_res.data:
+            raise HTTPException(status_code=500, detail="Error al crear cliente")
+        client_data = create_res.data[0]
+    else:
+        client_data = client_res.data[0]
         
-    client_data = client_res.data[0]
     hashed_pin = client_data.get('pin')
     
     if not hashed_pin:
-        # If no PIN is set, allow them to log in with OTP first
-        raise HTTPException(status_code=400, detail="No tienes un PIN configurado. Ingresa con WhatsApp.")
-        
-    if not verify_password(data.pin, hashed_pin):
-        raise HTTPException(status_code=401, detail="PIN incorrecto")
+        # Default PIN is the last 4 digits of the phone
+        default_pin = phone[-4:]
+        if data.pin != default_pin:
+             raise HTTPException(status_code=401, detail="PIN inicial incorrecto (usa los últimos 4 dígitos de tu celular)")
+    else:
+        if not verify_password(data.pin, hashed_pin):
+            raise HTTPException(status_code=401, detail="PIN incorrecto")
         
     # Generate Token
     access_token_expires = timedelta(hours=ACCESS_TOKEN_EXPIRE_HOURS)
@@ -4677,9 +4689,11 @@ async def login_client_pin(data: PINLogin):
     to_encode = {"sub": phone, "role": "client", "exp": expire}
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     
-    # Remove PIN from response
-    if 'pin' in client_data:
-        del client_data['pin']
+    # Remove Sensitive data from response
+    sensitive_fields = ['pin', 'security_answer']
+    for field in sensitive_fields:
+        if field in client_data:
+            del client_data[field]
         
     return {
         "access_token": encoded_jwt,
