@@ -293,24 +293,6 @@ export default function EmpleadosPage() {
                           </span>
                         </div>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(employee.id)}
-                        className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
-                        data-testid={`delete-employee-${employee.id}`}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => openEditModal(employee)}
-                        className="h-8 w-8 text-blue-500 hover:text-blue-600 hover:bg-blue-50"
-                        data-testid={`edit-employee-${employee.id}`}
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </Button>
                     </div>
 
                     <div className="bg-gray-50 rounded-lg p-3">
@@ -320,11 +302,33 @@ export default function EmpleadosPage() {
                       </p>
                     </div>
 
-                    <div className="mt-3 flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${employee.activo ? 'bg-green-500' : 'bg-gray-300'}`} />
-                      <span className="text-xs text-gray-500">
-                        {employee.activo ? 'Activo' : 'Inactivo'}
-                      </span>
+                    <div className="mt-3 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${employee.activo ? 'bg-green-500' : 'bg-gray-300'}`} />
+                        <span className="text-xs text-gray-500">
+                          {employee.activo ? 'Activo' : 'Inactivo'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => openEditModal(employee)}
+                          className="h-8 w-8 text-blue-500 hover:text-blue-600 hover:bg-blue-50"
+                          data-testid={`edit-employee-${employee.id}`}
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDelete(employee.id)}
+                          className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
+                          data-testid={`delete-employee-${employee.id}`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                   </motion.div>
                 );
@@ -333,9 +337,8 @@ export default function EmpleadosPage() {
           </div>
         )}
 
-        {/* Create Employee Modal */}
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent className="sm:max-w-md" aria-describedby="employee-modal-description">
+          <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto" aria-describedby="employee-modal-description">
             <DialogHeader>
               <DialogTitle>{selectedEmployee ? 'Editar empleado' : 'Nuevo empleado'}</DialogTitle>
               <DialogDescription id="employee-modal-description" className="sr-only">

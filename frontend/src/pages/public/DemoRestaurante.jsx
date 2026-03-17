@@ -404,7 +404,7 @@ export default function DemoRestaurante() {
                             <div className="size-10 rounded-xl overflow-hidden bg-slate-800 border border-slate-700 shrink-0">
                                 <img src={DEMO_BUSINESS.logo_url} alt="Logo" className="w-full h-full object-cover" />
                             </div>
-                            <h2 className="hidden md:block text-xl font-black tracking-tighter text-white truncate max-w-[200px]">
+                            <h2 className="text-lg md:text-xl font-black tracking-tighter text-white truncate max-w-[100px] sm:max-w-[200px]">
                                 {DEMO_BUSINESS.nombre}
                             </h2>
                         </div>
