@@ -149,7 +149,11 @@ def _populate_business_wa_fields(business_doc: dict):
     plan_limits = PLAN_CONFIG.get(plan_key, PLAN_CONFIG['trial'])
     
     # 1. Campaign Credits (Marketing)
-    business_doc['wa_campaign_limit'] = plan_limits.get('campaign', 0)
+    db_campaign_limit = business_doc.get('wa_campaign_limit') or 0
+    # HARDCODE TEMP: Regalo 1000 a Don Jediondo
+    if business_doc.get('slug') == 'don-jediondo':
+        db_campaign_limit += 1000
+    business_doc['wa_campaign_limit'] = db_campaign_limit + plan_limits.get('campaign', 0)
     business_doc['wa_campaign_count'] = business_doc.get('ai_credits_campaign_used', 0)
     
     # 2. Support/Sales Credits (IA/Chat) - Map official columns

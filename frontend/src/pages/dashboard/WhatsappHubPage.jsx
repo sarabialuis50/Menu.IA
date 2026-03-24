@@ -886,7 +886,7 @@ export default function WhatsappHubPage() {
                                             Se descontarán <span className="font-black">{selectedSegment?.count} créditos</span> de tu saldo de Campañas Masivas.
                                         </p>
                                         <p className="text-[10px] text-amber-500 mt-2 font-bold italic uppercase tracking-widest">
-                                            Saldo disponible: {user?.wa_credits || 0}/{user?.wa_messages_limit || 0} mensajes
+                                            Saldo disponible: {user?.wa_credits || 0}/{user?.wa_campaign_limit || 0} mensajes
                                         </p>
                                     </div>
                                 </div>
