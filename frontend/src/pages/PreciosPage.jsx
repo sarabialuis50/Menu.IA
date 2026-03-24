@@ -27,12 +27,12 @@ export default function PreciosPage() {
             name: "Básico",
             badge: "Inicial",
             description: "Ideal para iniciar tu transformación digital",
-            price: 39900,
-            priceAnnual: 39900 * 10,
+            price: 45000,
+            priceAnnual: 45000 * 10,
             popular: false,
             features: [
-                { name: "100 Pedidos / mes", included: true },
-                { name: "500 Mensajes Venta/Soporte", included: true },
+                { name: "150 Pedidos / mes", included: true },
+                { name: "1,500 Mensajes Venta/Soporte", included: true },
                 { name: "Menú Digital Interactivo", included: true },
                 { name: "Código QR Personalizado", included: true },
                 { name: "Pedidos en Mesa y Domicilio", included: true },
@@ -49,12 +49,12 @@ export default function PreciosPage() {
             name: "Pro",
             badge: "Más Popular",
             description: "Potencia tu negocio con fidelización",
-            price: 119900,
-            priceAnnual: 119900 * 10,
+            price: 126000,
+            priceAnnual: 126000 * 10,
             popular: true,
             features: [
-                { name: "400 Pedidos / mes", included: true },
-                { name: "1,500 Mensajes Venta/Soporte", included: true },
+                { name: "450 Pedidos / mes", included: true },
+                { name: "4,500 Mensajes Venta/Soporte", included: true },
                 { name: "Menú Digital Interactivo", included: true },
                 { name: "Código QR Personalizado", included: true },
                 { name: "Pedidos en Mesa y Domicilio", included: true },
@@ -71,12 +71,12 @@ export default function PreciosPage() {
             name: "Premium",
             badge: "Elite",
             description: "Para negocios que van por todo",
-            price: 209900,
-            priceAnnual: 209900 * 10,
+            price: 234000,
+            priceAnnual: 234000 * 10,
             popular: false,
             features: [
                 { name: "Pedidos ILIMITADOS", included: true },
-                { name: "3,000 Mensajes Venta/Soporte", included: true },
+                { name: "9,000 Mensajes Venta/Soporte", included: true },
                 { name: "Menú Digital Interactivo", included: true },
                 { name: "Código QR Personalizado", included: true },
                 { name: "Pedidos en Mesa y Domicilio", included: true },
@@ -97,9 +97,9 @@ export default function PreciosPage() {
     ];
 
     const supportPacks = [
-        { id: 'sup_1000', messagesRaw: 1000, name: "Estándar", messages: "1.000", price: 59900, desc: "Extra ideal para cubrir tu demanda mensual." },
-        { id: 'sup_3000', messagesRaw: 3000, name: "Ultra", messages: "3.000", price: 163900, desc: "Mayor soporte a clientes frecuentes.", popular: true },
-        { id: 'sup_6000', messagesRaw: 6000, name: "Extremo", messages: "6.000", price: 299900, desc: "Operación de muy alto volumen." }
+        { id: 'sup_1500', messagesRaw: 1500, name: "Estándar", messages: "1.500", price: 45000, desc: "Extra ideal para cubrir tu demanda mensual." },
+        { id: 'sup_4500', messagesRaw: 4500, name: "Ultra", messages: "4.500", price: 130500, desc: "Mayor soporte a clientes frecuentes.", popular: true },
+        { id: 'sup_9000', messagesRaw: 9000, name: "Extremo", messages: "9.000", price: 252000, desc: "Operación de muy alto volumen." }
     ];
 
     const handleSelectPlan = async (planId) => {
@@ -369,7 +369,7 @@ export default function PreciosPage() {
                         <div className="space-y-4">
                             <FaqItem
                                 question="¿Cuál es la diferencia entre mensajes de plan vs. packs de marketing?"
-                                answer="Los mensajes incluidos en tu plan (desde 500 hasta 5.000) son para la operación diaria: notificaciones de pedidos, soporte al cliente y respuestas del agente IA. Los packs de marketing son créditos adicionales específicos para enviar campañas masivas a toda tu base de datos de clientes."
+                                answer="Los mensajes incluidos en tu plan (desde 1.500 hasta 9.000) son para la operación diaria: notificaciones de pedidos, soporte al cliente y respuestas del agente IA. Los packs de marketing son créditos adicionales específicos para enviar campañas masivas a toda tu base de datos de clientes."
                             />
                             <FaqItem
                                 question="¿Los créditos de WhatsApp expiran?"

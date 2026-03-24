@@ -37,26 +37,26 @@ def get_template_data(template_key, **kwargs):
         # Variable names in Content SID HX1743ee41809bd9c543ab1e5393ea7645
         # variables: {{1}} Repartidor, {{2}} Negocio, {{3}} Cliente, {{4}} Telefono Cliente, {{5}} Dirección, {{6}} ID Pedido, {{7}} Link
         variables = {
-            "repartidor_nombre": sanitize_val(kwargs.get("repartidor_nombre", "Repartidor"), 60),
-            "negocio_nombre": sanitize_val(kwargs.get("negocio_nombre", "Nuestro Negocio"), 60),
-            "cliente_nombre": sanitize_val(kwargs.get("cliente_nombre", "Cliente"), 60),
-            "cliente_telefono": sanitize_val(kwargs.get("cliente_telefono", "N/A"), 30),
-            "direccion_entrega": sanitize_val(kwargs.get("direccion_entrega", "Ver en mapa"), 300),
-            "order_id_corto": sanitize_val(kwargs.get("order_id_corto", "N/A"), 30),
-            "link_seguimiento": sanitize_val(kwargs.get("link_seguimiento", "https://menuia.co"), 150)
+            "1": sanitize_val(kwargs.get("repartidor_nombre", "Repartidor"), 60),
+            "2": sanitize_val(kwargs.get("negocio_nombre", "Nuestro Negocio"), 60),
+            "3": sanitize_val(kwargs.get("cliente_nombre", "Cliente"), 60),
+            "4": sanitize_val(kwargs.get("cliente_telefono", "N/A"), 30),
+            "5": sanitize_val(kwargs.get("direccion_entrega", "Ver en mapa"), 300),
+            "6": sanitize_val(kwargs.get("order_id_corto", "N/A"), 30),
+            "7": sanitize_val(kwargs.get("link_seguimiento", "https://menuia.co"), 150)
         }
     
     elif template_key == "seguimiento_cliente":
         # Variable names in Content SID HX3659bc5dccb53e716316f42582cf45b4
         # variables: {{1}} Cliente, {{2}} Negocio, {{3}} Repartidor, {{4}} Telefono Repartidor, {{5}} Dirección, {{6}} ID Pedido, {{7}} Link
         variables = {
-            "cliente_nombre": sanitize_val(kwargs.get("cliente_nombre", "Cliente"), 60),
-            "negocio_nombre": sanitize_val(kwargs.get("negocio_nombre", "Nuestro Negocio"), 60),
-            "repartidor_nombre": sanitize_val(kwargs.get("repartidor_nombre", "Repartidor"), 60),
-            "repartidor_telefono": sanitize_val(kwargs.get("repartidor_telefono", "N/A"), 30),
-            "direccion_entrega": sanitize_val(kwargs.get("direccion_entrega", "Ver en mapa"), 300),
-            "order_id_corto": sanitize_val(kwargs.get("order_id_corto", "N/A"), 30),
-            "link_seguimiento": sanitize_val(kwargs.get("link_seguimiento", "https://menuia.co"), 150)
+            "1": sanitize_val(kwargs.get("cliente_nombre", "Cliente"), 60),
+            "2": sanitize_val(kwargs.get("negocio_nombre", "Nuestro Negocio"), 60),
+            "3": sanitize_val(kwargs.get("repartidor_nombre", "Repartidor"), 60),
+            "4": sanitize_val(kwargs.get("repartidor_telefono", "N/A"), 30),
+            "5": sanitize_val(kwargs.get("direccion_entrega", "Ver en mapa"), 300),
+            "6": sanitize_val(kwargs.get("order_id_corto", "N/A"), 30),
+            "7": sanitize_val(kwargs.get("link_seguimiento", "https://menuia.co"), 150)
         }
 
     elif template_key == "resumen_pedido":
@@ -82,62 +82,61 @@ def get_template_data(template_key, **kwargs):
         # {{18}} Fecha y hora
         # {{19}} URL de seguimiento
         variables = {
-            "negocio_nombre":     sanitize_val(kwargs.get("negocio_nombre", "Nuestro Negocio"), 80),
-            "pedido_id":          sanitize_val(kwargs.get("pedido_id", "N/A"), 40),
-            "cliente_nombre":     sanitize_val(kwargs.get("cliente_nombre", "Cliente"), 80),
-            "cliente_telefono":   sanitize_val(kwargs.get("cliente_telefono", "N/A"), 30),
-            "detalle_productos":  sanitize_val(kwargs.get("detalle_productos", "Sin productos"), 800),
-            "tamanos":            sanitize_val(kwargs.get("tamanos", ""), 200),
-            "adicionales":        sanitize_val(kwargs.get("adicionales", ""), 300),
-            "opciones":           sanitize_val(kwargs.get("opciones", ""), 300),
-            "observacion_pedido": sanitize_val(kwargs.get("observacion_pedido", ""), 300),
-            "metodo_entrega":     sanitize_val(kwargs.get("metodo_entrega", "Domicilio"), 80),
-            "direccion":          sanitize_val(kwargs.get("direccion", "N/A"), 300),
-            "distancia":          sanitize_val(kwargs.get("distancia", "N/A"), 30),
-            "observacion_entrega": sanitize_val(kwargs.get("observacion_entrega", ""), 300),
-            "metodo_pago":        sanitize_val(kwargs.get("metodo_pago", "Efectivo"), 60),
-            "subtotal":           sanitize_val(kwargs.get("subtotal", "$0"), 30),
-            "costo_envio":        sanitize_val(kwargs.get("costo_envio", "$0"), 30),
-            "total":              sanitize_val(kwargs.get("total", "$0"), 30),
-            "fecha":              sanitize_val(kwargs.get("fecha", ""), 100),
-            "link_seguimiento":   sanitize_val(kwargs.get("link_seguimiento", "https://menuia.co"), 250),
+            "1":  sanitize_val(kwargs.get("negocio_nombre", "Nuestro Negocio"), 80),
+            "2":  sanitize_val(kwargs.get("pedido_id", "N/A"), 40),
+            "3":  sanitize_val(kwargs.get("cliente_nombre", "Cliente"), 80),
+            "4":  sanitize_val(kwargs.get("cliente_telefono", "N/A"), 30),
+            "5":  sanitize_val(kwargs.get("detalle_productos", "Sin productos"), 800),
+            "6":  sanitize_val(kwargs.get("tamanos", ""), 200),
+            "7":  sanitize_val(kwargs.get("adicionales", ""), 300),
+            "8":  sanitize_val(kwargs.get("opciones", ""), 300),
+            "9":  sanitize_val(kwargs.get("observacion_pedido", ""), 300),
+            "10": sanitize_val(kwargs.get("metodo_entrega", "Domicilio"), 80),
+            "11": sanitize_val(kwargs.get("direccion", "N/A"), 300),
+            "12": sanitize_val(kwargs.get("distancia", "N/A"), 30),
+            "13": sanitize_val(kwargs.get("observacion_entrega", ""), 300),
+            "14": sanitize_val(kwargs.get("metodo_pago", "Efectivo"), 60),
+            "15": sanitize_val(kwargs.get("subtotal", "$0"), 30),
+            "16": sanitize_val(kwargs.get("costo_envio", "$0"), 30),
+            "17": sanitize_val(kwargs.get("total", "$0"), 30),
+            "18": sanitize_val(kwargs.get("fecha", ""), 100),
+            "19": sanitize_val(kwargs.get("link_seguimiento", "https://menuia.co"), 250),
         }
 
     elif template_key == "fidelidad":
         # variables: {{1}} Cliente, {{2}} Acción, {{3}} Negocio, {{4}} Puntos
         # Variable names in Content SID HX23628ad40f0211a1379819bf608de21b
         variables = {
-            "cliente_nombre": kwargs.get("cliente_nombre", "Cliente"),
-            "accion": kwargs.get("accion", "Has ganado puntos"),
-            "negocio_nombre": kwargs.get("negocio_nombre", "Nuestro Negocio"),
-            "puntos": str(kwargs.get("puntos", 0))
+            "1": kwargs.get("cliente_nombre", "Cliente"),
+            "2": kwargs.get("accion", "Has ganado puntos"),
+            "3": kwargs.get("negocio_nombre", "Nuestro Negocio"),
+            "4": str(kwargs.get("puntos", 0))
         }
 
     elif template_key == "cumpleanos":
         # variables: {{1}} Cliente, {{2}} Negocio
         # Variable names in Content SID HX1f5542e7ab4c3a77f396a6a70fef1658
         variables = {
-            "cliente_nombre": kwargs.get("cliente_nombre", "Cumpleañero"),
-            "negocio_nombre": kwargs.get("negocio_nombre", "Nuestro Negocio")
+            "1": kwargs.get("cliente_nombre", "Cumpleañero"),
+            "2": kwargs.get("negocio_nombre", "Nuestro Negocio")
         }
 
     elif template_key == "campana_marketing":
         # variables: {{1}} Cliente, {{2}} Negocio, {{3}} Mensaje, {{4}} Link
         # Variable names in Content SID HX4e4cf9232106524f8a3f412c1baecc96
         variables = {
-            "cliente_nombre": kwargs.get("cliente_nombre", "Cliente"),
-            "negocio_nombre": kwargs.get("negocio_nombre", "Nuestro Negocio"),
-            "mensaje_personalizado": kwargs.get("mensaje_personalizado", ""),
-            "link": kwargs.get("link", "https://menuia.co")
+            "1": kwargs.get("cliente_nombre", "Cliente"),
+            "2": kwargs.get("negocio_nombre", "Nuestro Negocio"),
+            "3": kwargs.get("mensaje_personalizado", ""),
+            "4": kwargs.get("link", "https://menuia.co")
         }
 
     elif template_key == "codigo_verificacion":
         # variables: {{1}} OTP Code, {{2}} Negocio
         # Variable names in Content SID HX42003eb243fd020dbeaa9d9b983e7ea4
         variables = {
-            "otp_code": kwargs.get("otp_code", ""),
-            "negocio_nombre": kwargs.get("negocio_nombre", "Menu.IA")
+            "1": kwargs.get("otp_code", ""),
+            "2": kwargs.get("negocio_nombre", "Menu.IA")
         }
-
 
     return sid, variables
