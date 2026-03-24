@@ -405,7 +405,7 @@ export default function WhatsappHubPage() {
                                             <MessageSquare className="w-5 h-5 text-white" />
                                         </div>
                                         <div>
-                                            <CardTitle className="text-sm font-black uppercase tracking-[0.2em]">WhatsApp Hub</CardTitle>
+                                            <CardTitle className="text-sm font-black uppercase tracking-widest whitespace-nowrap">WhatsApp Hub</CardTitle>
                                             <div className="flex items-center gap-1.5 text-[8px] font-bold text-white/60">
                                                 <div className="w-1 h-1 rounded-full bg-white opacity-40" />
                                                 SINCRONIZACIÓN ACTIVA
@@ -418,26 +418,29 @@ export default function WhatsappHubPage() {
                                 <div className="space-y-4 py-2">
                                     <div className="flex items-start justify-between gap-4">
                                         <h3 className="text-4xl font-black leading-none tracking-tight">
-                                            {`${user?.wa_credits || 0}/${user?.wa_messages_limit || 0}`}
+                                            {`${user?.wa_campaign_count || 0}/${user?.wa_campaign_limit || 0}`}
                                         </h3>
                                         <Badge className="bg-white/20 text-white text-[7px] md:text-[8px] font-black tracking-widest border-white border-2 px-2 py-0.5 shrink-0 mt-1 uppercase">
                                             PLAN {user?.plan?.toUpperCase() || 'GRATUITO'}
                                         </Badge>
                                     </div>
-                                    <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest px-1 whitespace-nowrap mt-1">
+                                    <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest px-1 whitespace-nowrap">
                                         Créditos Campañas Masivas
                                     </p>
-                                    <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden">
-                                        <div
-                                            className="h-full bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-1000"
-                                            style={{
-                                                width: `${Math.min(100, (user?.wa_messages_limit > 0 ? ((user?.wa_credits || 0) / user.wa_messages_limit * 100) : 0))}%`
-                                            }}
-                                        />
+
+                                    <div className="space-y-2">
+                                        <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-1000"
+                                                style={{
+                                                    width: `${user?.wa_campaign_limit > 0 ? Math.min(100, (user?.wa_campaign_count / user.wa_campaign_limit * 100)) : 0}%`
+                                                }}
+                                            />
+                                        </div>
+                                        <p className="text-[9px] font-bold text-white/80 italic text-center">
+                                            ✨ Dispones de {Math.max(0, (user?.wa_campaign_limit || 0) - (user?.wa_campaign_count || 0))} mensajes para campañas.
+                                        </p>
                                     </div>
-                                    <p className="text-[9px] font-bold text-white/80 italic text-center">
-                                        ✨ Dispones de {user?.wa_credits || 0} mensajes para campañas.
-                                    </p>
                                 </div>
 
                                 <div className="bg-white/10 rounded-2xl p-4 flex items-center justify-between border border-white/10">
@@ -454,7 +457,7 @@ export default function WhatsappHubPage() {
                                 <div className="pt-2">
                                     <Button
                                         onClick={() => setIsCampaignModalOpen(true)}
-                                        className="w-full bg-white text-[#22C55E] border-2 border-transparent hover:bg-transparent hover:text-white hover:border-white font-black text-[10px] uppercase h-12 rounded-xl tracking-widest shadow-xl shadow-green-900/10 transition-all px-2"
+                                        className="w-full bg-white text-[#22C55E] border-2 border-transparent hover:bg-transparent hover:text-white hover:border-white font-black text-[9px] uppercase h-12 rounded-xl tracking-normal shadow-xl shadow-green-900/10 transition-all px-2 leading-tight whitespace-normal"
                                     >
                                         Comprar paquetes de mensajes
                                     </Button>
@@ -533,10 +536,40 @@ export default function WhatsappHubPage() {
                             </div>
                         </div>
 
-                        {activeTab === 'templates' ? (
-                            <>
-                                {/* Selector de Disparadores Atómicos */}
-                                <div className="space-y-4">
+                        <div className="relative flex flex-col flex-1 mt-2">
+                            {(!user?.wa_credits || user.wa_credits <= 0) && !dismissedLockOverlay && (
+                                <div className="absolute inset-x-0 -top-4 -bottom-4 z-50 backdrop-blur-[2px] bg-white/40 flex items-center justify-center p-6 rounded-[2.5rem]">
+                                    <div className="relative max-w-sm w-full bg-white border-2 border-amber-100 shadow-2xl rounded-[2rem] p-8 text-center flex flex-col items-center gap-4">
+                                        <button
+                                            onClick={() => setDismissedLockOverlay(true)}
+                                            className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center shadow-sm hover:scale-110 transition-transform hover:border-gray-300"
+                                        >
+                                            <X className="w-4 h-4 text-gray-500" />
+                                        </button>
+                                        <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center mt-2">
+                                            <Lock className="w-8 h-8 text-amber-500" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight mb-2">Módulo Bloqueado</h3>
+                                            <p className="text-sm text-gray-500 font-medium">
+                                                Las automatizaciones y campañas requieren un pack de mensajes activo. Recarga ahora para impactar a tus clientes.
+                                            </p>
+                                        </div>
+                                        <Button
+                                            onClick={() => setIsCampaignModalOpen(true)}
+                                            className="w-full h-12 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl uppercase tracking-normal text-[9px] leading-tight px-4 whitespace-normal"
+                                        >
+                                            Adquirir pack de mensajes
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className={(!user?.wa_credits || user.wa_credits <= 0) ? 'flex flex-col flex-1 opacity-30 pointer-events-none' : 'flex flex-col flex-1'}>
+                                {activeTab === 'templates' ? (
+                                    <>
+                                        {/* Selector de Disparadores Atómicos */}
+                                        <div className="space-y-4">
                                     <div className="flex items-center gap-2 text-[#22C55E]">
                                         <Zap className="w-3.5 h-3.5 fill-current" />
                                         <h3 className="text-[10px] font-black uppercase tracking-widest text-[#23a352]">Disparadores Atómicos</h3>
@@ -658,35 +691,7 @@ export default function WhatsappHubPage() {
                                 )}
                             </>
                         ) : (
-                            <div className="relative">
-                                {(!user?.wa_credits || user.wa_credits <= 0) && !dismissedLockOverlay && (
-                                    <div className="absolute inset-x-0 -top-4 -bottom-4 z-50 backdrop-blur-[2px] bg-white/40 flex items-center justify-center p-6 rounded-[2.5rem]">
-                                        <div className="relative max-w-sm w-full bg-white border-2 border-amber-100 shadow-2xl rounded-[2rem] p-8 text-center flex flex-col items-center gap-4">
-                                            <button
-                                                onClick={() => setDismissedLockOverlay(true)}
-                                                className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center shadow-sm hover:scale-110 transition-transform hover:border-gray-300"
-                                            >
-                                                <X className="w-4 h-4 text-gray-500" />
-                                            </button>
-                                            <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center mt-2">
-                                                <Lock className="w-8 h-8 text-amber-500" />
-                                            </div>
-                                            <div>
-                                                <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight mb-2">Módulo Bloqueado</h3>
-                                                <p className="text-sm text-gray-500 font-medium">
-                                                    Las campañas masivas requieren un pack de mensajes activo. Recarga ahora para empezar a impactar a tus clientes.
-                                                </p>
-                                            </div>
-                                            <Button
-                                                onClick={() => setIsCampaignModalOpen(true)}
-                                                className="w-full h-12 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl uppercase tracking-widest text-[10px]"
-                                            >
-                                                Adquirir pack campaña masiva
-                                            </Button>
-                                        </div>
-                                    </div>
-                                )}
-                                <div className={(!user?.wa_credits || user.wa_credits <= 0) ? 'opacity-30 pointer-events-none' : ''}>
+                            <>
                                     {/* Selector de Audiencia */}
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-2 text-[#22C55E]">
@@ -792,9 +797,10 @@ export default function WhatsappHubPage() {
                                             </div>
                                         </Card>
                                     </div>
-                                </div>
+                                    </>
+                                )}
                             </div>
-                        )}
+                        </div>
                     </div>
 
                     {/* Impact Stats - BOTTOM on mobile */}
@@ -977,80 +983,74 @@ export default function WhatsappHubPage() {
 
             {/* Modal de Packs VENTAS/SOPORTE */}
             <Dialog open={isSupportModalOpen} onOpenChange={setIsSupportModalOpen}>
-                <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden" aria-describedby="support-pack-description">
-                    <div className="bg-[#4ADE80] p-8 text-[#111814] relative">
-                        <div className="absolute top-0 right-0 p-8 opacity-10">
-                            <MessageSquare className="w-24 h-24" />
-                        </div>
-                        <DialogHeader>
-                            <DialogTitle className="text-2xl font-black uppercase tracking-tight">Pack Soporte/Ventas</DialogTitle>
-                            <DialogDescription id="support-pack-description" className="text-white/80 font-bold text-xs uppercase tracking-widest mt-2">
-                                Recarga mensajes para tu agente de IA (Soporte y Ventas).
-                            </DialogDescription>
-                        </DialogHeader>
+                <DialogContent className="sm:max-w-[380px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden max-h-[95vh] flex flex-col" aria-describedby="support-modal-description">
+                <div className="bg-[#4ADE80] p-6 text-[#111814] relative shrink-0">
+                    <div className="absolute top-0 right-0 p-4 opacity-10">
+                        <MessageSquare className="w-16 h-16" />
                     </div>
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-black uppercase tracking-tight">Packs de Venta/Soporte</DialogTitle>
+                        <DialogDescription id="support-modal-description" className="text-white/80 font-bold text-[10px] uppercase tracking-widest mt-1">
+                            Recarga interacciones para tu servicio
+                        </DialogDescription>
+                    </DialogHeader>
+                </div>
 
-                    <div className="p-8 space-y-4 bg-[#FAFAF9]">
-                        {[
-                            { amount: 1000, price: "$59.900", desc: "Extra ideal para cubrir tu demanda mensual" },
-                            { amount: 3000, price: "$163.900", desc: "Mayor soporte a clientes frecuentes", popular: true },
-                            { amount: 6000, price: "$299.900", desc: "Operación de muy alto volumen" }
-                        ].map((pack) => (
-                            <button
-                                key={pack.amount}
-                                onClick={() => handlePurchaseSupportPack(pack.amount)}
-                                disabled={isCreatingLink}
-                                className={`w-full p-4 rounded-2xl border-2 transition-all flex items-center justify-between text-left group
-                                    ${pack.popular ? 'bg-white border-[#22C55E] shadow-lg shadow-green-100' : 'bg-white border-gray-100 hover:border-gray-200'}
-                                    ${isCreatingLink ? 'opacity-50 cursor-not-allowed' : 'active:scale-[0.98]'}`}
-                            >
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-black text-gray-900 text-lg">{pack.amount.toLocaleString('es-CO')}</span>
-                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter">MENSAJES</span>
-                                        {pack.popular && <Badge className="bg-[#4ADE80] text-[#111814] text-[7px] font-black px-2 border-none">RECOMENDADO</Badge>}
-                                    </div>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight leading-none">{pack.desc}</p>
+                <div className="p-6 space-y-3 bg-[#FAFAF9] overflow-y-auto">
+                    {[
+                        { amount: 1500, price: "$45.000", desc: "Plan Estándar - Ideal mensual" },
+                        { amount: 4500, price: "$130.500", desc: "Plan Ultra - Frecuentes", popular: true },
+                        { amount: 9000, price: "$252.000", desc: "Plan Extremo - Alto volumen" }
+                    ].map((pack) => (
+                        <button
+                            key={pack.amount}
+                            onClick={() => handlePurchaseSupportPack(pack.amount)}
+                            disabled={isCreatingLink}
+                            className={`w-full p-3.5 rounded-2xl border-2 transition-all flex items-center justify-between text-left group
+                                        ${pack.popular ? 'bg-white border-[#22C55E] shadow-lg shadow-green-100' : 'bg-white border-gray-100 hover:border-gray-200'}
+                                        ${isCreatingLink ? 'opacity-50 cursor-not-allowed' : 'active:scale-[0.98]'}`}
+                        >
+                            <div className="space-y-0.5">
+                                <div className="flex items-center gap-2">
+                                    <span className="font-black text-gray-900 text-base">{pack.amount.toLocaleString('es-CO')}</span>
+                                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">MSJS</span>
+                                    {pack.popular && <Badge className="bg-[#4ADE80] text-[#111814] text-[6px] font-black px-1.5 border-none h-4">TOP</Badge>}
                                 </div>
-                                <div className="text-right">
-                                    <p className="font-black text-[#22C55E] text-xl leading-none">{pack.price}</p>
-                                    <p className="text-[8px] font-bold text-gray-300 uppercase tracking-widest mt-1">COP</p>
-                                </div>
-                            </button>
-                        ))}
-                    </div>
+                                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-tight leading-none">{pack.desc}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="font-black text-[#22C55E] text-lg leading-none">{pack.price}</p>
+                                <p className="text-[7px] font-bold text-gray-300 uppercase tracking-widest mt-1">COP</p>
+                            </div>
+                        </button>
+                    ))}
+                </div>
 
-                    <div className="px-8 pb-8 bg-[#FAFAF9]">
-                        <p className="text-[9px] text-gray-400 font-bold text-center uppercase tracking-widest leading-relaxed">
-                            🔒 Pago seguro vía MercadoPago. <br />
-                            Los mensajes se añaden inmediatamente a tu cuenta.
-                        </p>
-                    </div>
-                </DialogContent>
+                <div className="px-6 pb-6 bg-[#FAFAF9] shrink-0">
+                    <p className="text-[8px] text-gray-400 font-bold text-center uppercase tracking-widest leading-relaxed">
+                        🔒 Pago seguro vía MercadoPago. <br />
+                        Mensajes inmediatos en tu cuenta.
+                    </p>
+                </div>
+            </DialogContent>
             </Dialog>
 
             {/* Modal de Packs CAMPAÑAS (Prepago) - Próximamente integrado en pestaña Campañas */}
             <Dialog open={isCampaignModalOpen} onOpenChange={setIsCampaignModalOpen}>
-                <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden" aria-describedby="campaign-pack-description">
-                    <div className="bg-[#4ADE80] p-8 text-[#111814] relative">
-                        <button
-                            onClick={() => setIsCampaignModalOpen(false)}
-                            className="absolute top-4 right-4 text-[#111814]/40 hover:text-[#111814] transition-colors z-10"
-                        >
-                            <X className="w-6 h-6" />
-                        </button>
-                        <div className="absolute top-0 right-0 p-8 opacity-10">
-                            <MessageSquareMore className="w-24 h-24" />
+                <DialogContent className="sm:max-w-[380px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden max-h-[95vh] flex flex-col" aria-describedby="campaign-pack-description">
+                    <div className="bg-[#4ADE80] p-6 text-[#111814] relative shrink-0">
+                        <div className="absolute top-0 right-0 p-4 opacity-10">
+                            <MessageSquareMore className="w-16 h-16" />
                         </div>
                         <DialogHeader>
-                            <DialogTitle className="text-2xl font-black uppercase tracking-tight">Recargar Mensajes</DialogTitle>
-                            <DialogDescription id="campaign-pack-description" className="text-white/80 font-bold text-xs uppercase tracking-widest mt-2">
-                                Elige el pack que mejor se adapte a tu próxima campaña masiva.
+                            <DialogTitle className="text-xl font-black uppercase tracking-tight">Packs de Campañas</DialogTitle>
+                            <DialogDescription id="campaign-pack-description" className="text-white/80 font-bold text-[10px] uppercase tracking-widest mt-1">
+                                Elige el pack que mejor se adapte a tu campaña.
                             </DialogDescription>
                         </DialogHeader>
                     </div>
 
-                    <div className="p-8 space-y-4 bg-[#FAFAF9]">
+                    <div className="p-6 space-y-3 bg-[#FAFAF9] overflow-y-auto">
                         {[
                             { amount: 1000, price: "$150.000", desc: "Ideal para avisos puntuales" },
                             { amount: 5000, price: "$725.000", desc: "Perfecto para campañas mensuales", popular: true },
@@ -1060,28 +1060,28 @@ export default function WhatsappHubPage() {
                                 key={pack.amount}
                                 onClick={() => handlePurchaseCampaignPack(pack.amount)}
                                 disabled={isCreatingLink}
-                                className={`w-full p-4 rounded-2xl border-2 transition-all flex items-center justify-between text-left group
+                                className={`w-full p-3.5 rounded-2xl border-2 transition-all flex items-center justify-between text-left group
                                     ${pack.popular ? 'bg-white border-[#22C55E] shadow-lg shadow-green-100' : 'bg-white border-gray-100 hover:border-gray-200'}
                                     ${isCreatingLink ? 'opacity-50 cursor-not-allowed' : 'active:scale-[0.98]'}`}
                             >
-                                <div className="space-y-1">
+                                <div className="space-y-0.5">
                                     <div className="flex items-center gap-2">
-                                        <span className="font-black text-gray-900 text-lg">{pack.amount.toLocaleString()}</span>
-                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter">MENSAJES</span>
-                                        {pack.popular && <Badge className="bg-[#4ADE80] text-[#111814] text-[7px] font-black px-2 border-none">POPULAR</Badge>}
+                                        <span className="font-black text-gray-900 text-base">{pack.amount.toLocaleString()}</span>
+                                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">MENSAJES</span>
+                                        {pack.popular && <Badge className="bg-[#4ADE80] text-[#111814] text-[6px] font-black px-1.5 border-none h-4">TOP</Badge>}
                                     </div>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight leading-none">{pack.desc}</p>
+                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-tight leading-none">{pack.desc}</p>
                                 </div>
                                 <div className="text-right">
-                                    <p className="font-black text-[#22C55E] text-xl leading-none">{pack.price}</p>
-                                    <p className="text-[8px] font-bold text-gray-300 uppercase tracking-widest mt-1">COP</p>
+                                    <p className="font-black text-[#22C55E] text-lg leading-none">{pack.price}</p>
+                                    <p className="text-[7px] font-bold text-gray-300 uppercase tracking-widest mt-1">COP</p>
                                 </div>
                             </button>
                         ))}
                     </div>
 
-                    <div className="px-8 pb-8 bg-[#FAFAF9]">
-                        <p className="text-[9px] text-gray-400 font-bold text-center uppercase tracking-widest leading-relaxed">
+                    <div className="px-6 pb-6 bg-[#FAFAF9] shrink-0">
+                        <p className="text-[8px] text-gray-400 font-bold text-center uppercase tracking-widest leading-relaxed">
                             🔒 Pago seguro vía MercadoPago. <br />
                             Los mensajes se añaden inmediatamente a tu cuenta.
                         </p>

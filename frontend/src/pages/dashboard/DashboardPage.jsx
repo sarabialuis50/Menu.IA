@@ -414,7 +414,7 @@ export default function DashboardPage() {
                     <MessageSquare className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <CardTitle className="text-sm font-black uppercase tracking-[0.2em]">WhatsApp Hub</CardTitle>
+                    <CardTitle className="text-sm font-black uppercase tracking-widest whitespace-nowrap">WhatsApp Hub</CardTitle>
                     <div className="flex items-center gap-1.5 text-[8px] font-bold text-white/60">
                       <div className="w-1 h-1 rounded-full bg-white opacity-40" />
                       SINCRONIZACIÓN ACTIVA
@@ -427,7 +427,7 @@ export default function DashboardPage() {
               <div className="space-y-4 py-2">
                 <div className="flex items-start justify-between gap-4">
                   <h3 className="text-4xl font-black leading-none tracking-tight">
-                    {user?.wa_messages_limit > 0 ? (user?.wa_messages_count || 0) : 0}/{user?.wa_messages_limit || 0}
+                    {`${user?.whatsapp_usados || 0}/${user?.whatsapp_incluidos || 0}`}
                   </h3>
                   <Badge className="bg-white/20 text-white text-[7px] md:text-[8px] font-black tracking-widest border-white border-2 px-2 py-0.5 shrink-0 mt-1 uppercase">
                     PLAN {user?.plan?.toUpperCase() || 'GRATUITO'}
@@ -439,11 +439,11 @@ export default function DashboardPage() {
                 <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-1000"
-                    style={{ width: `${Math.min(100, user?.wa_messages_limit > 0 ? ((user?.wa_messages_count || 0) / user.wa_messages_limit) * 100 : 0)}%` }}
+                    style={{ width: `${user?.whatsapp_incluidos > 0 ? Math.min(100, ((user?.whatsapp_usados || 0) / user.whatsapp_incluidos) * 100) : 0}%` }}
                   />
                 </div>
                 <p className="text-[9px] font-bold text-white/80 italic text-center">
-                  ✨ Has usado el {user?.wa_messages_limit > 0 ? (((user?.wa_messages_count || 0) / user.wa_messages_limit) * 100).toFixed(1) : '0.0'}% de tu cupo incluido.
+                  ✨ Has usado el {user?.whatsapp_incluidos > 0 ? (((user?.whatsapp_usados || 0) / user.whatsapp_incluidos) * 100).toFixed(1) : '0.0'}% de tu cupo incluido.
                 </p>
               </div>
 
@@ -497,53 +497,53 @@ export default function DashboardPage() {
       </div>
 
       <Dialog open={isSupportModalOpen} onOpenChange={setIsSupportModalOpen}>
-        <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden" aria-describedby="support-modal-description">
-          <div className="bg-[#4ADE80] p-8 text-[#111814] relative">
-            <div className="absolute top-0 right-0 p-8 opacity-10">
-              <MessageSquare className="w-24 h-24" />
+        <DialogContent className="sm:max-w-[380px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden max-h-[95vh] flex flex-col" aria-describedby="support-modal-description">
+          <div className="bg-[#4ADE80] p-6 text-[#111814] relative shrink-0">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <MessageSquare className="w-16 h-16" />
             </div>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-black uppercase tracking-tight">Packs de Venta/Soporte</DialogTitle>
-              <DialogDescription id="support-modal-description" className="text-white/80 font-bold text-xs uppercase tracking-widest mt-2">
-                Incrementa tu límite de interacciones para no detener nunca el servicio
+              <DialogTitle className="text-xl font-black uppercase tracking-tight">Packs de Venta/Soporte</DialogTitle>
+              <DialogDescription id="support-modal-description" className="text-white/80 font-bold text-[10px] uppercase tracking-widest mt-1">
+                Recarga interacciones para tu servicio
               </DialogDescription>
             </DialogHeader>
           </div>
 
-          <div className="p-8 space-y-4 bg-[#FAFAF9]">
+          <div className="p-6 space-y-3 bg-[#FAFAF9] overflow-y-auto">
             {[
-              { amount: 1000, price: "$59.900", desc: "Suficiente para operaciones pequeñas" },
-              { amount: 3000, price: "$163.900", desc: "Para negocios con alto flujo diario", popular: true },
-              { amount: 6000, price: "$299.900", desc: "Soporte ininterrumpido a gran escala" }
+              { amount: 1500, price: "$45.000", desc: "Plan Estándar - Ideal mensual" },
+              { amount: 4500, price: "$130.500", desc: "Plan Ultra - Frecuentes", popular: true },
+              { amount: 9000, price: "$252.000", desc: "Plan Extremo - Alto volumen" }
             ].map((pack) => (
               <button
                 key={pack.amount}
                 onClick={() => handlePurchaseSupportPack(pack.amount)}
                 disabled={isCreatingLink}
-                className={`w-full p-4 rounded-2xl border-2 transition-all flex items-center justify-between text-left group
+                className={`w-full p-3.5 rounded-2xl border-2 transition-all flex items-center justify-between text-left group
                               ${pack.popular ? 'bg-white border-[#22C55E] shadow-lg shadow-green-100' : 'bg-white border-gray-100 hover:border-gray-200'}
                               ${isCreatingLink ? 'opacity-50 cursor-not-allowed' : 'active:scale-[0.98]'}`}
               >
-                <div className="space-y-1">
+                <div className="space-y-0.5">
                   <div className="flex items-center gap-2">
-                    <span className="font-black text-gray-900 text-lg">{pack.amount.toLocaleString('es-CO')}</span>
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter">MENSAJES</span>
-                    {pack.popular && <Badge className="bg-[#4ADE80] text-[#111814] text-[7px] font-black px-2 border-none">RECOMENDADO</Badge>}
+                    <span className="font-black text-gray-900 text-base">{pack.amount.toLocaleString('es-CO')}</span>
+                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">MSJS</span>
+                    {pack.popular && <Badge className="bg-[#4ADE80] text-[#111814] text-[6px] font-black px-1.5 border-none h-4">TOP</Badge>}
                   </div>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight leading-none">{pack.desc}</p>
+                  <p className="text-[9px] font-bold text-gray-400 uppercase tracking-tight leading-none">{pack.desc}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-black text-[#22C55E] text-xl leading-none">{pack.price}</p>
-                  <p className="text-[8px] font-bold text-gray-300 uppercase tracking-widest mt-1">COP</p>
+                  <p className="font-black text-[#22C55E] text-lg leading-none">{pack.price}</p>
+                  <p className="text-[7px] font-bold text-gray-300 uppercase tracking-widest mt-1">COP</p>
                 </div>
               </button>
             ))}
           </div>
 
-          <div className="px-8 pb-8 bg-[#FAFAF9]">
-            <p className="text-[9px] text-gray-400 font-bold text-center uppercase tracking-widest leading-relaxed">
+          <div className="px-6 pb-6 bg-[#FAFAF9] shrink-0">
+            <p className="text-[8px] text-gray-400 font-bold text-center uppercase tracking-widest leading-relaxed">
               🔒 Pago seguro vía MercadoPago. <br />
-              Los mensajes se añaden inmediatamente a tu cuenta.
+              Mensajes inmediatos en tu cuenta.
             </p>
           </div>
         </DialogContent>

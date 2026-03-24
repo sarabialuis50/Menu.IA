@@ -78,7 +78,7 @@ PLAN_CONFIG = {
         "img": 50,
         "nutri": 50,
         "desc": 50,
-        "wa": 500,
+        "wa": 1500,
         "campaign": 0,
         "hub": 0
     },
@@ -86,7 +86,7 @@ PLAN_CONFIG = {
         "img": 120,
         "nutri": 120,
         "desc": 120,
-        "wa": 1500,
+        "wa": 4500,
         "campaign": 0,
         "hub": 0
     },
@@ -94,7 +94,7 @@ PLAN_CONFIG = {
         "img": 300,
         "nutri": 300,
         "desc": 300,
-        "wa": 3000,
+        "wa": 9000,
         "campaign": 50,
         "hub": 10
     },
@@ -142,6 +142,27 @@ async def reverse_geocode_api(lat: float, lng: float):
         return {"error": res.get("status"), "message": res.get("error_message")}
     except Exception as e:
         return {"error": "request_error", "message": str(e)}
+
+def _populate_business_wa_fields(business_doc: dict):
+    """Internal helper to populate dynamic campaign & whatsapp fields based on plan."""
+    plan_key = (business_doc.get('plan') or 'trial').lower()
+    plan_limits = PLAN_CONFIG.get(plan_key, PLAN_CONFIG['trial'])
+    
+    # 1. Campaign Credits (Marketing)
+    business_doc['wa_campaign_limit'] = plan_limits.get('campaign', 0)
+    business_doc['wa_campaign_count'] = business_doc.get('ai_credits_campaign_used', 0)
+    
+    # 2. Support/Sales Credits (IA/Chat) - Map official columns
+    # Fields like whatsapp_incluidos should be 1500 for basic
+    business_doc['whatsapp_incluidos'] = business_doc.get('whatsapp_incluidos') or plan_limits.get('wa', 500)
+    business_doc['whatsapp_usados'] = business_doc.get('whatsapp_usados', 0)
+    
+    # Legacy/Compatibility fields
+    business_doc['wa_messages_limit'] = business_doc['whatsapp_incluidos']
+    business_doc['wa_messages_count'] = business_doc['whatsapp_usados']
+    business_doc['wa_credits'] = business_doc['wa_campaign_limit'] - business_doc['wa_campaign_count']
+
+    return business_doc
 
 # Configure CORS based on environment variables
 cors_origins_str = os.environ.get("CORS_ORIGINS", "")
@@ -448,6 +469,9 @@ async def get_current_business(credentials: HTTPAuthorizationCredentials = Depen
             # Update local doc for the current request
             business_doc.update(update_data)
 
+        # 5. Populate Dynamic Campaign & WhatsApp Fields
+        _populate_business_wa_fields(business_doc)
+
         if 'password_hash' in business_doc:
             del business_doc['password_hash']
             
@@ -473,6 +497,7 @@ async def get_current_business(credentials: HTTPAuthorizationCredentials = Depen
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail="Error interno de autenticación")
+
 
 
 async def get_current_employee(credentials: HTTPAuthorizationCredentials = Depends(security)) -> Employee:
@@ -727,6 +752,7 @@ async def login_business(data: BusinessLogin):
     if 'password_hash' in business_doc:
         del business_doc['password_hash']
         
+    _populate_business_wa_fields(business_doc)
     business = Business(**business_doc)
     token = create_token({"sub": business.id, "type": "business"})
     
@@ -1867,8 +1893,8 @@ async def create_order(slug: str, data: OrderCreate, background_tasks: Backgroun
         # Plan Limits
         LIMITS = {
             'trial': 50,      # Trial limit (optional, user said trial allows functionality but no WA)
-            'impulso': 100,
-            'pro': 400,
+            'impulso': 150,
+            'pro': 450,
             'elite': 999999,
             'business': 999999 # Alias for elite
         }
@@ -3976,9 +4002,9 @@ async def public_landing_audio(audio: UploadFile = File(...)):
     PACKS DE WHATSAPP (Recargas Prepago):
     
     1. PACKS DE VENTA/SOPORTE (Para el agente que conversa y toma pedidos):
-    - 1.000 mensajes / $59.900 COP.
-    - 3.000 mensajes / $163.900 COP.
-    - 6.000 mensajes / $299.900 COP.
+    - 1.500 mensajes / $45.000 COP.
+    - 4.500 mensajes / $130.500 COP.
+    - 9.000 mensajes / $252.000 COP.
 
     2. PACKS DE CAMPAÑAS MASIVAS (Para marketing masivo y anuncios):
     - 1.000 mensajes / $150.000 COP.
@@ -4093,9 +4119,9 @@ async def public_landing_chat(request: LandingChatRequest):
     RECARGAS WHATSAPP (Packs Prepago):
 
     1. PACKS DE VENTA/SOPORTE (Agente IA Interactivo y Pedidos):
-    - 1.000 mensajes por $59.900 COP.
-    - 3.000 mensajes por $163.900 COP.
-    - 6.000 mensajes por $299.900 COP.
+    - 1.500 mensajes por $45.000 COP.
+    - 4.500 mensajes por $130.500 COP.
+    - 9.000 mensajes por $252.000 COP.
 
     2. PACKS DE CAMPAÑAS MASIVAS (Marketing y Promociones):
     - 1.000 mensajes por $150.000 COP.
@@ -4421,9 +4447,9 @@ async def create_support_pack_link(data: WhatsAppPackRequest, business: Business
          raise HTTPException(status_code=503, detail="El sistema de pagos de MercadoPago no está configurado.")
     try:
         SUPPORT_PRICING = {
-            1000: 59900,
-            3000: 163900,
-            6000: 299900
+            1500: 45000,
+            4500: 130500,
+            9000: 252000
         }
         
         price = SUPPORT_PRICING.get(data.amount)
@@ -5230,3 +5256,7 @@ async def web_chat_audio_agent(slug: str, audio: UploadFile = File(...), phone: 
         return {"response": "Lo siento, tuve un problema procesando tu audio. ¿Podrías intentarlo de nuevo o escribir tu mensaje?"}
 
 app.include_router(api_router)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)

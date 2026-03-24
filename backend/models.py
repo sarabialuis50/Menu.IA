@@ -91,6 +91,15 @@ class BusinessBase(BaseModel):
     facebook_url: Optional[str] = None
     tiktok_url: Optional[str] = None
 
+    # WhatsApp & Campaign Credits (Centralized)
+    whatsapp_incluidos: int = 0
+    whatsapp_usados: int = 0
+    wa_campaign_limit: int = 0
+    wa_campaign_count: int = 0
+    wa_messages_limit: int = 0
+    wa_messages_count: int = 0
+    wa_credits: int = 0
+
     @field_validator('metodos_entrega', mode='before')
     @classmethod
     def normalize_metodos_entrega(cls, v: Any) -> Any:
@@ -162,10 +171,7 @@ class Business(BusinessBase):
     email: str
     created_at: datetime = Field(default_factory=get_utc_now)
     plan: Optional[str] = "free"
-    is_active: bool = True 
-    wa_messages_count: int = 0
-    wa_messages_limit: int = 0
-    wa_credits: int = 0
+    is_active: bool = True
     # IA Credits Usage
     ai_credits_desc_used: int = 0
     ai_credits_img_used: int = 0
@@ -180,9 +186,6 @@ class BusinessPublic(BusinessBase):
     model_config = ConfigDict(extra="ignore", populate_by_name=True)
     id: str
     plan: Optional[str] = "free"
-    wa_messages_count: int = 0
-    wa_messages_limit: int = 0
-    wa_credits: int = 0
     # IA Credits Usage
     ai_credits_desc_used: int = 0
     ai_credits_img_used: int = 0
