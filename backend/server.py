@@ -2668,6 +2668,24 @@ async def get_loyalty_customers(slug: str, q: Optional[str] = None, business: Bu
     ) for c in customers]
 
 
+@api_router.delete("/loyalty/{slug}/customers/{telefono}")
+async def delete_loyalty_customer(slug: str, telefono: str, business: Business = Depends(get_current_business)):
+    """Delete a customer from loyalty program"""
+    if business.slug != slug:
+        raise HTTPException(status_code=403, detail="No autorizado")
+
+    # Check if customer belongs to this business
+    res = supabase.table('clientes_puntos').delete().match({
+        "negocio_id": business.id,
+        "telefono": telefono
+    }).execute()
+
+    if not res.data:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+
+    return {"message": "Cliente eliminado correctamente"}
+
+
 @api_router.post("/loyalty/{slug}/customers", response_model=CustomerPointsPublic)
 async def create_loyalty_customer(slug: str, data: CustomerCreate, business: Business = Depends(get_current_business)):
     """Register a new loyalty customer"""

@@ -183,8 +183,19 @@ export default function AllCustomersPage() {
         }
     };
 
-    const handleDelete = (name) => {
-        toast.error(`Cliente ${name} eliminado (Simulación)`);
+    const handleDelete = async (customer) => {
+        if (!window.confirm(`¿Estás seguro de que deseas eliminar a ${customer.name}?`)) return;
+
+        try {
+            const loadingToast = toast.loading(`Eliminando a ${customer.name}...`);
+            await api().delete(`/loyalty/${slug}/customers/${customer.phone}`);
+            toast.dismiss(loadingToast);
+            toast.success('Cliente eliminado correctamente');
+            fetchCustomers();
+        } catch (error) {
+            console.error("Error deleting customer:", error);
+            toast.error("Error al eliminar cliente");
+        }
     };
 
     const handleAddCustomer = async (e) => {
@@ -450,7 +461,7 @@ export default function AllCustomersPage() {
                                                 </DropdownMenuItem>
                                                 <div className="h-px bg-gray-100 my-1" />
                                                 <DropdownMenuItem
-                                                    onClick={() => handleDelete(customer.name)}
+                                                    onClick={() => handleDelete(customer)}
                                                     className="rounded-xl px-4 py-3 text-xs font-bold gap-3 focus:bg-red-50 focus:text-red-500 cursor-pointer text-red-500"
                                                 >
                                                     <Trash2 className="w-4 h-4" /> Eliminar
