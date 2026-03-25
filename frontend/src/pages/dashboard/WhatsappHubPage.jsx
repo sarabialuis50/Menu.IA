@@ -424,7 +424,7 @@ export default function WhatsappHubPage() {
                                             PLAN {user?.plan?.toUpperCase() || 'GRATUITO'}
                                         </Badge>
                                     </div>
-                                    <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest px-1 whitespace-nowrap">
+                                    <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest px-1 whitespace-nowrap overflow-hidden text-ellipsis">
                                         Créditos Campañas Masivas
                                     </p>
 
@@ -988,8 +988,14 @@ export default function WhatsappHubPage() {
                     <div className="absolute top-0 right-0 p-4 opacity-10">
                         <MessageSquare className="w-16 h-16" />
                     </div>
+                    <button
+                        onClick={() => setIsSupportModalOpen(false)}
+                        className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-white border-2 border-[#22C55E] flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
+                    >
+                        <X className="w-4 h-4 text-black" />
+                    </button>
                     <DialogHeader>
-                        <DialogTitle className="text-xl font-black uppercase tracking-tight">Packs de Venta/Soporte</DialogTitle>
+                        <DialogTitle className="text-xl font-black uppercase tracking-tight">Packs de Soporte</DialogTitle>
                         <DialogDescription id="support-modal-description" className="text-white/80 font-bold text-[10px] uppercase tracking-widest mt-1">
                             Recarga interacciones para tu servicio
                         </DialogDescription>
@@ -1042,6 +1048,12 @@ export default function WhatsappHubPage() {
                         <div className="absolute top-0 right-0 p-4 opacity-10">
                             <MessageSquareMore className="w-16 h-16" />
                         </div>
+                        <button
+                            onClick={() => setIsCampaignModalOpen(false)}
+                            className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-white border-2 border-[#22C55E] flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
+                        >
+                            <X className="w-4 h-4 text-black" />
+                        </button>
                         <DialogHeader>
                             <DialogTitle className="text-xl font-black uppercase tracking-tight">Packs de Campañas</DialogTitle>
                             <DialogDescription id="campaign-pack-description" className="text-white/80 font-bold text-[10px] uppercase tracking-widest mt-1">

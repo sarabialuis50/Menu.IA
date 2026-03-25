@@ -936,10 +936,11 @@ async def update_business(slug: str, data: Dict[str, Any], business: Business = 
         'nombre', 'descripcion', 'slogan', 'direccion', 'telefono', 
         'whatsapp', 'horarios', 'logo_url', 'banner_url',
         'banner_tag', 'banner_title', 'banner_description',
+        'promo_habilitado', 'promo_imagen_url', 'promo_precio',
         'precio_km', 'costo_minimo_domicilio', 'lat', 'lng',
         'metodos_pago', 'metodos_entrega',
         'ai_habilitado', 'ai_personalidad', 'ai_saludo', 'ai_conocimiento',
-        'ai_use_modal', 'twilio_sid', 'twilio_token', 'twilio_number', 'abierto',
+        'ai_use_modal', 'google_maps_review_url', 'twilio_sid', 'twilio_token', 'twilio_number', 'abierto',
         'instagram_url', 'facebook_url', 'tiktok_url'
     ]
     update_data = {k: v for k, v in data.items() if k in allowed_fields}
