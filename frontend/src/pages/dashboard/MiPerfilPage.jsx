@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
+const MapView = lazy(() => import('@/components/MapView'));
 import { useParams, Link } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
 import { DashboardLayout } from '@/layouts/DashboardLayout';
@@ -723,17 +724,14 @@ export default function MiPerfilPage() {
                                 </div>
 
                                 {/* Mapa Elevado Horizontal */}
-                                <div className="rounded-[2rem] bg-gray-100 overflow-hidden h-[300px] relative group border-none shadow-sm">
-                                    <iframe
-                                        title="Ubicación del Negocio"
-                                        src={`https://maps.google.com/maps?q=${encodeURIComponent(businessData.direccion || 'Colombia')}&output=embed&hl=es`}
-                                        width="100%"
-                                        height="100%"
-                                        style={{ border: 0 }}
-                                        allowFullScreen=""
-                                        loading="lazy"
-                                        className="opacity-90 group-hover:opacity-100 transition-all duration-500"
-                                    ></iframe>
+                                <div className="rounded-[2rem] bg-gray-100 overflow-hidden h-[300px] relative border-none shadow-sm">
+                                    <Suspense fallback={
+                                        <div className="flex items-center justify-center h-full text-gray-400 gap-2">
+                                            <div className="w-6 h-6 border-2 border-gray-300 border-t-green-500 rounded-full animate-spin" />
+                                        </div>
+                                    }>
+                                        <MapView address={businessData.direccion} />
+                                    </Suspense>
                                     <div className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg pointer-events-none">
                                         <p className="text-sm font-bold text-[#111814] flex items-center gap-2 truncate">
                                             <MapPin className="w-4 h-4 text-[#22C55E] shrink-0" />
