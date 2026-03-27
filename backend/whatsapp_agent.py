@@ -788,28 +788,26 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
             adicionales_str = ", ".join(all_adicionales) if all_adicionales else ""
             opciones_str = ", ".join(all_opciones) if all_opciones else ""
             
-            # Combine product-level notes and general order notes
+            # Combine product-level notes (without product name prefix to avoid 'mezcla rara')
+            # General notes from 'args.get(notas)' will go to obs_entrega to avoid duplication
+            # unless they are explicitly separated, which is handled in server.py
             obs_pedido_list = product_notes.copy()
-            general_notes = args.get('notas', '') or ""
-            if general_notes and str(general_notes).lower() not in ["sin observaciones", ""]:
-                obs_pedido_list.append(str(general_notes))
-            
             obs_pedido = ". ".join(obs_pedido_list) if obs_pedido_list else "Sin observaciones"
             
             # Build business-specific link
             link_negocio = f"https://menuia.co/{biz_slug}" if biz_slug else "https://menuia.co"
-            if biz_slug: link_negocio += "/menu"
             
             # Delivery Info
             direccion_val = args.get('direccion', '')
             distancia_val = f"{args.get('distancia', 0)} Km" if args.get('distancia') else ""
-            obs_entrega = args.get('notas_entrega', '') or "Sin observaciones"
+            obs_entrega = args.get('notas_entrega', '') or args.get('notas', '') or "Sin observaciones"
             
-            display_pedido_id = f"*{order_data.get('numero_secuencial', '000000')}*" # Usar * para negrita, facilitando visibilidad y copia
+            # Usar monoespacio para el ID para facilitar la copia en móviles
+            display_pedido_id = f"```{order_data.get('numero_secuencial', '000000')}```"
             
             template_kwargs = {
                 "negocio_nombre":     business_name,                                          # {{1}}
-                "pedido_id":          display_pedido_id,                                      # {{2}} - ID resaltado
+                "pedido_id":          display_pedido_id,                                      # {{2}} - ID monoespaciado para copiar
                 "cliente_nombre":     args.get('cliente_nombre', 'Cliente'),                   # {{3}}
                 "cliente_telefono":   args.get('cliente_telefono', 'N/A'),                     # {{4}}
                 "detalle_productos":  detalle_productos,                                       # {{5}}

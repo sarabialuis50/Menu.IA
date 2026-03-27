@@ -2115,11 +2115,12 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
     opciones_str = ", ".join(all_opciones) if all_opciones else ""
     
     # ── Collect observations into a cleaner structure ──
-    # 1. Product-level notes
+    # 1. Product-level notes (Item specific)
     product_notes = []
     for item in order.items:
         if item.notas and str(item.notas).lower() not in ["no aplica", "ninguna", "sin notas", "", "null"]:
-            product_notes.append(f"{item.nombre}: {item.notas}")
+            # Usar una pequeña viñeta para listar las notas de los productos
+            product_notes.append(f"• {item.notas}")
     
     # 2. General order notes
     raw_notes = order.notas or ""
@@ -2133,13 +2134,12 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
         if len(parts) > 1 and parts[1].strip() and parts[1].strip().lower() not in ["sin observaciones", ""]:
             entrega_notes.append(parts[1].strip())
     elif raw_notes and raw_notes.lower() not in ["sin observaciones", ""]:
-        # If no explicit delivery separator, we include it in both to ensure visibility
-        pedido_notes.append(raw_notes)
+        # Solo lo ponemos en entrega para evitar el reporte de "mezcla rara"
         entrega_notes.append(raw_notes)
         
     # Combine everything for the template
     all_obs_pedido = product_notes + pedido_notes
-    obs_pedido = ". ".join(all_obs_pedido) if all_obs_pedido else "Sin observaciones"
+    obs_pedido = "\n".join(all_obs_pedido) if all_obs_pedido else "Sin observaciones"
     obs_entrega = ". ".join(entrega_notes) if entrega_notes else "Sin observaciones"
     
     # Reverse geocode GPS coordinates to readable address
@@ -2154,13 +2154,13 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
     # Payment
     costo_envio = order.costo_envio or 0
     
-    # Order ID bolded for better tap-to-copy/readability
-    display_pedido_id = f"*{order.numero_secuencial or order.id[:8].upper()}*"
+    # Usar monoespacio para el ID para facilitar la copia en móviles
+    display_pedido_id = f"```{order.numero_secuencial or order.id[:8].upper()}```"
     
     # ── TEMPLATE VARIABLE MAPPING (19 variables) ──
     template_kwargs = {
         "negocio_nombre":     business_name,                           # {{1}}
-        "pedido_id":          display_pedido_id,                       # {{2}} - ID resaltado con negrita
+        "pedido_id":          display_pedido_id,                       # {{2}} - ID monoespaciado para copiar
         "cliente_nombre":     order.cliente_nombre or "Cliente",       # {{3}}
         "cliente_telefono":   order.cliente_telefono or "N/A",         # {{4}}
         "detalle_productos":  detalle_productos,                       # {{5}}
