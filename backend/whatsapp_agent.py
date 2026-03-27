@@ -787,7 +787,14 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
             tamanos_str = ", ".join(all_tamanos) if all_tamanos else ""
             adicionales_str = ", ".join(all_adicionales) if all_adicionales else ""
             opciones_str = ", ".join(all_opciones) if all_opciones else ""
-            obs_pedido = ". ".join(product_notes) if product_notes else ""
+            
+            # Combine product-level notes and general order notes
+            obs_pedido_list = product_notes.copy()
+            general_notes = args.get('notas', '') or ""
+            if general_notes and str(general_notes).lower() not in ["sin observaciones", ""]:
+                obs_pedido_list.append(str(general_notes))
+            
+            obs_pedido = ". ".join(obs_pedido_list) if obs_pedido_list else "Sin observaciones"
             
             # Build business-specific link
             link_negocio = f"https://menuia.co/{biz_slug}" if biz_slug else "https://menuia.co"
@@ -795,12 +802,14 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
             
             # Delivery Info
             direccion_val = args.get('direccion', '')
-            distancia_val = f"{args.get('distancia', '')} Km" if args.get('distancia') else ""
-            obs_entrega = args.get('notas_entrega', '') or ""
-
+            distancia_val = f"{args.get('distancia', 0)} Km" if args.get('distancia') else ""
+            obs_entrega = args.get('notas_entrega', '') or "Sin observaciones"
+            
+            display_pedido_id = f"*{order_data.get('numero_secuencial', '000000')}*" # Usar * para negrita, facilitando visibilidad y copia
+            
             template_kwargs = {
                 "negocio_nombre":     business_name,                                          # {{1}}
-                "pedido_id":          str(order_data.get("numero_secuencial", "000000")), # {{2}} - Usar el número de 6 dígitos
+                "pedido_id":          display_pedido_id,                                      # {{2}} - ID resaltado
                 "cliente_nombre":     args.get('cliente_nombre', 'Cliente'),                   # {{3}}
                 "cliente_telefono":   args.get('cliente_telefono', 'N/A'),                     # {{4}}
                 "detalle_productos":  detalle_productos,                                       # {{5}}
@@ -1016,11 +1025,28 @@ def send_whatsapp_template(to_number: str, template_key: str, custom_config: Dic
         else:
             formatted_to = f"whatsapp:+{clean_number}"
 
+        # Twilio SDK 9.x expects a DICT for content_variables, but some versions/proxies might want a JSON string.
+        # We ensure it's a dict and all values are strings.
+        final_variables = {}
+        if isinstance(content_variables, dict):
+            final_variables = {str(k): str(v) for k, v in content_variables.items()}
+        elif isinstance(content_variables, str):
+            try:
+                final_variables = json.loads(content_variables)
+            except:
+                final_variables = {"1": content_variables}
+
+        logger.info(f"Sending Template {template_key} to {formatted_to} (Content SID: {content_sid}) with variables: {final_variables}")
+        
+        # Important: content_variables MUST be a JSON string if using REST directly, 
+        # but in many modern SDK versions passing a DICT is preferred. 
+        # However, to be 100% safe across versions, a JSON string is often the most reliable way 
+        # IF the SDK doesn't auto-convert. Let's try sending the dict directly as requested by modern docs.
         message = client.messages.create(
             from_=from_number if from_number.startswith('whatsapp:') else f"whatsapp:{from_number}",
             to=formatted_to,
             content_sid=content_sid,
-            content_variables=json.dumps(content_variables) if isinstance(content_variables, dict) else content_variables
+            content_variables=json.dumps(final_variables) # Ensuring it's a clean JSON string for safety
         )
         
         logger.info(f"Plantilla {template_key} enviada a {to_number}. SID: {message.sid}")

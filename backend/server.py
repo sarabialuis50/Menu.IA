@@ -2114,20 +2114,33 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
     adicionales_str = ", ".join(all_adicionales) if all_adicionales else ""
     opciones_str = ", ".join(all_opciones) if all_opciones else ""
     
-    # Parse notes: "{notas_pedido}. Observaciones de entrega: {notas_entrega}"
+    # ── Collect observations into a cleaner structure ──
+    # 1. Product-level notes
+    product_notes = []
+    for item in order.items:
+        if item.notas and str(item.notas).lower() not in ["no aplica", "ninguna", "sin notas", "", "null"]:
+            product_notes.append(f"{item.nombre}: {item.notas}")
+    
+    # 2. General order notes
     raw_notes = order.notas or ""
-    obs_pedido = "Sin observaciones"
-    obs_entrega = "Sin observaciones"
+    pedido_notes = []
+    entrega_notes = []
     
     if ". Observaciones de entrega: " in raw_notes:
         parts = raw_notes.split(". Observaciones de entrega: ")
-        obs_pedido = parts[0] if parts[0] else ""
-        obs_entrega = parts[1] if len(parts) > 1 and parts[1] else ""
+        if parts[0].strip() and parts[0].strip().lower() not in ["sin observaciones", ""]:
+            pedido_notes.append(parts[0].strip())
+        if len(parts) > 1 and parts[1].strip() and parts[1].strip().lower() not in ["sin observaciones", ""]:
+            entrega_notes.append(parts[1].strip())
     elif raw_notes and raw_notes.lower() not in ["sin observaciones", ""]:
-        obs_entrega = raw_notes
-    else:
-        obs_pedido = ""
-        obs_entrega = ""
+        # If no explicit delivery separator, we include it in both to ensure visibility
+        pedido_notes.append(raw_notes)
+        entrega_notes.append(raw_notes)
+        
+    # Combine everything for the template
+    all_obs_pedido = product_notes + pedido_notes
+    obs_pedido = ". ".join(all_obs_pedido) if all_obs_pedido else "Sin observaciones"
+    obs_entrega = ". ".join(entrega_notes) if entrega_notes else "Sin observaciones"
     
     # Reverse geocode GPS coordinates to readable address
     direccion_legible = reverse_geocode_address(order.direccion) if order.direccion else ""
@@ -2141,10 +2154,13 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
     # Payment
     costo_envio = order.costo_envio or 0
     
+    # Order ID bolded for better tap-to-copy/readability
+    display_pedido_id = f"*{order.numero_secuencial or order.id[:8].upper()}*"
+    
     # ── TEMPLATE VARIABLE MAPPING (19 variables) ──
     template_kwargs = {
         "negocio_nombre":     business_name,                           # {{1}}
-        "pedido_id":          str(order.numero_secuencial or order.id[:8].upper()),   # {{2}} - Usar numero secuencial de 6 digitos
+        "pedido_id":          display_pedido_id,                       # {{2}} - ID resaltado con negrita
         "cliente_nombre":     order.cliente_nombre or "Cliente",       # {{3}}
         "cliente_telefono":   order.cliente_telefono or "N/A",         # {{4}}
         "detalle_productos":  detalle_productos,                       # {{5}}
@@ -2671,20 +2687,44 @@ async def get_loyalty_customers(slug: str, q: Optional[str] = None, business: Bu
 
 @api_router.delete("/loyalty/{slug}/customers/{telefono}")
 async def delete_loyalty_customer(slug: str, telefono: str, business: Business = Depends(get_current_business)):
-    """Delete a customer from loyalty program"""
+    """Delete a customer from loyalty program and their transactions"""
+    logger.info(f"--- SOLICITUD DE ELIMINACIÓN RECIBIDA: Slug={slug}, Teléfono={telefono} ---")
     if business.slug != slug:
         raise HTTPException(status_code=403, detail="No autorizado")
 
-    # Check if customer belongs to this business
-    res = supabase.table('clientes_puntos').delete().match({
-        "negocio_id": business.id,
-        "telefono": telefono
-    }).execute()
+    try:
+        # Trim input
+        telefono = telefono.strip()
+        
+        # 1. First, find the customer to get their internal UUID
+        customer_res = supabase.table('clientes_puntos').select('id').match({
+            "negocio_id": business.id,
+            "telefono": telefono
+        }).execute()
+        
+        if not customer_res.data:
+            logger.warning(f"Intento de borrar cliente inexistente: {telefono} en negocio {business.id}")
+            raise HTTPException(status_code=404, detail=f"Cliente {telefono} no encontrado en tu base de datos")
+        
+        cliente_id = customer_res.data[0]['id']
+        logger.info(f"Eliminando cliente {telefono} (ID: {cliente_id}) para el negocio {business.name} (ID: {business.id})")
 
-    if not res.data:
-        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+        # 2. Delete all related transactions in transacciones_puntos
+        supabase.table('transacciones_puntos').delete().eq('cliente_id', cliente_id).execute()
+        
+        # 3. Delete the customer record itself from clientes_puntos
+        res = supabase.table('clientes_puntos').delete().eq('id', cliente_id).execute()
 
-    return {"message": "Cliente eliminado correctamente"}
+        if not res.data:
+            raise HTTPException(status_code=404, detail="No se pudo confirmar la eliminación final del cliente")
+
+        return {"message": "Cliente y su historial eliminados correctamente"}
+        
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"Error CRÍTICO al eliminar cliente {telefono}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Fallo en base de datos: {str(e)}")
 
 
 @api_router.post("/loyalty/{slug}/customers", response_model=CustomerPointsPublic)
