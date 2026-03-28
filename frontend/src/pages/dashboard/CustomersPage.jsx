@@ -594,16 +594,16 @@ export default function CustomersPage() {
                 {/* Add Customer Modal */}
                 <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
                     <DialogContent className="sm:max-w-[450px] rounded-[2rem] border-None shadow-2xl p-0 overflow-hidden" aria-describedby="add-customer-description">
-                        <DialogHeader className="p-8 pb-0">
-                            <DialogTitle className="text-2xl font-black text-gray-900 uppercase tracking-tight">Nuevo Cliente</DialogTitle>
+                        <DialogHeader className="p-6 pb-0">
+                            <DialogTitle className="text-xl font-black text-gray-900 uppercase tracking-tight">Nuevo Cliente</DialogTitle>
                             <DialogDescription id="add-customer-description" className="sr-only">
                                 Formulario para registrar un nuevo cliente en el sistema de fidelización.
                             </DialogDescription>
                         </DialogHeader>
 
-                        <form onSubmit={handleAddCustomer} className="p-8 space-y-6">
-                            <div className="space-y-4">
-                                <div className="space-y-2">
+                        <form onSubmit={handleAddCustomer} className="p-6 space-y-4">
+                            <div className="space-y-3">
+                                <div className="space-y-1.5">
                                     <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Nombre Completo</Label>
                                     <div className="relative">
                                         <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -612,12 +612,12 @@ export default function CustomersPage() {
                                             value={newCustomerData.name}
                                             onChange={(e) => setNewCustomerData({ ...newCustomerData, name: e.target.value })}
                                             placeholder="Ej. Juan Pérez"
-                                            className="h-12 pl-11 rounded-xl border-2 border-gray-100 focus:border-[#22C55E] focus:ring-4 focus:ring-green-50 transition-all font-bold text-sm"
+                                            className="h-11 pl-11 rounded-xl border-2 border-gray-100 focus:border-[#22C55E] focus:ring-4 focus:ring-green-50 transition-all font-bold text-sm"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
+                                <div className="space-y-1.5">
                                     <div className="flex justify-between items-center ml-1">
                                         <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Número de WhatsApp</Label>
                                         <AnimatePresence mode="wait">
@@ -644,7 +644,7 @@ export default function CustomersPage() {
                                             value={newCustomerData.phone}
                                             onChange={(e) => handlePhoneChange(e.target.value)}
                                             placeholder="300 123 4567"
-                                            className={`h-12 pl-24 rounded-xl border-2 transition-all font-bold text-sm ${phoneError
+                                            className={`h-11 pl-24 rounded-xl border-2 transition-all font-bold text-sm ${phoneError
                                                 ? 'border-red-100 bg-red-50/30 focus:border-red-400 focus:ring-red-50'
                                                 : 'border-gray-100 focus:border-[#22C55E] focus:ring-4 focus:ring-green-50'
                                                 }`}
@@ -664,7 +664,7 @@ export default function CustomersPage() {
                                     </p>
                                 </div>
 
-                                <div className="space-y-2">
+                                <div className="space-y-1.5">
                                     <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Correo Electrónico (Opcional)</Label>
                                     <div className="relative">
                                         <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -673,37 +673,37 @@ export default function CustomersPage() {
                                             value={newCustomerData.email}
                                             onChange={(e) => setNewCustomerData({ ...newCustomerData, email: e.target.value })}
                                             placeholder="juan@ejemplo.com"
-                                            className="h-12 pl-11 rounded-xl border-2 border-gray-100 focus:border-[#22C55E] focus:ring-4 focus:ring-green-50 transition-all font-bold text-sm"
+                                            className="h-11 pl-11 rounded-xl border-2 border-gray-100 focus:border-[#22C55E] focus:ring-4 focus:ring-green-50 transition-all font-bold text-sm"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
+                                <div className="space-y-1.5">
                                     <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Fecha de Cumpleaños (Opcional)</Label>
                                     <div className="relative">
-                                        <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                        < Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                         <Input
                                             type="date"
                                             value={newCustomerData.birthday}
                                             onChange={(e) => setNewCustomerData({ ...newCustomerData, birthday: e.target.value })}
-                                            className="h-12 pl-11 rounded-xl border-2 border-gray-100 focus:border-[#22C55E] focus:ring-4 focus:ring-green-50 transition-all font-bold text-sm text-gray-600"
+                                            className="h-11 pl-11 rounded-xl border-2 border-gray-100 focus:border-[#22C55E] focus:ring-4 focus:ring-green-50 transition-all font-bold text-sm text-gray-600"
                                         />
                                     </div>
                                 </div>
                             </div>
 
-                            <DialogFooter className="flex flex-col md:flex-row gap-3 pt-4">
+                            <DialogFooter className="flex flex-col md:flex-row gap-3 pt-2">
                                 <Button
                                     type="button"
                                     variant="outline"
                                     onClick={() => setIsAddModalOpen(false)}
-                                    className="h-12 flex-1 rounded-xl border-2 font-black text-[11px] tracking-widest"
+                                    className="h-11 flex-1 rounded-xl border-2 font-black text-[11px] tracking-widest"
                                 >
                                     CANCELAR
                                 </Button>
                                 <Button
                                     type="submit"
-                                    className="h-12 flex-1 rounded-xl bg-[#4ADE80] hover:bg-[#1da850] border-none font-black text-[11px] tracking-widest shadow-lg shadow-green-100"
+                                    className="h-11 flex-1 rounded-xl bg-[#4ADE80] hover:bg-[#1da850] border-none font-black text-[11px] tracking-widest shadow-lg shadow-green-100"
                                 >
                                     REGISTRAR CLIENTE
                                 </Button>

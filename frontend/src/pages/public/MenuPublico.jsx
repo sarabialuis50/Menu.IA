@@ -1669,16 +1669,17 @@ const MenuContent = () => {
                   <h3 className="text-3xl font-black text-[#111814] mb-2 tracking-tighter">¡Pedido Exitoso!</h3>
                   <p className="text-[#618972] font-medium mb-8">
                     Nuestra cocina ya recibió tu orden{' '}
-                    <span
-                      onClick={() => {
-                        navigator.clipboard.writeText(orderSuccess.id.slice(0, 8).toUpperCase());
-                        toast.success('Código copiado al portapapeles');
-                      }}
-                      className="cursor-pointer font-bold text-blue-600 hover:text-blue-800 underline decoration-dashed decoration-2 underline-offset-4 active:scale-95 inline-block transition-transform"
-                      title="Copiar código para rastreo"
-                    >
-                      {orderSuccess.id.slice(0, 8).toUpperCase()}
-                    </span>
+                      <span
+                        onClick={() => {
+                          const idToCopy = String(orderSuccess.numero_secuencial || '').padStart(8, '0');
+                          navigator.clipboard.writeText(idToCopy);
+                          toast.success('Código copiado al portapapeles');
+                        }}
+                        className="cursor-pointer font-bold text-blue-600 hover:text-blue-800 underline decoration-dashed decoration-2 underline-offset-4 active:scale-95 inline-block transition-transform"
+                        title="Copiar código para rastreo"
+                      >
+                        {String(orderSuccess.numero_secuencial || '').padStart(8, '0')}
+                      </span>
                   </p>
 
                   <div className="bg-gray-50 rounded-[2rem] p-6 mb-8 border border-gray-100">

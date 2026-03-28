@@ -373,8 +373,8 @@ export default function MiPerfilPage() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                    {/* Main Editor - Identidad Visual + Banner + Logo */}
-                    <div className="lg:col-span-8 space-y-8 order-2 lg:order-1">
+                    {/* Main Editor - Identidad Visual + Banner + Logo + Ubicación */}
+                    <div className="lg:col-span-8 space-y-8 order-1 lg:order-1">
                         {/* Visual Identity Card Updated with ConfiguracionPage Design */}
                         <Card className="border-none shadow-sm overflow-hidden rounded-[2.5rem] bg-white">
                             <CardHeader className="px-10 pt-10 pb-4">
@@ -582,28 +582,32 @@ export default function MiPerfilPage() {
                                     </div>
 
                                     {/* Promo Modal Box */}
-                                    <div className="bg-white rounded-[2.5rem] border border-orange-100 p-6 md:p-8 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col relative overflow-hidden">
+                                    <div className="bg-white rounded-[2.5rem] border border-orange-100 p-6 md:p-8 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col relative overflow-hidden min-h-[400px]">
                                         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-orange-400 to-orange-600" />
 
-                                        <div className="flex flex-col gap-2 w-full mb-6">
-                                            <div className="flex items-start gap-3">
-                                                <div className="bg-orange-50 p-3 rounded-2xl border border-orange-100 flex-shrink-0">
-                                                    <Sparkles className="w-5 h-5 text-orange-600" />
+                                        <div className="flex flex-col gap-4 w-full mb-8">
+                                            <div className="flex items-start justify-between gap-4">
+                                                <div className="flex items-start gap-3 min-w-0">
+                                                    <div className="bg-orange-50 p-2.5 rounded-xl border border-orange-100 flex-shrink-0">
+                                                        <Sparkles className="w-5 h-5 text-orange-600" />
+                                                    </div>
+                                                    <div className="min-w-0 flex-1 pt-0.5">
+                                                        <Label className="text-base font-black uppercase tracking-tight text-orange-900 leading-tight block truncate">
+                                                            Banner Promocional
+                                                        </Label>
+                                                        <p className="text-[10px] text-orange-700/80 mt-1 font-medium leading-tight">Publicidad inicial para tus clientes.</p>
+                                                    </div>
                                                 </div>
-                                                <div className="min-w-0 flex-1">
-                                                    <Label className="text-base font-black uppercase tracking-tight text-orange-900 leading-tight block">
-                                                        Banner Promocional
-                                                    </Label>
-                                                    <p className="text-[11px] text-orange-700/80 mt-0.5">Banner inicial publicitario que se muestra a tus clientes.</p>
+                                                <div className="flex flex-col items-center gap-1.5 bg-orange-50/50 p-2 rounded-2xl border border-orange-100/50">
+                                                    <Switch
+                                                        checked={businessData.promo_habilitado || false}
+                                                        onCheckedChange={val => setBusinessData({ ...businessData, promo_habilitado: val })}
+                                                        className="data-[state=checked]:bg-orange-500 scale-100 shadow-sm"
+                                                    />
+                                                    <span className="text-[9px] font-black uppercase text-orange-600 tracking-tighter">
+                                                        {businessData.promo_habilitado ? 'ACTIVO' : 'OFF'}
+                                                    </span>
                                                 </div>
-                                            </div>
-                                            <div className="flex items-center justify-between px-1 mt-1">
-                                                <span className="text-xs text-orange-700/60 font-medium">Activar sección promocional</span>
-                                                <Switch
-                                                    checked={businessData.promo_habilitado || false}
-                                                    onCheckedChange={val => setBusinessData({ ...businessData, promo_habilitado: val })}
-                                                    className="data-[state=checked]:bg-orange-500 scale-110 shadow-sm flex-shrink-0"
-                                                />
                                             </div>
                                         </div>
 
@@ -747,7 +751,7 @@ export default function MiPerfilPage() {
                         </Card>
                     </div>
                     {/* Sidebar: Estado, QR, Seguridad, Sociales, Horarios */}
-                    <div className="lg:col-span-4 space-y-8 order-1 lg:order-2">
+                    <div className="lg:col-span-4 space-y-8 order-2 lg:order-2">
                         {/* Business Status Card */}
                         <Card className={`border-none shadow-lg rounded-[2.5rem] overflow-hidden transition-all duration-500 ${businessData.abierto ? 'bg-white' : 'bg-red-50'}`}>
                             <CardHeader className="p-8 pb-4">

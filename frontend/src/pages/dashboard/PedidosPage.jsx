@@ -241,9 +241,11 @@ export default function PedidosPage() {
 
     const filteredOrders = orders.filter(order => {
         const statusMatch = filterStatus === 'TODOS' || order.estado === filterStatus.toLowerCase();
+        const cleanSearch = searchTerm.trim().replace(/^0+/, ''); // Remove leading zeros for numeric search
         const searchMatch =
             (order.cliente_nombre && order.cliente_nombre.toLowerCase().includes(searchTerm.toLowerCase())) ||
             (order.id.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (order.numero_secuencial && order.numero_secuencial.toString().includes(cleanSearch)) ||
             (order.mesa_numero && order.mesa_numero.toString().includes(searchTerm));
 
         return statusMatch && searchMatch;
@@ -470,7 +472,7 @@ export default function PedidosPage() {
                                                 </td>
                                                 <td className="px-3 py-4">
                                                     <span className="font-mono text-[11px] font-bold text-[#6366F1]">
-                                                        {order.numero_secuencial || order.id.slice(0, 8).toUpperCase()}
+                                                        {order.numero_secuencial ? String(order.numero_secuencial).padStart(8, '0') : order.id.slice(0, 8).toUpperCase()}
                                                     </span>
                                                 </td>
                                                 <td className="px-3 py-4 text-left">
@@ -609,7 +611,7 @@ export default function PedidosPage() {
                         {/* Header Info */}
                         <div className="text-center space-y-1">
                             <h2 className="text-2xl font-black text-[#FF6B00]">{user?.nombre || 'Mi Negocio'}</h2>
-                            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">ID del Pedido: {selectedOrder?.numero_secuencial || selectedOrder?.id?.slice(0, 8).toUpperCase()}</p>
+                            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">ID del Pedido: {selectedOrder?.numero_secuencial ? String(selectedOrder.numero_secuencial).padStart(8, '0') : selectedOrder?.id?.slice(0, 8).toUpperCase()}</p>
                             <p className="text-[11px] font-bold text-gray-400">Realizado: {selectedOrder ? format(new Date(selectedOrder.created_at), 'dd/MM/yyyy, HH:mm:ss') : ''}</p>
                         </div>
 
@@ -763,7 +765,7 @@ export default function PedidosPage() {
                         {/* Order Summary Card */}
                         <Card className="bg-white rounded-3xl p-6 shadow-sm border-2 border-gray-100 space-y-3">
                             <div className="flex justify-between items-center">
-                                <h4 className="text-lg font-black text-gray-900">Orden {selectedOrder?.numero_secuencial || selectedOrder?.id?.slice(0, 8).toUpperCase()}</h4>
+                                <h4 className="text-lg font-black text-gray-900">Orden {selectedOrder?.numero_secuencial ? String(selectedOrder.numero_secuencial).padStart(8, '0') : selectedOrder?.id?.slice(0, 8).toUpperCase()}</h4>
                             </div>
                             <div className="space-y-1">
                                 <p className="text-sm font-bold text-gray-500">Cliente: <span className="text-gray-900">{selectedOrder?.cliente_nombre || 'Usuario de Prueba'}</span></p>

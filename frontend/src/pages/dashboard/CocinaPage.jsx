@@ -124,7 +124,7 @@ export default function CocinaPage() {
         {orders.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
             {orders
               .filter(order => !(order.tipo === 'delivery' && order.estado === 'listo'))
               .map((order) => (
@@ -229,7 +229,7 @@ function OrderCard({ order, onUpdateStatus }) {
             <p className="text-xs font-bold text-gray-500 line-clamp-1">Cliente: {order.cliente_nombre || 'N/A'}</p>
           </div>
           <div className="flex flex-col items-end shrink-0 ml-2">
-            <span className="text-[11px] font-black text-blue-700 leading-tight">ID: {order.numero_secuencial || order.id?.slice(0, 8).toUpperCase()}</span>
+            <span className="text-[11px] font-black text-blue-700 leading-tight">ID: {order.numero_secuencial ? String(order.numero_secuencial).padStart(8, '0') : order.id?.slice(0, 8).toUpperCase()}</span>
             <div className="flex items-center gap-1 mt-1 text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-md">
               <Clock className="w-3 h-3 shrink-0" />
               <span className="text-[10px] font-bold shrink-0">{getTimeSince(order.created_at)}</span>

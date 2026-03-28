@@ -575,41 +575,46 @@ def format_order_summary_wa(business_name: str, order: Order, slug: str = None) 
     items_text = ""
     subtotal_items = 0
     for i, item in enumerate(order.items, 1):
-        item_subtotal = item.cantidad * item.precio_unitario
-        subtotal_items += item_subtotal
-        items_text += f"{i}. {item.nombre}\n"
+        item_total = item.cantidad * item.precio_unitario
+        subtotal_items += item_total
+        items_text += f"* Producto: {i}. {item.nombre} x{item.cantidad} (${item_total:,.0f})\n"
+        
         if item.modificadores:
-            mods = []
+            # Try to categorize modifiers if possible
+            tamanos = []
+            adicionales = []
+            opciones = []
+            
             for m in item.modificadores:
                 if isinstance(m, dict):
-                    name = m.get('nombre', '')
-                    price = m.get('precio', 0)
-                    if price and price > 0:
-                        mods.append(f"(1) {name} (+${price:,.0f})")
-                    else:
-                        mods.append(f"(1) {name}")
+                    m_name = m.get('nombre', '')
+                    m_price = m.get('precio', 0)
+                    m_cat = (m.get('categoria') or m.get('tipo', '')).lower()
+                    m_display = f"{m_name} (+${m_price:,.0f})" if m_price > 0 else m_name
+                    
+                    if 'tama' in m_cat: tamanos.append(m_display)
+                    elif 'opci' in m_cat: opciones.append(m_display)
+                    else: adicionales.append(m_display)
                 else:
-                    mods.append(f"(1) {str(m)}")
-            items_text += f"   Opciones/Adicionales:\n"
-            for m_idx, mod_str in enumerate(mods):
-                terminator = "," if m_idx < len(mods) - 1 else ""
-                items_text += f"   {mod_str}{terminator}\n"
+                    adicionales.append(str(m))
+            
+            if tamanos: items_text += f"  * Tamaños: {', '.join(tamanos)}\n"
+            if adicionales: items_text += f"  * Adicionales: {', '.join(adicionales)}\n"
+            if opciones: items_text += f"  * Opciones: {', '.join(opciones)}\n"
 
-        if item.notas and item.notas != "No aplica" and item.notas != "Sin notas":
-            items_text += f"   Nota: {item.notas}\n"
+        if item.notas and item.notas.lower() not in ["no aplica", "ninguna", "", "null"]:
+            items_text += f"  * Observaciones: {item.notas}\n"
         
-        # Omit 'Cantidad' string if we want exactly the format user asked (they had Cantidad: 1 previously but removed it in their ideal template... wait, or did they?
-        # Actually in their ideal template they only had Precio and Subtotal below modifiers.
-        items_text += f"   Precio: ${item.precio_unitario:,.0f}\n"
-        items_text += f"   Subtotal: ${item_subtotal:,.0f}\n\n"
+        items_text += "\n"
     
     delivery_info = ""
-    if order.tipo == "delivery":
-        delivery_info = f"🛵 Entrega a Domicilio\n"
-        delivery_info += f"📍 Dirección: {order.direccion or 'No especificada'}\n"
-        if order.distancia:
-            delivery_info += f"📏 Distancia: {order.distancia:.1f} km\n"
-        delivery_info += "\n"
+    if order.metodo_entrega == "domicilio" or order.tipo == "domicilio":
+        delivery_info = (
+            f"🛵 ENTREGA\n"
+            f"*Dirección: {order.direccion or 'N/A'}\n"
+            f"*Distancia: {order.distancia or 0} Km\n"
+            f"*Observación de entrega: {order.observaciones_entrega or 'Ninguna'}\n\n"
+        )
     else:
         metodo = order.metodo_entrega or ("Mesa" if order.tipo == "mesa" else "Para Recoger")
         delivery_info = f"🛒 Retiro: {metodo}\n\n"
@@ -633,22 +638,23 @@ def format_order_summary_wa(business_name: str, order: Order, slug: str = None) 
     if slug:
         link_text = f"🔗 Ver mi pedido / Pedir de nuevo: https://menuia.co/{slug}/menu\n\n"
 
+    order_id_display = str(order.numero_secuencial).zfill(8) if order.numero_secuencial else (order.id[:8].upper() if isinstance(order.id, str) else str(order.id))
+
     summary = (
-        f"🔔 Nuevo Pedido - {business_name}\n\n"
-        f"🆔 ID del Pedido: {order.id[:8].upper()}\n\n"
-        f"👤 Datos del Cliente\n"
-        f"Nombre: {order.cliente_nombre or 'Usuario'}\n"
-        f"Teléfono: {order.cliente_telefono or 'N/A'}{cliente_notas}\n\n"
-        f"🛒 Detalle del Pedido\n"
+        f"🔔 NUEVO PEDIDO - {business_name.upper()}\n\n"
+        f"🆔 ID DEL PEDIDO: `{order_id_display}`\n\n"
+        f"👤 DATOS DEL CLIENTE\n"
+        f"*Nombre: {order.cliente_nombre or 'Usuario'}\n"
+        f"*Tel: {order.cliente_telefono or 'N/A'}{cliente_notas}\n\n"
+        f"🛒 DETALLE DEL PEDIDO\n"
         f"{items_text}"
         f"{delivery_info}"
-        f"💳 Resumen de Pago\n"
-        f"Subtotal productos: ${subtotal_items:,.2f}\n"
-        f"Costo de envío: ${order.costo_envio or 0:,.2f}\n"
-        f"💰 TOTAL: ${order.total:,.2f}\n\n"
-        f"💵 Método de Pago: {order.metodo_pago or 'Efectivo'}\n"
-        f"🚚 Método de Entrega: {order.metodo_entrega or order.tipo}\n\n"
-        f"⏰ Pedido realizado: {fecha}\n\n"
+        f"💳 RESUMEN DE PAGO\n"
+        f"*Método de Pago: {order.metodo_pago or 'Efectivo'}\n"
+        f"*Subtotal: ${subtotal_items:,.0f}\n"
+        f"*Costo del envío: ${order.costo_envio or 0:,.0f}\n"
+        f"*TOTAL: ${order.total:,.0f}\n\n"
+        f"⏰ Realizado: {fecha}\n\n"
         f"{link_text}"
         f"¡Gracias por tu pedido! {emoji}"
     )
@@ -2492,10 +2498,11 @@ async def get_customer_orders(slug: str, query: str = None):
     
     orders = []
     if response.data:
-        q_lower = query.lower()
-        # Search by UUID prefix OR by numeric sequential ID (for 6-digit numbers)
-        matched = [o for o in response.data if str(o.get('id', '')).lower().startswith(q_lower) or str(o.get('numero_secuencial', '')).startswith(query)]
-        orders = matched[:10]
+        clean_q = query.lstrip('0')
+        q_lower = clean_q.lower()
+        # Search by UUID prefix OR by numeric sequential ID (for 8-digit numbers, ignoring leading zeros)
+        matched = [o for o in response.data if (q_lower != "" and str(o.get('id', '')).lower().startswith(q_lower)) or (clean_q != "" and str(o.get('numero_secuencial', '')).startswith(clean_q))]
+        orders = matched[:15]
         
     return [Order(**o) for o in orders]
 
