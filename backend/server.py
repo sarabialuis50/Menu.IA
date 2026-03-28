@@ -577,7 +577,7 @@ def format_order_summary_wa(business_name: str, order: Order, slug: str = None) 
     for i, item in enumerate(order.items, 1):
         item_total = item.cantidad * item.precio_unitario
         subtotal_items += item_total
-        items_text += f"* Producto: {i}. {item.nombre} x{item.cantidad} (${item_total:,.0f})\n"
+        items_text += f"  * Nombre producto: {i}. {item.nombre} x{item.cantidad} (${item_total:,.0f})\n"
         
         if item.modificadores:
             # Try to categorize modifiers if possible
@@ -603,7 +603,7 @@ def format_order_summary_wa(business_name: str, order: Order, slug: str = None) 
             if opciones: items_text += f"  * Opciones: {', '.join(opciones)}\n"
 
         if item.notas and item.notas.lower() not in ["no aplica", "ninguna", "", "null"]:
-            items_text += f"  * Observaciones: {item.notas}\n"
+            items_text += f"  * Observaciones del producto: {item.notas}\n"
         
         items_text += "\n"
     
@@ -632,17 +632,17 @@ def format_order_summary_wa(business_name: str, order: Order, slug: str = None) 
     else:
         obs_pedido = raw_notes
 
-    cliente_notas = f"\nObservación de pedido: {obs_pedido}" if obs_pedido and obs_pedido.lower() not in ["sin notas", "none", ""] else ""
+    cliente_notas = f"\n* Observaciones del pedido: {obs_pedido}" if obs_pedido and obs_pedido.lower() not in ["sin notas", "none", ""] else ""
 
     link_text = ""
     if slug:
         link_text = f"🔗 Ver mi pedido / Pedir de nuevo: https://menuia.co/{slug}/menu\n\n"
 
-    order_id_display = str(order.numero_secuencial).zfill(8) if order.numero_secuencial else (order.id[:8].upper() if isinstance(order.id, str) else str(order.id))
+    order_id_display = f"`{str(order.numero_secuencial).zfill(8)}`" if order.numero_secuencial else f"`{order.id[:8].upper()}`" if isinstance(order.id, str) else f"`{str(order.id)}`"
 
     summary = (
-        f"🔔 NUEVO PEDIDO - {business_name.upper()}\n\n"
-        f"🆔 ID DEL PEDIDO: `{order_id_display}`\n\n"
+        f"🔔 Nuevo Pedido - {business_name}\n\n"
+        f"🆔 ID del Pedido: {order_id_display}\n\n"
         f"👤 DATOS DEL CLIENTE\n"
         f"*Nombre: {order.cliente_nombre or 'Usuario'}\n"
         f"*Tel: {order.cliente_telefono or 'N/A'}{cliente_notas}\n\n"
@@ -2160,8 +2160,9 @@ def send_order_wa_background(business_name: str, order: Order, business_phone: s
     # Payment
     costo_envio = order.costo_envio or 0
     
-    # Usar monoespacio para el ID para facilitar la copia en móviles
-    display_pedido_id = f"```{order.numero_secuencial or order.id[:8].upper()}```"
+    # Usar monoespacio para el ID para facilitar la copia en móviles y asegurar 8 dígitos
+    padded_id = str(order.numero_secuencial).zfill(8) if order.numero_secuencial else (order.id[:8].upper() if isinstance(order.id, str) else str(order.id))
+    display_pedido_id = f"`{padded_id}`"
     
     # ── TEMPLATE VARIABLE MAPPING (19 variables) ──
     template_kwargs = {

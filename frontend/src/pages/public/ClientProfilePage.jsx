@@ -96,10 +96,11 @@ export default function ClientProfilePage() {
     }
 
     async function fetchProfile() {
+        if (!token) return;
         setLoading(true);
         try {
             const api = axios.create({
-                baseURL: (import.meta.env && import.meta.env.REACT_APP_BACKEND_URL) || '/api',
+                baseURL: (import.meta.env && import.meta.env.REACT_APP_BACKEND_URL) || (import.meta.env && import.meta.env.VITE_API_URL) || '/api',
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -112,20 +113,22 @@ export default function ClientProfilePage() {
             if (currentUser.pin_hint) setPinHint(currentUser.pin_hint);
             if (currentUser.security_question) setSecurityQuestion(currentUser.security_question);
 
-            const [ordersRes, addrRes, favRes, pointsRes] = await Promise.all([
+            // Load other data in parallel
+            const [ordersRes, addrRes, favRes, pointsRes] = await Promise.allSettled([
                 api.get('/client/orders'),
                 api.get('/client/addresses'),
                 api.get('/client/favorites'),
                 api.get(`/loyalty/${slug}/points/${currentUser.telefono}`)
             ]);
 
-            setOrders(ordersRes.data);
-            setAddresses(addrRes.data);
-            setFavorites(favRes.data || []);
-            setLoyalty(pointsRes.data);
+            if (ordersRes.status === 'fulfilled') setOrders(ordersRes.value.data);
+            if (addrRes.status === 'fulfilled') setAddresses(addrRes.value.data);
+            if (favRes.status === 'fulfilled') setFavorites(favRes.value.data || []);
+            if (pointsRes.status === 'fulfilled') setLoyalty(pointsRes.value.data);
         } catch (error) {
-            console.error(error);
+            console.error("Error fetching profile:", error);
             if (error.response?.status === 401) {
+                // Only logout on 401 if we don't have user data already OR it's a hard error
                 logout();
             }
         } finally {
@@ -134,7 +137,11 @@ export default function ClientProfilePage() {
     }
 
     function logout() {
-        localStorage.removeItem('client_token');
+        try {
+            localStorage.removeItem('client_token');
+        } catch (e) {
+            console.warn("Could not access localStorage to remove token");
+        }
         setToken(null);
         setUser(null);
         setAuthStep('phone');
@@ -182,9 +189,18 @@ export default function ClientProfilePage() {
         setSubmitting(true);
         try {
             const res = await axios.post('/api/auth/client/login-pin', { telefono: phone, pin });
-            const newToken = res.data.access_token;
-            localStorage.setItem('client_token', newToken);
-            setToken(newToken);
+            const { access_token, cliente } = res.data;
+            
+            try {
+                localStorage.setItem('client_token', access_token);
+            } catch (e) {
+                console.error("Storage Error:", e);
+                toast.warning("El navegador bloqueó el almacenamiento. Tu sesión podría perderse al recargar.");
+            }
+            
+            // Set user immediately to avoid UI flicker/extra fetch loop
+            if (cliente) setUser(cliente);
+            setToken(access_token);
             toast.success("¡Bienvenido!");
         } catch (error) {
             toast.error(error.response?.data?.detail || "PIN incorrecto");
@@ -198,9 +214,17 @@ export default function ClientProfilePage() {
         setSubmitting(true);
         try {
             const res = await axios.post('/api/auth/client/verify-otp', { telefono: phone, otp });
-            const newToken = res.data.access_token;
-            localStorage.setItem('client_token', newToken);
-            setToken(newToken);
+            const { access_token, cliente } = res.data;
+            
+            try {
+                localStorage.setItem('client_token', access_token);
+            } catch (e) {
+                console.error("Storage Error:", e);
+                toast.warning("El navegador bloqueó el almacenamiento de la sesión.");
+            }
+            
+            if (cliente) setUser(cliente);
+            setToken(access_token);
             toast.success("¡Bienvenido!");
         } catch (error) {
             toast.error("Código inválido o expirado");
