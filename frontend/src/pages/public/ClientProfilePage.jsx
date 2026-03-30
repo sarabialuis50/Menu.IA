@@ -79,12 +79,14 @@ export default function ClientProfilePage() {
 
     useEffect(() => {
         fetchBusiness();
-        if (token) {
+        // Solo obtener perfil si tenemos token Y NO tenemos el usuario ya cargado
+        // Esto evita que después de un login exitoso, una falla en fetchProfile resetee la sesión
+        if (token && !user) {
             fetchProfile();
-        } else {
+        } else if (!token) {
             setLoading(false);
         }
-    }, [token, slug]);
+    }, [token, user, slug]);
 
     async function fetchBusiness() {
         try {
@@ -99,12 +101,9 @@ export default function ClientProfilePage() {
         if (!token) return;
         setLoading(true);
         try {
-            const api = axios.create({
-                baseURL: (import.meta.env && import.meta.env.REACT_APP_BACKEND_URL) || (import.meta.env && import.meta.env.VITE_API_URL) || '/api',
+            const profileRes = await axios.get('/api/client/me', {
                 headers: { Authorization: `Bearer ${token}` }
             });
-
-            const profileRes = await api.get('/client/me');
             const currentUser = profileRes.data;
             setUser(currentUser);
 
@@ -198,9 +197,10 @@ export default function ClientProfilePage() {
                 toast.warning("El navegador bloqueó el almacenamiento. Tu sesión podría perderse al recargar.");
             }
             
-            // Set user immediately to avoid UI flicker/extra fetch loop
+            // Set user immediately and set token
             if (cliente) setUser(cliente);
             setToken(access_token);
+            setLoading(false); // Asegurar que loading sea false
             toast.success("¡Bienvenido!");
         } catch (error) {
             toast.error(error.response?.data?.detail || "PIN incorrecto");
@@ -225,6 +225,7 @@ export default function ClientProfilePage() {
             
             if (cliente) setUser(cliente);
             setToken(access_token);
+            setLoading(false);
             toast.success("¡Bienvenido!");
         } catch (error) {
             toast.error("Código inválido o expirado");
@@ -516,7 +517,7 @@ export default function ClientProfilePage() {
                                             <div className="space-y-4">
                                                 <div className="space-y-2">
                                                     <p className="text-xs font-bold text-gray-500 uppercase">Pregunta de Seguridad:</p>
-                                                    <p className="text-sm font-black text-[#111814]">{recoveryInfo?.question}</p>
+                                                    <p className="text-sm font-black text-[#111814]">{recoveryInfo?.question || "No has configurado una pregunta. Prueba con otro método o contacta soporte."}</p>
                                                 </div>
                                                 <div className="space-y-2">
                                                     <Label className="text-xs font-bold text-gray-700">Tu Respuesta</Label>
@@ -573,6 +574,144 @@ export default function ClientProfilePage() {
                     </Button>
                 </div>
             </div >
+        );
+    }
+
+    // Mandatory Security Setup (Force Question/Hint if not set)
+    if (user && !user.recovery_method) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-inter">
+                <div className="w-full max-w-md space-y-8">
+                    <div className="text-center space-y-2">
+                        <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Shield className="w-8 h-8 text-blue-500" />
+                        </div>
+                        <h1 className="text-2xl font-black text-[#111814]">Protege tu cuenta</h1>
+                        <p className="text-gray-500 font-medium">
+                            Como no usamos WhatsApp para códigos, configura una pregunta de seguridad para poder recuperar tu acceso si olvidas tu PIN.
+                        </p>
+                    </div>
+
+                    <Card className="border-none shadow-xl rounded-[2rem] overflow-hidden">
+                        <CardContent className="p-8">
+                            <form onSubmit={async (e) => {
+                                e.preventDefault();
+                                const pinVal = e.target.pin.value;
+                                if (pinVal.length !== 4) return toast.error("Crea un PIN de 4 dígitos");
+                                if (recoveryMethod === 'question' && (!securityQuestion || !securityAnswer)) {
+                                    return toast.error("Selecciona una pregunta y escribe la respuesta");
+                                }
+                                if (recoveryMethod === 'hint' && !pinHint) {
+                                    return toast.error("Escribe una pista para recordar tu PIN");
+                                }
+
+                                setSubmitting(true);
+                                try {
+                                    const res = await axios.post('/api/client/update-pin', {
+                                        pin: pinVal,
+                                        recovery_method: recoveryMethod,
+                                        pin_hint: pinHint,
+                                        security_question: securityQuestion,
+                                        security_answer: securityAnswer
+                                    }, {
+                                        headers: { Authorization: `Bearer ${token}` }
+                                    });
+                                    toast.success("¡Seguridad configurada!");
+                                    // Actualizar localmente el usuario para saltar este paso
+                                    setUser({ ...user, recovery_method: recoveryMethod });
+                                } catch (err) {
+                                    toast.error("Error al guardar seguridad");
+                                } finally {
+                                    setSubmitting(false);
+                                }
+                            }} className="space-y-6">
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label className="text-xs font-black uppercase text-gray-400">Crea tu PIN Final</Label>
+                                        <Input
+                                            name="pin"
+                                            type="password"
+                                            maxLength={4}
+                                            placeholder="••••"
+                                            className="h-12 rounded-xl bg-gray-50 border-gray-200 text-center text-2xl tracking-[0.5rem] font-bold"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="space-y-3 px-2 pt-2">
+                                        <Label className="text-xs font-black uppercase text-gray-400">Método de recuperación</Label>
+                                        <div className="flex gap-4">
+                                            <button
+                                                type="button"
+                                                onClick={() => setRecoveryMethod('hint')}
+                                                className={`flex-1 py-3 rounded-xl border-2 transition-all font-bold text-sm ${recoveryMethod === 'hint' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-100 bg-gray-50 text-gray-400'}`}
+                                            >
+                                                Pista
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setRecoveryMethod('question')}
+                                                className={`flex-1 py-3 rounded-xl border-2 transition-all font-bold text-sm ${recoveryMethod === 'question' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-100 bg-gray-50 text-gray-400'}`}
+                                            >
+                                                Pregunta
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {recoveryMethod === 'hint' ? (
+                                        <div className="space-y-2">
+                                            <Input
+                                                placeholder="Ej: Año de mi graduación"
+                                                className="h-11 rounded-xl bg-gray-50 border-gray-200"
+                                                value={pinHint}
+                                                onChange={e => setPinHint(e.target.value)}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-3">
+                                            <select
+                                                className="w-full h-11 rounded-xl bg-gray-50 border border-gray-200 px-4 text-sm font-medium"
+                                                value={securityQuestion}
+                                                onChange={e => setSecurityQuestion(e.target.value)}
+                                                required
+                                            >
+                                                <option value="">Selecciona una pregunta...</option>
+                                                <option value="¿Nombre de tu primera mascota?">¿Nombre de tu primera mascota?</option>
+                                                <option value="¿Ciudad donde naciste?">¿Ciudad donde naciste?</option>
+                                                <option value="¿Nombre de tu escuela primaria?">¿Nombre de tu escuela primaria?</option>
+                                                <option value="¿Marca de tu primer auto?">¿Marca de tu primer auto?</option>
+                                            </select>
+                                            <Input
+                                                placeholder="Tu respuesta..."
+                                                className="h-11 rounded-xl bg-gray-50 border-gray-200"
+                                                value={securityAnswer}
+                                                onChange={e => setSecurityAnswer(e.target.value)}
+                                                required
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+
+                                <Button
+                                    type="submit"
+                                    className="w-full h-12 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black shadow-lg shadow-blue-600/20"
+                                    disabled={submitting}
+                                >
+                                    {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Empezar a usar mi cuenta"}
+                                </Button>
+                            </form>
+                        </CardContent>
+                    </Card>
+
+                    <Button
+                        variant="ghost"
+                        onClick={logout}
+                        className="w-full text-gray-400 font-bold hover:text-red-500"
+                    >
+                        Salir y configurar luego
+                    </Button>
+                </div>
+            </div>
         );
     }
 

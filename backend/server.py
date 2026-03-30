@@ -4755,15 +4755,19 @@ async def request_otp(data: OTPRequest):
 
 @api_router.post("/auth/client/login-pin", response_model=ClientTokenResponse)
 async def login_client_pin(data: PINLogin):
-    phone = data.telefono.replace(' ', '').replace('+', '')
+    # Normalize phone: keep only digits
+    phone_digits = "".join(filter(str.isdigit, data.telefono))
+    # Standard search: last 10 digits (most common for local numbers)
+    search_phone = phone_digits[-10:] if len(phone_digits) >= 10 else phone_digits
     
-    # Get or Create Client (for PIN-only flow)
-    client_res = supabase.table('clientes').select('*').eq('telefono', phone).execute()
+    # Search for client - try exact match or matching the last 10 digits
+    # Supabase doesn't easily support 'ends_with', so we'll fetch by exact or use a broad search
+    client_res = supabase.table('clientes').select('*').or_(f"telefono.eq.{phone_digits},telefono.ilike.%{search_phone}").execute()
     
     if not client_res.data:
         # Auto-create client if not exists
         new_client = {
-            "telefono": phone,
+            "telefono": phone_digits,
             "nombre": "Cliente Nuevo",
             "avatar_url": f"https://ui-avatars.com/api/?name=User&background=random"
         }
@@ -4772,16 +4776,20 @@ async def login_client_pin(data: PINLogin):
             raise HTTPException(status_code=500, detail="Error al crear cliente")
         client_data = create_res.data[0]
     else:
+        # If multiple found, pick the one that matches better or the first one
         client_data = client_res.data[0]
         
     # Use password_hash for the PIN as the 'pin' column is missing
     hashed_pin = client_data.get('password_hash') or client_data.get('pin')
     
+    # IMPORTANT: The default PIN is the last 4 digits of the stored number
+    stored_phone = client_data.get('telefono', phone_digits)
+    default_pin = "".join(filter(str.isdigit, stored_phone))[-4:]
+    
     if not hashed_pin:
-        # Default PIN is the last 4 digits of the phone
-        default_pin = phone[-4:]
+        # First time login with default PIN
         if data.pin != default_pin:
-             raise HTTPException(status_code=401, detail="PIN inicial incorrecto (usa los últimos 4 dígitos de tu celular)")
+             raise HTTPException(status_code=401, detail=f"PIN inicial incorrecto. Usa los últimos 4 dígitos de tu celular ({default_pin})")
     else:
         if not verify_password(data.pin, hashed_pin):
             raise HTTPException(status_code=401, detail="PIN incorrecto")
