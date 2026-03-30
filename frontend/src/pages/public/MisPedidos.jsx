@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { PublicLayout } from '@/layouts/PublicLayout';
 import axios from 'axios';
@@ -401,12 +401,12 @@ function OrderTimeline({ order, onRefresh, onReset, onHide }) {
 function DeliveryMap({ lat, lng, businessLat, businessLng, clienteLat, clienteLng, isDelivered }) {
   const isLoaded = useGoogleMaps(GOOGLE_MAPS_API_KEY);
   const [map, setMap] = useState(null);
-  const mapRef = useState(null);
+  const markersRef = useRef([]);
 
   useEffect(() => {
     if (isLoaded && !map && document.getElementById('map-container')) {
-      const initialLat = lat || businessLat || 4.6097;
-      const initialLng = lng || businessLng || -74.0817;
+      const initialLat = lat || businessLat || clienteLat || 4.6097;
+      const initialLng = lng || businessLng || clienteLng || -74.0817;
 
       const mapInstance = new window.google.maps.Map(document.getElementById('map-container'), {
         center: { lat: initialLat, lng: initialLng },
@@ -414,21 +414,9 @@ function DeliveryMap({ lat, lng, businessLat, businessLng, clienteLat, clienteLn
         disableDefaultUI: true,
         zoomControl: false,
         styles: [
-          {
-            "featureType": "all",
-            "elementType": "labels.text.fill",
-            "stylers": [{ "color": "#111814" }]
-          },
-          {
-            "featureType": "water",
-            "elementType": "geometry",
-            "stylers": [{ "color": "#e9e9e9" }]
-          },
-          {
-            "featureType": "landscape",
-            "elementType": "geometry",
-            "stylers": [{ "color": "#f5f5f5" }]
-          }
+          { "featureType": "all", "elementType": "labels.text.fill", "stylers": [{ "color": "#111814" }] },
+          { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#e9e9e9" }] },
+          { "featureType": "landscape", "elementType": "geometry", "stylers": [{ "color": "#f5f5f5" }] }
         ]
       });
       setMap(mapInstance);
@@ -438,74 +426,83 @@ function DeliveryMap({ lat, lng, businessLat, businessLng, clienteLat, clienteLn
   useEffect(() => {
     if (!map) return;
 
-    // Clear existing markers if any (using a simple approach for this demo)
-    // In a real app we'd keep track of marker objects
+    // 1. Limpiar marcadores anteriores para evitar fugas de memoria y duplicados
+    markersRef.current.forEach(m => m.setMap(null));
+    markersRef.current = [];
 
     const bounds = new window.google.maps.LatLngBounds();
     let hasPoints = false;
 
-    // Business Marker
+    // Marcador: Restaurante (Negocio)
     if (businessLat && businessLng) {
-      new window.google.maps.Marker({
-        position: { lat: businessLat, lng: businessLng },
+      const bizMarker = new window.google.maps.Marker({
+        position: { lat: Number(businessLat), lng: Number(businessLng) },
         map: map,
         title: "Restaurante",
+        label: { text: "🏪", fontSize: "16px" },
         icon: {
           path: window.google.maps.SymbolPath.CIRCLE,
           fillColor: "#111814",
           fillOpacity: 1,
-          strokeWeight: 2,
+          strokeWeight: 4,
           strokeColor: "#FFFFFF",
-          scale: 10
+          scale: 12
         }
       });
-      bounds.extend({ lat: businessLat, lng: businessLng });
+      markersRef.current.push(bizMarker);
+      bounds.extend({ lat: Number(businessLat), lng: Number(businessLng) });
       hasPoints = true;
     }
 
-    // Customer Marker
+    // Marcador: Cliente (Destino)
     if (clienteLat && clienteLng) {
-      new window.google.maps.Marker({
-        position: { lat: clienteLat, lng: clienteLng },
+      const clientMarker = new window.google.maps.Marker({
+        position: { lat: Number(clienteLat), lng: Number(clienteLng) },
         map: map,
-        title: "Tú",
+        title: "Tu ubicación",
+        label: { text: "🏠", fontSize: "16px", fontWeight: "bold" },
         icon: {
           path: window.google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
           fillColor: "#22C55E",
           fillOpacity: 1,
-          strokeWeight: 2,
+          strokeWeight: 4,
           strokeColor: "#FFFFFF",
-          scale: 6
+          scale: 8
         }
       });
-      bounds.extend({ lat: clienteLat, lng: clienteLng });
+      markersRef.current.push(clientMarker);
+      bounds.extend({ lat: Number(clienteLat), lng: Number(clienteLng) });
       hasPoints = true;
     }
 
-    // Courier Marker
+    // Marcador: Repartidor (Movimiento)
     if (lat && lng) {
-      new window.google.maps.Marker({
-        position: { lat, lng },
+      const courierMarker = new window.google.maps.Marker({
+        position: { lat: Number(lat), lng: Number(lng) },
         map: map,
-        title: "Repartidor",
+        title: "Repartidor en camino",
+        optimized: false, // For smoother animation
         icon: {
-          url: "https://maps.google.com/mapfiles/ms/icons/motorcycling.png", // Icono de moto
-          scaledSize: new window.google.maps.Size(40, 40)
+          url: "https://maps.google.com/mapfiles/ms/icons/motorcycling.png",
+          scaledSize: new window.google.maps.Size(50, 50),
+          anchor: new window.google.maps.Point(25, 25)
         }
       });
-      bounds.extend({ lat, lng });
+      markersRef.current.push(courierMarker);
+      bounds.extend({ lat: Number(lat), lng: Number(lng) });
       hasPoints = true;
     }
 
+    // Centrar mapa si hay puntos y el pedido no ha terminado
     if (hasPoints && !isDelivered) {
       if (bounds.getNorthEast().equals(bounds.getSouthWest())) {
         map.setCenter(bounds.getNorthEast());
         map.setZoom(16);
       } else {
-        map.fitBounds(bounds, { top: 50, bottom: 50, left: 50, right: 50 });
-        // prevent over-zooming
+        map.fitBounds(bounds, { top: 60, bottom: 60, left: 60, right: 60 });
+        // Ajuste fino para evitar zoom extremo
         const listener = window.google.maps.event.addListener(map, 'idle', function () {
-          if (map.getZoom() > 16) map.setZoom(16);
+          if (map.getZoom() > 17) map.setZoom(17);
           window.google.maps.event.removeListener(listener);
         });
       }
@@ -514,5 +511,5 @@ function DeliveryMap({ lat, lng, businessLat, businessLng, clienteLat, clienteLn
 
   if (!isLoaded) return <div className="p-4 text-center"><RefreshCw className="w-6 h-6 animate-spin mx-auto text-[#22C55E]" /></div>;
 
-  return <div id="map-container" className="w-full h-full z-0" />;
+  return <div id="map-container" className="w-full h-full z-0 overflow-hidden rounded-[2.5rem]" />;
 }

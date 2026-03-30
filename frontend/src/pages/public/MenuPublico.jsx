@@ -1414,20 +1414,28 @@ const MenuContent = () => {
                         )}
 
                         {isManualAddress && (
-                          <p className="text-[10px] font-bold text-amber-600 bg-amber-50 p-3 rounded-xl border-l-4 border-amber-400 flex items-start gap-2">
-                            Asegúrate de incluir barrio y cualquier indicación extra. El costo de envío se confirmará al recibir tu pedido.
-                          </p>
+                          <div className="space-y-2">
+                            <p className="text-[10px] font-bold text-amber-600 bg-amber-50 p-3 rounded-xl border-l-4 border-amber-400 flex items-start gap-2">
+                              <span>⚠️</span>
+                              <span>Asegúrate de incluir barrio y cualquier indicación extra. <b>Nota:</b> Al escribir manualmente, no se genera punto en el mapa para seguimiento en vivo.</span>
+                            </p>
+                          </div>
                         )}
 
-                        <Button
-                          variant="outline"
-                          onClick={handleGetLocation}
-                          disabled={calculatingDistance}
-                          className="w-full h-12 rounded-2xl border-2 border-dashed border-[#4ADE80]/30 text-[#618972] font-black text-xs gap-2 hover:bg-[#4ADE80]/5 transition-all"
-                        >
-                          {calculatingDistance ? <Loader2 className="w-4 h-4 animate-spin" /> : <NavigationIcon className="w-4 h-4" />}
-                          USAR MI UBICACIÓN ACTUAL (GPS)
-                        </Button>
+                        <div className="space-y-2">
+                          <Button
+                            variant="outline"
+                            onClick={handleGetLocation}
+                            disabled={calculatingDistance}
+                            className="w-full h-12 rounded-2xl border-2 border-dashed border-[#4ADE80]/30 text-[#618972] font-black text-xs gap-2 hover:bg-[#4ADE80]/5 transition-all"
+                          >
+                            {calculatingDistance ? <Loader2 className="w-4 h-4 animate-spin" /> : <NavigationIcon className="w-4 h-4" />}
+                            USAR MI UBICACIÓN ACTUAL (GPS)
+                          </Button>
+                          <p className="text-[9px] font-black text-[#22C55E] text-center uppercase tracking-widest animate-pulse">
+                            📍 RECOMENDADO para ver el movimiento del repartidor en vivo
+                          </p>
+                        </div>
 
                         {!isManualAddress && (
                           <div className="space-y-2">

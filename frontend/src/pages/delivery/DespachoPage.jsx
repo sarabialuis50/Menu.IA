@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -77,11 +77,22 @@ export default function DespachoPage() {
         }
     };
 
+    useEffect(() => {
+        // Si el componente carga y el pedido ya está "en camino", arrancamos el GPS automáticamente
+        if (order && order.estado === 'enviado' && !isTracking) {
+            startGPS();
+        }
+        return () => stopGPS();
+    }, [order?.estado]);
+
     const startGPS = () => {
         if (!("geolocation" in navigator)) return;
-        setIsTracking(true);
+        if (watchId.current) return; // Ya está activo
 
-        const watchId = navigator.geolocation.watchPosition(
+        setIsTracking(true);
+        console.log("GPS: Iniciando seguimiento de repartidor...");
+
+        watchId.current = navigator.geolocation.watchPosition(
             async (position) => {
                 try {
                     await api().put(`/orders/${slug}/${orderId}`, {
@@ -92,14 +103,20 @@ export default function DespachoPage() {
                     console.error("Error updating GPS:", err);
                 }
             },
-            (err) => console.error("GPS Error:", err),
-            { enableHighAccuracy: true }
+            (err) => {
+                console.error("GPS Error:", err);
+                setIsTracking(false);
+                watchId.current = null;
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         );
-
-        return () => navigator.geolocation.clearWatch(watchId);
     };
 
     const stopGPS = () => {
+        if (watchId.current !== null) {
+            navigator.geolocation.clearWatch(watchId.current);
+            watchId.current = null;
+        }
         setIsTracking(false);
     };
 
