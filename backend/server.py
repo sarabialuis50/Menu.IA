@@ -3519,17 +3519,12 @@ async def handle_whatsapp_webhook(request: Request):
 
             send_whatsapp_response(sender_phone, response_text, twilio_config)
             
-            # Actualizar contador o créditos (solo si hay negocio)
+            # Actualizar contador de mensajes operativos (Soporte/Ventas)
             if business_data:
-                if use_credits:
-                    supabase.table('negocios').update({
-                        "wa_credits": wa_credits - 1
-                    }).eq('id', negocio_id).execute()
-                else:
-                    update_data = {"wa_messages_count": wa_count + 1}
-                    if biz_plan == 'trial':
-                        update_data["ai_credits_wa_used"] = business_data.get('ai_credits_wa_used', 0) + 1
-                    supabase.table('negocios').update(update_data).eq('id', negocio_id).execute()
+                update_data = {"wa_messages_count": wa_count + 1}
+                if biz_plan == 'trial':
+                    update_data["ai_credits_wa_used"] = business_data.get('ai_credits_wa_used', 0) + 1
+                supabase.table('negocios').update(update_data).eq('id', negocio_id).execute()
             
         return {"status": "processed", "response": response_text}
 
