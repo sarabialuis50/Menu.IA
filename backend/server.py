@@ -4792,14 +4792,10 @@ async def request_otp(data: OTPRequest):
                     biz_data = biz_res.data[0]
                     if not data.negocio_nombre:
                         business_name_to_use = biz_data.get('nombre', "Menu.IA")
-                    
-                    # Deduct from Ventas/Soporte (by incrementing usage counter)
-                    wa_count = biz_data.get('wa_messages_count') or 0
-                    supabase.table('business').update({'wa_messages_count': wa_count + 1}).eq('slug', data.negocio_slug).execute()
             except HTTPException:
                 raise
             except Exception as e:
-                logger.error(f"Error checking/deducting credits for slug {data.negocio_slug}: {e}")
+                logger.error(f"Error checking slug {data.negocio_slug}: {e}")
         # Send via WhatsApp using the approved Authentication template
         send_whatsapp_template(
             to_number=phone,
