@@ -628,11 +628,13 @@ const ConfiguracionPage = () => {
     const getAICredits = (type) => {
         const plan = businessData?.plan?.toLowerCase() || 'free';
         const limits = {
+            'impulso': 50,
             'basic': 50,
             'pro': 120,
+            'elite': 300,
             'premium': 300,
             'free': 5,
-            'trial': 10
+            'trial': 0
         };
         const limit = limits[plan] || 5;
         const usedField = `ai_credits_${type === 'desc' ? 'desc' : type === 'img' ? 'img' : 'nutri'}_used`;

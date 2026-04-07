@@ -134,12 +134,19 @@ export const DashboardLayout = ({ children }) => {
                   {/* Plan Badge */}
                   <div className={`
                     px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider border whitespace-nowrap
-                    ${user?.plan === 'premium' || user?.plan === 'pro'
+                    ${user?.plan === 'elite' || user?.plan === 'premium' || user?.plan === 'pro'
                       ? 'bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20'
                       : 'bg-[#F97316]/10 text-[#F97316] border-[#F97316]/20'
                     }
                   `}>
-                    {user?.plan === 'trial' || user?.plan === 'free' ? 'PRUEBA (25D)' : (user?.plan || 'BÁSICO')}
+                    {(() => {
+                      const p = (user?.plan || 'trial').toLowerCase();
+                      if (p === 'trial' || p === 'free') return 'PRUEBA';
+                      if (p === 'impulso' || p === 'basic') return 'BÁSICO';
+                      if (p === 'pro') return 'PRO';
+                      if (p === 'elite' || p === 'premium') return 'PREMIUM';
+                      return p.toUpperCase();
+                    })()}
                   </div>
                 </div>
               </div>

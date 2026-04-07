@@ -67,10 +67,18 @@ ACCESS_TOKEN_EXPIRE_HOURS = 24 * 30
 # --- PLAN CONFIG ---
 PLAN_CONFIG = {
     "trial": {
-        "img": 10,
-        "nutri": 10,
-        "desc": 10,
-        "wa": 10,
+        "img": 0,
+        "nutri": 0,
+        "desc": 0,
+        "wa": 0,
+        "campaign": 0,
+        "hub": 0
+    },
+    "impulso": {
+        "img": 50,
+        "nutri": 50,
+        "desc": 50,
+        "wa": 1500,
         "campaign": 0,
         "hub": 0
     },
@@ -90,13 +98,21 @@ PLAN_CONFIG = {
         "campaign": 0,
         "hub": 0
     },
+    "elite": {
+        "img": 300,
+        "nutri": 300,
+        "desc": 300,
+        "wa": 9000,
+        "campaign": 0,
+        "hub": 0
+    },
     "premium": {
         "img": 300,
         "nutri": 300,
         "desc": 300,
         "wa": 9000,
-        "campaign": 50,
-        "hub": 10
+        "campaign": 0,
+        "hub": 0
     },
     "free": {
         "img": 5,
@@ -384,7 +400,8 @@ async def get_current_business(credentials: HTTPAuthorizationCredentials = Depen
             from datetime import datetime, timezone
             now = datetime.now(timezone.utc)
             
-            # 1. Date Check
+            # Date Check only - trial has 0 credits for messaging/campaigns/IA
+            # but AI agents and core features remain functional
             if plan_expires_at:
                 try:
                     expires_dt = datetime.fromisoformat(plan_expires_at.replace('Z', '+00:00'))
@@ -396,24 +413,6 @@ async def get_current_business(credentials: HTTPAuthorizationCredentials = Depen
                         )
                 except (ValueError, TypeError) as e:
                     logger.error(f"Error parsing plan_expires_at: {e}")
-
-            # 2. Credits Check (Hard stop if ANY limit reached in trial)
-            trial_limits = PLAN_CONFIG['trial']
-            used_img = business_doc.get('ai_credits_img_used', 0)
-            used_nutri = business_doc.get('ai_credits_nutri_used', 0)
-            used_desc = business_doc.get('ai_credits_desc_used', 0)
-            used_wa = business_doc.get('ai_credits_wa_used', 0)
-            
-            if (used_img >= trial_limits['img'] or 
-                used_nutri >= trial_limits['nutri'] or 
-                used_desc >= trial_limits['desc'] or 
-                used_wa >= trial_limits['wa']):
-                
-                logger.warning(f"Trial limits reached for {business_id}")
-                raise HTTPException(
-                    status_code=403, 
-                    detail="Has agotado tus créditos de prueba gratuitos. Todas las funciones están inhabilitadas hasta que adquieras un plan."
-                )
 
         # PLAN EXPIRATION CHECK (Non-trial)
         elif plan_expires_at:
@@ -775,6 +774,47 @@ async def login_business(data: BusinessLogin):
 @api_router.get("/auth/me", response_model=BusinessPublic)
 async def get_current_business_info(business: Business = Depends(get_current_business)):
     return BusinessPublic(**business.model_dump())
+
+
+@api_router.post("/auth/activate-trial")
+async def activate_trial(business: Business = Depends(get_current_business)):
+    """
+    Activa o reactiva el periodo de prueba de 7 días para un negocio.
+    Solo se puede activar si el negocio no tiene un plan pagado activo.
+    """
+    current_plan = (business.plan or 'trial').lower()
+    
+    if current_plan not in ('trial', 'free'):
+        raise HTTPException(
+            status_code=403,
+            detail="Solo puedes activar la prueba gratuita si no tienes un plan activo."
+        )
+    
+    now = datetime.now(timezone.utc)
+    expires = now + timedelta(days=7)
+    
+    try:
+        supabase.table('negocios').update({
+            'plan': 'trial',
+            'plan_expires_at': expires.isoformat(),
+            'ai_credits_img_used': 0,
+            'ai_credits_nutri_used': 0,
+            'ai_credits_desc_used': 0,
+            'ai_credits_wa_used': 0,
+            'ai_credits_campaign_used': 0,
+            'ai_credits_last_reset': now.isoformat()
+        }).eq('id', business.id).execute()
+        
+        logger.info(f"Trial activated for business {business.id}, expires {expires.isoformat()}")
+        
+        return {
+            "success": True,
+            "message": "¡Prueba gratuita de 7 días activada!",
+            "expires_at": expires.isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error activating trial for {business.id}: {e}")
+        raise HTTPException(status_code=500, detail="Error al activar la prueba gratuita.")
 
 
 # ============ EMPLOYEE AUTH ============
@@ -3447,16 +3487,11 @@ async def handle_whatsapp_webhook(request: Request):
             wa_limit = business_data.get('wa_messages_limit', 0)
             wa_credits = business_data.get('wa_credits', 0)
 
-            # PLAN CHECK: WhatsApp disabled for 'free'
-            if biz_plan == 'free':
-                 return {"status": "blocked", "reason": "free_plan_no_whatsapp"}
+            # PLAN CHECK: WhatsApp disabled for 'free' and 'trial'
+            if biz_plan in ('free', 'trial'):
+                 return {"status": "blocked", "reason": f"{biz_plan}_plan_no_whatsapp"}
             
-            if biz_plan == 'trial':
-                used_wa = business_data.get('ai_credits_wa_used', 0)
-                if used_wa >= 10: # Trial Limit
-                    return {"status": "limit_reached", "reason": "trial_wa_limit_reached"}
-            
-            # 2. Verificar límites de mensajes operativos (Soporte/Ventas)
+            # Verificar límites de mensajes operativos (Soporte/Ventas)
             if wa_count >= wa_limit:
                 # Notify Owner if they confirm the service is stopped
                 # SERVICE STOPPED WARNING
@@ -4655,27 +4690,30 @@ async def mercadopago_webhook(request: Request):
                      
                      logger.info(f"Support Pack Webhook: Added {amount} to wa_messages_limit for Business {business_id}")
                 
+                
                  elif len(parts) >= 2:
                      # Handle Plan Payment (Old Logic)
                      business_id = parts[0]
                      plan_id = parts[1]
                      frequency = parts[2] if len(parts) > 2 else 'monthly'
-                     
+                      
                      from datetime import datetime, timedelta
                      now = datetime.now()
                      expiration = now + timedelta(days=365 if frequency == 'annual' else 31)
-                     
+                      
                      # Set default limits based on plan
                      limits = {
-                         'impulso': 500,
-                         'pro': 1500,
-                         'elite': 5000
+                         'impulso': 1500,
+                         'basic': 1500,
+                         'pro': 4500,
+                         'elite': 9000,
+                         'premium': 9000
                      }
-                     
+                      
                      supabase.table('negocios').update({
                          'plan': plan_id,
                          'plan_expires_at': expiration.isoformat(),
-                          'wa_messages_limit': limits.get(plan_id, 500)
+                         'wa_messages_limit': limits.get(plan_id, 1500)
                      }).eq('id', business_id).execute()
                      logger.info(f"Payment Webhook: Updated {business_id} Plan to {plan_id} expiring {expiration}")
 

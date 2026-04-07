@@ -176,6 +176,35 @@ export default function PreciosPage() {
         }
     };
 
+    const handleActivateTrial = async () => {
+        if (!user) {
+            sessionStorage.setItem('pending_trial', 'true');
+            toast.info("¡Regístrate primero para activar tu prueba gratuita!");
+            navigate('/register');
+            return;
+        }
+
+        const currentPlan = (user.plan || 'trial').toLowerCase();
+        if (currentPlan !== 'trial' && currentPlan !== 'free') {
+            toast.info(`Ya tienes un plan activo (${user.plan}). No necesitas prueba gratuita.`);
+            return;
+        }
+
+        try {
+            setLoadingPlan('trial');
+            const response = await api().post('/auth/activate-trial');
+            if (response.data.success) {
+                toast.success(response.data.message);
+                setTimeout(() => navigate(`/dashboard/${user.slug}`), 1500);
+            }
+        } catch (error) {
+            const detail = error.response?.data?.detail || "Error al activar la prueba gratuita";
+            toast.error(detail);
+        } finally {
+            setLoadingPlan(null);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-[#FAFAF9] font-sans">
             <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b">
@@ -252,6 +281,14 @@ export default function PreciosPage() {
                                         : 'bg-white border-2 border-[#4ADE80] text-[#22C55E] hover:bg-[#4ADE80] hover:text-[#111814]'}`}
                                 >
                                     {loadingPlan === plan.id ? <Loader2 className="animate-spin" /> : `Activar ${plan.name}`}
+                                </Button>
+                                <Button
+                                    onClick={handleActivateTrial}
+                                    disabled={loadingPlan !== null}
+                                    variant="outline"
+                                    className="h-10 rounded-xl font-bold text-xs uppercase tracking-wider mt-3 border-2 border-dashed border-gray-300 text-gray-500 hover:border-[#22C55E] hover:text-[#22C55E] hover:bg-green-50 transition-all w-full"
+                                >
+                                    {loadingPlan === 'trial' ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Prueba x 7 días'}
                                 </Button>
                             </motion.div>
                         ))}

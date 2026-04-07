@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { motion } from 'framer-motion';
@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register, api } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -21,6 +21,18 @@ export default function RegisterPage() {
     telefono: '',
     whatsapp: ''
   });
+
+  useEffect(() => {
+    const pendingTrial = sessionStorage.getItem('pending_trial');
+    const pendingPlan = sessionStorage.getItem('pending_plan');
+    if (pendingTrial) {
+      toast.info('Completa tu registro para activar tu prueba gratuita de 7 días.');
+      sessionStorage.removeItem('pending_trial');
+    }
+    if (pendingPlan) {
+      toast.info('Completa tu registro para activar tu plan.');
+    }
+  }, []);
 
   const generateSlug = (name) => {
     return name
@@ -56,7 +68,27 @@ export default function RegisterPage() {
         whatsapp: formData.whatsapp || formData.telefono
       });
       toast.success('¡Cuenta creada exitosamente!');
-      navigate(`/dashboard/${business.slug}`);
+
+      const pendingPlan = sessionStorage.getItem('pending_plan');
+      if (pendingPlan) {
+        const planData = JSON.parse(pendingPlan);
+        sessionStorage.removeItem('pending_plan');
+        try {
+          const response = await api().post('/payments/create-payment-link', {
+            plan_id: planData.planId,
+            frequency: planData.frequency
+          });
+          if (response.data.init_point) {
+            window.location.href = response.data.init_point;
+          } else {
+            navigate(`/dashboard/${business.slug}`);
+          }
+        } catch (error) {
+          navigate(`/dashboard/${business.slug}`);
+        }
+      } else {
+        navigate(`/dashboard/${business.slug}`);
+      }
     } catch (error) {
       const message = error.response?.data?.detail || 'Error al crear la cuenta';
       toast.error(message);

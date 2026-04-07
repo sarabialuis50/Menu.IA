@@ -99,6 +99,20 @@ export default function PedidosPage() {
     const [monthlyAnalytics, setMonthlyAnalytics] = useState(null);
     const [loadingMonthly, setLoadingMonthly] = useState(true);
 
+    const ORDER_LIMITS = {
+        'trial': 50,
+        'impulso': 150,
+        'basic': 150,
+        'pro': 450,
+        'elite': null,
+        'premium': null,
+        'free': 0
+    };
+
+    const orderLimit = ORDER_LIMITS[user?.plan?.toLowerCase()] ?? 50;
+    const currentOrders = monthlyAnalytics?.pedidos_mes || 0;
+    const orderCounter = orderLimit === null ? `${currentOrders} / ILIMITADO` : `${currentOrders} / ${orderLimit}`;
+
     // Fetch Orders
     useEffect(() => {
         const fetchOrders = async () => {
@@ -293,7 +307,7 @@ export default function PedidosPage() {
                         />
                         <StatCard
                             title="Pedidos Mes"
-                            value={monthlyAnalytics?.pedidos_mes || 0}
+                            value={orderCounter}
                             icon={ShoppingBag}
                             color="bg-blue-600"
                         />
