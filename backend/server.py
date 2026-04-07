@@ -2284,6 +2284,7 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
     """
     Background task to handle delivery notifications.
     type: 'assignment' (to messenger), 'enviado' (to customer), 'entregado' (to customer/admin)
+    Deducts wa_messages_count for each WhatsApp message sent.
     """
     try:
         # Fetch fresh data
@@ -2294,6 +2295,9 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
         res_biz = supabase.table('negocios').select('*').eq('slug', slug).execute()
         if not res_biz.data: return
         biz = res_biz.data[0]
+        negocio_id = biz['id']
+        wa_count = biz.get('wa_messages_count', 0)
+        wa_credits = biz.get('wa_credits', 0)
         
         frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:3000")
         
@@ -2340,6 +2344,8 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
                 order_id_corto=order_id[:8].upper()
             )
             
+            messages_sent = 0
+            
             # 1. Enviar al Repartidor (con link a su interfaz de despacho)
             rep_phone = clean_wa_phone(rep.get('telefono'))
             if rep_phone:
@@ -2353,6 +2359,7 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
                 )
                 if res_tmpl:
                     logger.info(f"Asignación enviada al repartidor via plantilla. SID: {res_tmpl}")
+                    messages_sent += 1
                 else:
                     logger.error(f"Error al enviar plantilla asignacion_repartidor a repartidor {rep_phone}")
             else:
@@ -2371,10 +2378,19 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
                 )
                 if res_tmpl_cust:
                     logger.info(f"Seguimiento enviado al cliente via plantilla. SID: {res_tmpl_cust}")
+                    messages_sent += 1
                 else:
                     logger.error(f"Error al enviar plantilla seguimiento_cliente a cliente {cust_phone}")
             else:
                 logger.warning(f"Cliente sin teléfono registrado")
+            
+            # 3. Deduct credits for messages sent (assignment = 2 messages: repartidor + cliente)
+            if messages_sent > 0:
+                if wa_credits >= messages_sent:
+                    supabase.table('negocios').update({"wa_credits": wa_credits - messages_sent}).eq("id", negocio_id).execute()
+                else:
+                    supabase.table('negocios').update({"wa_messages_count": wa_count + messages_sent}).eq("id", negocio_id).execute()
+                logger.info(f"Deducted {messages_sent} credits for delivery assignment notification")
             
         # Estado 'enviado': No se envía notificación adicional.
         # El repartidor ya fue notificado con 'asignacion_repartidor' al pasar a 'listo'.
@@ -2382,17 +2398,31 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
             logger.info(f"Pedido {order_id} marcado como enviado. Sin notificación adicional.")
             
         elif type == 'entregado':
+            messages_sent = 0
+            
             # Notificar Cliente
             msg_cust = f"✅ *¡Pedido Entregado!* (#ID: {order_id[:8].upper()})\n\nEsperamos que lo disfrutes. ¡Vuelve pronto a {biz.get('nombre', 'nuestro local')}!"
             cust_phone = clean_wa_phone(order.get('cliente_telefono'))
             if cust_phone:
                 send_whatsapp_response(cust_phone, msg_cust, custom_config=twilio_config)
+                messages_sent += 1
             
             # Notificar Admin
             msg_admin = f"💰 *ENTREGA COMPLETADA*\n\nEl pedido #{order_id[:8].upper()} ha sido registrado como entregado al cliente {order.get('cliente_nombre', 'N/A')}."
             biz_phone = clean_wa_phone(biz.get('whatsapp') or biz.get('telefono'))
             if biz_phone:
                 send_whatsapp_response(biz_phone, msg_admin, custom_config=twilio_config)
+                messages_sent += 1
+            
+            # Deduct credits for messages sent (entregado = up to 2 messages)
+            if messages_sent > 0:
+                current_wa_count = biz.get('wa_messages_count', 0)
+                current_wa_credits = biz.get('wa_credits', 0)
+                if current_wa_credits >= messages_sent:
+                    supabase.table('negocios').update({"wa_credits": current_wa_credits - messages_sent}).eq("id", negocio_id).execute()
+                else:
+                    supabase.table('negocios').update({"wa_messages_count": current_wa_count + messages_sent}).eq("id", negocio_id).execute()
+                logger.info(f"Deducted {messages_sent} credits for delivery completed notification")
 
     except Exception as e:
         logger.error(f"Error in delivery notification background: {str(e)}")
@@ -5211,8 +5241,7 @@ async def web_chat_agent(slug: str, data: WebChatRequest):
     """
     Endpoint for the Web Modal Chat.
     Rules:
-    - 1 Credit for starting a session (first message).
-    - AI responses are free in the web modal.
+    - 1 Credit per message/response (Soporte/Ventas).
     - If a sale is made, it deducts 2 more (handled in create_order).
     """
     try:
@@ -5223,16 +5252,19 @@ async def web_chat_agent(slug: str, data: WebChatRequest):
         
         business_data = biz_res.data[0]
         business_id = business_data['id']
-        
-        # 2. Check Credits/Limits (Web Modal is now a core feature and always active)
+        biz_plan = (business_data.get('plan') or 'trial').lower()
         wa_count = business_data.get('wa_messages_count', 0)
-        wa_credits = business_data.get('wa_credits', 0)
+        wa_limit = business_data.get('wa_messages_limit', 0)
 
-        # 3. Manage Conversation and Billing
-        # Phone for web chat is prefixed with 'web_' to keep it separate from real WA
+        # 2. Check limits
+        if biz_plan in ('free', 'trial'):
+            raise HTTPException(status_code=403, detail="Tu plan no incluye mensajería. Adquiere un plan o un pack de soporte.")
+        if wa_count >= wa_limit:
+            raise HTTPException(status_code=403, detail="Has agotado tus mensajes de venta/soporte. Compra un pack de soporte o mejora tu plan.")
+
+        # 3. Manage Conversation
         phone_id = f"web_{data.phone.strip()}"
         
-        # Find or create active conversation
         conv_res = supabase.table('agent_conversations') \
             .select('*') \
             .eq('negocio_id', business_id) \
@@ -5244,32 +5276,26 @@ async def web_chat_agent(slug: str, data: WebChatRequest):
         
         conversation = conv_res.data[0] if conv_res.data else None
         
-        # If no active conversation or it wasn't billed yet, we bill it now
-        if not conversation or not conversation.get('is_billed', False):
-            # Bill 1 credit from wa_messages_count (Soporte/Ventas)
-            update_data = {"wa_messages_count": wa_count + 1}
-            if business_data.get('plan') == 'trial':
-                update_data["ai_credits_wa_used"] = business_data.get('ai_credits_wa_used', 0) + 1
-            supabase.table('negocios').update(update_data).eq("id", business_id).execute()
-            
-            # If we are creating it now, bill it as part of creation logic later? 
-            # Better to ensure the flag is set.
-            if conversation:
-                supabase.table('agent_conversations').update({"is_billed": True}).eq("id", conversation['id']).execute()
-            else:
-                # create_conversation will be called by process_whatsapp_message, but we want it billed.
-                # So we create it explicitly here.
-                new_conv = supabase.table('agent_conversations').insert({
-                    "negocio_id": business_id,
-                    "phone_number": phone_id,
-                    "status": "active",
-                    "is_billed": True
-                }).execute()
+        if not conversation:
+            supabase.table('agent_conversations').insert({
+                "negocio_id": business_id,
+                "phone_number": phone_id,
+                "status": "active",
+                "is_billed": True
+            }).execute()
         
-        # 4. Process Message
+        # 4. Deduct 1 credit per message (Soporte/Ventas)
+        update_data = {"wa_messages_count": wa_count + 1}
+        if biz_plan == 'trial':
+            update_data["ai_credits_wa_used"] = business_data.get('ai_credits_wa_used', 0) + 1
+        supabase.table('negocios').update(update_data).eq("id", business_id).execute()
+        
+        # 5. Process Message
         response_text = await process_whatsapp_message(data.message, phone_id, business_id)
         
         return {"response": response_text}
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error in web_chat_agent: {e}")
         logger.error(traceback.format_exc())
@@ -5321,12 +5347,26 @@ async def web_chat_audio_agent(slug: str, audio: UploadFile = File(...), phone: 
         if not user_text:
              return {"response": "No pude escuchar nada en tu audio. ¿Podrías intentarlo de nuevo?"}
 
-        # 3. Process with WhatsApp Agent logic (Full tools & History)
+        # 3. Check limits
+        biz_plan = (business_data.get('plan') or 'trial').lower()
+        wa_count = business_data.get('wa_messages_count', 0)
+        wa_limit = business_data.get('wa_messages_limit', 0)
+
+        if biz_plan in ('free', 'trial'):
+            raise HTTPException(status_code=403, detail="Tu plan no incluye mensajería. Adquiere un plan o un pack de soporte.")
+        if wa_count >= wa_limit:
+            raise HTTPException(status_code=403, detail="Has agotado tus mensajes de venta/soporte. Compra un pack de soporte o mejora tu plan.")
+
+        # 4. Deduct 1 credit per audio message (Soporte/Ventas)
+        update_data = {"wa_messages_count": wa_count + 1}
+        if biz_plan == 'trial':
+            update_data["ai_credits_wa_used"] = business_data.get('ai_credits_wa_used', 0) + 1
+        supabase.table('negocios').update(update_data).eq("id", business_id).execute()
+
+        # 5. Process with WhatsApp Agent logic
         phone_id = f"web_{phone.strip()}"
         
-        # Billing check (handled inside web_chat_agent, but we replicate here or call it)
-        # For simplicity, we call process_whatsapp_message directly which saves to history.
-        # But we must ensure it's billed if it's the first message.
+        # Manage conversation tracking
         conv_res = supabase.table('agent_conversations') \
             .select('*') \
             .eq('negocio_id', business_id) \
@@ -5335,26 +5375,13 @@ async def web_chat_audio_agent(slug: str, audio: UploadFile = File(...), phone: 
             .execute()
         
         conversation = conv_res.data[0] if conv_res.data else None
-        if not conversation or not conversation.get('is_billed', False):
-            wa_credits = business_data.get('wa_credits', 0)
-            if wa_credits > 0:
-                supabase.table('negocios').update({"wa_credits": wa_credits - 1}).eq("id", business_id).execute()
-            else:
-                wa_count = business_data.get('wa_messages_count', 0)
-                update_data = {"wa_messages_count": wa_count + 1}
-                if business_data.get('plan') == 'trial':
-                    update_data["ai_credits_wa_used"] = business_data.get('ai_credits_wa_used', 0) + 1
-                supabase.table('negocios').update(update_data).eq("id", business_id).execute()
-            
-            if conversation:
-                supabase.table('agent_conversations').update({"is_billed": True}).eq("id", conversation['id']).execute()
-            else:
-                supabase.table('agent_conversations').insert({
-                    "negocio_id": business_id,
-                    "phone_number": phone_id,
-                    "status": "active",
-                    "is_billed": True
-                }).execute()
+        if not conversation:
+            supabase.table('agent_conversations').insert({
+                "negocio_id": business_id,
+                "phone_number": phone_id,
+                "status": "active",
+                "is_billed": True
+            }).execute()
 
         # Call the core processor (OpenAI with tools)
         from whatsapp_agent import process_whatsapp_message
