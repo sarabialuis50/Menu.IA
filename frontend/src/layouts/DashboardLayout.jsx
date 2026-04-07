@@ -154,8 +154,8 @@ export const DashboardLayout = ({ children }) => {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-3 py-4 flex flex-col min-h-0">
-            <div className="flex flex-col flex-1 gap-1 overflow-y-auto custom-scrollbar pr-1">
+          <nav className="flex-1 px-3 py-4 flex flex-col min-h-0 overflow-y-auto custom-scrollbar">
+            <div className="flex flex-col gap-1">
               {navItems.map((item) => {
                 const fullPath = `${basePath}${item.path}`;
                 const isActive = location.pathname === fullPath ||
@@ -182,10 +182,10 @@ export const DashboardLayout = ({ children }) => {
               })}
             </div>
 
-            <div className="pt-4 mt-auto border-t border-slate-800/50 shrink-0 mb-safe">
+            <div className="pt-4 mt-4 border-t border-slate-800/50 shrink-0">
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-bold text-[12px] lg:text-[13px] text-red-400 hover:bg-red-500/10 transition-all active:scale-95 group mb-2 lg:mb-0"
+                className="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-bold text-[12px] lg:text-[13px] text-red-400 hover:bg-red-500/10 transition-all active:scale-95 group"
               >
                 <div className="p-2 rounded-lg bg-red-500/10 group-hover:bg-red-500/20 transition-colors">
                   <LogOut className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
