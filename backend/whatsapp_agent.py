@@ -153,6 +153,43 @@ TOOLS = [
     {
         "type": "function",
         "function": {
+            "name": "save_address",
+            "description": "Guarda o actualiza la dirección de entrega del cliente. Úsala cuando el cliente proporcione su dirección por texto o comparta su ubicación GPS.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "direccion": {
+                        "type": "string",
+                        "description": "Dirección completa del cliente (calle, número, barrio, ciudad)"
+                    },
+                    "latitud": {
+                        "type": "number",
+                        "description": "Latitud GPS (opcional, si el cliente compartió ubicación)"
+                    },
+                    "longitud": {
+                        "type": "number",
+                        "description": "Longitud GPS (opcional, si el cliente compartió ubicación)"
+                    }
+                },
+                "required": ["direccion"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_customer_address",
+            "description": "Obtiene la dirección guardada del cliente si ya tiene una registrada.",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": []
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "create_order",
             "description": "Crea un pedido formal en el sistema una vez que el cliente ha confirmado los productos, el total y el método de entrega.",
             "parameters": {
@@ -475,6 +512,17 @@ TU PERSONALIDAD:
 CONOCIMIENTO ESPECIAL SOBRE EL NEGOCIO (ENTRENAMIENTO):
 {ai_conocimiento if ai_conocimiento else 'Eres un asistente de restaurante estándar. Consulta el menú para dar información exacta.'}
 
+MANEJO DE UBICACIÓN Y DIRECCIÓN DE ENTREGA (CRÍTICO):
+- El cliente puede enviarte su dirección de tres formas:
+  1. Por texto: "Calle 123 #45-67, barrio Centro"
+  2. Compartiendo su ubicación GPS de WhatsApp: verás algo como "[UBICACIÓN GPS: 4.6097, -74.0817]"
+  3. En respuesta a tu pregunta directa: "¿Cuál es tu dirección de entrega?"
+- Cuando el cliente comparta su ubicación GPS (formato: [UBICACIÓN GPS: lat, lng]), usa la herramienta 'save_address' para guardarla. Puedes decir algo como "Perfecto, he guardado tu ubicación: [dirección aproximada]".
+- Cuando el cliente escriba su dirección por texto, también usa 'save_address' para guardarla.
+- ANTES de pedir la dirección, usa 'get_customer_address' para verificar si ya tiene una guardada. Si ya tiene, confirma: "¿Te envío a la dirección que tienes registrada: [dirección]?"
+- NUNCA vuelvas a preguntar la dirección si el cliente ya la proporcionó en esta conversación o si ya tiene una guardada.
+- Si el cliente envía su GPS, reconoce que ya dio su ubicación y NO le vuelvas a preguntar. Responde confirmando que la recibiste.
+
 REGISTRO DE CLIENTES Y FIDELIZACIÓN (PRIORIDAD ALTA):
 - Si el nombre del cliente es '{customer_name if customer_name else 'cliente'}' (o desconocido), debes preguntarle su nombre al inicio para dar una atención personalizada.
 - Si el cliente no está registrado, invítalo amablemente a unirse al programa de fidelización.
@@ -514,6 +562,8 @@ REGLAS DE INTERACCIÓN:
 - CONFIRMA siempre el pedido con el cliente antes de finalizarlo (items, total, dirección).
 - Sé conciso, apropiado para un chat rápido.
 - Dirígete al cliente por su nombre si ya lo tienes.
+- NUNCA repitas preguntas que ya fueron respondidas. Revisa el historial de la conversación antes de preguntar.
+- Si el cliente ya te dio su dirección, NO se la vuelvas a pedir.
 
 HOY ES: {now} (UTC)
 """
@@ -531,6 +581,31 @@ HOY ES: {now} (UTC)
             
         # Fetch History
         history_messages = await get_recent_messages(conversation_id, limit=10)
+        
+        # Inject customer context (name + saved address) into system prompt
+        customer_context = ""
+        if customer_name:
+            customer_context += f"\n- El cliente se llama: {customer_name}"
+        
+        if not is_platform:
+            try:
+                addr_res = supabase.table('clientes_direcciones') \
+                    .select('*') \
+                    .eq('negocio_id', negocio_id) \
+                    .eq('telefono', sender_phone) \
+                    .eq('es_principal', True) \
+                    .limit(1) \
+                    .execute()
+                if addr_res.data:
+                    addr = addr_res.data[0]
+                    customer_context += f"\n- Dirección guardada del cliente: {addr.get('direccion', '')}"
+                    if addr.get('latitud') and addr.get('longitud'):
+                        customer_context += f" (GPS: {addr['latitud']}, {addr['longitud']})"
+            except Exception as addr_err:
+                logger.error(f"Error fetching customer address: {addr_err}")
+        
+        if customer_context:
+            system_prompt += f"\n\nCONTEXTO DEL CLIENTE ACTUAL:{customer_context}\n"
         
         if not history_messages:
              messages = [
@@ -578,6 +653,10 @@ HOY ES: {now} (UTC)
                     )
                 elif function_name == "create_order":
                     function_response = await create_order_ai(negocio_id, function_args)
+                elif function_name == "save_address":
+                    function_response = await save_address(negocio_id, sender_phone, function_args)
+                elif function_name == "get_customer_address":
+                    function_response = await get_customer_address(negocio_id, sender_phone)
                 elif function_name == "find_nearest_restaurant":
                     function_response = await find_nearest_restaurant(
                         function_args.get('address'),
@@ -620,6 +699,69 @@ HOY ES: {now} (UTC)
 
 # --- IMPLEMENTACIÓN DE HERRAMIENTAS ---
 
+
+async def save_address(negocio_id: str, sender_phone: str, args: dict) -> str:
+    """Guarda la dirección del cliente asociada al negocio."""
+    try:
+        direccion = args.get('direccion', '')
+        latitud = args.get('latitud')
+        longitud = args.get('longitud')
+        
+        # Buscar si ya tiene dirección guardada
+        existing = supabase.table('clientes_direcciones') \
+            .select('*') \
+            .eq('negocio_id', negocio_id) \
+            .eq('telefono', sender_phone) \
+            .execute()
+        
+        address_data = {
+            "negocio_id": negocio_id,
+            "telefono": sender_phone,
+            "direccion": direccion,
+            "latitud": latitud,
+            "longitud": longitud,
+            "es_principal": True
+        }
+        
+        if existing.data:
+            # Actualizar existente
+            supabase.table('clientes_direcciones') \
+                .update(address_data) \
+                .eq('id', existing.data[0]['id']) \
+                .execute()
+            return json.dumps({"status": "updated", "direccion": direccion})
+        else:
+            # Crear nueva
+            supabase.table('clientes_direcciones').insert(address_data).execute()
+            return json.dumps({"status": "saved", "direccion": direccion})
+    except Exception as e:
+        logger.error(f"Error save_address: {e}")
+        return json.dumps({"error": str(e)})
+
+async def get_customer_address(negocio_id: str, sender_phone: str) -> str:
+    """Obtiene la dirección guardada del cliente."""
+    try:
+        res = supabase.table('clientes_direcciones') \
+            .select('*') \
+            .eq('negocio_id', negocio_id) \
+            .eq('telefono', sender_phone) \
+            .eq('es_principal', True) \
+            .limit(1) \
+            .execute()
+        
+        if res.data:
+            addr = res.data[0]
+            return json.dumps({
+                "found": True,
+                "direccion": addr.get('direccion', ''),
+                "latitud": addr.get('latitud'),
+                "longitud": addr.get('longitud')
+            })
+        else:
+            return json.dumps({"found": False})
+    except Exception as e:
+        logger.error(f"Error get_customer_address: {e}")
+        return json.dumps({"error": str(e)})
 
 async def get_menu_categories(negocio_id: str) -> str:
     try:
