@@ -24,6 +24,7 @@ import PublicTrialLocked from '@/components/PublicTrialLocked';
 export default function DespachoPage() {
     const { slug, orderId } = useParams();
     const { api } = useAuth();
+    const watchId = useRef(null);
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);

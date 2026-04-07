@@ -1015,13 +1015,16 @@ def send_whatsapp_template(to_number: str, template_key: str, custom_config: Dic
         # Formatear número (misma lógica que send_whatsapp_response)
         clean_number = to_number.replace(' ', '').replace('+', '').replace('-', '').replace('whatsapp:', '')
         
+        # Log destination for debugging
+        logger.info(f"Target number: {to_number} -> Cleaned: {clean_number}")
+
         # Default to Colombia (+57) if 10 digits starting with 3
         if len(clean_number) == 10 and clean_number.startswith('3'):
             formatted_to = f"whatsapp:+57{clean_number}"
         elif len(clean_number) == 12 and clean_number.startswith('57'):
             formatted_to = f"whatsapp:+{clean_number}"
         else:
-            formatted_to = f"whatsapp:+{clean_number}"
+            formatted_to = f"whatsapp:+{clean_number if clean_number.startswith('+') else ('+' + clean_number)}"
 
         # Twilio SDK 9.x expects a DICT for content_variables, but some versions/proxies might want a JSON string.
         # We ensure it's a dict and all values are strings.
@@ -1034,21 +1037,30 @@ def send_whatsapp_template(to_number: str, template_key: str, custom_config: Dic
             except:
                 final_variables = {"1": content_variables}
 
-        logger.info(f"Sending Template {template_key} to {formatted_to} (Content SID: {content_sid}) with variables: {final_variables}")
+        logger.info(f"Sending Template {template_key} to {formatted_to} (Content SID: {content_sid}) from {from_number}")
+        logger.info(f"Variables for {template_key}: {json.dumps(final_variables, indent=2)}")
         
         # Important: content_variables MUST be a JSON string if using REST directly, 
         # but in many modern SDK versions passing a DICT is preferred. 
         # However, to be 100% safe across versions, a JSON string is often the most reliable way 
         # IF the SDK doesn't auto-convert. Let's try sending the dict directly as requested by modern docs.
-        message = client.messages.create(
-            from_=from_number if from_number.startswith('whatsapp:') else f"whatsapp:{from_number}",
-            to=formatted_to,
-            content_sid=content_sid,
-            content_variables=json.dumps(final_variables) # Ensuring it's a clean JSON string for safety
-        )
-        
-        logger.info(f"Plantilla {template_key} enviada a {to_number}. SID: {message.sid}")
-        return message.sid
+        try:
+            message = client.messages.create(
+                from_=from_number if from_number.startswith('whatsapp:') else f"whatsapp:{from_number}",
+                to=formatted_to,
+                content_sid=content_sid,
+                content_variables=json.dumps(final_variables) # Ensuring it's a clean JSON string for safety
+            )
+            logger.info(f"Plantilla {template_key} enviada exitosamente a {to_number}. Twilio SID: {message.sid}")
+            return message.sid
+        except Exception as twilio_err:
+            logger.error(f"TWILIO API ERROR sending template {template_key} to {to_number}: {twilio_err}")
+            # Log the specific error message from Twilio if available
+            if hasattr(twilio_err, 'message'):
+                logger.error(f"Twilio Message: {twilio_err.message}")
+            if hasattr(twilio_err, 'code'):
+                logger.error(f"Twilio Error Code: {twilio_err.code}")
+            return None
     except Exception as e:
         logger.error(f"Error enviando plantilla {template_key} a {to_number}: {e}")
         return None
