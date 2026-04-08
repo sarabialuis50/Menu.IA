@@ -345,13 +345,13 @@ export default function PedidosPage() {
                                 { title: 'Entregados', count: todayOrders.filter(o => o.estado === 'entregado').length, colorClasses: 'bg-slate-100 text-slate-600', Icon: Utensils },
                                 { title: 'Cancelados', count: todayOrders.filter(o => o.estado === 'cancelado').length, colorClasses: 'bg-red-50 text-red-600', Icon: XCircle }
                             ].map((stat, idx) => (
-                                <Card key={idx} className="p-4 sm:p-5 border-2 border-gray-100 rounded-3xl bg-white shadow-sm hover:shadow-md transition-all flex flex-col items-center justify-center text-center gap-3">
-                                    <div className={`size-12 rounded-2xl flex items-center justify-center shrink-0 ${stat.colorClasses.split(' ')[0]}`}>
-                                        <stat.Icon className={`w-6 h-6 ${stat.colorClasses.split(' ')[1]}`} />
+                                <Card key={idx} className="p-3 sm:p-4 md:p-5 border-2 border-gray-100 rounded-3xl bg-white shadow-sm hover:shadow-md transition-all flex flex-col items-center justify-center text-center gap-2 sm:gap-3 min-h-[120px] sm:min-h-0">
+                                    <div className={`size-10 sm:size-12 rounded-2xl flex items-center justify-center shrink-0 ${stat.colorClasses.split(' ')[0]} mb-1 sm:mb-0`}>
+                                        <stat.Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${stat.colorClasses.split(' ')[1]}`} />
                                     </div>
                                     <div>
-                                        <h3 className="text-2xl sm:text-3xl font-black text-gray-900 leading-none mb-1.5">{stat.count}</h3>
-                                        <p className="text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest leading-tight line-clamp-1">{stat.title}</p>
+                                        <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-gray-900 leading-none mb-1.5">{stat.count}</h3>
+                                        <p className="text-[10px] sm:text-[11px] font-black text-gray-400 uppercase tracking-widest leading-tight break-words px-1 min-h-[1.2em]">{stat.title}</p>
                                     </div>
                                 </Card>
                             ))

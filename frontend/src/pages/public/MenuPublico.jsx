@@ -696,7 +696,7 @@ const MenuContent = () => {
 
         {/* Nutritional Info (IA) - Compact row below description */}
         {(product.nutri_kcal || product.nutri_proteina || product.nutri_carbohidratos || product.nutri_grasa) && (
-          <div className="flex flex-nowrap items-center gap-1 md:gap-1.5 mb-2 pb-0.5 w-full overflow-x-auto no-scrollbar">
+          <div className="flex flex-nowrap items-center gap-1 md:gap-1.5 mb-3 pb-1 w-full overflow-x-auto no-scrollbar">
             {product.nutri_kcal && (
               <div title="Calorías" className="flex-shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-[#4ADE80]/10 text-[#22C55E] text-[7px] md:text-[8px] font-black border border-[#4ADE80]/20 whitespace-nowrap">
                 🔥 {product.nutri_kcal} <span className="md:inline hidden">kcal</span>
@@ -720,7 +720,7 @@ const MenuContent = () => {
           </div>
         )}
 
-        <div className="flex items-center justify-between mt-auto pt-2 md:pt-3 border-t border-[#f0f4f2]">
+        <div className="flex items-center justify-between mt-auto pt-3 md:pt-4 border-t border-[#f0f4f2] min-h-[60px] md:min-h-0">
           <div className="flex items-baseline gap-2 md:gap-3">
             {product.precio > 0 && (
               <span className="text-base md:text-2xl font-black text-[#111814]">{formatCurrency(product.precio)}</span>
