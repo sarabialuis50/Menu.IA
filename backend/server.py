@@ -2005,8 +2005,12 @@ async def create_order(slug: str, data: OrderCreate, background_tasks: Backgroun
         
         wa_credits = business_data.get('wa_credits', 0)
         wa_count = business_data.get('wa_messages_count', 0)
+        whatsapp_usados = business_data.get('whatsapp_usados', 0)
         
         if not is_demo:
+            # Always increment whatsapp_usados (used for dashboard counter)
+            supabase.table('negocios').update({"whatsapp_usados": whatsapp_usados + credits_to_deduct}).eq("id", business_id).execute()
+            
             if wa_credits >= credits_to_deduct:
                 supabase.table('negocios').update({"wa_credits": wa_credits - credits_to_deduct}).eq("id", business_id).execute()
             else:
@@ -2292,12 +2296,20 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
         if not res_order.data: return
         order = res_order.data[0]
         
+        # Get display ID (numero_secuencial padded to 8 digits or first 8 chars of UUID)
+        numero_secuencial = order.get('numero_secuencial')
+        if numero_secuencial:
+            display_id = str(numero_secuencial).zfill(8)
+        else:
+            display_id = order_id[:8].upper() if isinstance(order_id, str) else str(order_id)
+        
         res_biz = supabase.table('negocios').select('*').eq('slug', slug).execute()
         if not res_biz.data: return
         biz = res_biz.data[0]
         negocio_id = biz['id']
         wa_count = biz.get('wa_messages_count', 0)
         wa_credits = biz.get('wa_credits', 0)
+        whatsapp_usados = biz.get('whatsapp_usados', 0)
         
         frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:3000")
         
@@ -2341,7 +2353,7 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
                 cliente_nombre=order.get('cliente_nombre', 'Cliente'),
                 cliente_telefono=order.get('cliente_telefono', 'N/A'),
                 direccion_entrega=order.get('direccion', 'Ver en mapa'),
-                order_id_corto=order_id[:8].upper()
+                order_id_corto=display_id
             )
             
             messages_sent = 0
@@ -2386,6 +2398,8 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
             
             # 3. Deduct credits for messages sent (assignment = 2 messages: repartidor + cliente)
             if messages_sent > 0:
+                # Always increment whatsapp_usados (used for dashboard counter)
+                supabase.table('negocios').update({"whatsapp_usados": whatsapp_usados + messages_sent}).eq("id", negocio_id).execute()
                 if wa_credits >= messages_sent:
                     supabase.table('negocios').update({"wa_credits": wa_credits - messages_sent}).eq("id", negocio_id).execute()
                 else:
@@ -2401,14 +2415,14 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
             messages_sent = 0
             
             # Notificar Cliente
-            msg_cust = f"✅ *¡Pedido Entregado!* (#ID: {order_id[:8].upper()})\n\nEsperamos que lo disfrutes. ¡Vuelve pronto a {biz.get('nombre', 'nuestro local')}!"
+            msg_cust = f"✅ *¡Pedido Entregado!* (#ID: {display_id})\n\nEsperamos que lo disfrutes. ¡Vuelve pronto a {biz.get('nombre', 'nuestro local')}!"
             cust_phone = clean_wa_phone(order.get('cliente_telefono'))
             if cust_phone:
                 send_whatsapp_response(cust_phone, msg_cust, custom_config=twilio_config)
                 messages_sent += 1
             
             # Notificar Admin
-            msg_admin = f"💰 *ENTREGA COMPLETADA*\n\nEl pedido #{order_id[:8].upper()} ha sido registrado como entregado al cliente {order.get('cliente_nombre', 'N/A')}."
+            msg_admin = f"💰 *ENTREGA COMPLETADA*\n\nEl pedido #{display_id} ha sido registrado como entregado al cliente {order.get('cliente_nombre', 'N/A')}."
             biz_phone = clean_wa_phone(biz.get('whatsapp') or biz.get('telefono'))
             if biz_phone:
                 send_whatsapp_response(biz_phone, msg_admin, custom_config=twilio_config)
@@ -2416,6 +2430,8 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
             
             # Deduct credits for messages sent (entregado = up to 2 messages)
             if messages_sent > 0:
+                # Always increment whatsapp_usados (used for dashboard counter)
+                supabase.table('negocios').update({"whatsapp_usados": whatsapp_usados + messages_sent}).eq("id", negocio_id).execute()
                 current_wa_count = biz.get('wa_messages_count', 0)
                 current_wa_credits = biz.get('wa_credits', 0)
                 if current_wa_credits >= messages_sent:
@@ -3586,7 +3602,8 @@ async def handle_whatsapp_webhook(request: Request):
             
             # Actualizar contador de mensajes operativos (Soporte/Ventas)
             if business_data:
-                update_data = {"wa_messages_count": wa_count + 1}
+                whatsapp_usados = business_data.get('whatsapp_usados', 0)
+                update_data = {"wa_messages_count": wa_count + 1, "whatsapp_usados": whatsapp_usados + 1}
                 if biz_plan == 'trial':
                     update_data["ai_credits_wa_used"] = business_data.get('ai_credits_wa_used', 0) + 1
                 supabase.table('negocios').update(update_data).eq('id', negocio_id).execute()

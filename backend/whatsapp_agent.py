@@ -865,7 +865,11 @@ async def create_order_ai(negocio_id: str, args: Dict[str, Any]) -> str:
         if not is_demo:
             wa_credits = biz_data.get('wa_credits', 0)
             wa_count = biz_data.get('wa_messages_count', 0)
+            whatsapp_usados = biz_data.get('whatsapp_usados', 0)
             credits_to_deduct = 2
+            
+            # Always increment whatsapp_usados (used for dashboard counter)
+            supabase.table('negocios').update({"whatsapp_usados": whatsapp_usados + credits_to_deduct}).eq("id", negocio_id).execute()
             
             if wa_credits >= credits_to_deduct:
                 supabase.table('negocios').update({"wa_credits": wa_credits - credits_to_deduct}).eq("id", negocio_id).execute()
