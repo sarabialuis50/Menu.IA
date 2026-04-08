@@ -60,6 +60,7 @@ export default function DashboardPage() {
   const { user, api } = useAuth();
   const [analytics, setAnalytics] = useState(null);
   const [recentOrders, setRecentOrders] = useState([]);
+  const [vipClientes, setVipClientes] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
@@ -86,13 +87,30 @@ export default function DashboardPage() {
     let isMounted = true;
     const fetchData = async () => {
       try {
-        const [analyticsRes, ordersRes] = await Promise.all([
+        const [analyticsRes, ordersRes, vipRes] = await Promise.all([
           api().get(`/business/${slug}/analytics`),
-          api().get(`/orders/${slug}?limit=5`)
+          api().get(`/orders/${slug}?limit=5`),
+          api().get(`/loyalty/${slug}/customers?limit=4`)
         ]);
         if (isMounted) {
           setAnalytics(analyticsRes.data);
           setRecentOrders(ordersRes.data);
+          
+          // Map VIP Clients
+          const mappedVips = vipRes.data.map(c => {
+            let level = 'Bronce';
+            if (c.puntos_totales > 1000) level = 'Oro';
+            else if (c.puntos_totales > 300) level = 'Plata';
+            
+            return {
+              nombre: c.nombre || 'Sin Nombre',
+              telefono: c.telefono,
+              nivel: level,
+              puntos: `${c.puntos_totales.toLocaleString()} pts`,
+              img: `https://ui-avatars.com/api/?name=${encodeURIComponent(c.nombre || 'C')}&background=22C55E&color=fff`
+            };
+          });
+          setVipClientes(mappedVips);
         }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
@@ -135,13 +153,6 @@ export default function DashboardPage() {
     { name: 'PARTICIPACIÓN MEDIA', value: 25, color: '#3B82F6' },
     { name: 'CLIENTES NUEVOS', value: 20, color: '#EAB308' },
     { name: 'SIN ACTIVIDAD', value: 10, color: '#EF4444' },
-  ];
-
-  const vipClientes = [
-    { nombre: 'Carlos Rodríguez', nivel: 'Oro', puntos: '1.450 pts', img: 'https://ui-avatars.com/api/?name=Carlos+Rodriguez&background=22C55E&color=fff' },
-    { nombre: 'María García', nivel: 'Plata', puntos: '450 pts', img: 'https://ui-avatars.com/api/?name=Maria+Garcia&background=22C55E&color=fff' },
-    { nombre: 'Juan Pérez', nivel: 'Oro', puntos: '1.250 pts', img: 'https://ui-avatars.com/api/?name=Juan+Perez&background=22C55E&color=fff' },
-    { nombre: 'Ana López', nivel: 'Plata', puntos: '320 pts', img: 'https://ui-avatars.com/api/?name=Ana+Lopez&background=22C55E&color=fff' },
   ];
 
   return (
@@ -222,33 +233,43 @@ export default function DashboardPage() {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {vipClientes.map((cliente, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between group hover:shadow-md transition-all"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-green-50 overflow-hidden border border-gray-100 shrink-0">
-                    <img src={cliente.img} alt={cliente.nombre} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-black text-gray-900 truncate">{cliente.nombre}</p>
-                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">
-                      <span className={cliente.nivel === 'Oro' ? 'text-amber-500' : 'text-blue-400'}>{cliente.nivel}</span> • {cliente.puntos}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => toast.success(`Abriendo chat con ${cliente.nombre}`)}
-                  className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-[#4ADE80]/10 hover:text-[#22C55E] transition-all shrink-0"
+            {vipClientes.length > 0 ? (
+              vipClientes.map((cliente, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: i * 0.1 }}
+                  className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between group hover:shadow-md transition-all"
                 >
-                  <MessageCircle className="w-4 h-4" />
-                </button>
-              </motion.div>
-            ))}
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-green-50 overflow-hidden border border-gray-100 shrink-0">
+                      <img src={cliente.img} alt={cliente.nombre} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-black text-gray-900 truncate">{cliente.nombre}</p>
+                      <p className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">
+                        <span className={cliente.nivel === 'Oro' ? 'text-amber-500' : 'text-blue-400'}>{cliente.nivel}</span> • {cliente.puntos}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                        toast.success(`Abriendo chat con ${cliente.nombre}`);
+                        window.open(`https://wa.me/${cliente.telefono.replace(/\s+/g, '')}`, '_blank');
+                    }}
+                    className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-[#4ADE80]/10 hover:text-[#22C55E] transition-all shrink-0"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                  </button>
+                </motion.div>
+              ))
+            ) : (
+              <div className="col-span-full py-10 bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-center">
+                <Users className="w-10 h-10 text-gray-300 mb-2" />
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">No hay clientes VIP aún</p>
+              </div>
+            )}
           </div>
         </div>
 

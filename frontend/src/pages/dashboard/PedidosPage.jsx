@@ -609,19 +609,19 @@ export default function PedidosPage() {
 
             {/* Modal para Ver Pedido (DETALLES DEL PEDIDO) */}
             <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
-                <DialogContent className="max-w-2xl rounded-[2rem] border-none p-0 overflow-hidden bg-[#F8F9FA] shadow-2xl" aria-describedby="order-details-description">
+                <DialogContent className="max-w-2xl rounded-[2rem] border-none p-0 overflow-hidden bg-[#F8F9FA] shadow-2xl flex flex-col max-h-[90vh]" aria-describedby="order-details-description">
                     <DialogHeader className="hidden">
                         <DialogTitle>Detalles del Pedido</DialogTitle>
                         <DialogDescription id="order-details-description">Vista detallada de la información del pedido y del cliente.</DialogDescription>
                     </DialogHeader>
-                    <div className="flex items-center gap-4 p-6 bg-white border-b border-gray-100">
+                    <div className="flex-shrink-0 flex items-center gap-4 p-6 bg-white border-b border-gray-100">
                         <Button variant="ghost" size="icon" onClick={() => setShowViewModal(false)} className="rounded-full">
                             <ArrowLeft className="w-5 h-5" />
                         </Button>
                         <DialogTitle className="text-xl font-black text-gray-900">Detalles del Pedido</DialogTitle>
                     </div>
 
-                    <div className="p-8 space-y-8 overflow-y-auto max-h-[80vh] no-scrollbar">
+                    <div className="flex-1 p-8 space-y-8 overflow-y-auto">
                         {/* Header Info */}
                         <div className="text-center space-y-1">
                             <h2 className="text-2xl font-black text-[#FF6B00]">{user?.nombre || 'Mi Negocio'}</h2>
@@ -763,19 +763,19 @@ export default function PedidosPage() {
 
             {/* Modal para Seguimiento de Pedido (Tracking) */}
             <Dialog open={showTrackingModal} onOpenChange={setShowTrackingModal}>
-                <DialogContent className="max-w-xl rounded-[2rem] border-none p-0 overflow-hidden bg-[#F8F9FA] shadow-2xl" aria-describedby="tracking-modal-description">
+                <DialogContent className="max-w-xl rounded-[2rem] border-none p-0 overflow-hidden bg-[#F8F9FA] shadow-2xl flex flex-col max-h-[90vh]" aria-describedby="tracking-modal-description">
                     <DialogHeader className="hidden">
                         <DialogTitle>Seguimiento a Pedido</DialogTitle>
                         <DialogDescription id="tracking-modal-description">Actualización del estado del flujo del pedido.</DialogDescription>
                     </DialogHeader>
-                    <div className="flex items-center gap-4 p-6 bg-white border-b border-gray-100">
+                    <div className="flex-shrink-0 flex items-center gap-4 p-6 bg-white border-b border-gray-100">
                         <Button variant="ghost" size="icon" onClick={() => setShowTrackingModal(false)} className="rounded-full">
                             <ArrowLeft className="w-5 h-5" />
                         </Button>
                         <DialogTitle className="text-xl font-black text-gray-900">Seguimiento a Pedido</DialogTitle>
                     </div>
 
-                    <div className="p-8 space-y-8 overflow-y-auto max-h-[80vh] no-scrollbar">
+                    <div className="flex-1 p-8 space-y-8 overflow-y-auto">
                         {/* Order Summary Card */}
                         <Card className="bg-white rounded-3xl p-6 shadow-sm border-2 border-gray-100 space-y-3">
                             <div className="flex justify-between items-center">
@@ -823,22 +823,22 @@ export default function PedidosPage() {
                             </div>
                         </div>
 
-                        {/* Action Button */}
-                        <div className="sticky bottom-0 bg-[#F8F9FA] pt-4 pb-2">
-                            <Button
-                                disabled={!selectedStatus || selectedStatus === selectedOrder?.estado}
-                                onClick={() => {
-                                    handleUpdateStatus(selectedOrder.id, selectedStatus);
-                                    setShowTrackingModal(false);
-                                }}
-                                className={`w-full h-14 rounded-2xl font-black text-sm tracking-widest transition-all shadow-lg ${selectedStatus && selectedStatus !== selectedOrder?.estado
-                                    ? 'bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814]'
-                                    : 'bg-[#94A3B8] text-white opacity-50'
-                                    }`}
-                            >
-                                ACTUALIZAR ESTADO
-                            </Button>
                         </div>
+
+                    <div className="flex-shrink-0 p-6 bg-white border-t border-gray-100">
+                        <Button
+                            disabled={!selectedStatus || selectedStatus === selectedOrder?.estado}
+                            onClick={() => {
+                                handleUpdateStatus(selectedOrder.id, selectedStatus);
+                                setShowTrackingModal(false);
+                            }}
+                            className={`w-full h-14 rounded-2xl font-black text-sm tracking-widest transition-all shadow-lg ${selectedStatus && selectedStatus !== selectedOrder?.estado
+                                ? 'bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814]'
+                                : 'bg-[#94A3B8] text-white opacity-50'
+                                }`}
+                        >
+                            ACTUALIZAR ESTADO
+                        </Button>
                     </div>
                 </DialogContent>
             </Dialog>
