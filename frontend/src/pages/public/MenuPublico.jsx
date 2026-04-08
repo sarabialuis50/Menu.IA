@@ -1790,7 +1790,7 @@ const MenuContent = () => {
                 </div>
 
                 {/* Content Scrollable */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-10 pb-40 md:pb-56">
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-10 pb-64 md:pb-72">
                   <div className="max-w-2xl mx-auto space-y-8">
                     {/* Basic Info */}
                     <div className="space-y-4 overflow-hidden">
@@ -2031,7 +2031,7 @@ const MenuContent = () => {
                       })}
 
                       {/* Notes Section */}
-                      <div className="space-y-4">
+                      <div className="space-y-4 pb-12">
                         <div className="flex items-center gap-2">
                           <h3 className="text-lg font-black text-[#111814] tracking-tight">Observaciones del pedido</h3>
                           <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">(Opcional)</span>
