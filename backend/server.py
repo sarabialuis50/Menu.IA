@@ -2418,15 +2418,29 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
             msg_cust = f"✅ *¡Pedido Entregado!* (#ID: {display_id})\n\nEsperamos que lo disfrutes. ¡Vuelve pronto a {biz.get('nombre', 'nuestro local')}!"
             cust_phone = clean_wa_phone(order.get('cliente_telefono'))
             if cust_phone:
-                send_whatsapp_response(cust_phone, msg_cust, custom_config=twilio_config)
-                messages_sent += 1
+                logger.info(f"Enviando notificación de entrega al cliente: {cust_phone}")
+                result = send_whatsapp_response(cust_phone, msg_cust, custom_config=twilio_config)
+                if result:
+                    logger.info(f"Mensaje de entrega enviado al cliente {cust_phone}. SID: {result}")
+                    messages_sent += 1
+                else:
+                    logger.error(f"Error al enviar mensaje de entrega al cliente {cust_phone}")
+            else:
+                logger.warning(f"No hay teléfono del cliente para enviar notificación de entrega")
             
             # Notificar Admin
             msg_admin = f"💰 *ENTREGA COMPLETADA*\n\nEl pedido #{display_id} ha sido registrado como entregado al cliente {order.get('cliente_nombre', 'N/A')}."
             biz_phone = clean_wa_phone(biz.get('whatsapp') or biz.get('telefono'))
             if biz_phone:
-                send_whatsapp_response(biz_phone, msg_admin, custom_config=twilio_config)
-                messages_sent += 1
+                logger.info(f"Enviando notificación de entrega al negocio: {biz_phone}")
+                result = send_whatsapp_response(biz_phone, msg_admin, custom_config=twilio_config)
+                if result:
+                    logger.info(f"Mensaje de entrega enviado al negocio {biz_phone}. SID: {result}")
+                    messages_sent += 1
+                else:
+                    logger.error(f"Error al enviar mensaje de entrega al negocio {biz_phone}")
+            else:
+                logger.warning(f"No hay teléfono del negocio para enviar notificación de entrega")
             
             # Deduct credits for messages sent (entregado = up to 2 messages)
             if messages_sent > 0:
