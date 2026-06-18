@@ -1,5 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+const motion = { 
+  div: ({ initial, animate, exit, transition, ...props }) => <div {...props} />,
+  button: ({ initial, animate, exit, transition, whileHover, whileTap, ...props }) => <button {...props} />
+};
+const AnimatePresence = ({ children }) => <>{children}</>;
 import { MessageCircle, X, Send, Loader2, Minimize2, ExternalLink, Mic, Square, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

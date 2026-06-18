@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+const motion = { div: ({ initial, animate, exit, transition, ...props }) => <div {...props} /> };
+const AnimatePresence = ({ children }) => <>{children}</>;
 import { Cookie, X, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';

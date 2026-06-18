@@ -639,3 +639,174 @@ class MarketingAISuggestionRequest(BaseModel):
     segment_name: str
     segment_desc: str
     tone: Optional[str] = "amigable y profesional"
+
+# --- NEW ARCHITECTURE MODELS (Multi-Sede, Catalog, Inventory, Loyalty) ---
+
+class BrandBase(BaseModel):
+    nombre: str
+    slug: str
+    logo_url: Optional[str] = None
+    configuracion_global: Optional[Dict[str, Any]] = {}
+
+class BrandCreate(BrandBase):
+    pass
+
+class Brand(BrandBase):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=generate_id)
+    created_at: datetime = Field(default_factory=get_utc_now)
+    updated_at: datetime = Field(default_factory=get_utc_now)
+
+class GlobalCategoryBase(BaseModel):
+    brand_id: str
+    nombre: str
+    orden: int = 0
+
+class GlobalCategoryCreate(GlobalCategoryBase):
+    pass
+
+class GlobalCategory(GlobalCategoryBase):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=generate_id)
+    created_at: datetime = Field(default_factory=get_utc_now)
+    updated_at: datetime = Field(default_factory=get_utc_now)
+
+class GlobalProductBase(BaseModel):
+    brand_id: str
+    category_id: Optional[str] = None
+    nombre: str
+    descripcion: Optional[str] = None
+    precio_base: float
+    imagen: Optional[str] = None
+
+class GlobalProductCreate(GlobalProductBase):
+    pass
+
+class GlobalProduct(GlobalProductBase):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=generate_id)
+    created_at: datetime = Field(default_factory=get_utc_now)
+    updated_at: datetime = Field(default_factory=get_utc_now)
+
+class SedeProductBase(BaseModel):
+    sede_id: str
+    global_product_id: str
+    activo: bool = True
+    disponible: bool = True
+    precio_local: Optional[float] = None
+    config_adicional: Optional[Dict[str, Any]] = {}
+
+class SedeProductCreate(SedeProductBase):
+    pass
+
+class SedeProduct(SedeProductBase):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=generate_id)
+    created_at: datetime = Field(default_factory=get_utc_now)
+    updated_at: datetime = Field(default_factory=get_utc_now)
+
+class GlobalIngredientBase(BaseModel):
+    brand_id: str
+    nombre: str
+    unidad_medida: str
+
+class GlobalIngredientCreate(GlobalIngredientBase):
+    pass
+
+class GlobalIngredient(GlobalIngredientBase):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=generate_id)
+    created_at: datetime = Field(default_factory=get_utc_now)
+    updated_at: datetime = Field(default_factory=get_utc_now)
+
+class GlobalRecipeBase(BaseModel):
+    global_product_id: str
+    nombre: Optional[str] = None
+
+class GlobalRecipeCreate(GlobalRecipeBase):
+    pass
+
+class GlobalRecipe(GlobalRecipeBase):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=generate_id)
+    created_at: datetime = Field(default_factory=get_utc_now)
+    updated_at: datetime = Field(default_factory=get_utc_now)
+
+class RecipeIngredientBase(BaseModel):
+    recipe_id: str
+    global_ingredient_id: str
+    cantidad: float
+
+class RecipeIngredientCreate(RecipeIngredientBase):
+    pass
+
+class RecipeIngredient(RecipeIngredientBase):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=generate_id)
+    created_at: datetime = Field(default_factory=get_utc_now)
+    updated_at: datetime = Field(default_factory=get_utc_now)
+
+class SedeInventoryBase(BaseModel):
+    sede_id: str
+    global_ingredient_id: str
+    stock_actual: float = 0.0
+    stock_minimo: float = 0.0
+    costo_unitario: float = 0.0
+
+class SedeInventoryCreate(SedeInventoryBase):
+    pass
+
+class SedeInventory(SedeInventoryBase):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=generate_id)
+    created_at: datetime = Field(default_factory=get_utc_now)
+    updated_at: datetime = Field(default_factory=get_utc_now)
+
+class InventoryTransactionBase(BaseModel):
+    sede_id: str
+    global_ingredient_id: str
+    tipo: str # 'entrada', 'venta', 'merma', 'ajuste', 'reverso_cancelacion'
+    cantidad: float
+    reference_id: Optional[str] = None
+    notas: Optional[str] = None
+
+class InventoryTransactionCreate(InventoryTransactionBase):
+    pass
+
+class InventoryTransaction(InventoryTransactionBase):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=generate_id)
+    created_at: datetime = Field(default_factory=get_utc_now)
+
+class LoyaltyAccountBase(BaseModel):
+    brand_id: str
+    telefono: str
+    nombre: Optional[str] = None
+    email: Optional[str] = None
+    puntos_totales: int = 0
+    puntos_actuales: int = 0
+
+class LoyaltyAccountCreate(LoyaltyAccountBase):
+    pass
+
+class LoyaltyAccount(LoyaltyAccountBase):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=generate_id)
+    created_at: datetime = Field(default_factory=get_utc_now)
+    updated_at: datetime = Field(default_factory=get_utc_now)
+
+class LoyaltyTransactionBase(BaseModel):
+    account_id: str
+    sede_id: Optional[str] = None
+    tipo: str
+    puntos: int
+    reference_id: Optional[str] = None
+    descripcion: Optional[str] = None
+
+class LoyaltyTransactionCreate(LoyaltyTransactionBase):
+    pass
+
+class LoyaltyTransaction(LoyaltyTransactionBase):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=generate_id)
+    created_at: datetime = Field(default_factory=get_utc_now)

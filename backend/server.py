@@ -2458,6 +2458,82 @@ def notify_delivery_update_background(slug: str, order_id: str, type: str, data:
         logger.error(f"Error in delivery notification background: {str(e)}")
 
 
+async def process_inventory_for_order(order_id: str, sede_id: str, action: str):
+    try:
+        if action == 'deduct':
+            # Check idempotency
+            check = supabase.table('inventory_transactions').select('id').eq('reference_id', order_id).eq('tipo', 'venta').execute()
+            if check.data:
+                logger.info(f"Inventory already deducted for order {order_id}")
+                return
+                
+            order_res = supabase.table('pedidos').select('items').eq('id', order_id).execute()
+            if not order_res.data: return
+            items = order_res.data[0].get('items', [])
+            
+            for item in items:
+                prod_id = item.get('producto_id')
+                qty = item.get('cantidad', 1)
+                if not prod_id: continue
+                
+                recipe_res = supabase.table('global_recipes').select('id').eq('global_product_id', prod_id).execute()
+                if not recipe_res.data: continue
+                recipe_id = recipe_res.data[0]['id']
+                
+                ing_res = supabase.table('recipe_ingredients').select('global_ingredient_id, cantidad').eq('recipe_id', recipe_id).execute()
+                for ing in ing_res.data:
+                    ing_id = ing['global_ingredient_id']
+                    deduct_qty = float(ing['cantidad']) * float(qty)
+                    
+                    inv_res = supabase.table('sede_inventory').select('id, stock_actual').eq('sede_id', sede_id).eq('global_ingredient_id', ing_id).execute()
+                    if inv_res.data:
+                        new_stock = float(inv_res.data[0]['stock_actual']) - deduct_qty
+                        supabase.table('sede_inventory').update({'stock_actual': new_stock}).eq('id', inv_res.data[0]['id']).execute()
+                    else:
+                        supabase.table('sede_inventory').insert({
+                            'sede_id': sede_id,
+                            'global_ingredient_id': ing_id,
+                            'stock_actual': -deduct_qty
+                        }).execute()
+                        
+                    supabase.table('inventory_transactions').insert({
+                        'sede_id': sede_id,
+                        'global_ingredient_id': ing_id,
+                        'tipo': 'venta',
+                        'cantidad': -deduct_qty,
+                        'reference_id': order_id,
+                        'notas': f"Venta de producto {prod_id}"
+                    }).execute()
+                    
+        elif action == 'revert':
+            check_deduct = supabase.table('inventory_transactions').select('id').eq('reference_id', order_id).eq('tipo', 'venta').execute()
+            if not check_deduct.data: return 
+                
+            check_revert = supabase.table('inventory_transactions').select('id').eq('reference_id', order_id).eq('tipo', 'reverso_cancelacion').execute()
+            if check_revert.data: return 
+                
+            trans_res = supabase.table('inventory_transactions').select('global_ingredient_id, cantidad').eq('reference_id', order_id).eq('tipo', 'venta').execute()
+            for trans in trans_res.data:
+                ing_id = trans['global_ingredient_id']
+                revert_qty = abs(float(trans['cantidad']))
+                
+                inv_res = supabase.table('sede_inventory').select('id, stock_actual').eq('sede_id', sede_id).eq('global_ingredient_id', ing_id).execute()
+                if inv_res.data:
+                    new_stock = float(inv_res.data[0]['stock_actual']) + revert_qty
+                    supabase.table('sede_inventory').update({'stock_actual': new_stock}).eq('id', inv_res.data[0]['id']).execute()
+                
+                supabase.table('inventory_transactions').insert({
+                    'sede_id': sede_id,
+                    'global_ingredient_id': ing_id,
+                    'tipo': 'reverso_cancelacion',
+                    'cantidad': revert_qty,
+                    'reference_id': order_id,
+                    'notas': "Reverso por cancelación de pedido"
+                }).execute()
+                
+    except Exception as e:
+        logger.error(f"Error processing inventory for order {order_id}: {str(e)}")
+
 @api_router.put("/orders/{slug}/{order_id}", response_model=Order)
 async def update_order(slug: str, order_id: str, data: OrderUpdate, background_tasks: BackgroundTasks):
     try:
@@ -2478,6 +2554,12 @@ async def update_order(slug: str, order_id: str, data: OrderUpdate, background_t
             
         updated_order = res.data[0]
         order = Order(**updated_order)
+        
+        # Inventory Management triggers
+        if data.estado == OrderStatus.PREPARANDO:
+            asyncio.create_task(process_inventory_for_order(order_id, business_id, 'deduct'))
+        elif data.estado == OrderStatus.CANCELADO:
+            asyncio.create_task(process_inventory_for_order(order_id, business_id, 'revert'))
         
         # If order is delivered or cancelled, free the table
         if data.estado in [OrderStatus.ENTREGADO, OrderStatus.CANCELADO] and order.mesa_id:

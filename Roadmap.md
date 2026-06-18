@@ -20,7 +20,37 @@ Este roadmap detalla el plan de implementación en **4 fases** para integrar dos
 
 ---
 
-## 📌 Estado Actual del Proyecto (Pre-Agentes)
+## 🏗️ Refactorización Arquitectura Multisede (Actual)
+
+**Objetivo:** Transformar la plataforma de un SaaS B2B Multitenant a un sistema de negocio único con múltiples sedes operativas ("The Golden Burger").
+
+### ✅ Completado
+- **Migraciones SQL en Supabase:**
+  - Creación de jerarquía `brands` -> `sedes`.
+  - Catálogo maestro (`global_products`, `global_categories`).
+  - Overrides locales por sede (`sede_products`).
+  - Módulo de Inventario con recetas (`global_recipes`, `recipe_ingredients`, `sede_inventory`, `inventory_transactions`).
+  - Sistema global de fidelidad (`loyalty_clients`, `loyalty_transactions`).
+- **Backend (Motor de Pedidos):**
+  - Implementación de deducción de inventario (`sede_inventory`) de forma transaccional e idempotente al pasar pedido a estado `PREPARANDO`.
+  - Implementación de reversos automáticos de inventario al pasar pedido a `CANCELADO`.
+- **Frontend (Rediseño):**
+  - `LandingPage.jsx` rediseñado con tema de hamburguesería "Premium" (Oscuro/Dorado).
+  - Integración de las 3 sedes fijas (Norte, Centro, Sur).
+  - Íconos oficiales integrados. Animaciones inmersivas (modal flotante).
+
+### ⏳ Pendiente
+- **Backend (Endpoints de Catálogo):**
+  - Modificar `get_menu_items` en `server.py` para cruzar `global_products` con `sede_products` (aplicar `precio_local` y visibilidad por sede).
+- **Frontend (Paneles y Flujos):**
+  - Construir Panel Administrativo Global vs. Local (Selector de contexto de sede).
+  - Desarrollar la vista de Control de Inventario (`InventoryPage.jsx`).
+  - Desarrollar el panel de edición del Catálogo Maestro y Override de Sedes.
+  - Adaptar el flujo del carrito de compras al contexto de la sede seleccionada.
+
+---
+
+## 📌 Estado del Proyecto (IA)
 
 | Componente | Estado | Notas |
 |------------|--------|-------|
