@@ -1717,6 +1717,101 @@ async def remove_sede_product(sede_slug: str, product_id: str, business: Busines
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ─── INVENTORY ADMIN ENDPOINTS ────────────────────────────────────────────────
+
+@api_router.get("/catalog/sedes/{sede_slug}/inventory")
+async def get_sede_inventory(sede_slug: str, business: Business = Depends(get_current_business)):
+    """
+    Devuelve el inventario actual de ingredientes para una sede,
+    enriquecido con el nombre y unidad del ingrediente global.
+    """
+    negocio_res = supabase.table('negocios').select('id').eq('slug', sede_slug).execute()
+    if not negocio_res.data:
+        raise HTTPException(status_code=404, detail="Sede no encontrada")
+    sede_id = negocio_res.data[0]['id']
+
+    try:
+        inv_res = supabase.table('sede_inventory').select(
+            'id, sede_id, stock_actual, stock_minimo, costo_unitario, '
+            'global_ingredients(id, nombre, unidad_medida)'
+        ).eq('sede_id', sede_id).execute()
+    except Exception as e:
+        logger.error(f"Error fetching inventory for sede {sede_slug}: {e}")
+        raise HTTPException(status_code=500, detail="Error al obtener inventario")
+
+    result = []
+    for row in inv_res.data:
+        gi = row.get('global_ingredients') or {}
+        result.append({
+            'id': row['id'],
+            'sede_id': row['sede_id'],
+            'global_ingredient_id': gi.get('id'),
+            'nombre': gi.get('nombre', 'Ingrediente desconocido'),
+            'unidad_medida': gi.get('unidad_medida', 'unidades'),
+            'stock_actual': float(row.get('stock_actual', 0)),
+            'stock_minimo': float(row.get('stock_minimo', 0)),
+            'costo_unitario': float(row.get('costo_unitario', 0)),
+        })
+    return result
+
+
+class InventoryTransactionCreate(BaseModel):
+    sede_id: str
+    global_ingredient_id: str
+    tipo: str  # 'entrada' | 'ajuste' | 'merma'
+    cantidad: float
+    notas: Optional[str] = None
+
+
+@api_router.post("/catalog/sedes/inventory/transaction")
+async def register_inventory_transaction(
+    data: InventoryTransactionCreate,
+    business: Business = Depends(get_current_business)
+):
+    """
+    Registra un movimiento manual de inventario (entrada, ajuste, merma)
+    y actualiza el stock en sede_inventory.
+    """
+    try:
+        # 1. Record the transaction
+        tx_row = {
+            'id': str(uuid.uuid4()),
+            'sede_id': data.sede_id,
+            'global_ingredient_id': data.global_ingredient_id,
+            'tipo': data.tipo,
+            'cantidad': data.cantidad,
+            'notas': data.notas,
+            'created_at': datetime.now(timezone.utc).isoformat(),
+        }
+        supabase.table('inventory_transactions').insert(tx_row).execute()
+
+        # 2. Update or insert the stock in sede_inventory
+        existing = supabase.table('sede_inventory').select('id, stock_actual').eq(
+            'sede_id', data.sede_id).eq('global_ingredient_id', data.global_ingredient_id).execute()
+
+        if existing.data:
+            new_stock = float(existing.data[0]['stock_actual']) + data.cantidad
+            supabase.table('sede_inventory').update({
+                'stock_actual': new_stock,
+                'updated_at': datetime.now(timezone.utc).isoformat()
+            }).eq('id', existing.data[0]['id']).execute()
+        else:
+            supabase.table('sede_inventory').insert({
+                'id': str(uuid.uuid4()),
+                'sede_id': data.sede_id,
+                'global_ingredient_id': data.global_ingredient_id,
+                'stock_actual': data.cantidad,
+                'stock_minimo': 0,
+                'costo_unitario': 0,
+                'created_at': datetime.now(timezone.utc).isoformat(),
+                'updated_at': datetime.now(timezone.utc).isoformat(),
+            }).execute()
+
+        return {"message": "Movimiento registrado correctamente", "cantidad": data.cantidad, "tipo": data.tipo}
+
+    except Exception as e:
+        logger.error(f"Error registering inventory transaction: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # --- Options ---

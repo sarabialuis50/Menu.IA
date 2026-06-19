@@ -31,6 +31,8 @@ import GeminiConsultantPage from "@/pages/dashboard/GeminiConsultantPage";
 import WhatsappHubPage from "@/pages/dashboard/WhatsappHubPage";
 import MiPerfilPage from "@/pages/dashboard/MiPerfilPage";
 import ConfiguracionPage from "@/pages/dashboard/ConfiguracionPage";
+import CatalogoMaestroPage from "@/pages/dashboard/CatalogoMaestroPage";
+import InventarioPage from "@/pages/dashboard/InventarioPage";
 import BusinessHomePage from "@/pages/public/BusinessHomePage";
 import CustomerDetailsPage from "@/pages/dashboard/CustomerDetailsPage";
 import EditCustomerPage from "@/pages/dashboard/EditCustomerPage";
@@ -113,6 +115,8 @@ function AppRoutes() {
       <Route path="/dashboard/:slug/marketing" element={<ProtectedRoute><WhatsappHubPage /></ProtectedRoute>} />
       <Route path="/dashboard/:slug/perfil" element={<ProtectedRoute><MiPerfilPage /></ProtectedRoute>} />
       <Route path="/dashboard/:slug/configuracion" element={<ProtectedRoute><ConfiguracionPage /></ProtectedRoute>} />
+      <Route path="/dashboard/:slug/catalogo-maestro" element={<ProtectedRoute><CatalogoMaestroPage /></ProtectedRoute>} />
+      <Route path="/dashboard/:slug/inventario" element={<ProtectedRoute><InventarioPage /></ProtectedRoute>} />
 
       {/* Waiter App */}
       <Route path="/mesero/:slug" element={<MeseroApp />} />

@@ -16,7 +16,9 @@ import {
   ChevronRight,
   ClipboardList,
   Smartphone,
-  ExternalLink
+  ExternalLink,
+  Package,
+  BookOpen
 } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -29,6 +31,8 @@ const navItems = [
   { path: '/clientes', icon: Users, label: 'Base de Clientes' },
   { path: '/fidelidad', icon: Gift, label: 'Fidelidad' },
   { path: '/empleados', icon: Users, label: 'Empleados' },
+  { path: '/catalogo-maestro', icon: BookOpen, label: 'Catálogo Maestro', badge: 'NUEVO' },
+  { path: '/inventario', icon: Package, label: 'Inventario', badge: 'NUEVO' },
   { path: '/marketing', icon: MessageSquareMore, label: 'WhatsApp Hub' },
   { path: '/consultor', icon: Sparkles, label: 'Consultor Gemini' },
   { path: '/perfil', icon: Users, label: 'Mi Perfil' },
@@ -176,6 +180,11 @@ export const DashboardLayout = ({ children }) => {
                   >
                     <item.icon className={`w-4 h-4 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
                     <span className="flex-1 truncate">{item.label}</span>
+                    {item.badge && !isActive && (
+                      <span className="px-1.5 py-0.5 text-[8px] font-black rounded bg-[#DAA520]/20 text-[#DAA520] uppercase tracking-wider">
+                        {item.badge}
+                      </span>
+                    )}
                     {isActive && <ChevronRight className="w-3.5 h-3.5 opacity-50" />}
                   </Link>
                 );
