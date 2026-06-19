@@ -46,6 +46,17 @@ from models import LoyaltyConfig, LoyaltyConfigCreate, LoyaltyConfigUpdate
 from models import CustomerPoints, CustomerPointsPublic, CustomerCreate, PointsTransaction
 from models import RedeemPointsRequest, RedeemPointsResponse, AwardPointsRequest
 from models import MenuItem, MenuItemCreate, MenuItemOption, MenuItemOptionCreate, MenuItemTag, MenuItemTagCreate, MarketingAISuggestionRequest
+from models import (
+    Brand, GlobalCategory, GlobalProduct, SedeProduct,
+    GlobalIngredient, GlobalRecipe, RecipeIngredient,
+    SedeInventory, InventoryTransaction,
+    LoyaltyAccount, LoyaltyTransaction,
+    # New catalog response/request models
+    SedeMenuItemResponse,
+    GlobalProductCreate, GlobalProductUpdate,
+    SedeProductUpsert,
+    GlobalCategoryCreate, GlobalCategoryUpdate,
+)
 from models_client import Cliente, ClienteCreate, ClienteUpdate
 from models_client import Address, AddressCreate, AddressUpdate
 from models_client import OTPRequest, OTPVerify, ClientTokenResponse, PINLogin, UpdatePINRequest, ResetPINRequest, RecoveryInfo
@@ -1439,75 +1450,273 @@ async def delete_product(slug: str, product_id: str, business: Business = Depend
     return {"message": "Producto eliminado"}
 
 
-# ============ PREMIUM MENU ROUTES ============
-@api_router.get("/menu-items/{slug}", response_model=List[MenuItem])
+
+
+# ============ CATALOG ROUTES (Multi-Sede Architecture) ============
+
+@api_router.get("/menu-items/{slug}", response_model=List[SedeMenuItemResponse])
 async def get_menu_items(slug: str):
-    response = supabase.table('negocios').select('id').eq('slug', slug).execute()
-    if not response.data:
-        raise HTTPException(status_code=404, detail="Negocio no encontrado")
-    business_id = response.data[0]['id']
-    
-    response = supabase.table('menu_items').select('*').eq('negocio_id', business_id).order('created_at', desc=True).execute()
-    return [MenuItem(**item) for item in response.data]
+    """
+    Endpoint principal del menú público para una sede.
+    Lee del catálogo maestro (global_products) aplicando los overrides locales
+    de sede_products (precio_local, activo, disponible, config_adicional).
+    El campo 'id' en la respuesta siempre es el global_product_id para que
+    el motor de inventario (process_inventory_for_order) funcione correctamente.
+    """
+    # 1. Resolver la sede (negocio) a partir del slug
+    negocio_res = supabase.table('negocios').select('id').eq('slug', slug).execute()
+    if not negocio_res.data:
+        raise HTTPException(status_code=404, detail="Sede no encontrada")
+    sede_id = negocio_res.data[0]['id']
 
-
-@api_router.post("/menu-items/{slug}", response_model=MenuItem)
-async def create_menu_item(slug: str, data: MenuItemCreate, business: Business = Depends(get_current_business)):
-    if business.slug != slug:
-        raise HTTPException(status_code=403, detail="No autorizado")
-    
-    dump_data = data.model_dump()
-    dump_data['negocio_id'] = business.id
-    item = MenuItem(**dump_data)
-    data_dict = serialize_doc(item.model_dump())
-    
+    # 2. Obtener todos los sede_products activos para esta sede,
+    #    con JOIN implícito a global_products y su categoría
     try:
-        response = supabase.table('menu_items').insert(data_dict).execute()
-        if not response.data:
-            raise HTTPException(status_code=500, detail="Error al crear el plato")
-        return MenuItem(**response.data[0])
+        sp_res = supabase.table('sede_products').select(
+            'id, activo, disponible, precio_local, config_adicional, '
+            'global_products(id, nombre, descripcion, imagen, precio_base, category_id, '
+            'global_categories(id, nombre))'
+        ).eq('sede_id', sede_id).eq('activo', True).execute()
     except Exception as e:
-        logger.error(f"Error creating menu item: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error al crear plato: {str(e)}")
+        logger.error(f"Error fetching sede menu for slug '{slug}': {e}")
+        raise HTTPException(status_code=500, detail="Error al obtener el menú de la sede")
+
+    if not sp_res.data:
+        # Si no hay sede_products configurados aún, intentar fallback a menu_items clásico
+        # para mantener compatibilidad con sedes que aún no han migrado
+        logger.warning(f"No sede_products found for sede {sede_id} (slug: {slug}). Falling back to legacy menu_items.")
+        legacy_res = supabase.table('menu_items').select('*').eq('negocio_id', sede_id).order('created_at', desc=True).execute()
+        return [MenuItem(**item) for item in legacy_res.data]
+
+    # 3. Mapear cada fila al DTO de respuesta SedeMenuItemResponse
+    items: List[SedeMenuItemResponse] = []
+    for row in sp_res.data:
+        gp = row.get('global_products') or {}
+        cat = gp.get('global_categories') or {}
+        config = row.get('config_adicional') or {}
+
+        precio_base = float(gp.get('precio_base', 0))
+        precio_local = float(row['precio_local']) if row.get('precio_local') is not None else None
+        precio_vigente = precio_local if precio_local is not None else precio_base
+
+        item = SedeMenuItemResponse(
+            id=gp['id'],
+            sede_product_id=row['id'],
+            nombre=gp.get('nombre', ''),
+            descripcion=gp.get('descripcion'),
+            imagen=gp.get('imagen'),
+            category_id=gp.get('category_id'),
+            category_nombre=cat.get('nombre') if cat else None,
+            precio_base=precio_base,
+            precio_local=precio_local,
+            precio_vigente=precio_vigente,
+            activo=row.get('activo', True),
+            disponible=row.get('disponible', True),
+            # Extended config comes from sede_products.config_adicional
+            modificadores=config.get('modificadores'),
+            tamanos=config.get('tamanos'),
+            opciones=config.get('opciones'),
+            etiqueta=config.get('etiqueta'),
+            is_recommended=config.get('is_recommended', False),
+            is_spicy=config.get('is_spicy', False),
+            is_vegan=config.get('is_vegan', False),
+            is_vegetarian=config.get('is_vegetarian', False),
+            is_gluten_free=config.get('is_gluten_free', False),
+            allergens=config.get('allergens', []),
+            prep_time_minutes=config.get('prep_time_minutes'),
+        )
+        items.append(item)
+
+    return items
 
 
-@api_router.put("/menu-items/{slug}/{item_id}", response_model=MenuItem)
-async def update_menu_item(slug: str, item_id: str, data: Dict[str, Any], business: Business = Depends(get_current_business)):
-    if business.slug != slug:
-        raise HTTPException(status_code=403, detail="No autorizado")
-    
-    update_data = {k: v for k, v in data.items() if k != 'id'}
-    update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
-    
+# --- Legacy endpoints (deprecated, kept for backward compatibility) ---
+@api_router.post("/menu-items/{slug}", deprecated=True)
+async def create_menu_item_legacy(slug: str):
+    raise HTTPException(
+        status_code=501,
+        detail="Este endpoint está deprecado. Usa POST /catalog/global-products para crear productos en el catálogo maestro, y PUT /catalog/sedes/{sede_slug}/products/{product_id} para configurar la disponibilidad por sede."
+    )
+
+
+@api_router.put("/menu-items/{slug}/{item_id}", deprecated=True)
+async def update_menu_item_legacy(slug: str, item_id: str):
+    raise HTTPException(
+        status_code=501,
+        detail="Este endpoint está deprecado. Usa PATCH /catalog/global-products/{product_id} para actualizar el catálogo maestro, o PUT /catalog/sedes/{sede_slug}/products/{product_id} para overrides locales."
+    )
+
+
+@api_router.delete("/menu-items/{slug}/{item_id}", deprecated=True)
+async def delete_menu_item_legacy(slug: str, item_id: str):
+    raise HTTPException(
+        status_code=501,
+        detail="Este endpoint está deprecado. Desactiva el producto en la sede usando PUT /catalog/sedes/{sede_slug}/products/{product_id} con activo=false."
+    )
+
+
+# ============ CATALOG ADMIN ROUTES ============
+
+# --- Global Categories ---
+@api_router.get("/catalog/categories/{brand_slug}", response_model=List[GlobalCategory])
+async def get_global_categories(brand_slug: str, business: Business = Depends(get_current_business)):
+    """Lista todas las categorías del catálogo maestro para una marca."""
+    brand_res = supabase.table('brands').select('id').eq('slug', brand_slug).execute()
+    if not brand_res.data:
+        raise HTTPException(status_code=404, detail="Marca no encontrada")
+    brand_id = brand_res.data[0]['id']
+    res = supabase.table('global_categories').select('*').eq('brand_id', brand_id).order('orden').execute()
+    return [GlobalCategory(**c) for c in res.data]
+
+
+@api_router.post("/catalog/categories", response_model=GlobalCategory)
+async def create_global_category(data: GlobalCategoryCreate, business: Business = Depends(get_current_business)):
+    """Crea una nueva categoría en el catálogo maestro."""
+    row = data.model_dump()
+    row['id'] = str(uuid.uuid4())
+    row['created_at'] = datetime.now(timezone.utc).isoformat()
+    row['updated_at'] = datetime.now(timezone.utc).isoformat()
     try:
-        response = supabase.table('menu_items').update(update_data).match({
-            "id": item_id,
-            "negocio_id": business.id
-        }).execute()
-        
-        if not response.data:
-            raise HTTPException(status_code=404, detail="Plato no encontrado")
-        
-        return MenuItem(**response.data[0])
+        res = supabase.table('global_categories').insert(row).execute()
+        if not res.data:
+            raise HTTPException(status_code=500, detail="Error al crear categoría")
+        return GlobalCategory(**res.data[0])
     except Exception as e:
-        logger.error(f"Error updating menu item: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error al actualizar plato: {str(e)}")
+        logger.error(f"Error creating global category: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
-@api_router.delete("/menu-items/{slug}/{item_id}")
-async def delete_menu_item(slug: str, item_id: str, business: Business = Depends(get_current_business)):
-    if business.slug != slug:
-        raise HTTPException(status_code=403, detail="No autorizado")
-    
-    response = supabase.table('menu_items').delete().match({
-        "id": item_id,
-        "negocio_id": business.id
-    }).execute()
-    
-    if not response.data:
-        raise HTTPException(status_code=404, detail="Plato no encontrado")
-    
-    return {"message": "Plato eliminado"}
+@api_router.patch("/catalog/categories/{category_id}", response_model=GlobalCategory)
+async def update_global_category(category_id: str, data: GlobalCategoryUpdate, business: Business = Depends(get_current_business)):
+    """Actualiza nombre u orden de una categoría del catálogo maestro."""
+    update = {k: v for k, v in data.model_dump().items() if v is not None}
+    update['updated_at'] = datetime.now(timezone.utc).isoformat()
+    try:
+        res = supabase.table('global_categories').update(update).eq('id', category_id).execute()
+        if not res.data:
+            raise HTTPException(status_code=404, detail="Categoría no encontrada")
+        return GlobalCategory(**res.data[0])
+    except Exception as e:
+        logger.error(f"Error updating category {category_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.delete("/catalog/categories/{category_id}")
+async def delete_global_category(category_id: str, business: Business = Depends(get_current_business)):
+    """Elimina una categoría del catálogo maestro."""
+    try:
+        supabase.table('global_categories').delete().eq('id', category_id).execute()
+        return {"message": "Categoría eliminada"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# --- Global Products (Catálogo Maestro) ---
+@api_router.get("/catalog/products/{brand_slug}", response_model=List[GlobalProduct])
+async def get_global_products(brand_slug: str, business: Business = Depends(get_current_business)):
+    """Lista todos los productos del catálogo maestro para una marca."""
+    brand_res = supabase.table('brands').select('id').eq('slug', brand_slug).execute()
+    if not brand_res.data:
+        raise HTTPException(status_code=404, detail="Marca no encontrada")
+    brand_id = brand_res.data[0]['id']
+    res = supabase.table('global_products').select('*').eq('brand_id', brand_id).order('created_at', desc=True).execute()
+    return [GlobalProduct(**p) for p in res.data]
+
+
+@api_router.post("/catalog/products", response_model=GlobalProduct)
+async def create_global_product(data: GlobalProductCreate, business: Business = Depends(get_current_business)):
+    """Crea un nuevo producto en el catálogo maestro."""
+    row = data.model_dump()
+    row['id'] = str(uuid.uuid4())
+    row['created_at'] = datetime.now(timezone.utc).isoformat()
+    row['updated_at'] = datetime.now(timezone.utc).isoformat()
+    try:
+        res = supabase.table('global_products').insert(row).execute()
+        if not res.data:
+            raise HTTPException(status_code=500, detail="Error al crear producto")
+        return GlobalProduct(**res.data[0])
+    except Exception as e:
+        logger.error(f"Error creating global product: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.patch("/catalog/products/{product_id}", response_model=GlobalProduct)
+async def update_global_product(product_id: str, data: GlobalProductUpdate, business: Business = Depends(get_current_business)):
+    """Actualiza datos del catálogo maestro (nombre, descripción, precio_base, imagen)."""
+    update = {k: v for k, v in data.model_dump().items() if v is not None}
+    update['updated_at'] = datetime.now(timezone.utc).isoformat()
+    try:
+        res = supabase.table('global_products').update(update).eq('id', product_id).execute()
+        if not res.data:
+            raise HTTPException(status_code=404, detail="Producto no encontrado")
+        return GlobalProduct(**res.data[0])
+    except Exception as e:
+        logger.error(f"Error updating global product {product_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.delete("/catalog/products/{product_id}")
+async def delete_global_product(product_id: str, business: Business = Depends(get_current_business)):
+    """Elimina un producto del catálogo maestro (y en cascada sus sede_products)."""
+    try:
+        supabase.table('global_products').delete().eq('id', product_id).execute()
+        return {"message": "Producto eliminado del catálogo maestro"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# --- Sede Product Overrides ---
+@api_router.get("/catalog/sedes/{sede_slug}/products", response_model=List[SedeMenuItemResponse])
+async def get_sede_products(sede_slug: str, business: Business = Depends(get_current_business)):
+    """Lista todos los productos configurados para una sede (vista de administrador)."""
+    return await get_menu_items(sede_slug)
+
+
+@api_router.put("/catalog/sedes/{sede_slug}/products/{product_id}", response_model=SedeProduct)
+async def upsert_sede_product(sede_slug: str, product_id: str, data: SedeProductUpsert, business: Business = Depends(get_current_business)):
+    """
+    Crea o actualiza el override local de un producto global para una sede específica.
+    Si el par (sede_id, global_product_id) ya existe, lo actualiza.
+    Si no existe, lo crea (activando el producto en la sede).
+    """
+    negocio_res = supabase.table('negocios').select('id').eq('slug', sede_slug).execute()
+    if not negocio_res.data:
+        raise HTTPException(status_code=404, detail="Sede no encontrada")
+    sede_id = negocio_res.data[0]['id']
+
+    upsert_row = {
+        'sede_id': sede_id,
+        'global_product_id': product_id,
+        'activo': data.activo,
+        'disponible': data.disponible,
+        'precio_local': data.precio_local,
+        'config_adicional': data.config_adicional or {},
+        'updated_at': datetime.now(timezone.utc).isoformat(),
+    }
+    try:
+        res = supabase.table('sede_products').upsert(upsert_row, on_conflict='sede_id,global_product_id').execute()
+        if not res.data:
+            raise HTTPException(status_code=500, detail="Error al configurar producto en sede")
+        return SedeProduct(**res.data[0])
+    except Exception as e:
+        logger.error(f"Error upserting sede_product for sede {sede_slug}, product {product_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.delete("/catalog/sedes/{sede_slug}/products/{product_id}")
+async def remove_sede_product(sede_slug: str, product_id: str, business: Business = Depends(get_current_business)):
+    """Desvincula (elimina el override de) un producto de una sede. El producto sigue existiendo en el catálogo maestro."""
+    negocio_res = supabase.table('negocios').select('id').eq('slug', sede_slug).execute()
+    if not negocio_res.data:
+        raise HTTPException(status_code=404, detail="Sede no encontrada")
+    sede_id = negocio_res.data[0]['id']
+    try:
+        supabase.table('sede_products').delete().eq('sede_id', sede_id).eq('global_product_id', product_id).execute()
+        return {"message": "Producto desvinculado de la sede"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 
 
 # --- Options ---

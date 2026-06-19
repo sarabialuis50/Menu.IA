@@ -810,3 +810,96 @@ class LoyaltyTransaction(LoyaltyTransactionBase):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=generate_id)
     created_at: datetime = Field(default_factory=get_utc_now)
+
+
+# ============================================================
+# CATALOG RESPONSE MODELS (Multi-Sede Enriched Menu)
+# ============================================================
+
+class SedeMenuItemResponse(BaseModel):
+    """
+    DTO de salida del endpoint GET /menu-items/{slug}.
+    Combina global_products (catálogo maestro) con los overrides de sede_products.
+    El campo 'id' corresponde al global_product_id para mantener compatibilidad
+    con el motor de inventario (process_inventory_for_order).
+    """
+    model_config = ConfigDict(extra="ignore")
+    # Identity
+    id: str                              # = global_products.id  (crucial para motor de inventario)
+    sede_product_id: Optional[str] = None  # = sede_products.id  (para gestión desde el admin)
+    # Catalog master data
+    nombre: str
+    descripcion: Optional[str] = None
+    imagen: Optional[str] = None
+    category_id: Optional[str] = None
+    category_nombre: Optional[str] = None
+    # Pricing (override local tiene prioridad)
+    precio_base: float
+    precio_local: Optional[float] = None   # Si no es None, este es el precio vigente para la sede
+    precio_vigente: float                  # precio_local ?? precio_base (calculado en el backend)
+    # Availability flags (controlled per-sede)
+    activo: bool = True
+    disponible: bool = True
+    # Extended local config (from sede_products.config_adicional)
+    modificadores: Optional[List[Dict[str, Any]]] = None
+    tamanos: Optional[List[Dict[str, Any]]] = None
+    opciones: Optional[List[Dict[str, Any]]] = None
+    etiqueta: Optional[str] = None
+    is_recommended: bool = False
+    is_spicy: bool = False
+    is_vegan: bool = False
+    is_vegetarian: bool = False
+    is_gluten_free: bool = False
+    allergens: List[str] = []
+    prep_time_minutes: Optional[int] = None
+    # Timestamps
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+
+class GlobalProductCreate(BaseModel):
+    """Request body para crear un producto en el catálogo maestro."""
+    brand_id: str
+    category_id: Optional[str] = None
+    nombre: str
+    descripcion: Optional[str] = None
+    precio_base: float
+    imagen: Optional[str] = None
+
+
+class GlobalProductUpdate(BaseModel):
+    """Request body para actualizar campos del catálogo maestro."""
+    model_config = ConfigDict(extra="ignore")
+    category_id: Optional[str] = None
+    nombre: Optional[str] = None
+    descripcion: Optional[str] = None
+    precio_base: Optional[float] = None
+    imagen: Optional[str] = None
+
+
+class SedeProductUpsert(BaseModel):
+    """
+    Request body para activar/configurar un producto global en una sede.
+    Si el registro no existe para (sede_id, global_product_id), se crea.
+    Si existe, se actualiza (upsert).
+    """
+    global_product_id: str
+    activo: Optional[bool] = True
+    disponible: Optional[bool] = True
+    precio_local: Optional[float] = None
+    # Config adicional extendida (modificadores, etiquetas, alérgenos, etc.)
+    config_adicional: Optional[Dict[str, Any]] = {}
+
+
+class GlobalCategoryCreate(BaseModel):
+    """Request body para crear una categoría en el catálogo maestro."""
+    brand_id: str
+    nombre: str
+    orden: int = 0
+
+
+class GlobalCategoryUpdate(BaseModel):
+    """Request body para actualizar una categoría."""
+    nombre: Optional[str] = None
+    orden: Optional[int] = None
+
