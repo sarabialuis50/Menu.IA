@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { DashboardLayout } from '@/layouts/DashboardLayout';
 import { useAuth } from '@/context/AuthContext';
@@ -162,9 +162,8 @@ const ConfiguracionPage = () => {
     const { pathname } = useLocation();
     const [searchParams, setSearchParams] = useSearchParams();
 
-    // Auto-detect tab from path if not explicitly set in query
-    // Default to 'menu' tab
-    const activeTab = searchParams.get('tab') || 'menu';
+    // Default to 'domicilios' tab (menu tab was removed — managed via CatalogoMaestroPage)
+    const activeTab = searchParams.get('tab') || 'domicilios';
 
     // Status states
     const [loading, setLoading] = useState(true);
@@ -1025,17 +1024,8 @@ const ConfiguracionPage = () => {
                     onValueChange={(val) => setSearchParams({ tab: val })}
                     className="w-full"
                 >
-                    <TabsList className="bg-gray-100/50 p-1 h-auto rounded-[2.5rem] grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-1 mb-8 w-full overflow-hidden">
+                    <TabsList className="bg-gray-100/50 p-1 h-auto rounded-[2.5rem] grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1 mb-8 w-full overflow-hidden">
 
-                        <TabsTrigger
-                            value="menu"
-                            className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
-                            data-[state=active]:bg-[#4ADE80] data-[state=active]:text-[#111814] data-[state=active]:shadow-lg data-[state=active]:shadow-[#4ADE80]/20
-                            data-[state=inactive]:text-[#618972] data-[state=inactive]:bg-white data-[state=inactive]:border-gray-100 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:shadow-sm"
-                        >
-                            <Utensils className="w-3.5 h-3.5" />
-                            Gestión de Menú
-                        </TabsTrigger>
                         <TabsTrigger
                             value="domicilios"
                             className="flex-1 rounded-full px-2 py-3 font-black uppercase tracking-tighter text-[9px] items-center gap-2 transition-all duration-300 border border-transparent whitespace-nowrap
@@ -1087,69 +1077,6 @@ const ConfiguracionPage = () => {
 
 
                     {/* MENU TAB — Replaced by CatalogoMaestroPage in multi-sede architecture */}
-                    <TabsContent value="menu" className="space-y-6 outline-none">
-                        <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-
-                            {/* Icon */}
-                            <div className="w-20 h-20 rounded-3xl bg-[#DAA520]/10 border-2 border-[#DAA520]/20 flex items-center justify-center mb-6 shadow-sm">
-                                <Utensils className="w-9 h-9 text-[#DAA520]" />
-                            </div>
-
-                            {/* Heading */}
-                            <h2 className="text-2xl font-black text-slate-800 mb-2">
-                                Gestión de Menú fue migrada
-                            </h2>
-                            <p className="text-slate-500 text-sm max-w-md leading-relaxed mb-8">
-                                Con la nueva arquitectura multisede, los productos y categorías se administran desde el
-                                <strong className="text-slate-700"> Catálogo Maestro</strong>, donde también puedes configurar
-                                precios y disponibilidad de forma independiente para cada sede.
-                            </p>
-
-                            {/* What changed */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-xl mb-8 text-left">
-                                {[
-                                    {
-                                        icon: '📖',
-                                        title: 'Catálogo Global',
-                                        desc: 'Crea y edita productos que aplican a todo el negocio desde un solo lugar.',
-                                    },
-                                    {
-                                        icon: '🏪',
-                                        title: 'Overrides por Sede',
-                                        desc: 'Ajusta precio local, activa o desactiva productos para Norte, Centro o Sur.',
-                                    },
-                                    {
-                                        icon: '📦',
-                                        title: 'Inventario Real',
-                                        desc: 'El stock se descuenta automáticamente con cada pedido en estado Preparando.',
-                                    },
-                                    {
-                                        icon: '🏷️',
-                                        title: 'Categorías Globales',
-                                        desc: 'Define categorías únicas en el catálogo maestro para toda la marca.',
-                                    },
-                                ].map((item) => (
-                                    <div key={item.title}
-                                        className="flex gap-3 p-4 bg-white border border-slate-100 rounded-2xl shadow-sm">
-                                        <span className="text-2xl flex-shrink-0">{item.icon}</span>
-                                        <div>
-                                            <p className="text-sm font-bold text-slate-800">{item.title}</p>
-                                            <p className="text-xs text-slate-500 mt-0.5">{item.desc}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* CTA */}
-                            <button
-                                onClick={() => navigate(`/dashboard/${slug}/catalogo-maestro`)}
-                                className="inline-flex items-center gap-3 px-8 py-4 bg-[#DAA520] hover:bg-[#C4941A] text-white font-black rounded-2xl shadow-lg shadow-[#DAA520]/30 transition-all hover:scale-105 active:scale-95 text-sm"
-                            >
-                                <Utensils className="w-5 h-5" />
-                                Ir al Catálogo Maestro
-                            </button>
-                        </div>
-                    </TabsContent>
 
 
                     {/* DOMICILIOS TAB */}
