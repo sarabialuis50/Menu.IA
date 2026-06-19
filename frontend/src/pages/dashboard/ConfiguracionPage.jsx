@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { DashboardLayout } from '@/layouts/DashboardLayout';
 import { useAuth } from '@/context/AuthContext';
@@ -1086,375 +1086,71 @@ const ConfiguracionPage = () => {
 
 
 
-                    {/* MENU TAB */}
-                    <TabsContent value="menu" className="space-y-8 outline-none">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {/* Categories Manager */}
-                            <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                                <CardHeader className="pt-8 px-4 md:px-8 flex flex-row items-center justify-between">
-                                    <div>
-                                        <CardTitle className="text-xl">Categorías</CardTitle>
-                                        <CardDescription className="text-xs">Estructura de tu menú.</CardDescription>
-                                    </div>
-                                    <Button
-                                        size="sm"
-                                        onClick={() => {
-                                            setEditingCategory(null);
-                                            setCategoryName('');
-                                            setOriginalCategoryName('');
-                                            setCategoryIcon('Utensils');
-                                            setIsCategoryModalOpen(true);
-                                        }}
-                                        className="rounded-xl bg-[#4ADE80] text-[#111814] font-black hover:bg-[#4ADE80] shadow-md transition-all active:scale-95 text-[10px]"
-                                    >
-                                        <Plus className="w-3.5 h-3.5 mr-1.5" />
-                                        NUEVA
-                                    </Button>
-                                </CardHeader>
-                                <CardContent className="px-4 md:px-8 pb-8">
-                                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                                        {categories.map((cat, idx) => {
-                                            const catName = typeof cat === 'object' ? cat.nombre : cat;
-                                            const catIcon = typeof cat === 'object' ? cat.icono : 'Utensils';
-                                            const isUrl = catIcon?.includes('/') || catIcon?.includes('http');
-                                            const isLucide = AvailableIcons[catIcon];
-                                            const IconComponent = isLucide ? AvailableIcons[catIcon] : Utensils;
+                    {/* MENU TAB — Replaced by CatalogoMaestroPage in multi-sede architecture */}
+                    <TabsContent value="menu" className="space-y-6 outline-none">
+                        <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
 
-                                            return (
-                                                <motion.div
-                                                    initial={{ opacity: 0, scale: 0.9 }}
-                                                    animate={{ opacity: 1, scale: 1 }}
-                                                    key={`${catName}-${idx}`}
-                                                    className="group flex items-center gap-2 bg-white border border-gray-100 pl-2 pr-1 py-2 rounded-2xl hover:border-[#4ADE80] hover:shadow-xl hover:shadow-[#4ADE80]/5 transition-all cursor-default"
-                                                >
-                                                    <div className="size-7 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-[#4ADE80]/10 group-hover:text-[#22C55E] transition-colors shrink-0 overflow-hidden">
-                                                        {isUrl ? (
-                                                            <img src={catIcon} alt="" className="w-4 h-4 object-contain" />
-                                                        ) : isLucide ? (
-                                                            <IconComponent className="w-3.5 h-3.5" />
-                                                        ) : (
-                                                            <span className="text-base leading-none">{catIcon || '🍽️'}</span>
-                                                        )}
-                                                    </div>
-                                                    <div className="flex flex-col min-w-0 pr-0.5 flex-1">
-                                                        <span className="font-black text-[10px] text-[#111814] truncate leading-tight -mb-px">{catName}</span>
-                                                        <span className="text-[7px] text-[#618972] font-bold uppercase tracking-tight truncate">
-                                                            {products.filter(p => p.categoria === catName).length} Productos
-                                                        </span>
-                                                    </div>
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" size="icon" className="size-8 rounded-xl hover:bg-gray-100 shrink-0">
-                                                                <MoreVertical className="w-4 h-4 text-gray-400" />
-                                                            </Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end" className="rounded-2xl p-2 border-gray-100 shadow-2xl min-w-[140px]">
-                                                            <DropdownMenuItem
-                                                                onClick={() => {
-                                                                    setEditingCategory(cat);
-                                                                    setCategoryName(catName);
-                                                                    setOriginalCategoryName(catName);
-                                                                    setCategoryIcon(catIcon || 'Utensils');
-                                                                    setIsCategoryModalOpen(true);
-                                                                }}
-                                                                className="rounded-xl font-bold text-xs cursor-pointer gap-2 py-2.5"
-                                                            >
-                                                                <Edit2 className="w-3.5 h-3.5" />
-                                                                Editar
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem
-                                                                onClick={() => handleDeleteCategory(cat)}
-                                                                className="rounded-xl font-bold text-xs cursor-pointer gap-2 py-2.5 text-red-500 focus:text-red-600 focus:bg-red-50"
-                                                            >
-                                                                <Trash2 className="w-3.5 h-3.5" />
-                                                                Eliminar
-                                                            </DropdownMenuItem>
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
-                                                </motion.div>
-                                            );
-                                        })}
-                                        {categories.length === 0 && (
-                                            <div className="w-full text-center py-12 border-2 border-dashed border-gray-100 rounded-[2.5rem] bg-gray-50/30">
-                                                <div className="size-16 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center mx-auto mb-4">
-                                                    <FolderPlus className="w-6 h-6 text-gray-300" />
-                                                </div>
-                                                <p className="text-[#618972] text-sm font-medium">No hay categorías. Crea una para organizar tu menú.</p>
-                                            </div>
-                                        )}
-                                    </div>
-                                </CardContent>
-                            </Card>
+                            {/* Icon */}
+                            <div className="w-20 h-20 rounded-3xl bg-[#DAA520]/10 border-2 border-[#DAA520]/20 flex items-center justify-center mb-6 shadow-sm">
+                                <Utensils className="w-9 h-9 text-[#DAA520]" />
+                            </div>
 
-                            {/* Tags Manager */}
-                            <Card className="rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                                <CardHeader className="pt-8 px-4 md:px-8 flex flex-row items-center justify-between">
-                                    <div>
-                                        <CardTitle className="text-xl">Etiquetas</CardTitle>
-                                        <CardDescription className="text-xs">Promociones y estados.</CardDescription>
+                            {/* Heading */}
+                            <h2 className="text-2xl font-black text-slate-800 mb-2">
+                                Gestión de Menú fue migrada
+                            </h2>
+                            <p className="text-slate-500 text-sm max-w-md leading-relaxed mb-8">
+                                Con la nueva arquitectura multisede, los productos y categorías se administran desde el
+                                <strong className="text-slate-700"> Catálogo Maestro</strong>, donde también puedes configurar
+                                precios y disponibilidad de forma independiente para cada sede.
+                            </p>
+
+                            {/* What changed */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-xl mb-8 text-left">
+                                {[
+                                    {
+                                        icon: '📖',
+                                        title: 'Catálogo Global',
+                                        desc: 'Crea y edita productos que aplican a todo el negocio desde un solo lugar.',
+                                    },
+                                    {
+                                        icon: '🏪',
+                                        title: 'Overrides por Sede',
+                                        desc: 'Ajusta precio local, activa o desactiva productos para Norte, Centro o Sur.',
+                                    },
+                                    {
+                                        icon: '📦',
+                                        title: 'Inventario Real',
+                                        desc: 'El stock se descuenta automáticamente con cada pedido en estado Preparando.',
+                                    },
+                                    {
+                                        icon: '🏷️',
+                                        title: 'Categorías Globales',
+                                        desc: 'Define categorías únicas en el catálogo maestro para toda la marca.',
+                                    },
+                                ].map((item) => (
+                                    <div key={item.title}
+                                        className="flex gap-3 p-4 bg-white border border-slate-100 rounded-2xl shadow-sm">
+                                        <span className="text-2xl flex-shrink-0">{item.icon}</span>
+                                        <div>
+                                            <p className="text-sm font-bold text-slate-800">{item.title}</p>
+                                            <p className="text-xs text-slate-500 mt-0.5">{item.desc}</p>
+                                        </div>
                                     </div>
-                                    <Button
-                                        size="sm"
-                                        onClick={() => {
-                                            setEditingTag(null);
-                                            setTagName('');
-                                            setOriginalTagName('');
-                                            setIsTagModalOpen(true);
-                                        }}
-                                        className="rounded-xl bg-[#4ADE80] text-[#111814] font-black hover:bg-[#4ADE80] shadow-md transition-all active:scale-95 text-[10px]"
-                                    >
-                                        <TagIcon className="w-3.5 h-3.5 mr-1.5" />
-                                        NUEVA
-                                    </Button>
-                                </CardHeader>
-                                <CardContent className="px-4 md:px-8 pb-8">
-                                    <div className="flex flex-wrap gap-2">
-                                        {tags.map((tag, idx) => (
-                                            <div key={`${tag}-${idx}`} className="group flex items-center gap-1 bg-[#4ADE80]/5 border border-[#4ADE80]/20 pl-3 pr-1 py-1.5 rounded-xl hover:border-[#4ADE80] transition-all">
-                                                <span className="font-bold text-xs text-[#22C55E]">{tag}</span>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="size-6 rounded-lg hover:bg-gray-100">
-                                                            <MoreVertical className="w-3 h-3 text-gray-400" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end" className="rounded-2xl p-2 border-gray-100 shadow-xl">
-                                                        <DropdownMenuItem
-                                                            onClick={() => {
-                                                                setEditingTag(tag);
-                                                                setTagName(tag);
-                                                                setOriginalTagName(tag);
-                                                                setIsTagModalOpen(true);
-                                                            }}
-                                                            className="rounded-xl font-bold text-sm cursor-pointer gap-2"
-                                                        >
-                                                            <Edit2 className="w-4 h-4" />
-                                                            Renombrar
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            onClick={() => handleDeleteTag(tag)}
-                                                            className="rounded-xl font-bold text-sm cursor-pointer gap-2 text-red-500 focus:text-red-600 focus:bg-red-50"
-                                                        >
-                                                            <Trash2 className="w-4 h-4" />
-                                                            Eliminar
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </div>
-                                        ))}
-                                        {tags.length === 0 && (
-                                            <p className="text-[10px] text-gray-400 italic">No hay etiquetas creadas (ej: "Oferta", "Nuevo").</p>
-                                        )}
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                ))}
+                            </div>
+
+                            {/* CTA */}
+                            <button
+                                onClick={() => navigate(`/dashboard/${slug}/catalogo-maestro`)}
+                                className="inline-flex items-center gap-3 px-8 py-4 bg-[#DAA520] hover:bg-[#C4941A] text-white font-black rounded-2xl shadow-lg shadow-[#DAA520]/30 transition-all hover:scale-105 active:scale-95 text-sm"
+                            >
+                                <Utensils className="w-5 h-5" />
+                                Ir al Catálogo Maestro
+                            </button>
                         </div>
-
-                        {/* Products Table */}
-                        <Card className="rounded-[2rem] md:rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                            <div className="p-4 md:p-8 border-b border-gray-50">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                    <div className="text-center sm:text-left">
-                                        <h2 className="text-xl md:text-2xl font-black text-[#111814] tracking-tight whitespace-nowrap">Gestión de Catálogo</h2>
-                                        <p className="text-[11px] text-[#618972] font-medium mt-0.5 hidden sm:block">Administra tus productos y existencias.</p>
-                                    </div>
-                                    <div className="flex items-center gap-2 md:gap-3 flex-wrap justify-center sm:justify-end">
-                                        <Button
-                                            onClick={() => navigate(`/dashboard/${slug}/catalogo/todos`)}
-                                            variant="outline"
-                                            className="rounded-2xl h-10 md:h-11 px-3 md:px-6 border-gray-200 text-[#618972] font-black gap-2 hover:bg-gray-50 transition-all active:scale-95 text-[10px] md:text-sm"
-                                        >
-                                            <LayoutGrid className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                                            <span className="whitespace-nowrap">Historial</span>
-                                        </Button>
-                                        <Button
-                                            onClick={() => window.open(`/${slug}/menu`, '_blank')}
-                                            variant="outline"
-                                            className="rounded-2xl h-10 md:h-11 px-3 md:px-6 border-gray-200 text-[#618972] font-black gap-2 hover:bg-gray-50 transition-all active:scale-95 text-[10px] md:text-sm"
-                                        >
-                                            <ExternalLink className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                                            <span className="whitespace-nowrap">Ver Menú</span>
-                                        </Button>
-                                        <Button
-                                            onClick={openAddProduct}
-                                            className="rounded-2xl h-10 md:h-11 px-4 md:px-6 bg-[#4ADE80] hover:bg-[#4ADE80] text-[#111814] font-black gap-2 shadow-lg shadow-[#4ADE80]/10 transition-all active:scale-95 text-xs md:text-sm"
-                                        >
-                                            <Plus className="w-4 h-4" />
-                                            <span className="whitespace-nowrap">+ Nuevo Producto</span>
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="overflow-x-auto">
-                                <table className="w-full">
-                                    <thead>
-                                        <tr className="bg-gray-50/50">
-                                            <th className="hidden sm:table-cell px-3 py-3 text-left text-[10px] font-black text-[#618972] uppercase tracking-widest w-[72px]">Imagen</th>
-                                            <th className="px-3 py-3 text-left text-[10px] font-black text-[#618972] uppercase tracking-widest">Producto</th>
-                                            <th className="hidden lg:table-cell px-3 py-3 text-left text-[10px] font-black text-[#618972] uppercase tracking-widest">Categoría</th>
-                                            <th className="px-3 py-3 text-left text-[10px] font-black text-[#618972] uppercase tracking-widest w-[100px]">Precio</th>
-                                            <th className="hidden md:table-cell px-3 py-3 text-left text-[10px] font-black text-[#618972] uppercase tracking-widest w-[110px]">Estado</th>
-                                            <th className="px-3 py-3 text-right text-[10px] font-black text-[#618972] uppercase tracking-widest w-[100px]">Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-50">
-                                        <AnimatePresence mode='popLayout'>
-                                            {paginatedProducts.map((p) => (
-                                                <motion.tr
-                                                    key={p.id}
-                                                    layout
-                                                    initial={{ opacity: 0 }}
-                                                    animate={{ opacity: 1 }}
-                                                    exit={{ opacity: 0 }}
-                                                    className="hover:bg-gray-50/50 transition-colors group"
-                                                >
-                                                    <td className="hidden sm:table-cell px-3 py-3">
-                                                        <div className="size-14 rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 shadow-sm">
-                                                            <img
-                                                                src={p.imagen || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80'}
-                                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                                                alt={p.nombre}
-                                                            />
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-3 py-3">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="sm:hidden size-12 rounded-xl overflow-hidden border border-gray-100 bg-gray-50 flex-shrink-0">
-                                                                <img
-                                                                    src={p.imagen || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80'}
-                                                                    className="w-full h-full object-cover"
-                                                                    alt={p.nombre}
-                                                                />
-                                                            </div>
-                                                            <div className="space-y-0.5 min-w-0">
-                                                                <div className="font-black text-[#111814] text-sm group-hover:text-[#22C55E] transition-colors truncate">
-                                                                    {p.nombre}
-                                                                </div>
-                                                                <div className="flex flex-wrap gap-1 mt-1">
-                                                                    {p.etiqueta && (
-                                                                        <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-[#111824] text-[8px] font-black text-white uppercase tracking-widest">
-                                                                            {p.etiqueta}
-                                                                        </span>
-                                                                    )}
-                                                                    {p.prep_time_minutes > 0 && (
-                                                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-blue-50 text-[8px] font-black text-blue-600 border border-blue-100 uppercase tracking-widest">
-                                                                            ⏱️ {p.prep_time_minutes} min
-                                                                        </span>
-                                                                    )}
-                                                                    {p.oferta_porcentaje && (
-                                                                        <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-red-50 text-[8px] font-black text-red-500 border border-red-100 uppercase tracking-widest">
-                                                                            🔥 {p.oferta_porcentaje}% OFF
-                                                                        </span>
-                                                                    )}
-                                                                    <span className={`sm:hidden text-[9px] font-black uppercase tracking-tight ${p.disponible ? 'text-[#22C55E]' : 'text-red-400'}`}>
-                                                                        {p.disponible ? 'Disponible' : 'Agotado'}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td className="hidden lg:table-cell px-3 py-3">
-                                                        <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-[10px] font-black text-[#618972] uppercase tracking-tighter">
-                                                            {typeof p.categoria === 'object' ? p.categoria.nombre : p.categoria}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-3 py-3">
-                                                        <span className="font-black text-[#111814] text-sm md:text-base tracking-tighter">
-                                                            {formatCurrency(p.precio)}
-                                                        </span>
-                                                    </td>
-                                                    <td className="hidden md:table-cell px-3 py-3">
-                                                        <div className="flex items-center gap-3">
-                                                            <span className={`text-[10px] font-black uppercase tracking-widest ${p.disponible ? 'text-[#22C55E]' : 'text-red-400'}`}>
-                                                                {p.disponible ? 'Disponible' : 'Agotado'}
-                                                            </span>
-                                                            <Switch
-                                                                checked={p.disponible}
-                                                                className="data-[state=checked]:bg-[#4ADE80]"
-                                                                onCheckedChange={async (val) => {
-                                                                    try {
-                                                                        await api().put(`/products/${slug}/${p.id}`, { disponible: val });
-                                                                        fetchInitialData();
-                                                                        toast.success(val ? 'Activado' : 'Pausado');
-                                                                    } catch (e) { toast.error('Error'); }
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-3 py-3 text-right">
-                                                        <div className="flex items-center justify-end gap-1 md:gap-2">
-                                                            <Switch
-                                                                checked={p.disponible}
-                                                                className="sm:hidden scale-75 data-[state=checked]:bg-[#4ADE80]"
-                                                                onCheckedChange={async (val) => {
-                                                                    try {
-                                                                        await api().put(`/products/${slug}/${p.id}`, { disponible: val });
-                                                                        fetchInitialData();
-                                                                        toast.success(val ? 'Activado' : 'Pausado');
-                                                                    } catch (e) { toast.error('Error'); }
-                                                                }}
-                                                            />
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                onClick={() => openEditProduct(p)}
-                                                                className="size-8 md:size-9 rounded-xl text-gray-400 hover:text-[#22C55E] hover:bg-[#4ADE80]/5 transition-all"
-                                                            >
-                                                                <Edit2 className="w-4 h-4" />
-                                                            </Button>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                onClick={() => handleDeleteProduct(p.id)}
-                                                                className="size-8 md:size-9 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
-                                                            >
-                                                                <Trash2 className="w-4 h-4" />
-                                                            </Button>
-                                                        </div>
-                                                    </td>
-                                                </motion.tr>
-                                            ))}
-                                        </AnimatePresence>
-                                    </tbody>
-                                </table>
-                                {filteredProducts.length === 0 && (
-                                    <div className="py-20 text-center">
-                                        <Utensils className="w-12 h-12 text-gray-200 mx-auto mb-4" />
-                                        <h3 className="font-bold text-gray-400 uppercase text-xs tracking-widest">No hay productos registrados</h3>
-                                        <Button variant="link" className="text-[#22C55E] text-xs font-black uppercase tracking-tighter" onClick={() => { setSearchTerm(''); setFilterCategory('all'); }}>Limpiar filtros</Button>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Pagination Footer */}
-                            <div className="p-6 border-t border-gray-100 bg-gray-50/30 flex items-center justify-between">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                    Mostrando {Math.min(filteredProducts.length, (currentPage - 1) * itemsPerPage + 1)} - {Math.min(filteredProducts.length, currentPage * itemsPerPage)} de {filteredProducts.length} productos
-                                </p>
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                                        disabled={currentPage === 1}
-                                        className="h-9 px-4 rounded-xl border-gray-200 font-black text-[9px] tracking-widest hover:bg-white transition-all disabled:opacity-30"
-                                    >
-                                        ANTERIOR
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                                        disabled={currentPage === totalPages || totalPages === 0}
-                                        className="h-9 px-4 rounded-xl border-[#4ADE80] text-[#22C55E] bg-white font-black text-[9px] tracking-widest hover:bg-[#4ADE80]/5 shadow-sm transition-all disabled:opacity-30"
-                                    >
-                                        SIGUIENTE
-                                    </Button>
-                                </div>
-                            </div>
-                        </Card>
                     </TabsContent>
+
 
                     {/* DOMICILIOS TAB */}
                     <TabsContent value="domicilios" className="space-y-6 outline-none">
