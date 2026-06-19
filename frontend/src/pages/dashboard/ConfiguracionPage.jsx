@@ -155,6 +155,56 @@ const formatPrice = (val) => {
     return numeric.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
 
+const SEDES = [
+  { slug: 'sede-norte',  label: 'Norte',  color: '#3B82F6', bg: '#EFF6FF', border: '#BFDBFE', emoji: '🔵' },
+  { slug: 'sede-centro', label: 'Centro', color: '#B45309', bg: '#FFFBEB', border: '#FDE68A', emoji: '🟡' },
+  { slug: 'sede-sur',    label: 'Sur',    color: '#15803D', bg: '#F0FDF4', border: '#BBF7D0', emoji: '🟢' },
+];
+
+function SedePicker({ activeSede, onChange }) {
+  return (
+    <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-6 md:p-8 mb-8">
+      <p className="text-xs font-black uppercase tracking-widest text-[#618972] mb-4">
+        Selecciona la sede a configurar
+      </p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {SEDES.map((sede) => {
+          const isActive = activeSede?.slug === sede.slug;
+          return (
+            <button
+              key={sede.slug}
+              onClick={() => onChange(sede)}
+              className={`flex flex-col items-center gap-2 p-5 rounded-3xl border-2 transition-all duration-300 ${
+                isActive
+                  ? 'shadow-lg scale-[1.02]'
+                  : 'border-slate-100 hover:border-slate-200 hover:bg-slate-50 hover:-translate-y-1'
+              }`}
+              style={isActive ? {
+                borderColor: sede.color,
+                backgroundColor: sede.bg,
+              } : {}}
+            >
+              <span className="text-3xl mb-1">{sede.emoji}</span>
+              <div className="text-center">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Sede</p>
+                <p className="text-lg font-black" style={isActive ? { color: sede.color } : { color: '#111814' }}>
+                  {sede.label}
+                </p>
+              </div>
+              {isActive && (
+                <span className="px-3 py-1 mt-2 text-[9px] font-black rounded-full text-white tracking-widest shadow-sm"
+                  style={{ backgroundColor: sede.color }}>
+                  ACTIVA
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 const ConfiguracionPage = () => {
     const { slug } = useParams();
     const { user, api } = useAuth();
@@ -162,7 +212,11 @@ const ConfiguracionPage = () => {
     const { pathname } = useLocation();
     const [searchParams, setSearchParams] = useSearchParams();
 
-    // Default to 'domicilios' tab (menu tab was removed — managed via CatalogoMaestroPage)
+    // Sede State
+    const initialSede = SEDES.find(s => s.slug === slug) || SEDES[0];
+    const [activeSede, setActiveSede] = useState(initialSede);
+
+    // Default to 'domicilios' tab
     const activeTab = searchParams.get('tab') || 'domicilios';
 
     // Status states
@@ -334,7 +388,7 @@ const ConfiguracionPage = () => {
 
     useEffect(() => {
         fetchInitialData();
-    }, [slug]);
+    }, [activeSede.slug]);
 
     useEffect(() => {
         const editId = searchParams.get('edit');
@@ -342,7 +396,6 @@ const ConfiguracionPage = () => {
             const productToEdit = products.find(p => p.id === editId || p.id.toString() === editId);
             if (productToEdit) {
                 openEditProduct(productToEdit);
-                // Clear the param so it doesn't re-open on every render
                 setSearchParams({ tab: activeTab });
             }
         }
@@ -382,7 +435,7 @@ const ConfiguracionPage = () => {
         setLoading(true);
         try {
             const [businessRes, catalogData] = await Promise.all([
-                api().get(`/business/${slug}`),
+                api().get(`/business/${activeSede.slug}`),
                 fetchCatalog()
             ]);
 
@@ -504,7 +557,7 @@ const ConfiguracionPage = () => {
                 };
             };
 
-            const response = await api().put(`/business/${slug}`, businessData);
+            const response = await api().put(`/business/${activeSede.slug}`, businessData);
 
             const dataWithNormalizedMethods = {
                 ...response.data,
@@ -670,7 +723,7 @@ const ConfiguracionPage = () => {
         } finally {
             setAnalyzingNutrition(false);
             // Refresh business data to update credits
-            const updatedBiz = await api().get(`/business/${slug}`);
+            const updatedBiz = await api().get(`/business/${activeSede.slug}`);
             setBusinessData(prev => ({ ...prev, ...updatedBiz.data }));
         }
     };
@@ -697,7 +750,7 @@ const ConfiguracionPage = () => {
         } finally {
             setGeneratingAIImage(false);
             // Refresh business data to update credits
-            const updatedBiz = await api().get(`/business/${slug}`);
+            const updatedBiz = await api().get(`/business/${activeSede.slug}`);
             setBusinessData(prev => ({ ...prev, ...updatedBiz.data }));
         }
     };
@@ -723,7 +776,7 @@ const ConfiguracionPage = () => {
         } finally {
             setGeneratingAIDescription(false);
             // Refresh business data to update credits
-            const updatedBiz = await api().get(`/business/${slug}`);
+            const updatedBiz = await api().get(`/business/${activeSede.slug}`);
             setBusinessData(prev => ({ ...prev, ...updatedBiz.data }));
         }
     };
@@ -795,10 +848,10 @@ const ConfiguracionPage = () => {
             };
 
             if (editingProduct) {
-                await api().put(`/menu-items/${slug}/${editingProduct.id}`, menuItemPayload);
+                await api().put(`/menu-items/${activeSede.slug}/${editingProduct.id}`, menuItemPayload);
                 toast.success('Producto actualizado');
             } else {
-                await api().post(`/menu-items/${slug}`, menuItemPayload);
+                await api().post(`/menu-items/${activeSede.slug}`, menuItemPayload);
                 toast.success('Producto creado');
             }
             setIsProductModalOpen(false);
@@ -821,7 +874,7 @@ const ConfiguracionPage = () => {
     const handleDeleteProduct = async (id) => {
         if (!confirm('¿Eliminar este producto?')) return;
         try {
-            await api().delete(`/menu-items/${slug}/${id}`);
+            await api().delete(`/menu-items/${activeSede.slug}/${id}`);
             toast.success('Producto eliminado');
             fetchCatalog();
         } catch (error) {
@@ -848,7 +901,7 @@ const ConfiguracionPage = () => {
                     const productsToUpdate = products.filter(p => p.categoria === oldName);
                     // Update products sequentially to avoid race conditions or overload
                     for (const p of productsToUpdate) {
-                        await api().put(`/products/${slug}/${p.id}`, { categoria: newName });
+                        await api().put(`/products/${activeSede.slug}/${p.id}`, { categoria: newName });
                     }
                 }
 
@@ -861,17 +914,17 @@ const ConfiguracionPage = () => {
                 // So if we rename, we might be creating a new one matching the new name.
                 // We need to delete the old one if name changed? 
                 // Let's assume for now we call POST to save the new state.
-                await api().post(`/categories/${slug}`, { nombre: newName, icono: newIcon });
+                await api().post(`/categories/${activeSede.slug}`, { nombre: newName, icono: newIcon });
 
                 // If name changed, delete old category entry if it was purely based on name
                 if (oldName !== newName) {
-                    await api().delete(`/categories/${slug}?nombre=${encodeURIComponent(oldName)}`);
+                    await api().delete(`/categories/${activeSede.slug}?nombre=${encodeURIComponent(oldName)}`);
                 }
 
                 toast.success('Categoría actualizada');
             } else {
                 // Scenario 2: New Category
-                await api().post(`/categories/${slug}`, { nombre: newName, icono: newIcon });
+                await api().post(`/categories/${activeSede.slug}`, { nombre: newName, icono: newIcon });
                 toast.success('Categoría creada');
             }
 
@@ -901,11 +954,11 @@ const ConfiguracionPage = () => {
                 // If it has products, we might want to update them to "Sin Categoría" or similar
                 const productsToUpdate = products.filter(p => p.categoria === catName);
                 await Promise.all(productsToUpdate.map(p =>
-                    api().put(`/products/${slug}/${p.id}`, { categoria: 'General' })
+                    api().put(`/products/${activeSede.slug}/${p.id}`, { categoria: 'General' })
                 ));
             }
             // Delete from backend table
-            await api().delete(`/categories/${slug}?nombre=${encodeURIComponent(catName)}`);
+            await api().delete(`/categories/${activeSede.slug}?nombre=${encodeURIComponent(catName)}`);
 
             toast.success('Categoría eliminada');
             fetchCatalog();
@@ -927,12 +980,12 @@ const ConfiguracionPage = () => {
                 // Rename scenario: update all products with this tag
                 const productsToUpdate = products.filter(p => p.etiqueta === editingTag);
                 await Promise.all(productsToUpdate.map(p =>
-                    api().put(`/products/${slug}/${p.id}`, { etiqueta: tagName.trim() })
+                    api().put(`/products/${activeSede.slug}/${p.id}`, { etiqueta: tagName.trim() })
                 ));
                 toast.success('Etiqueta renombrada');
                 fetchCatalog();
             } else {
-                await api().post(`/tags/${slug}`, { nombre: tagName.trim() });
+                await api().post(`/tags/${activeSede.slug}`, { nombre: tagName.trim() });
                 setTags(prev => [...new Set([...prev, tagName.trim()])]);
                 toast.success('Etiqueta creada');
             }
@@ -957,11 +1010,11 @@ const ConfiguracionPage = () => {
             if (hasProducts) {
                 const productsToUpdate = products.filter(p => p.etiqueta === tagToDelete);
                 await Promise.all(productsToUpdate.map(p =>
-                    api().put(`/products/${slug}/${p.id}`, { etiqueta: null })
+                    api().put(`/products/${activeSede.slug}/${p.id}`, { etiqueta: null })
                 ));
             }
 
-            await api().delete(`/tags/${slug}?nombre=${encodeURIComponent(tagToDelete)}`);
+            await api().delete(`/tags/${activeSede.slug}?nombre=${encodeURIComponent(tagToDelete)}`);
 
             setTags(tags.filter(t => t !== tagToDelete));
             toast.success('Etiqueta eliminada');
@@ -1015,9 +1068,11 @@ const ConfiguracionPage = () => {
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
                     <div className="space-y-1 text-center md:text-left">
                         <h1 className="text-3xl font-black text-gray-900 tracking-tight">Configuración</h1>
-                        <p className="text-gray-500 font-medium text-sm">Gestiona tu identidad y menú desde un solo lugar.</p>
+                        <p className="text-[#618972] mt-2">Gestiona la logística y los ajustes locales para cada sede.</p>
                     </div>
                 </div>
+
+                <SedePicker activeSede={activeSede} onChange={setActiveSede} />
 
                 <Tabs
                     value={activeTab}

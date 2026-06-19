@@ -985,7 +985,12 @@ async def get_business_by_slug(slug: str):
 
 @api_router.put("/business/{slug}", response_model=BusinessPublic)
 async def update_business(slug: str, data: Dict[str, Any], business: Business = Depends(get_current_business)):
-    if business.slug != slug:
+    target_res = supabase.table('negocios').select('id, slug, parent_id').eq('slug', slug).execute()
+    if not target_res.data:
+        raise HTTPException(status_code=404, detail="Negocio no encontrado")
+        
+    target_business = target_res.data[0]
+    if business.slug != slug and target_business.get('parent_id') != business.id:
         raise HTTPException(status_code=403, detail="No autorizado")
     
     # Filter data to only allowed fields
