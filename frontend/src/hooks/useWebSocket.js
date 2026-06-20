@@ -15,65 +15,83 @@ const getBackendWsUrl = (negocioId) => {
   return `${baseUrl}/ws/${negocioId}`;
 };
 
-export const useWebSocket = (negocioId) => {
+/**
+ * useWebSocket — connects to one or more negocio WebSocket channels.
+ *
+ * @param {string | string[]} negocioIds - A single ID or an array of IDs (for super admin multi-branch).
+ *
+ * For the super admin, pass all child sede IDs plus the parent ID so that
+ * any order event from any branch triggers a kitchen refresh.
+ */
+export const useWebSocket = (negocioIds) => {
   const [isConnected, setIsConnected] = useState(false);
   const [lastMessage, setLastMessage] = useState(null);
-  const wsRef = useRef(null);
-  const reconnectTimeoutRef = useRef(null);
+  const wsRefs = useRef([]);
+  const reconnectTimeoutsRef = useRef([]);
 
-  const connect = useCallback(() => {
-    if (!negocioId || wsRef.current?.readyState === WebSocket.OPEN) return;
+  // Normalize to array
+  const ids = Array.isArray(negocioIds)
+    ? negocioIds.filter(Boolean)
+    : negocioIds ? [negocioIds] : [];
 
-    try {
-      const ws = new WebSocket(getBackendWsUrl(negocioId));
+  const connectAll = useCallback(() => {
+    if (ids.length === 0) return;
 
-      ws.onopen = () => {
-        setIsConnected(true);
-        console.log('WebSocket connected');
-      };
+    ids.forEach((id) => {
+      // Avoid duplicate connections
+      if (wsRefs.current.find(ws => ws.__id === id && ws.readyState === WebSocket.OPEN)) return;
 
-      ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          setLastMessage(data);
-        } catch (e) {
-          console.error('Failed to parse WebSocket message:', e);
-        }
-      };
+      try {
+        const ws = new WebSocket(getBackendWsUrl(id));
+        ws.__id = id;
 
-      ws.onclose = () => {
-        setIsConnected(false);
-        console.log('WebSocket disconnected');
-        // Reconnect after 3 seconds
-        reconnectTimeoutRef.current = setTimeout(() => {
-          connect();
-        }, 3000);
-      };
+        ws.onopen = () => {
+          setIsConnected(true);
+          console.log(`WebSocket connected [${id}]`);
+        };
 
-      ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-      };
+        ws.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            setLastMessage(data);
+          } catch (e) {
+            console.error('Failed to parse WebSocket message:', e);
+          }
+        };
 
-      wsRef.current = ws;
-    } catch (error) {
-      console.error('Failed to create WebSocket:', error);
-    }
-  }, [negocioId]);
+        ws.onclose = () => {
+          // Mark disconnected only if ALL sockets are closed
+          const anyOpen = wsRefs.current.some(s => s.readyState === WebSocket.OPEN && s.__id !== id);
+          if (!anyOpen) setIsConnected(false);
+          console.log(`WebSocket disconnected [${id}]`);
+          // Reconnect after 3 seconds
+          const t = setTimeout(() => connectAll(), 3000);
+          reconnectTimeoutsRef.current.push(t);
+        };
 
-  const disconnect = useCallback(() => {
-    if (reconnectTimeoutRef.current) {
-      clearTimeout(reconnectTimeoutRef.current);
-    }
-    if (wsRef.current) {
-      wsRef.current.close();
-      wsRef.current = null;
-    }
+        ws.onerror = (error) => {
+          console.error(`WebSocket error [${id}]:`, error);
+        };
+
+        wsRefs.current = [...wsRefs.current.filter(s => s.__id !== id), ws];
+      } catch (error) {
+        console.error(`Failed to create WebSocket for [${id}]:`, error);
+      }
+    });
+  }, [ids.join(',')]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const disconnectAll = useCallback(() => {
+    reconnectTimeoutsRef.current.forEach(clearTimeout);
+    reconnectTimeoutsRef.current = [];
+    wsRefs.current.forEach(ws => ws.close());
+    wsRefs.current = [];
+    setIsConnected(false);
   }, []);
 
   useEffect(() => {
-    connect();
-    return () => disconnect();
-  }, [connect, disconnect]);
+    connectAll();
+    return () => disconnectAll();
+  }, [connectAll, disconnectAll]);
 
   return { isConnected, lastMessage };
 };

@@ -47,8 +47,18 @@ const mobileBottomNavItems = [
   { path: '/mesas', icon: TableProperties, label: 'Mesas' },
 ];
 
+const superAdminOnlyPaths = [
+  '/catalogo-maestro',
+  '/inventario',
+  '/marketing',
+  '/consultor',
+  '/configuracion',
+  '/clientes',
+  '/fidelidad',
+];
+
 export const DashboardLayout = ({ children }) => {
-  const { user, logout } = useAuth();
+  const { user, logout, isSuperAdmin } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -57,6 +67,18 @@ export const DashboardLayout = ({ children }) => {
     logout();
     navigate('/', { replace: true });
   };
+
+  // Filter nav items based on role
+  const visibleNavItems = navItems.filter(item => {
+    if (isSuperAdmin) return true; // Super admin sees everything
+    // Branch admin: hide super-admin-only sections
+    return !superAdminOnlyPaths.includes(item.path);
+  });
+
+  const visibleMobileItems = mobileBottomNavItems.filter(item => {
+    if (isSuperAdmin) return true;
+    return !superAdminOnlyPaths.includes(item.path);
+  });
 
   const basePath = `/dashboard/${user?.slug}`;
 
@@ -128,29 +150,22 @@ export const DashboardLayout = ({ children }) => {
                 <h2 className="font-heading font-black text-sm text-white truncate leading-tight tracking-tight mb-0.5">
                   {user?.nombre || 'Mi Negocio'}
                 </h2>
-                
+
                 <div className="flex items-center gap-1.5">
                   <span className="font-heading font-black text-[9px] tracking-widest text-white leading-none">
                     <span className="text-[#4ADE80]">MENU</span>
                     <span className="text-white">.IA</span>
                   </span>
-                  
-                  {/* Plan Badge */}
+
+                  {/* Role Badge */}
                   <div className={`
                     px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider border whitespace-nowrap
-                    ${user?.plan === 'elite' || user?.plan === 'premium' || user?.plan === 'pro'
-                      ? 'bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20'
-                      : 'bg-[#F97316]/10 text-[#F97316] border-[#F97316]/20'
+                    ${isSuperAdmin
+                      ? 'bg-[#DAA520]/10 text-[#DAA520] border-[#DAA520]/20'
+                      : 'bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/20'
                     }
                   `}>
-                    {(() => {
-                      const p = (user?.plan || 'trial').toLowerCase();
-                      if (p === 'trial' || p === 'free') return 'PRUEBA';
-                      if (p === 'impulso' || p === 'basic') return 'BÁSICO';
-                      if (p === 'pro') return 'PRO';
-                      if (p === 'elite' || p === 'premium') return 'PREMIUM';
-                      return p.toUpperCase();
-                    })()}
+                    {isSuperAdmin ? '👑 CENTRAL' : '🏪 SEDE'}
                   </div>
                 </div>
               </div>
@@ -160,7 +175,7 @@ export const DashboardLayout = ({ children }) => {
           {/* Navigation */}
           <nav className="flex-1 px-3 py-4 flex flex-col min-h-0 overflow-y-auto custom-scrollbar">
             <div className="flex flex-col gap-1">
-              {navItems.map((item) => {
+              {visibleNavItems.map((item) => {
                 const fullPath = `${basePath}${item.path}`;
                 const isActive = location.pathname === fullPath ||
                   (item.path === '' && location.pathname === basePath);
@@ -220,7 +235,7 @@ export const DashboardLayout = ({ children }) => {
       </main>
       {/* Mobile Bottom Navigation */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-[#0F172A] border-t border-slate-800 z-50 flex items-center justify-around px-2 shadow-[0_-4px_20px_rgba(0,0,0,0.2)]">
-        {mobileBottomNavItems.map((item) => {
+        {visibleMobileItems.map((item) => {
           const fullPath = `${basePath}${item.path}`;
           const isActive = location.pathname === fullPath;
 

@@ -2203,14 +2203,61 @@ async def get_orders(
 
 @api_router.get("/orders/{slug}/active", response_model=List[Order])
 async def get_active_orders(slug: str):
-    response = supabase.table('negocios').select('id').eq('slug', slug).execute()
+    """
+    Returns active kitchen orders for a slug.
+    - If the slug belongs to a Super Admin (parent_id IS NULL), fetches orders from
+      ALL child sedes plus the parent itself so the unified kitchen view works.
+    - If the slug belongs to a branch admin (parent_id IS NOT NULL), fetches only
+      that branch's orders.
+    """
+    # Resolve the negocio
+    response = supabase.table('negocios').select('id, parent_id').eq('slug', slug).execute()
     if not response.data:
         raise HTTPException(status_code=404, detail="Negocio no encontrado")
-    business_id = response.data[0]['id']
-    
-    response = supabase.table('pedidos').select('*').match({"negocio_id": business_id}).in_('estado', ["pendiente", "aceptado", "preparando", "listo"]).order('created_at').execute()
-    orders = response.data
-    return [Order(**o) for o in orders]
+
+    negocio = response.data[0]
+    business_id = negocio['id']
+    parent_id = negocio.get('parent_id')
+
+    if parent_id:
+        # Branch admin — only their own orders
+        negocio_ids = [business_id]
+    else:
+        # Super admin — their own orders + all child branches
+        children_res = supabase.table('negocios').select('id').eq('parent_id', business_id).execute()
+        child_ids = [c['id'] for c in (children_res.data or [])]
+        negocio_ids = [business_id] + child_ids
+
+    if len(negocio_ids) == 1:
+        query = supabase.table('pedidos').select('*').eq('negocio_id', negocio_ids[0])
+    else:
+        query = supabase.table('pedidos').select('*').in_('negocio_id', negocio_ids)
+
+    query = query.in_('estado', ["pendiente", "aceptado", "preparando", "listo"]).order('created_at')
+    orders_res = query.execute()
+
+    # Enrich each order with the sede name for the unified kitchen UI
+    sede_map = {}
+    if len(negocio_ids) > 1:
+        all_negocios = supabase.table('negocios').select('id, nombre, slug').in_('id', negocio_ids).execute()
+        sede_map = {n['id']: {'nombre': n['nombre'], 'slug': n['slug']} for n in (all_negocios.data or [])}
+
+    result = []
+    for o in (orders_res.data or []):
+        order = Order(**o)
+        # Attach sede info as extra metadata if available (used by kitchen UI)
+        if sede_map:
+            sede_info = sede_map.get(o.get('negocio_id'), {})
+            order_dict = order.model_dump()
+            order_dict['sede_nombre'] = sede_info.get('nombre', '')
+            order_dict['sede_slug'] = sede_info.get('slug', slug)
+            result.append(Order(**order_dict))
+        else:
+            result.append(order)
+
+    return result
+
+
 
 
 from fastapi import BackgroundTasks

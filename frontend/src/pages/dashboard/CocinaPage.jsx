@@ -10,11 +10,19 @@ import { playOrderSound, notifyNewOrder, unlockAudioAndNotifications } from '@/u
 export default function CocinaPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const { api, user } = useAuth();
+  const { api, user, isSuperAdmin } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const { lastMessage, isConnected } = useWebSocket(user?.id);
+  const [sedeFilter, setSedeFilter] = useState('all'); // 'all' | sede slug
+
+  // For super admin: collect all negocio_ids present in orders + own id
+  // so the WebSocket hook listens on every branch channel simultaneously
+  const wsIds = isSuperAdmin && orders.length > 0
+    ? [...new Set([user?.id, ...orders.map(o => o.negocio_id)].filter(Boolean))]
+    : user?.id;
+
+  const { lastMessage, isConnected } = useWebSocket(wsIds);
 
   const previousOrdersRef = useRef(new Set());
   const isFirstLoadRef = useRef(true);
@@ -78,6 +86,22 @@ export default function CocinaPage() {
     }
   };
 
+  // Derive unique sedes present in the orders list for the filter bar
+  const sedesPresentes = isSuperAdmin
+    ? [...new Set(orders.map(o => o.sede_slug).filter(Boolean))]
+    : [];
+
+  // Apply sede filter
+  const filteredOrders = sedeFilter === 'all'
+    ? orders
+    : orders.filter(o => o.sede_slug === sedeFilter);
+
+  const SEDE_COLORS = {
+    'sede-norte':  { bg: 'bg-blue-500',   text: 'text-blue-100',  label: '🔵 Norte'  },
+    'sede-centro': { bg: 'bg-yellow-500', text: 'text-yellow-900', label: '🟡 Centro' },
+    'sede-sur':    { bg: 'bg-green-500',  text: 'text-green-100',  label: '🟢 Sur'    },
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
@@ -95,8 +119,10 @@ export default function CocinaPage() {
               <img src="/logos/logo-icon-transparent.png" alt="Menu.IA" className="w-full h-full object-contain" />
             </div>
             <div>
-              <h1 className="font-heading font-bold text-lg">Cocina</h1>
-              <p className="text-xs text-gray-400">{orders.length} pedidos activos</p>
+              <h1 className="font-heading font-bold text-lg">
+                {isSuperAdmin ? '👑 Cocina Central' : 'Cocina'}
+              </h1>
+              <p className="text-xs text-gray-400">{filteredOrders.length} pedidos activos{sedeFilter !== 'all' ? ` · ${SEDE_COLORS[sedeFilter]?.label}` : ''}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -119,16 +145,45 @@ export default function CocinaPage() {
             </Button>
           </div>
         </div>
+
+        {/* Sede filter tabs — only visible to super admin when multiple sedes have orders */}
+        {isSuperAdmin && sedesPresentes.length > 1 && (
+          <div className="px-4 pb-2 flex gap-2 overflow-x-auto">
+            <button
+              onClick={() => setSedeFilter('all')}
+              className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap ${
+                sedeFilter === 'all' ? 'bg-white text-gray-900' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              Todas
+            </button>
+            {sedesPresentes.map(sedeSlug => {
+              const info = SEDE_COLORS[sedeSlug] || { bg: 'bg-gray-500', label: sedeSlug };
+              return (
+                <button
+                  key={sedeSlug}
+                  onClick={() => setSedeFilter(sedeSlug)}
+                  className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap ${
+                    sedeFilter === sedeSlug ? `${info.bg} text-white shadow` : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  }`}
+                >
+                  {info.label}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </header>
+
       <main className="p-4">
-        {orders.length === 0 ? (
+        {filteredOrders.length === 0 ? (
           <EmptyState />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-            {orders
+            {filteredOrders
               .filter(order => !(order.tipo === 'delivery' && order.estado === 'listo'))
               .map((order) => (
-                <OrderCard key={order.id} order={order} onUpdateStatus={updateOrderStatus} />
+                <OrderCard key={order.id} order={order} onUpdateStatus={updateOrderStatus} sedeColors={SEDE_COLORS} />
               ))}
           </div>
         )}
@@ -155,9 +210,10 @@ function EmptyState() {
   );
 }
 
-function OrderCard({ order, onUpdateStatus }) {
+function OrderCard({ order, onUpdateStatus, sedeColors = {} }) {
   const formatCurrency = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Number(v));
   const getTimeSince = (d) => { const diff = Math.floor((new Date() - new Date(d)) / 60000); return diff < 1 ? 'Ahora' : diff < 60 ? diff + ' min' : Math.floor(diff / 60) + 'h'; };
+  const sedeInfo = order.sede_slug ? sedeColors[order.sede_slug] : null;
 
   let config;
   if (order.estado === 'pendiente' || order.estado === 'aceptado') {
@@ -207,6 +263,12 @@ function OrderCard({ order, onUpdateStatus }) {
     <div className={`rounded-xl border-2 overflow-hidden flex flex-col h-full ${config.color}`} data-testid={`order-ticket-${order.id}`}>
       <div className={`${config.headerColor} text-white px-4 py-2 flex items-center justify-center relative`}>
         <span className="font-bold text-center text-lg uppercase tracking-wider">{config.label}</span>
+        {/* Sede badge for super admin unified view */}
+        {sedeInfo && (
+          <span className={`absolute left-4 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${sedeInfo.bg} ${sedeInfo.text}`}>
+            {sedeInfo.label}
+          </span>
+        )}
         <button
           onClick={(e) => {
             e.stopPropagation();

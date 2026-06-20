@@ -110,8 +110,17 @@ export const AuthProvider = ({ children }) => {
     setTrialLocked(null);
   };
 
+  // Role helpers — derived from user.parent_id
+  // isSuperAdmin: true for don-jediondo (no parent) → sees all branches
+  // isSedeAdmin: true for sede-norte/centro/sur → locked to own branch
+  const isSuperAdmin = !!user && !user.parent_id;
+  const isSedeAdmin  = !!user &&  !!user.parent_id;
+
   return (
-    <AuthContext.Provider value={{ user, setUser, token, loading, login, register, logout, api, trialLocked }}>
+    <AuthContext.Provider value={{
+      user, setUser, token, loading, login, register, logout, api, trialLocked,
+      isSuperAdmin, isSedeAdmin
+    }}>
       {children}
     </AuthContext.Provider>
   );

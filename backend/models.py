@@ -90,6 +90,8 @@ class BusinessBase(BaseModel):
     instagram_url: Optional[str] = None
     facebook_url: Optional[str] = None
     tiktok_url: Optional[str] = None
+    # Multi-branch hierarchy
+    parent_id: Optional[str] = None  # None = Super Admin / dueño. Set = Admin de Sede
 
     # WhatsApp & Campaign Credits (Centralized)
     whatsapp_incluidos: int = 0
@@ -398,6 +400,9 @@ class Order(OrderBase):
     negocio_logo: Optional[str] = None
     mesero_nombre: Optional[str] = None
     numero_secuencial: Optional[int] = None
+    # Multi-branch: enriched by the unified kitchen endpoint
+    sede_nombre: Optional[str] = None
+    sede_slug: Optional[str] = None
 
 
 # Analytics Models
