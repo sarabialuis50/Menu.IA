@@ -51,8 +51,8 @@ export default function LandingPage() {
                 <Flame className="w-6 h-6 text-[#D4AF37]" />
               </div>
               <div className="flex flex-col">
-                <span className="font-black text-xl leading-tight text-white tracking-wide">GOLDEN</span>
-                <span className="font-black text-xl leading-tight text-[#D4AF37] tracking-wide">BURGER</span>
+                <span className="font-black text-xl leading-tight text-white tracking-wide">BURGER</span>
+                <span className="font-black text-xl leading-tight text-[#D4AF37] tracking-wide">FULL</span>
               </div>
             </Link>
 
@@ -96,7 +96,7 @@ export default function LandingPage() {
             </div>
             
             <h1 className="text-6xl md:text-7xl lg:text-8xl font-black mb-6 tracking-tighter leading-[1.1]">
-              Sabe a <span className="text-[#D4AF37]">Oro</span>.<br/>
+              Sabe a <span className="text-[#D4AF37]">Full</span>.<br/>
               <span className="whitespace-nowrap">Sabe a <span className="text-[#D4AF37]">Burger</span>.</span>
             </h1>
             
@@ -304,8 +304,8 @@ export default function LandingPage() {
                 <Flame className="w-6 h-6 text-[#D4AF37]" />
               </div>
               <div className="flex flex-col">
-                <span className="font-black text-xl leading-tight text-white tracking-wide">GOLDEN</span>
-                <span className="font-black text-xl leading-tight text-[#D4AF37] tracking-wide">BURGER</span>
+                <span className="font-black text-xl leading-tight text-white tracking-wide">BURGER</span>
+                <span className="font-black text-xl leading-tight text-[#D4AF37] tracking-wide">FULL</span>
               </div>
             </Link>
             <p className="text-gray-400 text-sm mb-8 leading-relaxed max-w-xs">
@@ -379,7 +379,7 @@ export default function LandingPage() {
               </li>
               <li className="flex items-center gap-3">
                 <div className="w-5 h-5 text-[#D4AF37] shrink-0 flex items-center justify-center">@</div>
-                <span className="text-gray-400">info@goldenburger.com</span>
+                <span className="text-gray-400">info@burgerfull.co</span>
               </li>
             </ul>
           </div>
@@ -389,7 +389,7 @@ export default function LandingPage() {
         {/* Bottom Bar */}
         <div className="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-gray-500 text-sm">
-            © 2026 <span className="text-white font-medium">The Golden Burger</span>. Todos los derechos reservados.
+            © 2026 <span className="text-white font-medium">Burger Full</span>. Todos los derechos reservados.
           </p>
           
           <div className="flex items-center gap-2">
