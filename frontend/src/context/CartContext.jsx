@@ -1,6 +1,29 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { toast } from 'sonner';
 
 const CartContext = createContext(null);
+
+const CART_STORAGE_KEY = 'menuia_cart';
+
+// Helper to read from localStorage safely
+function readCartFromStorage() {
+  try {
+    const raw = localStorage.getItem(CART_STORAGE_KEY);
+    if (!raw) return { sedeSlug: null, items: [], customerInfo: { nombre: '', telefono: '' } };
+    return JSON.parse(raw);
+  } catch {
+    return { sedeSlug: null, items: [], customerInfo: { nombre: '', telefono: '' } };
+  }
+}
+
+// Helper to write to localStorage safely
+function writeCartToStorage(cart) {
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+  } catch {
+    // Storage full or unavailable — fail silently
+  }
+}
 
 export const useCart = () => {
   const context = useContext(CartContext);
@@ -11,8 +34,34 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
-  const [items, setItems] = useState([]);
-  const [customerInfo, setCustomerInfo] = useState({ nombre: '', telefono: '' });
+  // Initialize state from localStorage on first render
+  const stored = readCartFromStorage();
+  const [sedeSlug, setSedeSlug] = useState(stored.sedeSlug || null);
+  const [items, setItems] = useState(stored.items || []);
+  const [customerInfo, setCustomerInfo] = useState(
+    stored.customerInfo || { nombre: '', telefono: '' }
+  );
+
+  // Sync every state change to localStorage
+  useEffect(() => {
+    writeCartToStorage({ sedeSlug, items, customerInfo });
+  }, [sedeSlug, items, customerInfo]);
+
+  /**
+   * Called whenever the user visits a menu page for a specific sede.
+   * If the slug changes, the cart is cleared to prevent cross-branch orders.
+   */
+  const checkAndSetSede = useCallback((newSlug) => {
+    setSedeSlug((prev) => {
+      if (prev && prev !== newSlug) {
+        // User switched to a different branch — clear the cart
+        setItems([]);
+        setCustomerInfo({ nombre: '', telefono: '' });
+        toast.info('Tu carrito fue vaciado al cambiar de sede.', { duration: 3000 });
+      }
+      return newSlug;
+    });
+  }, []);
 
   const addItem = useCallback((product, quantity = 1, notas = '', selectedModifiers = []) => {
     // Helper to compare arrays ignoring order
@@ -26,7 +75,6 @@ export const CartProvider = ({ children }) => {
     };
 
     setItems(prev => {
-      // Find item with same product ID, same notes, AND same selected modifiers
       const existingIndex = prev.findIndex(item =>
         item.producto_id === product.id &&
         item.notas === notas &&
@@ -39,8 +87,9 @@ export const CartProvider = ({ children }) => {
         return updated;
       }
 
-      // Calculate extra price from modifiers (accounting for quantity per modifier)
-      const modifiersPrice = selectedModifiers ? selectedModifiers.reduce((acc, m) => acc + ((m.precio || 0) * (m.cantidad || 1)), 0) : 0;
+      const modifiersPrice = selectedModifiers
+        ? selectedModifiers.reduce((acc, m) => acc + ((m.precio || 0) * (m.cantidad || 1)), 0)
+        : 0;
       const finalUnitPrice = product.precio + modifiersPrice;
 
       return [...prev, {
@@ -57,7 +106,6 @@ export const CartProvider = ({ children }) => {
           if (product.tamanos?.some(g => g.opciones?.some(o => o.nombre === m.nombre))) cat = 'Tamaños';
           else if (product.opciones?.some(g => g.opciones?.some(o => o.nombre === m.nombre))) cat = 'Opciones';
           else if (product.modificadores?.some(g => g.opciones?.some(o => o.nombre === m.nombre))) {
-            // Find the exact modifier group name if needed, or default to Adicionales
             const group = product.modificadores.find(g => g.opciones?.some(o => o.nombre === m.nombre));
             cat = group ? group.nombre : 'Adicionales';
           }
@@ -74,7 +122,9 @@ export const CartProvider = ({ children }) => {
   const updateItem = useCallback((index, product, quantity = 1, notas = '', selectedModifiers = []) => {
     setItems(prev => {
       const updated = [...prev];
-      const modifiersPrice = selectedModifiers ? selectedModifiers.reduce((acc, m) => acc + ((m.precio || 0) * (m.cantidad || 1)), 0) : 0;
+      const modifiersPrice = selectedModifiers
+        ? selectedModifiers.reduce((acc, m) => acc + ((m.precio || 0) * (m.cantidad || 1)), 0)
+        : 0;
       const finalUnitPrice = product.precio + modifiersPrice;
 
       updated[index] = {
@@ -117,6 +167,7 @@ export const CartProvider = ({ children }) => {
   const clearCart = useCallback(() => {
     setItems([]);
     setCustomerInfo({ nombre: '', telefono: '' });
+    // Keep sedeSlug so UX is smooth (no sede switch notification on manual clear)
   }, []);
 
   const total = items.reduce((sum, item) => sum + (item.cantidad * item.precio_unitario), 0);
@@ -124,6 +175,10 @@ export const CartProvider = ({ children }) => {
 
   return (
     <CartContext.Provider value={{
+      // Sede context
+      sedeSlug,
+      checkAndSetSede,
+      // Cart state
       items,
       customerInfo,
       setCustomerInfo,

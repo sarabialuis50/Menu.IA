@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useCart, CartProvider } from '@/context/CartContext';
+import { useCart } from '@/context/CartContext';
 import { PublicLayout } from '@/layouts/PublicLayout';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
@@ -38,6 +38,7 @@ const API = (import.meta.env && (import.meta.env.VITE_BACKEND_URL || import.meta
 const BusinessHomePageContent = () => {
     const { slug } = useParams();
     const navigate = useNavigate();
+    const { checkAndSetSede } = useCart();
     const [business, setBusiness] = useState(null);
     const [featuredProducts, setFeaturedProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -47,6 +48,8 @@ const BusinessHomePageContent = () => {
     const [showClosedModal, setShowClosedModal] = useState(false);
 
     useEffect(() => {
+        // Register this branch — clears cart if user switched branches
+        if (slug) checkAndSetSede(slug);
         fetchData();
     }, [slug]);
 
@@ -578,9 +581,5 @@ const BusinessHomePageContent = () => {
 };
 
 export default function BusinessHomePage() {
-    return (
-        <CartProvider>
-            <BusinessHomePageContent />
-        </CartProvider>
-    );
+    return <BusinessHomePageContent />;
 }

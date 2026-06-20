@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { CartProvider } from "@/context/CartContext";
 import { Toaster } from "sonner";
 import TrialLockedOverlay from "@/components/TrialLockedOverlay";
 import CookieBanner from "@/components/CookieBanner";
@@ -124,14 +125,14 @@ function AppRoutes() {
       {/* Delivery App */}
       <Route path="/reparto/:slug/:orderId" element={<DespachoPage />} />
 
-      {/* Public Menu Routes */}
-      <Route path="/:slug" element={<BusinessHomePage />} />
-      <Route path="/:slug/menu" element={<MenuPublico />} />
-      <Route path="/:slug/mesa/:mesa" element={<MenuPublico />} />
-      <Route path="/:slug/mis-pedidos" element={<MisPedidos />} />
-      <Route path="/:slug/mi-cuenta" element={<ClientProfilePage />} />
-      <Route path="/:slug/mi-cuenta/editar" element={<ClientEditProfilePage />} />
-      <Route path="/:slug/mi-cuenta/pedidos" element={<ClientOrdersPage />} />
+      {/* Public Menu Routes — CartProvider wraps all public pages so the cart persists across navigation */}
+      <Route path="/:slug" element={<CartProvider><BusinessHomePage /></CartProvider>} />
+      <Route path="/:slug/menu" element={<CartProvider><MenuPublico /></CartProvider>} />
+      <Route path="/:slug/mesa/:mesa" element={<CartProvider><MenuPublico /></CartProvider>} />
+      <Route path="/:slug/mis-pedidos" element={<CartProvider><MisPedidos /></CartProvider>} />
+      <Route path="/:slug/mi-cuenta" element={<CartProvider><ClientProfilePage /></CartProvider>} />
+      <Route path="/:slug/mi-cuenta/editar" element={<CartProvider><ClientEditProfilePage /></CartProvider>} />
+      <Route path="/:slug/mi-cuenta/pedidos" element={<CartProvider><ClientOrdersPage /></CartProvider>} />
 
       {/* Demo routes */}
       <Route path="/demo" element={<Navigate to="/demo-restaurante" replace />} />

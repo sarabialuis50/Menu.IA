@@ -141,7 +141,7 @@ const MenuContent = () => {
   const { slug, mesa } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { items, addItem, updateQuantity, clearCart, total, itemCount, customerInfo, setCustomerInfo } = useCart();
+  const { items, addItem, updateQuantity, clearCart, total, itemCount, customerInfo, setCustomerInfo, checkAndSetSede } = useCart();
 
   const [business, setBusiness] = useState(null);
   const [scheduleData, setScheduleData] = useState(null);
@@ -206,6 +206,8 @@ const MenuContent = () => {
   };
 
   useEffect(() => {
+    // Register this branch in the cart context — clears cart if user switched branches
+    if (slug) checkAndSetSede(slug);
     fetchData();
   }, [slug, mesa]);
 
@@ -2159,9 +2161,5 @@ const MenuContent = () => {
 };
 
 export default function MenuPublico() {
-  return (
-    <CartProvider>
-      <MenuContent />
-    </CartProvider>
-  );
+  return <MenuContent />;
 }
