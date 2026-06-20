@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { DashboardLayout } from '@/layouts/DashboardLayout';
@@ -82,7 +82,7 @@ export default function InsightsPage() {
                         <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600" />
                         <Sparkles className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-purple-600 animate-pulse" />
                     </div>
-                    <p className="text-gray-500 font-medium animate-pulse">MenuPro AI está analizando tu negocio...</p>
+                    <p className="text-gray-500 font-medium animate-pulse">Burger Full AI está analizando tu negocio...</p>
                 </div>
             </DashboardLayout>
         );
@@ -108,7 +108,7 @@ export default function InsightsPage() {
                     <div>
                         <h1 className="font-heading text-2xl font-bold text-gray-900 flex items-center gap-2">
                             <Sparkles className="w-6 h-6 text-purple-600" />
-                            MenuPro Insights
+                            Burger Full Insights
                         </h1>
                         <p className="text-gray-500">Análisis inteligente de tu restaurante poteniado por Google Gemini</p>
                     </div>

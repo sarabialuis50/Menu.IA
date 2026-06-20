@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, User, Bot, Sparkles, SendHorizontal, Mic, Square, Play, Volume2 } from 'lucide-react';
 import axios from 'axios';
@@ -362,7 +362,7 @@ export const ChatModal = ({ isOpen, onClose, businessName, slug, aiSaludo }) => 
                                 </button>
                             </form>
                             <p className="text-[9px] text-center text-[#618972] mt-4 font-black uppercase tracking-[0.2em] opacity-40">
-                                Powered by Menu.IA
+                                Powered by Burger Full
                             </p>
                         </div>
                     )}

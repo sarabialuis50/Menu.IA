@@ -52,12 +52,12 @@ export default function LoginPage() {
           className="w-full max-w-md"
         >
           <Link to="/" className="flex items-center gap-2 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-transparent flex items-center justify-center overflow-hidden">
-              <img src="/logos/logo-icon-white.png" alt="Menu.IA" className="w-full h-full object-cover" />
+            <div className="w-10 h-10 rounded-xl bg-[#D4AF37] flex items-center justify-center overflow-hidden shadow-lg">
+              <span className="text-black font-black text-xl">🍔</span>
             </div>
             <span className="font-heading font-black text-xl tracking-tighter">
-              <span className="text-[#22C55E]">Menu</span>
-              <span className="text-[#22B8CF]">.IA</span>
+              <span className="text-[#D4AF37]">Burger</span>
+              <span className="text-gray-800"> Full</span>
             </span>
           </Link>
 
@@ -91,7 +91,7 @@ export default function LoginPage() {
                 <Label htmlFor="password">Contraseña</Label>
                 <Link
                   to="/forgot-password"
-                  className="text-sm font-medium text-[#22C55E] hover:text-[#16A34A]"
+                  className="text-sm font-medium text-[#D4AF37] hover:text-[#B8962E]"
                 >
                   ¿Olvidaste tu contraseña?
                 </Link>
@@ -121,7 +121,7 @@ export default function LoginPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] text-base font-bold rounded-xl"
+              className="w-full h-12 bg-[#D4AF37] hover:bg-[#B8962E] text-black text-base font-bold rounded-xl"
               data-testid="login-submit-btn"
             >
               {loading ? (
@@ -137,51 +137,47 @@ export default function LoginPage() {
 
           <p className="mt-6 text-center text-gray-600">
             ¿No tienes cuenta?{' '}
-            <Link to="/register" className="text-[#22C55E] hover:text-[#16A34A] font-bold">
+            <Link to="/register" className="text-[#D4AF37] hover:text-[#B8962E] font-bold">
               Regístrate gratis
             </Link>
           </p>
         </motion.div>
       </div>
 
-      {/* Right Panel - Image */}
-      {/* Right Panel - Image */}
-      <div className="hidden lg:block lg:w-1/2 relative bg-[#0F172A] overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0F172A] via-[#1e293b] to-[#0F172A]" />
+        <div className="hidden lg:block lg:w-1/2 relative bg-[#1a0a00] overflow-hidden">
+          {/* Background gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1a0a00] via-[#2d1500] to-[#1a0a00]" />
 
-        {/* Decorative elements */}
-        <div className="absolute top-0 left-0 w-96 h-96 bg-[#4ADE80]/10 rounded-full blur-[100px] transform -translate-x-1/3 -translate-y-1/3" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] transform translate-x-1/3 translate-y-1/3" />
+          {/* Decorative glows */}
+          <div className="absolute top-0 left-0 w-96 h-96 bg-[#D4AF37]/15 rounded-full blur-[100px] transform -translate-x-1/3 -translate-y-1/3" />
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-orange-700/15 rounded-full blur-[100px] transform translate-x-1/3 translate-y-1/3" />
 
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-12 z-10">
-          <div className="text-white text-center max-w-2xl mx-auto space-y-8">
-            {/* Logo */}
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="w-48 h-48 mx-auto -mb-4 relative"
-            >
-              <div className="absolute inset-0 bg-[#4ADE80]/20 rounded-full blur-2xl animate-pulse" />
-              <img
-                src="/logos/logo.png"
-                alt="Menu.IA Logo"
-                className="w-full h-full object-contain relative z-10 drop-shadow-2xl"
-              />
-            </motion.div>
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-12 z-10">
+            <div className="text-white text-center max-w-2xl mx-auto space-y-8">
+              {/* Logo emoji */}
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="w-40 h-40 mx-auto -mb-4 relative flex items-center justify-center"
+              >
+                <div className="absolute inset-0 bg-[#D4AF37]/20 rounded-full blur-2xl animate-pulse" />
+                <span className="text-[120px] drop-shadow-2xl relative z-10">🍔</span>
+              </motion.div>
 
-            <div className="space-y-4">
-              <h2 className="font-heading text-4xl lg:text-5xl font-bold tracking-tight text-white drop-shadow-lg text-balance">
-                Bienvenido a <span className="text-[#22C55E]">Menu</span><span className="text-[#22B8CF]">.IA</span>
-              </h2>
-              <p className="text-lg lg:text-xl text-gray-300 font-medium leading-relaxed drop-shadow-md text-balance max-w-lg mx-auto">
-                Gestiona tu restaurante con inteligencia. Pedidos, fidelización y automatización en una sola plataforma.
-              </p>
+              <div className="space-y-4">
+                <h2 className="font-heading text-4xl lg:text-5xl font-bold tracking-tight text-white drop-shadow-lg text-balance">
+                  Bienvenido a{' '}
+                  <span className="text-[#D4AF37]">Burger</span>
+                  <span className="text-white"> Full</span>
+                </h2>
+                <p className="text-lg lg:text-xl text-gray-300 font-medium leading-relaxed drop-shadow-md text-balance max-w-lg mx-auto">
+                  El sabor a parrilla que enamora. Gestiona tus sedes, pedidos y cocina en un solo lugar.
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 }

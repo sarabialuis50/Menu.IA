@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/layouts/DashboardLayout';
 import { Card } from '@/components/ui/card';
@@ -487,7 +487,7 @@ export default function HistorialPedidosPage() {
 
                     <div className="p-8 space-y-8 overflow-y-auto max-h-[80vh] no-scrollbar">
                         <div className="text-center space-y-1">
-                            <h2 className="text-2xl font-black text-[#FF6B00]">MenuPro</h2>
+                            <h2 className="text-2xl font-black text-[#FF6B00]">Burger Full</h2>
                             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">ID del Pedido: {selectedOrder?.numero_secuencial || selectedOrder?.id?.slice(0, 8).toUpperCase()}</p>
                             <p className="text-[11px] font-bold text-gray-400">Realizado: {selectedOrder ? format(new Date(selectedOrder.created_at), 'dd/MM/yyyy, HH:mm:ss') : ''}</p>
                         </div>

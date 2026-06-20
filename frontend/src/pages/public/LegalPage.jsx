@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronRight, FileText, Shield, Cookie, Home, ArrowLeft } from 'lucide-react';
@@ -375,7 +375,7 @@ export default function LegalPage() {
             <footer className="bg-white border-t mt-20 py-12">
                 <div className="max-w-7xl mx-auto px-4">
                     <p className="text-sm font-bold text-gray-400 uppercase tracking-widest text-center">
-                        © 2026 Menu.IA - Todos los derechos reservados
+                        © 2026 Burger Full - Todos los derechos reservados
                     </p>
                 </div>
             </footer>

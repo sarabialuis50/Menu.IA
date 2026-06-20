@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useCart, CartProvider } from '@/context/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -810,12 +810,12 @@ const MenuContent = () => {
             <Link to={`/${slug}`} className="flex items-center gap-3 group">
               <div className="size-10 rounded-xl overflow-hidden bg-slate-800 border border-slate-700 shrink-0">
                 <img
-                  src={business.logo_url || `https://ui-avatars.com/api/?name=${business.nombre || 'MenuPro'}&background=22C55E&color=fff&bold=true`}
+                  src={business.logo_url || `https://ui-avatars.com/api/?name=${business.nombre || 'Burger Full'}&background=22C55E&color=fff&bold=true`}
                   alt={business.nombre || 'Logo'}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = `https://ui-avatars.com/api/?name=${business.nombre || 'MenuPro'}&background=22C55E&color=fff&bold=true`;
+                    e.target.src = `https://ui-avatars.com/api/?name=${business.nombre || 'Burger Full'}&background=22C55E&color=fff&bold=true`;
                   }}
                 />
               </div>
@@ -1571,7 +1571,7 @@ const MenuContent = () => {
                           <Award className="w-5 h-5" />
                         </div>
                         <div>
-                          <span className="font-black text-sm text-[#111814] block">Tus Puntos MenuPro</span>
+                          <span className="font-black text-sm text-[#111814] block">Tus Puntos Burger Full</span>
                           <span className="text-xs font-bold text-[#22C55E]">{customerPoints.puntos_disponibles.toLocaleString()} disponibles</span>
                         </div>
                       </div>

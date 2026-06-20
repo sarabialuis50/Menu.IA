@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { ShieldAlert, LogOut, MessageSquare } from 'lucide-react';
 
@@ -46,7 +46,7 @@ const TrialLockedOverlay = () => {
                 </div>
 
                 <div className="bg-gray-50 px-8 py-4 text-xs text-gray-400 text-center border-t border-gray-100">
-                    Menu.IA - Soluciones Inteligentes para tu Negocio
+                    Burger Full Inteligentes para tu Negocio
                 </div>
             </div>
         </div>

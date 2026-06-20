@@ -93,10 +93,12 @@ export const DashboardLayout = ({ children }) => {
           <Menu className="w-6 h-6 text-white" />
         </button>
         <div className="flex-1 flex items-center justify-center gap-2">
-          <img src="/logos/logo-icon-transparent.png" alt="Menu.IA" className="size-8 object-contain" />
+          <div className="w-10 h-10 rounded-xl bg-transparent flex items-center justify-center overflow-hidden">
+            <img src="/logos/logo-icon-transparent.png" alt="Burger Full" className="size-8 object-contain" />
+          </div>
           <span className="font-heading font-black text-xl tracking-tighter">
-            <span className="text-[#22C55E]">Menu</span>
-            <span className="text-[#22B8CF]">.IA</span>
+            <span className="text-[#D4AF37]">BURGER</span>
+            <span className="text-white"> FULL</span>
           </span>
         </div>
         <div className="size-10 invisible" />
@@ -153,8 +155,8 @@ export const DashboardLayout = ({ children }) => {
 
                 <div className="flex items-center gap-1.5">
                   <span className="font-heading font-black text-[9px] tracking-widest text-white leading-none">
-                    <span className="text-[#4ADE80]">MENU</span>
-                    <span className="text-white">.IA</span>
+                    <span className="text-[#D4AF37]">BURGER</span>
+                    <span className="text-white"> FULL</span>
                   </span>
 
                   {/* Role Badge */}
@@ -188,7 +190,7 @@ export const DashboardLayout = ({ children }) => {
                     className={`
                       flex items-center gap-3.5 px-4 py-2.5 rounded-xl font-bold text-[12px] lg:text-[13px] transition-all duration-300 group
                       ${isActive
-                        ? 'bg-[#22C55E] text-white shadow-lg shadow-green-500/20'
+                        ? 'bg-[#D4AF37] text-black shadow-lg shadow-yellow-600/20'
                         : 'text-slate-400 hover:bg-slate-800/50 hover:text-white'
                       }
                     `}
@@ -243,10 +245,10 @@ export const DashboardLayout = ({ children }) => {
             <Link
               key={item.path}
               to={fullPath}
-              className={`flex flex-col items-center justify-center gap-1 transition-all duration-300 w-full h-full ${isActive ? 'text-[#22C55E]' : 'text-slate-400'
+              className={`flex flex-col items-center justify-center gap-1 transition-all duration-300 w-full h-full ${isActive ? 'text-[#D4AF37]' : 'text-slate-400'
                 }`}
             >
-              <div className={`p-1.5 rounded-xl transition-all ${isActive ? 'bg-[#4ADE80]/10 scale-110 shadow-sm shadow-[#4ADE80]/10' : ''}`}>
+              <div className={`p-1.5 rounded-xl transition-all ${isActive ? 'bg-[#D4AF37]/10 scale-110 shadow-sm shadow-[#D4AF37]/10' : ''}`}>
                 <item.icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5px]' : 'stroke-2'}`} />
               </div>
               <span className={`text-[9px] font-black uppercase tracking-tight ${isActive ? 'opacity-100' : 'opacity-60'}`}>

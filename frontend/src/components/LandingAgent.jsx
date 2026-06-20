@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 const motion = { 
   div: ({ initial, animate, exit, transition, ...props }) => <div {...props} />,
   button: ({ initial, animate, exit, transition, whileHover, whileTap, ...props }) => <button {...props} />
@@ -192,10 +192,10 @@ export default function LandingAgent() {
                         <div className="bg-[#22B8CF] p-5 flex items-center justify-between text-white shrink-0">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-white p-0.5 overflow-hidden border-2 border-[#22C55E]">
-                                    <img src="/logos/logo agente.png" alt="Agente Menu.IA" className="w-full h-full object-cover" />
+                                    <img src="/logos/logo agente.png" alt="Asistente Burger Full" className="w-full h-full object-cover" />
                                 </div>
                                 <div className="">
-                                    <h3 className="font-black text-sm tracking-tight text-white leading-none">Asistente Menu.IA</h3>
+                                    <h3 className="font-black text-sm tracking-tight text-white leading-none">Asistente Burger Full</h3>
                                     <div className="flex items-center gap-1.5 mt-1.5">
                                         <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
                                         <span className="text-[10px] font-bold text-white/80 uppercase tracking-widest">En línea</span>

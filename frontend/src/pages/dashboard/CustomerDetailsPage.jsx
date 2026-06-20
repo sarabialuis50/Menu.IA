@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/layouts/DashboardLayout';
 import { Card, CardContent } from '@/components/ui/card';
@@ -37,7 +37,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-// UNIFIED BRAND COLOR: #22C55E (Verde MenuPro)
+// UNIFIED BRAND COLOR: #22C55E (Verde Burger Full)
 const BRAND_GREEN = "#22C55E";
 
 export default function CustomerDetailsPage() {
@@ -299,7 +299,7 @@ export default function CustomerDetailsPage() {
                                     </div>
                                     <div className="space-y-0.5">
                                         <h4 className="text-[10px] md:text-[11px] font-black text-green-800 uppercase tracking-widest leading-none">Contexto Sugerido</h4>
-                                        <p className="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Análisis por Menu.IA</p>
+                                        <p className="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Análisis IA</p>
                                     </div>
                                 </div>
                                 <p className="text-base md:text-lg font-bold italic text-gray-800 leading-relaxed max-w-5xl text-center md:text-left">
