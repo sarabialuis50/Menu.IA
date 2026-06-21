@@ -418,7 +418,7 @@ export default function WhatsappHubPage() {
                                 <div className="space-y-4 py-2">
                                     <div className="flex items-start justify-between gap-4">
                                         <h3 className="text-4xl font-black leading-none tracking-tight">
-                                            {`${user?.wa_campaign_count || 0}/${user?.wa_campaign_limit || 0}`}
+                                            ILIMITADOS
                                         </h3>
                                         <Badge className="bg-white/20 text-white text-[7px] md:text-[8px] font-black tracking-widest border-white border-2 px-2 py-0.5 shrink-0 mt-1 uppercase">
                                             PLAN {user?.plan?.toUpperCase() || 'GRATUITO'}
@@ -429,16 +429,8 @@ export default function WhatsappHubPage() {
                                     </p>
 
                                     <div className="space-y-2">
-                                        <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden">
-                                            <div
-                                                className="h-full bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-1000"
-                                                style={{
-                                                    width: `${user?.wa_campaign_limit > 0 ? Math.min(100, (user?.wa_campaign_count / user.wa_campaign_limit * 100)) : 0}%`
-                                                }}
-                                            />
-                                        </div>
                                         <p className="text-[9px] font-bold text-white/80 italic text-center">
-                                            ✨ Dispones de {Math.max(0, (user?.wa_campaign_limit || 0) - (user?.wa_campaign_count || 0))} mensajes para campañas.
+                                            ✨ Dispones de mensajes ilimitados para tus campañas.
                                         </p>
                                     </div>
                                 </div>
@@ -454,14 +446,6 @@ export default function WhatsappHubPage() {
                                     <ExternalLink className="w-4 h-4 text-white/40" />
                                 </div>
 
-                                <div className="pt-2">
-                                    <Button
-                                        onClick={() => setIsCampaignModalOpen(true)}
-                                        className="w-full bg-white text-[#22C55E] border-2 border-transparent hover:bg-transparent hover:text-white hover:border-white font-black text-[9px] uppercase h-12 rounded-xl tracking-normal shadow-xl shadow-green-900/10 transition-all px-2 leading-tight whitespace-normal"
-                                    >
-                                        Comprar paquetes de mensajes
-                                    </Button>
-                                </div>
                             </CardContent>
                         </Card>
 
@@ -529,43 +513,12 @@ export default function WhatsappHubPage() {
                                 >
                                     <MessageSquareMore className={`w-3 h-3 ${activeTab === 'campaigns' ? 'fill-current' : ''}`} />
                                     CAMPAÑAS MASIVAS
-                                    {(!user?.wa_credits || user?.wa_credits <= 0) && (
-                                        <Lock className="w-2.5 h-2.5 absolute -top-1 -right-1 text-amber-500 bg-white rounded-full p-0.5 shadow-sm" />
-                                    )}
                                 </button>
                             </div>
                         </div>
 
                         <div className="relative flex flex-col flex-1 mt-2">
-                            {(!user?.wa_credits || user.wa_credits <= 0) && !dismissedLockOverlay && (
-                                <div className="absolute inset-x-0 -top-4 -bottom-4 z-50 backdrop-blur-[2px] bg-white/40 flex items-center justify-center p-6 rounded-[2.5rem]">
-                                    <div className="relative max-w-sm w-full bg-white border-2 border-amber-100 shadow-2xl rounded-[2rem] p-8 text-center flex flex-col items-center gap-4">
-                                        <button
-                                            onClick={() => setDismissedLockOverlay(true)}
-                                            className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center shadow-sm hover:scale-110 transition-transform hover:border-gray-300"
-                                        >
-                                            <X className="w-4 h-4 text-gray-500" />
-                                        </button>
-                                        <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center mt-2">
-                                            <Lock className="w-8 h-8 text-amber-500" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight mb-2">Módulo Bloqueado</h3>
-                                            <p className="text-sm text-gray-500 font-medium">
-                                                Las automatizaciones y campañas requieren un pack de mensajes activo. Recarga ahora para impactar a tus clientes.
-                                            </p>
-                                        </div>
-                                        <Button
-                                            onClick={() => setIsCampaignModalOpen(true)}
-                                            className="w-full h-12 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl uppercase tracking-normal text-[9px] leading-tight px-4 whitespace-normal"
-                                        >
-                                            Adquirir pack de mensajes
-                                        </Button>
-                                    </div>
-                                </div>
-                            )}
-
-                            <div className={(!user?.wa_credits || user.wa_credits <= 0) ? 'flex flex-col flex-1 opacity-30 pointer-events-none' : 'flex flex-col flex-1'}>
+                            <div className="flex flex-col flex-1">
                                 {activeTab === 'templates' ? (
                                     <>
                                         {/* Selector de Disparadores Atómicos */}
@@ -894,17 +847,11 @@ export default function WhatsappHubPage() {
                                 <div className="space-y-4 pt-4">
                                     <Button
                                         onClick={handleSendCampaign}
-                                        disabled={(user?.wa_credits || 0) < (selectedSegment?.count || 0)}
                                         className="w-full h-14 bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black rounded-2xl uppercase tracking-widest text-[11px] shadow-lg shadow-green-100 transition-all flex items-center justify-center gap-3"
                                     >
                                         <Zap className="w-4 h-4 fill-current" />
                                         INICIAR ENVÍO AHORA
                                     </Button>
-                                    {(user?.wa_credits || 0) < (selectedSegment?.count || 0) && (
-                                        <p className="text-[9px] text-red-500 font-black text-center uppercase tracking-widest bg-red-50 py-2 rounded-lg">
-                                            ⚠️ No tienes créditos de campaña suficientes.
-                                        </p>
-                                    )}
                                     <Button
                                         variant="ghost"
                                         onClick={() => setIsConfirmModalOpen(false)}
