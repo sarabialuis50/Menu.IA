@@ -396,58 +396,7 @@ export default function WhatsappHubPage() {
                 <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8">
                     {/* Phone Preview - TOP on mobile */}
                     <div className="lg:col-span-4 order-1 lg:order-2">
-                        {/* WhatsApp Usage Card */}
-                        <Card className="rounded-[2rem] border-none shadow-2xl bg-[#4ADE80] overflow-hidden text-[#111814] group mb-6">
-                            <CardContent className="p-8 flex flex-col h-full space-y-6">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-md">
-                                            <MessageSquare className="w-5 h-5 text-white" />
-                                        </div>
-                                        <div>
-                                            <CardTitle className="text-sm font-black uppercase tracking-widest whitespace-nowrap">WhatsApp Hub</CardTitle>
-                                            <div className="flex items-center gap-1.5 text-[8px] font-bold text-white/60">
-                                                <div className="w-1 h-1 rounded-full bg-white opacity-40" />
-                                                SINCRONIZACIÓN ACTIVA
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <AlertCircle className="w-4 h-4 text-white/40" />
-                                </div>
 
-                                <div className="space-y-4 py-2">
-                                    <div className="flex items-start justify-between gap-4">
-                                        <h3 className="text-4xl font-black leading-none tracking-tight">
-                                            ILIMITADOS
-                                        </h3>
-                                        <Badge className="bg-white/20 text-white text-[7px] md:text-[8px] font-black tracking-widest border-white border-2 px-2 py-0.5 shrink-0 mt-1 uppercase">
-                                            PLAN {user?.plan?.toUpperCase() || 'GRATUITO'}
-                                        </Badge>
-                                    </div>
-                                    <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest px-1 whitespace-nowrap overflow-hidden text-ellipsis">
-                                        Créditos Campañas Masivas
-                                    </p>
-
-                                    <div className="space-y-2">
-                                        <p className="text-[9px] font-bold text-white/80 italic text-center">
-                                            ✨ Dispones de mensajes ilimitados para tus campañas.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="bg-white/10 rounded-2xl p-4 flex items-center justify-between border border-white/10">
-                                    <div className="flex items-center gap-3">
-                                        <CheckCircle className="w-4 h-4 text-white" />
-                                        <div className="space-y-0.5">
-                                            <p className="text-[9px] font-black uppercase tracking-wider">Reporte Programado</p>
-                                            <p className="text-[8px] font-bold text-white/60">Próximo reset: 01/3/2026</p>
-                                        </div>
-                                    </div>
-                                    <ExternalLink className="w-4 h-4 text-white/40" />
-                                </div>
-
-                            </CardContent>
-                        </Card>
 
                         <div className="lg:sticky lg:top-[128px]">
                             <div className="bg-white rounded-[1.5rem] border-[5px] border-gray-900 shadow-2xl w-full max-w-[280px] h-[400px] md:h-[450px] overflow-hidden relative mx-auto transition-all">
