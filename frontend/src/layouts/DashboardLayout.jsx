@@ -48,13 +48,8 @@ const mobileBottomNavItems = [
 ];
 
 const superAdminOnlyPaths = [
-  '/catalogo-maestro',
-  '/inventario',
-  '/marketing',
-  '/consultor',
-  '/configuracion',
-  '/clientes',
-  '/fidelidad',
+  // Originally restricted, but branches are independent and need to manage 
+  // their own catalog, inventory, config, etc.
 ];
 
 export const DashboardLayout = ({ children }) => {
