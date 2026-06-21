@@ -1003,7 +1003,8 @@ async def update_business(slug: str, data: Dict[str, Any], business: Business = 
         'metodos_pago', 'metodos_entrega',
         'ai_habilitado', 'ai_personalidad', 'ai_saludo', 'ai_conocimiento',
         'ai_use_modal', 'google_maps_review_url', 'twilio_sid', 'twilio_token', 'twilio_number', 'abierto',
-        'instagram_url', 'facebook_url', 'tiktok_url'
+        'instagram_url', 'facebook_url', 'tiktok_url',
+        'cocinas_duales_activo'
     ]
     update_data = {k: v for k, v in data.items() if k in allowed_fields}
     update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
@@ -2202,13 +2203,17 @@ async def get_orders(
 
 
 @api_router.get("/orders/{slug}/active", response_model=List[Order])
-async def get_active_orders(slug: str):
+async def get_active_orders(slug: str, kitchen_type: Optional[str] = None):
     """
     Returns active kitchen orders for a slug.
     - If the slug belongs to a Super Admin (parent_id IS NULL), fetches orders from
       ALL child sedes plus the parent itself so the unified kitchen view works.
     - If the slug belongs to a branch admin (parent_id IS NOT NULL), fetches only
       that branch's orders.
+    - Optional query param `kitchen_type`:
+        - "delivery" → only delivery orders
+        - "salon"    → only mesa/takeaway orders
+        - None       → all orders (default)
     """
     # Resolve the negocio
     response = supabase.table('negocios').select('id, parent_id').eq('slug', slug).execute()
@@ -2244,6 +2249,12 @@ async def get_active_orders(slug: str):
 
     result = []
     for o in (orders_res.data or []):
+        # Apply kitchen_type filter
+        if kitchen_type == 'delivery' and o.get('tipo') not in ['delivery']:
+            continue
+        if kitchen_type == 'salon' and o.get('tipo') not in ['mesa', 'takeaway']:
+            continue
+
         order = Order(**o)
         # Attach sede info as extra metadata if available (used by kitchen UI)
         if sede_map:

@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+﻿import { useState, useEffect, useCallback, useRef } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import useWebSocket from '@/hooks/useWebSocket';
-import { ChefHat, Clock, Volume2, VolumeX, RefreshCw, X } from 'lucide-react';
+import { ChefHat, Clock, Volume2, VolumeX, RefreshCw, X, Truck, UtensilsCrossed, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { playOrderSound, notifyNewOrder, unlockAudioAndNotifications } from '@/utils/sound';
@@ -10,14 +10,22 @@ import { playOrderSound, notifyNewOrder, unlockAudioAndNotifications } from '@/u
 export default function CocinaPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { api, user, isSuperAdmin } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [sedeFilter, setSedeFilter] = useState('all'); // 'all' | sede slug
+  const [sedeFilter, setSedeFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [cocinasDualesActivo, setCocinasDualesActivo] = useState(false);
+  const [configLoading, setConfigLoading] = useState(true);
 
-  // For super admin: collect all negocio_ids present in orders + own id
-  // so the WebSocket hook listens on every branch channel simultaneously
+  const kitchenType = location.pathname.endsWith('/domicilios')
+    ? 'delivery'
+    : location.pathname.endsWith('/salon')
+      ? 'salon'
+      : null;
+
   const wsIds = isSuperAdmin && orders.length > 0
     ? [...new Set([user?.id, ...orders.map(o => o.negocio_id)].filter(Boolean))]
     : user?.id;
@@ -27,54 +35,55 @@ export default function CocinaPage() {
   const previousOrdersRef = useRef(new Set());
   const isFirstLoadRef = useRef(true);
 
+  useEffect(() => {
+    if (isSuperAdmin) { setConfigLoading(false); return; }
+    api().get(`/business/${slug}`).then(res => {
+      setCocinasDualesActivo(res.data?.cocinas_duales_activo || false);
+    }).catch(() => {
+      setCocinasDualesActivo(false);
+    }).finally(() => { setConfigLoading(false); });
+  }, [slug, api, isSuperAdmin]);
+
   const fetchOrders = useCallback(async () => {
     try {
       if (isFirstLoadRef.current) setLoading(true);
-      const response = await api().get(`/orders/${slug}/active`);
+      const params = kitchenType ? { kitchen_type: kitchenType } : {};
+      const response = await api().get(`/orders/${slug}/active`, { params });
       const incomingOrders = response.data || [];
       const incomingIds = new Set(incomingOrders.map(o => o.id));
-
       if (!isFirstLoadRef.current) {
         const newPendingOrders = incomingOrders.filter(o =>
           !previousOrdersRef.current.has(o.id) && o.estado === 'pendiente'
         );
-
         if (newPendingOrders.length > 0) {
-          toast.success(`¡Tienes ${newPendingOrders.length} pedido(s) nuevo(s)!`, {
-            duration: 5000,
-            position: 'top-center',
-          });
+          toast.success(`¡Tienes ${newPendingOrders.length} pedido(s) nuevo(s)!`, { duration: 5000, position: 'top-center' });
           if (soundEnabled) playOrderSound();
-          notifyNewOrder(
-            '¡Nuevo Pedido!',
-            `Tienes ${newPendingOrders.length} pedido(s) nuevo(s) en la cocina por preparar.`
-          );
+          notifyNewOrder('¡Nuevo Pedido!', `Tienes ${newPendingOrders.length} pedido(s) nuevo(s) en la cocina por preparar.`);
         }
       }
-
       previousOrdersRef.current = incomingIds;
       isFirstLoadRef.current = false;
-
       setOrders(incomingOrders);
     } catch (error) {
       console.error('Error fetching orders:', error);
     } finally {
       setLoading(false);
     }
-  }, [slug, api, soundEnabled]);
+  }, [slug, api, soundEnabled, kitchenType]);
 
   useEffect(() => {
-    fetchOrders();
-    const interval = setInterval(fetchOrders, 30000);
-    return () => clearInterval(interval);
-  }, [fetchOrders]);
-
-  useEffect(() => {
-    // The websocket triggers a fetch immediately to handle state sync
-    if (lastMessage && (lastMessage.type === 'new_order' || lastMessage.type === 'order_updated')) {
+    if (isSuperAdmin || kitchenType || !cocinasDualesActivo) {
       fetchOrders();
+      const interval = setInterval(fetchOrders, 30000);
+      return () => clearInterval(interval);
     }
-  }, [lastMessage, fetchOrders]);
+  }, [fetchOrders, isSuperAdmin, kitchenType, cocinasDualesActivo]);
+
+  useEffect(() => {
+    if (lastMessage && (lastMessage.type === 'new_order' || lastMessage.type === 'order_updated')) {
+      if (isSuperAdmin || kitchenType || !cocinasDualesActivo) fetchOrders();
+    }
+  }, [lastMessage, fetchOrders, isSuperAdmin, kitchenType, cocinasDualesActivo]);
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
@@ -86,23 +95,39 @@ export default function CocinaPage() {
     }
   };
 
-  // Derive unique sedes present in the orders list for the filter bar
   const sedesPresentes = isSuperAdmin
-    ? [...new Set(orders.map(o => o.sede_slug).filter(Boolean))]
+    ? [...new Map(
+        orders.filter(o => o.sede_slug).map(o => [o.sede_slug, { slug: o.sede_slug, nombre: o.sede_nombre || o.sede_slug }])
+      ).values()]
     : [];
 
-  // Apply sede filter
-  const filteredOrders = sedeFilter === 'all'
-    ? orders
-    : orders.filter(o => o.sede_slug === sedeFilter);
+  const sedeFiltered = sedeFilter === 'all' ? orders : orders.filter(o => o.sede_slug === sedeFilter);
 
-  const SEDE_COLORS = {
-    'sede-norte':  { bg: 'bg-blue-500',   text: 'text-blue-100',  label: '🔵 Norte'  },
-    'sede-centro': { bg: 'bg-yellow-500', text: 'text-yellow-900', label: '🟡 Centro' },
-    'sede-sur':    { bg: 'bg-green-500',  text: 'text-green-100',  label: '🟢 Sur'    },
-  };
+  const filteredOrders = typeFilter === 'all'
+    ? sedeFiltered
+    : typeFilter === 'delivery'
+      ? sedeFiltered.filter(o => o.tipo === 'delivery')
+      : sedeFiltered.filter(o => ['mesa', 'takeaway'].includes(o.tipo));
 
-  if (loading) {
+  const PALETTE = [
+    { bg: 'bg-blue-500',   text: 'text-blue-100',   label: '🔵' },
+    { bg: 'bg-yellow-500', text: 'text-yellow-900',  label: '🟡' },
+    { bg: 'bg-green-500',  text: 'text-green-100',   label: '🟢' },
+    { bg: 'bg-red-500',    text: 'text-red-100',     label: '🔴' },
+    { bg: 'bg-purple-500', text: 'text-purple-100',  label: '🟣' },
+  ];
+  const sedeColorMap = {};
+  sedesPresentes.forEach((sede, i) => {
+    sedeColorMap[sede.slug] = { ...PALETTE[i % PALETTE.length], nombre: sede.nombre };
+  });
+
+  const kitchenBadge = kitchenType === 'delivery'
+    ? { icon: <Truck className="w-4 h-4" />, label: 'Cocina Domicilios', color: 'bg-orange-500/20 text-orange-300 border border-orange-500/30' }
+    : kitchenType === 'salon'
+      ? { icon: <UtensilsCrossed className="w-4 h-4" />, label: 'Cocina Salón', color: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' }
+      : null;
+
+  if (configLoading || (loading && orders.length === 0 && (isSuperAdmin || kitchenType || !cocinasDualesActivo))) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#22C55E]" />
@@ -110,19 +135,44 @@ export default function CocinaPage() {
     );
   }
 
+  if (!isSuperAdmin && cocinasDualesActivo && !kitchenType) {
+    return <KitchenSelectionScreen slug={slug} navigate={navigate} />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-900 text-white" data-testid="cocina-container" onClick={unlockAudioAndNotifications}>
       <header className="sticky top-0 z-50 bg-gray-800 border-b border-gray-700">
         <div className="max-w-full mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
+            {kitchenType && (
+              <button
+                onClick={() => navigate(`/dashboard/${slug}/cocina`)}
+                className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-700 hover:bg-gray-600 transition-colors"
+                title="Volver a selección de cocina"
+              >
+                <ArrowLeft className="w-5 h-5 text-gray-300" />
+              </button>
+            )}
             <div className="w-10 h-10 rounded-xl bg-transparent flex items-center justify-center overflow-hidden">
               <img src="/logos/logo-icon-transparent.png" alt="Menu.IA" className="w-full h-full object-contain" />
             </div>
             <div>
-              <h1 className="font-heading font-bold text-lg">
-                {isSuperAdmin ? '👑 Cocina Central' : 'Cocina'}
-              </h1>
-              <p className="text-xs text-gray-400">{filteredOrders.length} pedidos activos{sedeFilter !== 'all' ? ` · ${SEDE_COLORS[sedeFilter]?.label}` : ''}</p>
+              <div className="flex items-center gap-2">
+                <h1 className="font-heading font-bold text-lg">
+                  {isSuperAdmin ? '👑 Cocina Central' : 'Cocina'}
+                </h1>
+                {kitchenBadge && (
+                  <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${kitchenBadge.color}`}>
+                    {kitchenBadge.icon}
+                    {kitchenBadge.label}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-gray-400">
+                {filteredOrders.length} pedidos activos
+                {sedeFilter !== 'all' ? ` · ${sedeColorMap[sedeFilter]?.nombre || sedeFilter}` : ''}
+                {isSuperAdmin && typeFilter !== 'all' ? ` · ${typeFilter === 'delivery' ? 'Domicilios' : 'Salón'}` : ''}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -134,60 +184,114 @@ export default function CocinaPage() {
               <RefreshCw className="w-5 h-5" />
             </Button>
             <Button
-              variant="ghost"
-              size="icon"
+              variant="ghost" size="icon"
               onClick={() => navigate(`/dashboard/${slug}`)}
               className="text-gray-400 hover:text-red-500 hover:bg-red-500/10 ml-2"
-              data-testid="exit-kitchen-btn"
-              title="Salir al Dashboard"
+              data-testid="exit-kitchen-btn" title="Salir al Dashboard"
             >
               <X className="w-6 h-6" />
             </Button>
           </div>
         </div>
 
-        {/* Sede filter tabs — only visible to super admin when multiple sedes have orders */}
         {isSuperAdmin && sedesPresentes.length > 1 && (
           <div className="px-4 pb-2 flex gap-2 overflow-x-auto">
             <button
               onClick={() => setSedeFilter('all')}
-              className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap ${
-                sedeFilter === 'all' ? 'bg-white text-gray-900' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
-            >
-              Todas
-            </button>
-            {sedesPresentes.map(sedeSlug => {
-              const info = SEDE_COLORS[sedeSlug] || { bg: 'bg-gray-500', label: sedeSlug };
+              className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap ${sedeFilter === 'all' ? 'bg-white text-gray-900' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+            >Todas</button>
+            {sedesPresentes.map(sede => {
+              const info = sedeColorMap[sede.slug] || { bg: 'bg-gray-500', text: 'text-white', label: '⚫' };
               return (
-                <button
-                  key={sedeSlug}
-                  onClick={() => setSedeFilter(sedeSlug)}
-                  className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap ${
-                    sedeFilter === sedeSlug ? `${info.bg} text-white shadow` : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  }`}
+                <button key={sede.slug} onClick={() => setSedeFilter(sede.slug)}
+                  className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap ${sedeFilter === sede.slug ? `${info.bg} text-white shadow` : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
                 >
-                  {info.label}
+                  {info.label} {sede.nombre}
                 </button>
               );
             })}
+          </div>
+        )}
+
+        {isSuperAdmin && (
+          <div className="px-4 pb-2 flex gap-2 border-t border-gray-700/50 pt-2">
+            <button onClick={() => setTypeFilter('all')}
+              className={`px-3 py-1 rounded-full text-xs font-bold transition-all whitespace-nowrap ${typeFilter === 'all' ? 'bg-gray-400 text-gray-900' : 'bg-gray-700/60 text-gray-400 hover:bg-gray-700'}`}
+            >Todos los pedidos</button>
+            <button onClick={() => setTypeFilter('delivery')}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all whitespace-nowrap ${typeFilter === 'delivery' ? 'bg-orange-500 text-white shadow' : 'bg-gray-700/60 text-gray-400 hover:bg-gray-700'}`}
+            ><Truck className="w-3.5 h-3.5" />Domicilios</button>
+            <button onClick={() => setTypeFilter('salon')}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all whitespace-nowrap ${typeFilter === 'salon' ? 'bg-emerald-500 text-white shadow' : 'bg-gray-700/60 text-gray-400 hover:bg-gray-700'}`}
+            ><UtensilsCrossed className="w-3.5 h-3.5" />Salón</button>
           </div>
         )}
       </header>
 
       <main className="p-4">
         {filteredOrders.length === 0 ? (
-          <EmptyState />
+          <EmptyState kitchenType={kitchenType} typeFilter={typeFilter} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
             {filteredOrders
               .filter(order => !(order.tipo === 'delivery' && order.estado === 'listo'))
               .map((order) => (
-                <OrderCard key={order.id} order={order} onUpdateStatus={updateOrderStatus} sedeColors={SEDE_COLORS} />
+                <OrderCard key={order.id} order={order} onUpdateStatus={updateOrderStatus} sedeColorMap={sedeColorMap} isSuperAdmin={isSuperAdmin} />
               ))}
           </div>
         )}
       </main>
+    </div>
+  );
+}
+
+function KitchenSelectionScreen({ slug, navigate }) {
+  return (
+    <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center p-6">
+      <div className="mb-8 flex flex-col items-center gap-3">
+        <div className="w-16 h-16 rounded-2xl bg-gray-800 border border-gray-700 flex items-center justify-center overflow-hidden">
+          <img src="/logos/logo-icon-transparent.png" alt="Menu.IA" className="w-full h-full object-contain" />
+        </div>
+        <div className="text-center">
+          <h1 className="text-white font-heading font-bold text-2xl">Cocina</h1>
+          <p className="text-gray-400 text-sm mt-1">Selecciona la cocina a gestionar</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full max-w-2xl">
+        <button
+          onClick={() => navigate(`/dashboard/${slug}/cocina/domicilios`)}
+          className="group relative bg-gray-800 border border-gray-700 hover:border-orange-500/60 rounded-2xl p-8 flex flex-col items-center gap-4 transition-all duration-200 hover:bg-gray-800/80 hover:shadow-2xl hover:shadow-orange-500/10 hover:-translate-y-1"
+        >
+          <div className="w-20 h-20 rounded-2xl bg-orange-500/10 border border-orange-500/20 group-hover:bg-orange-500/20 group-hover:border-orange-500/40 flex items-center justify-center transition-all duration-200">
+            <Truck className="w-10 h-10 text-orange-400 group-hover:text-orange-300 transition-colors" />
+          </div>
+          <div className="text-center">
+            <h2 className="text-white font-heading font-bold text-xl">Cocina Domicilios</h2>
+            <p className="text-gray-400 text-sm mt-1.5 leading-relaxed">Pedidos enviados a domicilio</p>
+          </div>
+          <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-orange-500/50 group-hover:bg-orange-400 transition-colors" />
+        </button>
+        <button
+          onClick={() => navigate(`/dashboard/${slug}/cocina/salon`)}
+          className="group relative bg-gray-800 border border-gray-700 hover:border-emerald-500/60 rounded-2xl p-8 flex flex-col items-center gap-4 transition-all duration-200 hover:bg-gray-800/80 hover:shadow-2xl hover:shadow-emerald-500/10 hover:-translate-y-1"
+        >
+          <div className="w-20 h-20 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 group-hover:bg-emerald-500/20 group-hover:border-emerald-500/40 flex items-center justify-center transition-all duration-200">
+            <UtensilsCrossed className="w-10 h-10 text-emerald-400 group-hover:text-emerald-300 transition-colors" />
+          </div>
+          <div className="text-center">
+            <h2 className="text-white font-heading font-bold text-xl">Cocina Salón</h2>
+            <p className="text-gray-400 text-sm mt-1.5 leading-relaxed">Pedidos de mesa y para llevar</p>
+          </div>
+          <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-emerald-500/50 group-hover:bg-emerald-400 transition-colors" />
+        </button>
+      </div>
+      <button
+        onClick={() => navigate(`/dashboard/${slug}`)}
+        className="mt-10 text-gray-500 hover:text-gray-300 text-sm transition-colors flex items-center gap-2"
+      >
+        <X className="w-4 h-4" />
+        Salir al Dashboard
+      </button>
     </div>
   );
 }
@@ -201,81 +305,55 @@ function ConnectionBadge({ isConnected }) {
   );
 }
 
-function EmptyState() {
+function EmptyState({ kitchenType, typeFilter }) {
+  const icon = kitchenType === 'delivery' || typeFilter === 'delivery'
+    ? <Truck className="w-20 h-20 mb-4 opacity-30" />
+    : kitchenType === 'salon' || typeFilter === 'salon'
+      ? <UtensilsCrossed className="w-20 h-20 mb-4 opacity-30" />
+      : <ChefHat className="w-20 h-20 mb-4 opacity-30" />;
+  const message = kitchenType === 'delivery' || typeFilter === 'delivery'
+    ? 'No hay domicilios activos'
+    : kitchenType === 'salon' || typeFilter === 'salon'
+      ? 'No hay pedidos de salón activos'
+      : 'No hay pedidos activos';
   return (
     <div className="flex flex-col items-center justify-center h-[60vh] text-gray-500">
-      <ChefHat className="w-20 h-20 mb-4 opacity-30" />
-      <p className="text-xl font-medium">No hay pedidos activos</p>
+      {icon}
+      <p className="text-xl font-medium">{message}</p>
     </div>
   );
 }
 
-function OrderCard({ order, onUpdateStatus, sedeColors = {} }) {
+function OrderCard({ order, onUpdateStatus, sedeColorMap = {}, isSuperAdmin }) {
   const formatCurrency = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Number(v));
   const getTimeSince = (d) => { const diff = Math.floor((new Date() - new Date(d)) / 60000); return diff < 1 ? 'Ahora' : diff < 60 ? diff + ' min' : Math.floor(diff / 60) + 'h'; };
-  const sedeInfo = order.sede_slug ? sedeColors[order.sede_slug] : null;
+  const sedeInfo = order.sede_slug ? sedeColorMap[order.sede_slug] : null;
 
   let config;
   if (order.estado === 'pendiente' || order.estado === 'aceptado') {
-    config = {
-      label: 'Nuevo',
-      color: 'border-blue-400 bg-blue-50',
-      headerColor: 'bg-blue-500',
-      nextAction: 'ACEPTAR',
-      nextStatus: 'preparando',
-      btnColor: 'bg-blue-500 hover:bg-blue-600 font-black'
-    };
-  }
-  else if (order.estado === 'preparando') {
-    config = {
-      label: 'Preparando',
-      color: 'border-yellow-400 bg-yellow-50',
-      headerColor: 'bg-yellow-500',
-      nextAction: 'LISTO',
-      nextStatus: 'listo',
-      btnColor: 'bg-green-500 hover:bg-green-600 font-black'
-    };
-  }
-  else if (order.estado === 'listo') {
+    config = { label: 'Nuevo', color: 'border-blue-400 bg-blue-50', headerColor: 'bg-blue-500', nextAction: 'ACEPTAR', nextStatus: 'preparando', btnColor: 'bg-blue-500 hover:bg-blue-600 font-black' };
+  } else if (order.estado === 'preparando') {
+    config = { label: 'Preparando', color: 'border-yellow-400 bg-yellow-50', headerColor: 'bg-yellow-500', nextAction: 'LISTO', nextStatus: 'listo', btnColor: 'bg-green-500 hover:bg-green-600 font-black' };
+  } else if (order.estado === 'listo') {
     const isDelivery = order.tipo === 'delivery';
-    config = {
-      label: 'Listo',
-      color: 'border-emerald-400 bg-emerald-50',
-      headerColor: 'bg-emerald-500',
-      nextAction: isDelivery ? 'ENVIADO' : 'ENTREGADO', // Changed from 'EN CAMINO' to 'ENVIADO'
-      nextStatus: isDelivery ? 'enviado' : 'entregado',
-      btnColor: 'bg-indigo-600 hover:bg-indigo-700 shadow-lg text-white font-black'
-    };
+    config = { label: 'Listo', color: 'border-emerald-400 bg-emerald-50', headerColor: 'bg-emerald-500', nextAction: isDelivery ? 'ENVIADO' : 'ENTREGADO', nextStatus: isDelivery ? 'enviado' : 'entregado', btnColor: 'bg-indigo-600 hover:bg-indigo-700 shadow-lg text-white font-black' };
+  } else if (order.estado === 'enviado') {
+    config = { label: 'Enviado', color: 'border-purple-400 bg-purple-50', headerColor: 'bg-purple-500', nextAction: 'ENTREGADO', nextStatus: 'entregado', btnColor: 'bg-indigo-600 hover:bg-indigo-700 shadow-lg text-white font-black' };
+  } else {
+    config = { label: 'Entregado', color: 'border-gray-400 bg-gray-50', headerColor: 'bg-gray-500', nextAction: null, nextStatus: null, btnColor: '' };
   }
-  else if (order.estado === 'enviado') { // Added new state for 'enviado'
-    config = {
-      label: 'Enviado',
-      color: 'border-purple-400 bg-purple-50',
-      headerColor: 'bg-purple-500',
-      nextAction: 'ENTREGADO',
-      nextStatus: 'entregado',
-      btnColor: 'bg-indigo-600 hover:bg-indigo-700 shadow-lg text-white font-black'
-    };
-  }
-  else config = { label: 'Entregado', color: 'border-gray-400 bg-gray-50', headerColor: 'bg-gray-500', nextAction: null, nextStatus: null, btnColor: '' };
 
   return (
     <div className={`rounded-xl border-2 overflow-hidden flex flex-col h-full ${config.color}`} data-testid={`order-ticket-${order.id}`}>
       <div className={`${config.headerColor} text-white px-4 py-2 flex items-center justify-center relative`}>
         <span className="font-bold text-center text-lg uppercase tracking-wider">{config.label}</span>
-        {/* Sede badge for super admin unified view */}
-        {sedeInfo && (
+        {isSuperAdmin && sedeInfo && (
           <span className={`absolute left-4 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${sedeInfo.bg} ${sedeInfo.text}`}>
-            {sedeInfo.label}
+            {sedeInfo.label} {sedeInfo.nombre}
           </span>
         )}
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            if (window.confirm('¿Deseas rechazar/cancelar este pedido?')) {
-              onUpdateStatus(order.id, 'cancelado');
-            }
-          }}
+          onClick={(e) => { e.stopPropagation(); if (window.confirm('¿Deseas rechazar/cancelar este pedido?')) { onUpdateStatus(order.id, 'cancelado'); } }}
           className="absolute right-4 w-6 h-6 flex items-center justify-center rounded-full border-2 border-white hover:bg-white/20 transition-colors"
           title="Rechazar Pedido"
         >
@@ -298,7 +376,6 @@ function OrderCard({ order, onUpdateStatus, sedeColors = {} }) {
             </div>
           </div>
         </div>
-
         <div className="space-y-4 overflow-visible flex-1">
           {order.items.map((item, idx) => (
             <div key={idx} className="flex flex-col gap-1 border-b border-gray-100 last:border-0 pb-2 mb-2">
@@ -306,19 +383,14 @@ function OrderCard({ order, onUpdateStatus, sedeColors = {} }) {
                 <span className="bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-sm font-bold h-fit shrink-0">{item.cantidad}</span>
                 <span className="font-medium text-gray-900 uppercase tracking-tight">{item.nombre}</span>
               </div>
-
               {item.descripcion && (
-                <div className="ml-8 text-[11px] font-bold text-gray-600 leading-tight mt-0.5">
-                  {item.descripcion}
-                </div>
+                <div className="ml-8 text-[11px] font-bold text-gray-600 leading-tight mt-0.5">{item.descripcion}</div>
               )}
-
               {item.notas && (
                 <div className="ml-8 text-sm font-black text-amber-600 leading-tight mt-1 bg-amber-50 px-2 py-1 rounded border-l-2 border-amber-400">
                   Nota: {item.notas}
                 </div>
               )}
-
               {item.modificadores && item.modificadores.length > 0 && (
                 <div className="ml-8 mt-1.5 grid grid-cols-3 w-full pr-4 gap-x-1">
                   {(() => {
@@ -328,13 +400,9 @@ function OrderCard({ order, onUpdateStatus, sedeColors = {} }) {
                       item.modificadores.forEach(mod => {
                         const lower = mod.toLowerCase();
                         let cat = 'ADICIONALES';
-                        if (/small|medium|grande|personal|mediana|familiar|mitad|entera|porcion/i.test(lower)) {
-                          cat = 'TAMAÑOS';
-                        } else if (/sin |con |oregano|orégano|salsa|picante|normal/i.test(lower)) {
-                          cat = 'OPCIONES';
-                        }
-                        const formattedMod = mod.startsWith('(') ? mod : `(1) ${mod}`;
-                        grouped[cat].push(formattedMod);
+                        if (/small|medium|grande|personal|mediana|familiar|mitad|entera|porcion/i.test(lower)) cat = 'TAMAÑOS';
+                        else if (/sin |con |oregano|orégano|salsa|picante|normal/i.test(lower)) cat = 'OPCIONES';
+                        grouped[cat].push(mod.startsWith('(') ? mod : `(1) ${mod}`);
                       });
                     } else {
                       grouped = item.modificadores.reduce((acc, mod) => {
@@ -344,23 +412,18 @@ function OrderCard({ order, onUpdateStatus, sedeColors = {} }) {
                         return acc;
                       }, {});
                     }
-
-                    return Object.entries(grouped)
-                      .filter(([_, mods]) => mods.length > 0)
-                      .map(([cat, mods], i) => (
-                        <div key={i} className={`flex flex-col min-w-0 ${cat === 'ADICIONALES' ? '-ml-[4%]' : ''}`}>
-                          <span className="text-[9px] text-gray-500 font-bold uppercase tracking-wider mb-0.5 leading-none whitespace-nowrap" title={cat}>
-                            {cat === 'OPCIONES' ? 'OPCIONES:' : cat}
-                          </span>
-                          <div className="flex flex-col gap-[1px]">
-                            {mods.map((m, j) => (
-                              <span key={j} className="text-[9px] text-blue-600 font-black uppercase leading-tight whitespace-nowrap overflow-visible z-10 relative" title={m}>
-                                {m}
-                              </span>
-                            ))}
-                          </div>
+                    return Object.entries(grouped).filter(([_, mods]) => mods.length > 0).map(([cat, mods], i) => (
+                      <div key={i} className={`flex flex-col min-w-0 ${cat === 'ADICIONALES' ? '-ml-[4%]' : ''}`}>
+                        <span className="text-[9px] text-gray-500 font-bold uppercase tracking-wider mb-0.5 leading-none whitespace-nowrap" title={cat}>
+                          {cat === 'OPCIONES' ? 'OPCIONES:' : cat}
+                        </span>
+                        <div className="flex flex-col gap-[1px]">
+                          {mods.map((m, j) => (
+                            <span key={j} className="text-[9px] text-blue-600 font-black uppercase leading-tight whitespace-nowrap overflow-visible z-10 relative" title={m}>{m}</span>
+                          ))}
                         </div>
-                      ));
+                      </div>
+                    ));
                   })()}
                 </div>
               )}

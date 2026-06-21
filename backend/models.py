@@ -86,6 +86,8 @@ class BusinessBase(BaseModel):
     twilio_number: Optional[str] = None
     ai_use_modal: Optional[bool] = True
     abierto: Optional[bool] = True
+    # Kitchen Config
+    cocinas_duales_activo: Optional[bool] = False
     # Social Media
     instagram_url: Optional[str] = None
     facebook_url: Optional[str] = None

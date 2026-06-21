@@ -109,6 +109,8 @@ function AppRoutes() {
       <Route path="/dashboard/:slug/pedidos" element={<ProtectedRoute><PedidosPage /></ProtectedRoute>} />
       <Route path="/dashboard/:slug/pedidos/historial" element={<ProtectedRoute><HistorialPedidosPage /></ProtectedRoute>} />
       <Route path="/dashboard/:slug/cocina" element={<ProtectedRoute><CocinaPage /></ProtectedRoute>} />
+      <Route path="/dashboard/:slug/cocina/domicilios" element={<ProtectedRoute><CocinaPage /></ProtectedRoute>} />
+      <Route path="/dashboard/:slug/cocina/salon" element={<ProtectedRoute><CocinaPage /></ProtectedRoute>} />
       <Route path="/dashboard/:slug/empleados" element={<ProtectedRoute><EmpleadosPage /></ProtectedRoute>} />
       <Route path="/dashboard/:slug/fidelidad" element={<ProtectedRoute><FidelidadPage /></ProtectedRoute>} />
       <Route path="/dashboard/:slug/fidelidad/historial" element={<ProtectedRoute><FidelidadHistoryPage /></ProtectedRoute>} />

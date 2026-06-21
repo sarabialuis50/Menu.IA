@@ -1375,6 +1375,31 @@ const ConfiguracionPage = () => {
                                     </div>
                                 </div>
 
+                                {/* Cocinas Duales Toggle */}
+                                <div className="mt-6 p-5 rounded-2xl border-2 border-gray-100 bg-gray-50 flex items-start justify-between gap-4">
+                                    <div className="flex items-start gap-3">
+                                        <div className={`size-10 shrink-0 rounded-xl flex items-center justify-center transition-all ${businessData.cocinas_duales_activo ? 'bg-[#4ADE80]/10 text-[#22C55E]' : 'bg-gray-200 text-gray-400'}`}>
+                                            <Truck className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-gray-800 text-sm">Cocinas Duales</p>
+                                            <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                                                Separa los pedidos de domicilio y de salón en dos cocinas independientes. 
+                                                Útil si tienes una dark kitchen para domicilios.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <Switch
+                                        id="cocinas-duales-switch"
+                                        checked={businessData.cocinas_duales_activo || false}
+                                        onCheckedChange={(checked) => setBusinessData({
+                                            ...businessData,
+                                            cocinas_duales_activo: checked
+                                        })}
+                                        className="shrink-0 mt-0.5"
+                                    />
+                                </div>
+
                                 <div className="flex justify-end pt-4 border-t border-gray-100">
                                     <Button
                                         onClick={handleSaveBusiness}
