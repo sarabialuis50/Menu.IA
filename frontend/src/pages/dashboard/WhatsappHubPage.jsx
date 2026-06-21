@@ -394,10 +394,48 @@ export default function WhatsappHubPage() {
                 </div>
 
                 <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8">
-                    {/* Phone Preview - TOP on mobile */}
+                    {/* Phone Preview & Impact Stats - TOP on mobile, Sidebar on desktop */}
                     <div className="lg:col-span-4 order-1 lg:order-2">
 
-
+                        {/* Impact Stats - Moved above phone mockup */}
+                        <Card className="border-2 border-gray-200 shadow-xl bg-white overflow-hidden rounded-[2rem] w-full max-w-[280px] mx-auto mb-6 border-t-[10px] border-t-[#22C55E]">
+                            <div className="p-5 border-b flex items-center justify-between">
+                                <h4 className="font-black text-gray-900 text-[10px] flex items-center gap-2 uppercase tracking-widest">
+                                    <BarChart className="w-3.5 h-3.5 text-[#22C55E]" />
+                                    Impacto Estimado
+                                </h4>
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse" />
+                            </div>
+                            <div className="p-6">
+                                <div className="grid grid-cols-1 gap-4">
+                                    <div className="flex justify-between items-center gap-1">
+                                        <span className="text-gray-400 font-black text-[10px] uppercase tracking-widest">Alcance</span>
+                                        <span className="font-black text-gray-900 text-sm">
+                                            {activeTab === 'templates' ? (selectedTemplate?.stats?.alcance || 0) : (selectedSegment?.count || 0)} Clientes
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center gap-1">
+                                        <span className="text-gray-400 font-black text-[10px] uppercase tracking-widest">Apertura</span>
+                                        <span className="font-black text-[#22C55E] text-lg">
+                                            {activeTab === 'templates' ? (selectedTemplate?.stats?.apertura || '95%') : '96%'}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center gap-1">
+                                        <span className="text-gray-400 font-black text-[10px] uppercase tracking-widest">Conversión</span>
+                                        <span className="font-black text-[#22C55E] text-lg">
+                                            {activeTab === 'templates' ? (selectedTemplate?.stats?.conversion || '10%') : '8%'}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="pt-4 mt-4 border-t-2 border-gray-50">
+                                    <p className="text-[10px] text-gray-400 font-bold italic leading-relaxed text-center uppercase tracking-tighter">
+                                        {activeTab === 'templates'
+                                            ? (selectedTemplate?.stats?.tip || 'Optimización automática activada.')
+                                            : `Impactarás al ${selectedSegment ? ((selectedSegment.count / 204) * 100).toFixed(0) : 0}% de tu base.`}
+                                    </p>
+                                </div>
+                            </div>
+                        </Card>
                         <div className="lg:sticky lg:top-[128px]">
                             <div className="bg-white rounded-[1.5rem] border-[5px] border-gray-900 shadow-2xl w-full max-w-[280px] h-[400px] md:h-[450px] overflow-hidden relative mx-auto transition-all">
                                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-28 h-4 bg-gray-900 rounded-b-lg z-20"></div>
@@ -705,49 +743,7 @@ export default function WhatsappHubPage() {
                         </div>
                     </div>
 
-                    {/* Impact Stats - BOTTOM on mobile */}
-                    <div className="lg:col-span-12 order-3 lg:order-3">
-                        <div className="flex justify-center lg:justify-end mt-4 lg:mt-0">
-                            <Card className="border-2 border-gray-200 shadow-xl bg-white overflow-hidden rounded-[2rem] w-full max-w-[280px] lg:max-w-none lg:w-full border-t-[10px] border-t-green-500">
-                                <div className="p-5 border-b flex items-center justify-between">
-                                    <h4 className="font-black text-gray-900 text-[10px] flex items-center gap-2 uppercase tracking-widest">
-                                        <BarChart className="w-3.5 h-3.5 text-[#22C55E]" />
-                                        Impacto Estimado
-                                    </h4>
-                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                                </div>
-                                <div className="p-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        <div className="flex justify-between md:flex-col md:items-start items-center gap-1">
-                                            <span className="text-gray-400 font-black text-[10px] uppercase">Alcance</span>
-                                            <span className="font-black text-gray-900 text-sm">
-                                                {activeTab === 'templates' ? (selectedTemplate?.stats?.alcance || 0) : (selectedSegment?.count || 0)} Clientes
-                                            </span>
-                                        </div>
-                                        <div className="flex justify-between md:flex-col md:items-start items-center gap-1">
-                                            <span className="text-gray-400 font-black text-[10px] uppercase">Tasa Apertura</span>
-                                            <span className="font-black text-[#22C55E] text-lg">
-                                                {activeTab === 'templates' ? (selectedTemplate?.stats?.apertura || '95%') : '96%'}
-                                            </span>
-                                        </div>
-                                        <div className="flex justify-between md:flex-col md:items-start items-center gap-1">
-                                            <span className="text-gray-400 font-black text-[10px] uppercase">Conversión</span>
-                                            <span className="font-black text-[#22C55E] text-lg">
-                                                {activeTab === 'templates' ? (selectedTemplate?.stats?.conversion || '10%') : '8%'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="pt-4 mt-4 border-t-2 border-gray-50">
-                                        <p className="text-[10px] text-gray-400 font-black italic leading-relaxed text-center lg:text-left uppercase tracking-tighter">
-                                            {activeTab === 'templates'
-                                                ? (selectedTemplate?.stats?.tip || 'Optimización automática activada.')
-                                                : `Impactarás al ${selectedSegment ? ((selectedSegment.count / 204) * 100).toFixed(0) : 0}% de tu base.`}
-                                        </p>
-                                    </div>
-                                </div>
-                            </Card>
-                        </div>
-                    </div>
+
                 </div>
             </div>
 
