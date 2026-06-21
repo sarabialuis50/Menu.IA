@@ -394,90 +394,8 @@ export default function WhatsappHubPage() {
                 </div>
 
                 <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8">
-                    {/* Phone Preview & Impact Stats - TOP on mobile, Sidebar on desktop */}
-                    <div className="lg:col-span-4 order-1 lg:order-2">
-
-                        {/* Impact Stats - Moved above phone mockup */}
-                        <Card className="border-2 border-gray-200 shadow-xl bg-white overflow-hidden rounded-[2rem] w-full max-w-[280px] mx-auto mb-6 border-t-[10px] border-t-[#22C55E]">
-                            <div className="p-5 border-b flex items-center justify-between">
-                                <h4 className="font-black text-gray-900 text-[10px] flex items-center gap-2 uppercase tracking-widest">
-                                    <BarChart className="w-3.5 h-3.5 text-[#22C55E]" />
-                                    Impacto Estimado
-                                </h4>
-                                <div className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse" />
-                            </div>
-                            <div className="p-6">
-                                <div className="grid grid-cols-1 gap-4">
-                                    <div className="flex justify-between items-center gap-1">
-                                        <span className="text-gray-400 font-black text-[10px] uppercase tracking-widest">Alcance</span>
-                                        <span className="font-black text-gray-900 text-sm">
-                                            {activeTab === 'templates' ? (selectedTemplate?.stats?.alcance || 0) : (selectedSegment?.count || 0)} Clientes
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between items-center gap-1">
-                                        <span className="text-gray-400 font-black text-[10px] uppercase tracking-widest">Apertura</span>
-                                        <span className="font-black text-[#22C55E] text-lg">
-                                            {activeTab === 'templates' ? (selectedTemplate?.stats?.apertura || '95%') : '96%'}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between items-center gap-1">
-                                        <span className="text-gray-400 font-black text-[10px] uppercase tracking-widest">Conversión</span>
-                                        <span className="font-black text-[#22C55E] text-lg">
-                                            {activeTab === 'templates' ? (selectedTemplate?.stats?.conversion || '10%') : '8%'}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="pt-4 mt-4 border-t-2 border-gray-50">
-                                    <p className="text-[10px] text-gray-400 font-bold italic leading-relaxed text-center uppercase tracking-tighter">
-                                        {activeTab === 'templates'
-                                            ? (selectedTemplate?.stats?.tip || 'Optimización automática activada.')
-                                            : `Impactarás al ${selectedSegment ? ((selectedSegment.count / 204) * 100).toFixed(0) : 0}% de tu base.`}
-                                    </p>
-                                </div>
-                            </div>
-                        </Card>
-                        <div className="lg:sticky lg:top-[128px]">
-                            <div className="bg-white rounded-[1.5rem] border-[5px] border-gray-900 shadow-2xl w-full max-w-[280px] h-[400px] md:h-[450px] overflow-hidden relative mx-auto transition-all">
-                                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-28 h-4 bg-gray-900 rounded-b-lg z-20"></div>
-                                <div className="w-full h-full bg-[#E5DDD5] flex flex-col relative">
-                                    <div className="bg-[#075E54] p-4 pt-10 text-white flex items-center gap-3 shrink-0">
-                                        <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm shadow-inner">
-                                            {user?.business_name?.[0] || 'M'}
-                                        </div>
-                                        <div>
-                                            <p className="text-xs font-black uppercase tracking-tight leading-none">{user?.business_name || 'Mi Negocio'}</p>
-                                            <p className="text-[10px] opacity-70 font-bold uppercase mt-0.5">En línea</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex-1 p-4 space-y-4 overflow-y-auto scrollbar-hide">
-                                        <div className="max-w-[90%] bg-white rounded-2xl rounded-tl-sm p-4 shadow-md relative border-b-2 border-gray-100">
-                                            <div className="flex items-center gap-1.5 mb-2">
-                                                <span className="text-[9px] font-black text-[#22C55E] uppercase tracking-widest">OFICIAL</span>
-                                                <div className="w-1.5 h-1.5 rounded-full bg-[#4ADE80]" />
-                                            </div>
-                                            <p className="text-sm text-gray-800 font-medium leading-relaxed whitespace-pre-wrap">
-                                                {activeTab === 'templates'
-                                                    ? (selectedTemplate?.message || 'Escribe tu mensaje...')
-                                                    : (campaignMessage || 'Escribiendo campaña...')
-                                                }
-                                            </p>
-                                            <div className="flex items-center justify-end gap-1 mt-2">
-                                                <p className="text-[8px] text-gray-400 font-bold uppercase">Ahora</p>
-                                                <Check className="w-2.5 h-2.5 text-[#22C55E]" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="bg-gray-100 p-3 px-4 flex items-center gap-3 shrink-0">
-                                        <div className="flex-1 h-9 bg-white rounded-full border-2 border-gray-200"></div>
-                                        <div className="w-10 h-10 rounded-full bg-[#075E54] flex items-center justify-center text-white shadow-lg"><Smartphone className="w-5 h-5" /></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Main Content Area - MIDDLE on mobile */}
-                    <div className="lg:col-span-8 flex flex-col space-y-6 order-2 lg:order-1">
+                    {/* Row 1 Left: Tabs & Selectores */}
+                    <div className="lg:col-span-8 order-3 lg:order-1 flex flex-col space-y-6">
                         {/* Tabs Navigation - Pill Style - Left Aligned */}
                         <div className="flex justify-start mb-2">
                             <div className="bg-gray-100 p-1.5 rounded-full flex items-center gap-1 shadow-inner border border-gray-200">
@@ -510,240 +428,327 @@ export default function WhatsappHubPage() {
                                     <>
                                         {/* Selector de Disparadores Atómicos */}
                                         <div className="space-y-4">
-                                    <div className="flex items-center gap-2 text-[#22C55E]">
-                                        <Zap className="w-3.5 h-3.5 fill-current" />
-                                        <h3 className="text-[10px] font-black uppercase tracking-widest text-[#23a352]">Disparadores Atómicos</h3>
-                                        <div className="ml-auto px-2 py-0.5 bg-green-50 rounded-full text-[9px] font-black border border-green-100 uppercase tracking-tighter">
-                                            {templates.filter(t => t.status).length} ACTIVOS
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-3 border-2 border-gray-200 p-2 rounded-[1.5rem] bg-gray-50/30">
-                                        {templates.map((template) => (
-                                            <button
-                                                key={template.id}
-                                                onClick={() => setSelectedTemplate(template)}
-                                                className={`p-4 rounded-2xl border transition-all flex items-start gap-4 text-left ${selectedTemplate?.id === template.id
-                                                    ? 'bg-white border-[#22C55E] border-2 shadow-lg shadow-green-100 ring-4 ring-green-50/50'
-                                                    : 'bg-white border-gray-100 border-2 hover:border-gray-200 shadow-sm'
-                                                    }`}
-                                            >
-                                                <div className={`p-2 rounded-xl shrink-0 ${selectedTemplate?.id === template.id ? 'bg-[#4ADE80] text-[#111814] shadow-md' : 'bg-gray-50 text-gray-300'}`}>
-                                                    <Zap className="w-4 h-4" />
+                                            <div className="flex items-center gap-2 text-[#22C55E]">
+                                                <Zap className="w-3.5 h-3.5 fill-current" />
+                                                <h3 className="text-[10px] font-black uppercase tracking-widest text-[#23a352]">Disparadores Atómicos</h3>
+                                                <div className="ml-auto px-2 py-0.5 bg-green-50 rounded-full text-[9px] font-black border border-green-100 uppercase tracking-tighter">
+                                                    {templates.filter(t => t.status).length} ACTIVOS
                                                 </div>
-                                                <div className="min-w-0">
-                                                    <p className={`font-black text-[10px] uppercase tracking-tight leading-none mb-2 ${selectedTemplate?.id === template.id ? 'text-[#22C55E]' : 'text-gray-500'}`}>{template.name}</p>
-                                                    <div className="flex items-center gap-1.5">
-                                                        <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${template.status ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`} />
-                                                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">
-                                                            {template.status ? 'EN EXECUCIÓN' : 'PAUSADO'}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Editor de Automatización */}
-                                {selectedTemplate && (
-                                    <div className="space-y-4 flex flex-col flex-1">
-                                        <div className="flex items-center justify-between px-1">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-9 h-9 rounded-full bg-white border-2 border-[#22C55E] text-[#22C55E] flex items-center justify-center font-black shadow-sm">
-                                                    <MessageSquareMore className="w-4 h-4" />
-                                                </div>
-                                                <h3 className="font-black text-gray-900 text-base uppercase tracking-tight">Personaliza el mensaje</h3>
                                             </div>
-                                            <div className="flex items-center gap-4">
-                                                <div className={`px-4 py-1.5 rounded-full font-black text-[10px] tracking-widest flex items-center gap-2 border transition-colors ${selectedTemplate.status ? 'bg-green-50 text-green-600 border-green-100' : 'bg-gray-100 text-gray-400 border-gray-200'}`}>
-                                                    <div className={`w-2 h-2 rounded-full ${selectedTemplate.status ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
-                                                    {selectedTemplate.status ? 'ACTIVADO' : 'DESACTIVADO'}
-                                                </div>
-                                                <Switch
-                                                    checked={selectedTemplate.status}
-                                                    onCheckedChange={(checked) => setSelectedTemplate({ ...selectedTemplate, status: checked })}
-                                                    className="data-[state=checked]:bg-[#4ADE80]"
-                                                />
-                                            </div>
-                                        </div>
 
-                                        <Card className="border-2 border-gray-200 shadow-xl shadow-gray-200/50 overflow-hidden bg-white flex flex-col flex-1 min-h-[500px] rounded-[1.5rem]">
-                                            <div className="p-7 flex-1 flex flex-col space-y-6">
-                                                <div className="bg-gray-50/80 rounded-2xl p-5 border-2 border-dashed border-gray-200 flex items-center gap-3">
-                                                    <AlertCircle className="w-5 h-5 text-[#22C55E] shrink-0" />
-                                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-tight leading-relaxed">{selectedTemplate.trigger}</p>
-                                                </div>
-
-                                                <div className="flex justify-end -my-4 relative z-10 px-4">
-                                                    <AISuggestButton type="template" />
-                                                </div>
-
-                                                <div className="flex-1 border-2 border-gray-50 rounded-2xl p-4 bg-gray-50/10">
-                                                    <textarea
-                                                        value={selectedTemplate.message}
-                                                        onChange={(e) => setSelectedTemplate({ ...selectedTemplate, message: e.target.value })}
-                                                        className="w-full h-full min-h-[180px] bg-transparent resize-none border-none focus:ring-0 text-gray-800 placeholder:text-gray-300 text-lg font-medium leading-relaxed scrollbar-hide"
-                                                        placeholder="Escribe el mensaje de la automatización..."
-                                                    />
-                                                </div>
-
-                                                <div className="pt-6 border-t-2 border-gray-100 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-6">
-                                                    <div className="space-y-3 min-w-0 flex-1">
-                                                        <div className="flex items-center gap-2">
-                                                            <Sparkles className="w-3.5 h-3.5 text-gray-400" />
-                                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Etiquetas Inteligentes</span>
+                                            <div className="grid grid-cols-2 gap-3 border-2 border-gray-200 p-2 rounded-[1.5rem] bg-gray-50/30">
+                                                {templates.map((template) => (
+                                                    <button
+                                                        key={template.id}
+                                                        onClick={() => setSelectedTemplate(template)}
+                                                        className={`p-4 rounded-2xl border transition-all flex items-start gap-4 text-left ${selectedTemplate?.id === template.id
+                                                            ? 'bg-white border-[#22C55E] border-2 shadow-lg shadow-green-100 ring-4 ring-green-50/50'
+                                                            : 'bg-white border-gray-100 border-2 hover:border-gray-200 shadow-sm'
+                                                            }`}
+                                                    >
+                                                        <div className={`p-2 rounded-xl shrink-0 ${selectedTemplate?.id === template.id ? 'bg-[#4ADE80] text-[#111814] shadow-md' : 'bg-gray-50 text-gray-300'}`}>
+                                                            <Zap className="w-4 h-4" />
                                                         </div>
-                                                        <div className="flex flex-wrap items-center gap-2">
-                                                            {tags.map(tag => (
-                                                                <button
-                                                                    key={tag}
-                                                                    onClick={() => setSelectedTemplate({ ...selectedTemplate, message: selectedTemplate.message + ' ' + tag })}
-                                                                    className="whitespace-nowrap text-[10px] font-bold px-3 py-1.5 bg-white border-2 border-gray-100 hover:border-[#22C55E] hover:text-[#22C55E] hover:shadow-sm text-gray-600 rounded-xl transition-all"
-                                                                >
-                                                                    {tag}
-                                                                </button>
-                                                            ))}
+                                                        <div className="min-w-0">
+                                                            <p className={`font-black text-[10px] uppercase tracking-tight leading-none mb-2 ${selectedTemplate?.id === template.id ? 'text-[#22C55E]' : 'text-gray-500'}`}>{template.name}</p>
+                                                            <div className="flex items-center gap-1.5">
+                                                                <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${template.status ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`} />
+                                                                <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">
+                                                                    {template.status ? 'EN EXECUCIÓN' : 'PAUSADO'}
+                                                                </span>
+                                                            </div>
                                                         </div>
-                                                    </div>
-
-                                                    <div className="md:pl-6 md:border-l-2 border-gray-100 flex flex-col items-center md:items-end gap-3 shrink-0">
-                                                        <Button
-                                                            onClick={handleSaveTemplate}
-                                                            disabled={isSavingTemplate}
-                                                            className="h-11 px-6 rounded-xl bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black flex items-center gap-2 transition-all shadow-lg shadow-green-100 disabled:opacity-50 text-[11px] tracking-widest"
-                                                        >
-                                                            {isSavingTemplate ? (
-                                                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                                            ) : (
-                                                                <Save className="w-4 h-4" />
-                                                            )}
-                                                            GUARDAR CAMBIOS
-                                                        </Button>
-                                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center md:text-right">
-                                                            {selectedTemplate.message.length} <span className="text-gray-200">/</span> 500 caract.
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </Card>
-                                    </div>
-                                )}
-                            </>
-                        ) : (
-                            <>
-                                    {/* Selector de Audiencia */}
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-2 text-[#22C55E]">
-                                            <Users className="w-3.5 h-3.5 fill-current" />
-                                            <h3 className="text-[10px] font-black uppercase tracking-widest text-[#23a352]">Audiencia Objetivo</h3>
-                                            <div className="ml-auto px-2 py-0.5 bg-green-50 rounded-full text-[9px] font-black border border-green-100 uppercase tracking-tighter text-[#22C55E]">
-                                                {selectedSegment?.count} CLIENTES SELECCIONADOS
+                                                    </button>
+                                                ))}
                                             </div>
                                         </div>
-
-                                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 border-2 border-gray-200 p-2 rounded-[1.5rem] bg-gray-50/30">
-                                            {segments.map((segment) => (
-                                                <button
-                                                    key={segment.id}
-                                                    onClick={() => handleSegmentChange(segment)}
-                                                    className={`p-4 rounded-2xl border transition-all flex flex-col items-center gap-2 text-center ${selectedSegment?.id === segment.id
-                                                        ? 'bg-white border-[#22C55E] border-2 shadow-lg shadow-green-100 ring-4 ring-green-50/50'
-                                                        : 'bg-white border-transparent border-2 hover:border-gray-200 shadow-sm'
-                                                        }`}
-                                                >
-                                                    <div className={`p-2 rounded-xl ${selectedSegment?.id === segment.id ? 'bg-[#4ADE80] text-[#111814] shadow-md' : 'bg-gray-50 text-gray-300'}`}>
-                                                        {segment.icon}
-                                                    </div>
-                                                    <div>
-                                                        <p className={`font-black text-[9px] uppercase tracking-tighter leading-none mb-1 ${selectedSegment?.id === segment.id ? 'text-[#22C55E]' : 'text-gray-500'}`}>{segment.name}</p>
-                                                        <p className="text-[11px] font-black text-gray-900">{segment.count}</p>
-                                                    </div>
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* Editor de Mensaje de Campaña */}
-                                    <div className="space-y-4 flex flex-col flex-1 mt-6">
-                                        <div className="flex items-center gap-3 px-1">
-                                            <div className="w-9 h-9 rounded-full bg-white border-2 border-[#22C55E] text-[#22C55E] flex items-center justify-center font-black shadow-sm">
-                                                <Send className="w-4 h-4" />
-                                            </div>
-                                            <h3 className="font-black text-gray-900 text-base uppercase tracking-tight">Personaliza el mensaje de campaña</h3>
-                                        </div>
-
-                                        <Card className="border-2 border-gray-200 shadow-xl shadow-gray-200/50 overflow-hidden bg-white flex flex-col flex-1 min-h-[500px] rounded-[1.5rem]">
-                                            <div className="p-7 flex-1 flex flex-col space-y-6">
-                                                <div className="bg-gray-50/80 rounded-2xl p-5 border-2 border-dashed border-gray-200 flex flex-col justify-center">
-                                                    <div className="flex items-center gap-3">
-                                                        <AlertCircle className="w-5 h-5 text-[#22C55E] shrink-0" />
-                                                        <p className="text-xs text-gray-500 font-bold uppercase tracking-tight leading-relaxed">
-                                                            {selectedSegment?.desc}
-                                                        </p>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex justify-end -my-4 relative z-10 px-4">
-                                                    <AISuggestButton type="campaign" />
-                                                </div>
-
-                                                <div className="flex-1 border-2 border-gray-50 rounded-2xl p-4 bg-gray-50/10">
-                                                    <textarea
-                                                        value={campaignMessage}
-                                                        onChange={(e) => setCampaignMessage(e.target.value)}
-                                                        className="w-full h-full min-h-[180px] bg-transparent resize-none border-none focus:ring-0 text-gray-800 placeholder:text-gray-300 text-lg font-medium leading-relaxed scrollbar-hide"
-                                                        placeholder="Escribe el mensaje que recibirán todos los clientes seleccionados..."
-                                                    />
-                                                </div>
-
-                                                <div className="pt-6 border-t-2 border-gray-100 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-6">
-                                                    <div className="space-y-3 min-w-0 flex-1">
-                                                        <div className="flex items-center gap-2">
-                                                            <Sparkles className="w-3.5 h-3.5 text-gray-400" />
-                                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Etiquetas Inteligentes</span>
-                                                        </div>
-                                                        <div className="flex flex-wrap items-center gap-2">
-                                                            {tags.map(tag => (
-                                                                <button
-                                                                    key={tag}
-                                                                    onClick={() => setCampaignMessage(campaignMessage + ' ' + tag)}
-                                                                    className="whitespace-nowrap text-[10px] font-bold px-3 py-1.5 bg-white border-2 border-gray-100 hover:border-[#22C55E] hover:text-[#22C55E] hover:shadow-sm text-gray-600 rounded-xl transition-all"
-                                                                >
-                                                                    {tag}
-                                                                </button>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="md:pl-6 md:border-l-2 border-gray-100 flex flex-col items-center md:items-end gap-3 shrink-0">
-                                                        <Button
-                                                            onClick={handleConfirmCampaign}
-                                                            disabled={campaignStatus === 'sending' || !campaignMessage.trim()}
-                                                            className="h-11 px-6 rounded-xl bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black flex items-center gap-2 transition-all shadow-lg shadow-green-100 disabled:opacity-50 text-[11px] tracking-widest"
-                                                        >
-                                                            {campaignStatus === 'sending' ? (
-                                                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                                            ) : (
-                                                                <Send className="w-4 h-4" />
-                                                            )}
-                                                            ENVIAR CAMPAÑA
-                                                        </Button>
-                                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center md:text-right">
-                                                            {campaignMessage.length} <span className="text-gray-200">/</span> 500 caract.
-                                                        </span>
-                                                    </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        {/* Selector de Audiencia */}
+                                        <div className="space-y-4">
+                                            <div className="flex items-center gap-2 text-[#22C55E]">
+                                                <Users className="w-3.5 h-3.5 fill-current" />
+                                                <h3 className="text-[10px] font-black uppercase tracking-widest text-[#23a352]">Audiencia Objetivo</h3>
+                                                <div className="ml-auto px-2 py-0.5 bg-green-50 rounded-full text-[9px] font-black border border-green-100 uppercase tracking-tighter text-[#22C55E]">
+                                                    {selectedSegment?.count} CLIENTES SELECCIONADOS
                                                 </div>
                                             </div>
-                                        </Card>
-                                    </div>
+
+                                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 border-2 border-gray-200 p-2 rounded-[1.5rem] bg-gray-50/30">
+                                                {segments.map((segment) => (
+                                                    <button
+                                                        key={segment.id}
+                                                        onClick={() => handleSegmentChange(segment)}
+                                                        className={`p-4 rounded-2xl border transition-all flex flex-col items-center gap-2 text-center ${selectedSegment?.id === segment.id
+                                                            ? 'bg-white border-[#22C55E] border-2 shadow-lg shadow-green-100 ring-4 ring-green-50/50'
+                                                            : 'bg-white border-transparent border-2 hover:border-gray-200 shadow-sm'
+                                                            }`}
+                                                    >
+                                                        <div className={`p-2 rounded-xl ${selectedSegment?.id === segment.id ? 'bg-[#4ADE80] text-[#111814] shadow-md' : 'bg-gray-50 text-gray-300'}`}>
+                                                            {segment.icon}
+                                                        </div>
+                                                        <div>
+                                                            <p className={`font-black text-[9px] uppercase tracking-tighter leading-none mb-1 ${selectedSegment?.id === segment.id ? 'text-[#22C55E]' : 'text-gray-500'}`}>{segment.name}</p>
+                                                            <p className="text-[11px] font-black text-gray-900">{segment.count}</p>
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
                                     </>
                                 )}
                             </div>
                         </div>
                     </div>
 
+                    {/* Row 1 Right: Impact Stats */}
+                    <div className="lg:col-span-4 order-1 lg:order-2 lg:h-full">
+                        {/* Impact Stats */}
+                        <Card className="border-2 border-gray-200 shadow-xl bg-white overflow-hidden rounded-[2rem] w-full max-w-[280px] mx-auto border-t-[10px] border-t-[#22C55E] h-full flex flex-col">
+                            <div className="p-5 border-b flex items-center justify-between shrink-0">
+                                <h4 className="font-black text-gray-900 text-[10px] flex items-center gap-2 uppercase tracking-widest">
+                                    <BarChart className="w-3.5 h-3.5 text-[#22C55E]" />
+                                    Impacto Estimado
+                                </h4>
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse" />
+                            </div>
+                            <div className="p-6 flex-1 flex flex-col justify-between">
+                                <div className="grid grid-cols-1 gap-4">
+                                    <div className="flex justify-between items-center gap-1">
+                                        <span className="text-gray-400 font-black text-[10px] uppercase tracking-widest">Alcance</span>
+                                        <span className="font-black text-gray-900 text-sm">
+                                            {activeTab === 'templates' ? (selectedTemplate?.stats?.alcance || 0) : (selectedSegment?.count || 0)} Clientes
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center gap-1">
+                                        <span className="text-gray-400 font-black text-[10px] uppercase tracking-widest">Apertura</span>
+                                        <span className="font-black text-[#22C55E] text-lg">
+                                            {activeTab === 'templates' ? (selectedTemplate?.stats?.apertura || '95%') : '96%'}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center gap-1">
+                                        <span className="text-gray-400 font-black text-[10px] uppercase tracking-widest">Conversión</span>
+                                        <span className="font-black text-[#22C55E] text-lg">
+                                            {activeTab === 'templates' ? (selectedTemplate?.stats?.conversion || '10%') : '8%'}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="pt-4 mt-4 border-t-2 border-gray-50 shrink-0">
+                                    <p className="text-[10px] text-gray-400 font-bold italic leading-relaxed text-center uppercase tracking-tighter">
+                                        {activeTab === 'templates'
+                                            ? (selectedTemplate?.stats?.tip || 'Optimización automática activada.')
+                                            : `Impactarás al ${selectedSegment ? ((selectedSegment.count / 204) * 100).toFixed(0) : 0}% de tu base.`}
+                                    </p>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
 
+                    {/* Row 2 Left: Editor Header */}
+                    <div className="lg:col-span-8 order-4 lg:order-3">
+                        {activeTab === 'templates' ? (
+                            selectedTemplate && (
+                                <div className="flex items-center justify-between px-1">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-9 h-9 rounded-full bg-white border-2 border-[#22C55E] text-[#22C55E] flex items-center justify-center font-black shadow-sm">
+                                            <MessageSquareMore className="w-4 h-4" />
+                                        </div>
+                                        <h3 className="font-black text-gray-900 text-base uppercase tracking-tight">Personaliza el mensaje</h3>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <div className={`px-4 py-1.5 rounded-full font-black text-[10px] tracking-widest flex items-center gap-2 border transition-colors ${selectedTemplate.status ? 'bg-green-50 text-green-600 border-green-100' : 'bg-gray-100 text-gray-400 border-gray-200'}`}>
+                                            <div className={`w-2 h-2 rounded-full ${selectedTemplate.status ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+                                            {selectedTemplate.status ? 'ACTIVADO' : 'DESACTIVADO'}
+                                        </div>
+                                        <Switch
+                                            checked={selectedTemplate.status}
+                                            onCheckedChange={(checked) => setSelectedTemplate({ ...selectedTemplate, status: checked })}
+                                            className="data-[state=checked]:bg-[#4ADE80]"
+                                        />
+                                    </div>
+                                </div>
+                            )
+                        ) : (
+                            <div className="flex items-center gap-3 px-1">
+                                <div className="w-9 h-9 rounded-full bg-white border-2 border-[#22C55E] text-[#22C55E] flex items-center justify-center font-black shadow-sm">
+                                    <Send className="w-4 h-4" />
+                                </div>
+                                <h3 className="font-black text-gray-900 text-base uppercase tracking-tight">Personaliza el mensaje de campaña</h3>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Row 3 Left: Editor Card */}
+                    <div className="lg:col-span-8 order-5 lg:order-5">
+                        {activeTab === 'templates' ? (
+                            selectedTemplate && (
+                                <Card className="border-2 border-gray-200 shadow-xl shadow-gray-200/50 overflow-hidden bg-white flex flex-col flex-1 h-full min-h-[580px] rounded-[1.5rem]">
+                                    <div className="p-7 flex-1 flex flex-col space-y-6">
+                                        <div className="bg-gray-50/80 rounded-2xl p-5 border-2 border-dashed border-gray-200 flex items-center gap-3">
+                                            <AlertCircle className="w-5 h-5 text-[#22C55E] shrink-0" />
+                                            <p className="text-xs text-gray-500 font-bold uppercase tracking-tight leading-relaxed">{selectedTemplate.trigger}</p>
+                                        </div>
+
+                                        <div className="flex justify-end -my-4 relative z-10 px-4">
+                                            <AISuggestButton type="template" />
+                                        </div>
+
+                                        <div className="flex-1 border-2 border-gray-50 rounded-2xl p-4 bg-gray-50/10">
+                                            <textarea
+                                                value={selectedTemplate.message}
+                                                onChange={(e) => setSelectedTemplate({ ...selectedTemplate, message: e.target.value })}
+                                                className="w-full h-full min-h-[180px] bg-transparent resize-none border-none focus:ring-0 text-gray-800 placeholder:text-gray-300 text-lg font-medium leading-relaxed scrollbar-hide"
+                                                placeholder="Escribe el mensaje de la automatización..."
+                                            />
+                                        </div>
+
+                                        <div className="pt-6 border-t-2 border-gray-100 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-6">
+                                            <div className="space-y-3 min-w-0 flex-1">
+                                                <div className="flex items-center gap-2">
+                                                    <Sparkles className="w-3.5 h-3.5 text-gray-400" />
+                                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Etiquetas Inteligentes</span>
+                                                </div>
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    {tags.map(tag => (
+                                                        <button
+                                                            key={tag}
+                                                            onClick={() => setSelectedTemplate({ ...selectedTemplate, message: selectedTemplate.message + ' ' + tag })}
+                                                            className="whitespace-nowrap text-[10px] font-bold px-3 py-1.5 bg-white border-2 border-gray-100 hover:border-[#22C55E] hover:text-[#22C55E] hover:shadow-sm text-gray-600 rounded-xl transition-all"
+                                                        >
+                                                            {tag}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            <div className="md:pl-6 md:border-l-2 border-gray-100 flex flex-col items-center md:items-end gap-3 shrink-0">
+                                                <Button
+                                                    onClick={handleSaveTemplate}
+                                                    disabled={isSavingTemplate}
+                                                    className="h-11 px-6 rounded-xl bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black flex items-center gap-2 transition-all shadow-lg shadow-green-100 disabled:opacity-50 text-[11px] tracking-widest"
+                                                >
+                                                    {isSavingTemplate ? (
+                                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                    ) : (
+                                                        <Save className="w-4 h-4" />
+                                                    )}
+                                                    GUARDAR CAMBIOS
+                                                </Button>
+                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center md:text-right">
+                                                    {selectedTemplate.message.length} <span className="text-gray-200">/</span> 500 caract.
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Card>
+                            )
+                        ) : (
+                            <Card className="border-2 border-gray-200 shadow-xl shadow-gray-200/50 overflow-hidden bg-white flex flex-col flex-1 h-full min-h-[580px] rounded-[1.5rem]">
+                                <div className="p-7 flex-1 flex flex-col space-y-6">
+                                    <div className="bg-gray-50/80 rounded-2xl p-5 border-2 border-dashed border-gray-200 flex flex-col justify-center">
+                                        <div className="flex items-center gap-3">
+                                            <AlertCircle className="w-5 h-5 text-[#22C55E] shrink-0" />
+                                            <p className="text-xs text-gray-500 font-bold uppercase tracking-tight leading-relaxed">
+                                                {selectedSegment?.desc}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex justify-end -my-4 relative z-10 px-4">
+                                        <AISuggestButton type="campaign" />
+                                    </div>
+
+                                    <div className="flex-1 border-2 border-gray-50 rounded-2xl p-4 bg-gray-50/10">
+                                        <textarea
+                                            value={campaignMessage}
+                                            onChange={(e) => setCampaignMessage(e.target.value)}
+                                            className="w-full h-full min-h-[180px] bg-transparent resize-none border-none focus:ring-0 text-gray-800 placeholder:text-gray-300 text-lg font-medium leading-relaxed scrollbar-hide"
+                                            placeholder="Escribe el mensaje que recibirán todos los clientes seleccionados..."
+                                        />
+                                    </div>
+
+                                    <div className="pt-6 border-t-2 border-gray-100 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-6">
+                                        <div className="space-y-3 min-w-0 flex-1">
+                                            <div className="flex items-center gap-2">
+                                                <Sparkles className="w-3.5 h-3.5 text-gray-400" />
+                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Etiquetas Inteligentes</span>
+                                            </div>
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                {tags.map(tag => (
+                                                    <button
+                                                        key={tag}
+                                                        onClick={() => setCampaignMessage(campaignMessage + ' ' + tag)}
+                                                        className="whitespace-nowrap text-[10px] font-bold px-3 py-1.5 bg-white border-2 border-gray-100 hover:border-[#22C55E] hover:text-[#22C55E] hover:shadow-sm text-gray-600 rounded-xl transition-all"
+                                                    >
+                                                        {tag}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="md:pl-6 md:border-l-2 border-gray-100 flex flex-col items-center md:items-end gap-3 shrink-0">
+                                            <Button
+                                                onClick={handleConfirmCampaign}
+                                                disabled={campaignStatus === 'sending' || !campaignMessage.trim()}
+                                                className="h-11 px-6 rounded-xl bg-[#4ADE80] hover:bg-[#22C55E] text-[#111814] font-black flex items-center gap-2 transition-all shadow-lg shadow-green-100 disabled:opacity-50 text-[11px] tracking-widest"
+                                            >
+                                                {campaignStatus === 'sending' ? (
+                                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                ) : (
+                                                    <Send className="w-4 h-4" />
+                                                )}
+                                                ENVIAR CAMPAÑA
+                                            </Button>
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center md:text-right">
+                                                {campaignMessage.length} <span className="text-gray-200">/</span> 500 caract.
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
+                        )}
+                    </div>
+
+                    {/* Row 3 Right: Phone Mockup */}
+                    <div className="lg:col-span-4 order-2 lg:order-6">
+                        <div className="bg-white rounded-[1.5rem] border-[5px] border-gray-900 shadow-2xl w-full max-w-[280px] h-full overflow-hidden relative mx-auto transition-all min-h-[580px]">
+                            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-28 h-4 bg-gray-900 rounded-b-lg z-20"></div>
+                            <div className="w-full h-full bg-[#E5DDD5] flex flex-col relative">
+                                <div className="bg-[#075E54] p-4 pt-10 text-white flex items-center gap-3 shrink-0">
+                                    <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm shadow-inner">
+                                        {user?.business_name?.[0] || 'M'}
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-black uppercase tracking-tight leading-none">{user?.business_name || 'Mi Negocio'}</p>
+                                        <p className="text-[10px] opacity-70 font-bold uppercase mt-0.5">En línea</p>
+                                    </div>
+                                </div>
+                                <div className="flex-1 p-4 space-y-4 overflow-y-auto scrollbar-hide">
+                                    <div className="max-w-[90%] bg-white rounded-2xl rounded-tl-sm p-4 shadow-md relative border-b-2 border-gray-100">
+                                        <div className="flex items-center gap-1.5 mb-2">
+                                            <span className="text-[9px] font-black text-[#22C55E] uppercase tracking-widest">OFICIAL</span>
+                                            <div className="w-1.5 h-1.5 rounded-full bg-[#4ADE80]" />
+                                        </div>
+                                        <p className="text-sm text-gray-800 font-medium leading-relaxed whitespace-pre-wrap">
+                                            {activeTab === 'templates'
+                                                ? (selectedTemplate?.message || 'Escribe tu mensaje...')
+                                                : (campaignMessage || 'Escribiendo campaña...')
+                                            }
+                                        </p>
+                                        <div className="flex items-center justify-end gap-1 mt-2">
+                                            <p className="text-[8px] text-gray-400 font-bold uppercase">Ahora</p>
+                                            <Check className="w-2.5 h-2.5 text-[#22C55E]" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="bg-gray-100 p-3 px-4 flex items-center gap-3 shrink-0">
+                                    <div className="flex-1 h-9 bg-white rounded-full border-2 border-gray-200"></div>
+                                    <div className="w-10 h-10 rounded-full bg-[#075E54] flex items-center justify-center text-white shadow-lg"><Smartphone className="w-5 h-5" /></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
