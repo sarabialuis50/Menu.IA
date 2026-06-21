@@ -251,9 +251,9 @@ function SedeOverrideModal({ open, onClose, product, activeSede, onSave }) {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function CatalogoMaestroPage() {
   const { slug } = useParams();
-  const { api } = useAuth();
+  const { api, isSuperAdmin } = useAuth();
 
-  // Active sede state — always shown, defaults to Norte
+  // Active sede state — always shown, defaults to the slug in URL
   const initialSede = SEDES.find(s => s.slug === slug) || SEDES[0];
   const [activeSede, setActiveSede] = useState(initialSede);
 
@@ -263,7 +263,7 @@ export default function CatalogoMaestroPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filterCat, setFilterCat] = useState('');
-  const [tab, setTab] = useState('catalogo');
+  const [tab, setTab] = useState(isSuperAdmin ? 'catalogo' : 'sede');
 
   const [productModal, setProductModal] = useState({ open: false, mode: 'create', product: null });
   const [overrideModal, setOverrideModal] = useState({ open: false, product: null });
@@ -365,20 +365,26 @@ export default function CatalogoMaestroPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-black text-slate-800 tracking-tight">Catálogo Maestro</h1>
+            <h1 className="text-2xl font-black text-slate-800 tracking-tight">
+              {isSuperAdmin ? 'Catálogo Maestro' : `Catálogo Sede ${activeSede.label}`}
+            </h1>
             <p className="text-sm text-slate-500 mt-1">
-              Gestiona el catálogo global y los overrides de precio y disponibilidad por sede.
+              {isSuperAdmin 
+                ? 'Gestiona el catálogo global y los overrides de precio y disponibilidad por sede.'
+                : 'Gestiona la disponibilidad y precios de tu catálogo.'}
             </p>
           </div>
-          <Button
-            onClick={() => setProductModal({ open: true, mode: 'create', product: null })}
-            className="bg-[#DAA520] hover:bg-[#C4941A] text-white font-bold gap-2 shadow-md">
-            <Plus className="w-4 h-4" /> Nuevo Producto Global
-          </Button>
+          {isSuperAdmin && (
+            <Button
+              onClick={() => setProductModal({ open: true, mode: 'create', product: null })}
+              className="bg-[#DAA520] hover:bg-[#C4941A] text-white font-bold gap-2 shadow-md">
+              <Plus className="w-4 h-4" /> Nuevo Producto Global
+            </Button>
+          )}
         </div>
 
-        {/* ── SEDE PICKER (always visible) ── */}
-        <SedePicker activeSede={activeSede} onChange={handleSedeChange} />
+        {/* ── SEDE PICKER (Visible only for super admins) ── */}
+        {isSuperAdmin && <SedePicker activeSede={activeSede} onChange={handleSedeChange} />}
 
         {/* Stats Row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -405,20 +411,22 @@ export default function CatalogoMaestroPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 border-b border-slate-200">
-          {[
-            { id: 'catalogo', label: '📖 Catálogo Global', count: products.length },
-            { id: 'sede', label: `${activeSede.emoji} Sede ${activeSede.label}`, count: activeSedeList.length },
-          ].map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)}
-              className={`px-4 py-2.5 text-sm font-bold border-b-2 -mb-px transition-all ${
-                tab === t.id ? 'border-[#DAA520] text-[#DAA520]' : 'border-transparent text-slate-500 hover:text-slate-700'
-              }`}>
-              {t.label}
-              <span className="ml-2 px-1.5 py-0.5 text-xs rounded-full bg-slate-100 text-slate-600">{t.count}</span>
-            </button>
-          ))}
-        </div>
+        {isSuperAdmin && (
+          <div className="flex gap-2 border-b border-slate-200">
+            {[
+              { id: 'catalogo', label: '📖 Catálogo Global', count: products.length },
+              { id: 'sede', label: `${activeSede.emoji} Sede ${activeSede.label}`, count: activeSedeList.length },
+            ].map(t => (
+              <button key={t.id} onClick={() => setTab(t.id)}
+                className={`px-4 py-2.5 text-sm font-bold border-b-2 -mb-px transition-all ${
+                  tab === t.id ? 'border-[#DAA520] text-[#DAA520]' : 'border-transparent text-slate-500 hover:text-slate-700'
+                }`}>
+                {t.label}
+                <span className="ml-2 px-1.5 py-0.5 text-xs rounded-full bg-slate-100 text-slate-600">{t.count}</span>
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3">
