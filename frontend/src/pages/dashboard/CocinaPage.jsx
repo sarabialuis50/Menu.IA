@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import useWebSocket from '@/hooks/useWebSocket';
@@ -146,9 +146,9 @@ export default function CocinaPage() {
           <div className="flex items-center gap-3">
             {kitchenType && (
               <button
-                onClick={() => navigate(`/dashboard/${slug}/cocina`)}
+                onClick={() => navigate(`/dashboard/${slug}`)}
                 className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-700 hover:bg-gray-600 transition-colors"
-                title="Volver a selección de cocina"
+                title="Salir al Dashboard"
               >
                 <ArrowLeft className="w-5 h-5 text-gray-300" />
               </button>
@@ -185,9 +185,10 @@ export default function CocinaPage() {
             </Button>
             <Button
               variant="ghost" size="icon"
-              onClick={() => navigate(`/dashboard/${slug}`)}
+              onClick={() => kitchenType ? navigate(`/dashboard/${slug}/cocina`) : navigate(`/dashboard/${slug}`)}
               className="text-gray-400 hover:text-red-500 hover:bg-red-500/10 ml-2"
-              data-testid="exit-kitchen-btn" title="Salir al Dashboard"
+              data-testid="exit-kitchen-btn"
+              title={kitchenType ? 'Cambiar cocina' : 'Salir al Dashboard'}
             >
               <X className="w-6 h-6" />
             </Button>
