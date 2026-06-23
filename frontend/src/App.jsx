@@ -10,6 +10,7 @@ import CookieBanner from "@/components/CookieBanner";
 // Pages
 import DemoRestaurante from './pages/public/DemoRestaurante';
 import LandingPage from "@/pages/LandingPage";
+import PresentationPage from "@/pages/PresentationPage";
 import PreciosPage from "@/pages/PreciosPage";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
@@ -90,6 +91,7 @@ function AppRoutes() {
     <Routes>
       {/* Public Routes */}
       <Route path="/" element={<LandingPage />} />
+      <Route path="/presentacion" element={<PresentationPage />} />
       <Route path="/precios" element={<PreciosPage />} />
       <Route path="/login" element={<AuthRoute><LoginPage /></AuthRoute>} />
       <Route path="/register" element={<AuthRoute><RegisterPage /></AuthRoute>} />
