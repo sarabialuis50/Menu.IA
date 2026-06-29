@@ -89,11 +89,10 @@ export const DashboardLayout = ({ children }) => {
         </button>
         <div className="flex-1 flex items-center justify-center gap-2">
           <div className="w-10 h-10 rounded-xl bg-transparent flex items-center justify-center overflow-hidden">
-            <img src="/logos/logo-icon-transparent.png" alt="Burger Full" className="size-8 object-contain" />
+            <img src="/logos/logo-icon-transparent.png" alt="Menu.IA" className="size-8 object-contain" />
           </div>
-          <span className="font-heading font-black text-xl tracking-tighter">
-            <span className="text-[#D4AF37]">BURGER</span>
-            <span className="text-white"> FULL</span>
+          <span className="font-heading font-black text-xl tracking-tighter text-white">
+            {user?.nombre || 'Mi Negocio'}
           </span>
         </div>
         <div className="size-10 invisible" />
@@ -149,10 +148,7 @@ export const DashboardLayout = ({ children }) => {
                 </h2>
 
                 <div className="flex items-center gap-1.5">
-                  <span className="font-heading font-black text-[9px] tracking-widest text-white leading-none">
-                    <span className="text-[#D4AF37]">BURGER</span>
-                    <span className="text-white"> FULL</span>
-                  </span>
+
 
                   {/* Role Badge */}
                   <div className={`

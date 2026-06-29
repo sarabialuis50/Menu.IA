@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
 import {
@@ -118,7 +118,7 @@ export default function PricingPage() {
                             <span className="font-heading font-bold text-white uppercase tracking-tighter">MENU.IA</span>
                         </div>
                         <p className="text-sm max-w-xs md:max-w-none">
-                            © 2026 Burger Full. Hecho con amor para negocios apasionados.
+                            © 2026 Menu.IA. Hecho con amor para negocios apasionados.
                         </p>
                     </div>
                 </div>

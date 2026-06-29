@@ -358,6 +358,13 @@ export default function PresentationPage() {
         </span>
         <Button 
           variant="ghost" size="sm" 
+          className="text-gray-400 hover:text-white rounded-full bg-gray-900/50 backdrop-blur-sm flex items-center gap-2"
+          onClick={() => window.open('/presentacion/pdf', '_blank')}
+        >
+          📄 PDF
+        </Button>
+        <Button 
+          variant="ghost" size="sm" 
           className="text-gray-400 hover:text-white rounded-full bg-gray-900/50 backdrop-blur-sm"
           onClick={() => navigate('/')}
         >

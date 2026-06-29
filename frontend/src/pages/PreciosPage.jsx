@@ -1,4 +1,4 @@
-﻿import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
@@ -434,7 +434,7 @@ export default function PreciosPage() {
             </div>
 
             <footer className="py-12 px-4 bg-[#0F172A] text-slate-400 text-center">
-                <p className="text-sm">© 2026 Burger Full. Impulsando el crecimiento de restaurantes en Colombia.</p>
+                <p className="text-sm">© 2026 Menu.IA. Impulsando el crecimiento de restaurantes en Colombia.</p>
             </footer>
             <LandingAgent />
         </div>
